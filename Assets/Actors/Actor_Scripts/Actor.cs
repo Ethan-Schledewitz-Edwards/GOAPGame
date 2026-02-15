@@ -12,13 +12,17 @@ public class Actor : MonoBehaviour
 	private Transform m_target;
 	public ActorInteractableObject objective;
 
-	[HideInInspector]
-	public EActorState state = default;
+	private EActorState m_state = default;
 
 	private void Awake()
 	{
 		m_actorHealth = GetComponent<ActorStats>();
 		m_navAgent = GetComponent<NavMeshAgent>();
+	}
+
+	public void SetState(EActorState state)
+	{
+		m_state = state;
 	}
 
 	public void SetTarget(Transform newTarget)
@@ -30,5 +34,11 @@ public class Actor : MonoBehaviour
 	{
 		if (m_navAgent.enabled && m_target != null)
 			m_navAgent.SetDestination(m_target.position);
+	}
+
+	public void FollowPlayer(Transform Player)
+	{
+		SetState(EActorState.STATE_Follow);
+		SetTarget(Player);
 	}
 }

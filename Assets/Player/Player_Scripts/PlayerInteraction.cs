@@ -1,6 +1,6 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class PlayerInteraction : MonoBehaviour, IInputHandler
 {
@@ -13,6 +13,8 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 	[SerializeField] private LayerMask m_cursorBlockingLayers;
 	[SerializeField] private LayerMask m_actorLayers;
 	[SerializeField] private Transform m_cursorVisualizer;
+
+	private List<Actor> m_followers = new List<Actor>();
 
 	#region Initialization Methods
 
@@ -61,6 +63,8 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 	}
 	#endregion
 
+	#region Monobehaviour Methods
+
 	private void Update()
 	{
 		Ray ray = m_mainCamera.ScreenPointToRay(m_mousePosition);
@@ -70,7 +74,9 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 			m_cursorVisualizer.position = hitData.point;
 		}
 	}
+	#endregion
 
+	#region Actions
 	private void Select(Vector3 position)
 	{
 		// Try to select actors
@@ -78,11 +84,31 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 
 		if (hitColliders.Length != 0)
 		{
-			Debug.Log("Found something!");
+			foreach (Collider i in hitColliders)
+			{
+				Actor actor = i.GetComponent<Actor>();
+				if (actor != null)
+				{
+					AddActor(actor);
+					actor.FollowPlayer(this.transform);
+				}
+			}
 		}
 	}
 
 	private void TryThrow(Vector3 position)
+	{
+		// Remove the closest follower and throw them at the cursor
+	}
+
+	#endregion
+
+	private void AddActor(Actor actor)
+	{
+
+	}
+
+	private void RemoveActor(Actor actor)
 	{
 
 	}

@@ -814,7 +814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e1ef4cedfd08648969ddceffcdc7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorManager
-  Actors: []
+  m_actorPrefab: {fileID: 1045364547215510978, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
 --- !u!4 &986610126
 Transform:
   m_ObjectHideFlags: 0
