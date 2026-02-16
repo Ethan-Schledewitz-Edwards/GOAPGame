@@ -16,6 +16,8 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 
 	private List<Actor> m_followers = new List<Actor>();
 
+	private bool m_isSummonHeld = false;
+
 	#region Initialization Methods
 
 	public void Start()
@@ -37,6 +39,7 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 	{
 		InputManager.Controls.Player.Look.performed += OnMouseInput;
 		InputManager.Controls.Player.Primary.performed += OnPrimaryInput;
+		InputManager.Controls.Player.Primary.canceled += OnPrimaryInput;
 		InputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
 	}
 
@@ -44,6 +47,7 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 	{
 		InputManager.Controls.Player.Look.performed -= OnMouseInput;
 		InputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
+		InputManager.Controls.Player.Primary.canceled -= OnPrimaryInput;
 		InputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
 	}
 
@@ -54,12 +58,12 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
 	{
-		Select(m_cursorVisualizer.position);
+		m_isSummonHeld = context.ReadValueAsButton();
 	}
 
 	private void OnSecondaryInput(InputAction.CallbackContext context)
 	{
-		TryThrow(m_cursorVisualizer.position);
+		TryAssignActor(m_cursorVisualizer.position);
 	}
 	#endregion
 
@@ -72,6 +76,11 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 		if (Physics.Raycast(ray, out RaycastHit hitData, 100f, m_cursorBlockingLayers))
 		{
 			m_cursorVisualizer.position = hitData.point;
+		}
+
+		if (m_isSummonHeld)
+		{
+			Select(m_cursorVisualizer.position);
 		}
 	}
 	#endregion
@@ -89,27 +98,61 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 				Actor actor = i.GetComponent<Actor>();
 				if (actor != null)
 				{
-					AddActor(actor);
-					actor.FollowPlayer(this.transform);
+					AddFollower(actor);
 				}
 			}
 		}
 	}
 
-	private void TryThrow(Vector3 position)
+	private void TryAssignActor(Vector3 throwPosition)
 	{
 		// Remove the closest follower and throw them at the cursor
+		Actor followerToThrow = FindClosestFollower();
+		if (followerToThrow != null) 
+		{ 
+			RemoveFollower(followerToThrow);
+			followerToThrow.TryToFindTask(throwPosition);
+		}
 	}
 
 	#endregion
 
-	private void AddActor(Actor actor)
+	private void AddFollower(Actor newFollower)
 	{
+		if (m_followers.Contains(newFollower))
+			return;
 
+		// Update systems to include new actor
+		m_followers.Add(newFollower);
+		newFollower.FollowPlayer(this.transform);
 	}
 
-	private void RemoveActor(Actor actor)
+	private void RemoveFollower(Actor actor)
 	{
+		if (m_followers.Contains(actor))
+		{
+			m_followers.Remove(actor);
+		}
+	}
 
+	// Finds the follower closest to the player
+	private Actor FindClosestFollower()
+	{
+		Actor closestFollower = null;
+
+		float closestDist = Mathf.Infinity;
+		foreach (Actor actor in m_followers)
+		{
+			if(actor == null) continue;
+
+			float dist = Vector3.Distance(transform.position, actor.transform.position);
+			if (dist < closestDist)
+			{
+				closestFollower = actor;
+				closestDist = dist;
+			}
+		}
+
+		return closestFollower;
 	}
 }

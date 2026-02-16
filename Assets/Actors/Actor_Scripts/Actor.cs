@@ -41,4 +41,12 @@ public class Actor : MonoBehaviour
 		SetState(EActorState.STATE_Follow);
 		SetTarget(Player);
 	}
+
+	public void TryToFindTask(Vector3 destination)
+	{
+		SetState(EActorState.STATE_Working);
+		SetTarget(null);
+
+		m_navAgent.SetDestination(destination);
+	}
 }
