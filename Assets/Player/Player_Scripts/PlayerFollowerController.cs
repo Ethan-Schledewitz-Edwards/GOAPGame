@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public class PlayerInteraction : MonoBehaviour, IInputHandler
+public class PlayerFollowerController : MonoBehaviour, IInputHandler
 {
 	// Constants
 	private const float k_selectionRadius = 5.0f;
@@ -111,7 +111,7 @@ public class PlayerInteraction : MonoBehaviour, IInputHandler
 		if (followerToThrow != null) 
 		{ 
 			RemoveFollower(followerToThrow);
-			followerToThrow.TryToFindTask(throwPosition);
+			followerToThrow.GoToDestination(throwPosition);
 		}
 	}
 

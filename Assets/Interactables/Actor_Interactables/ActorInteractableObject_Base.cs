@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public abstract class ActorInteractableObject : MonoBehaviour
+public abstract class ActorInteractableObject_Base : MonoBehaviour
 {
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
