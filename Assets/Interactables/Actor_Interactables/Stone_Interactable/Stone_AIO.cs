@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Stone_AIO : ActorInteractableObject_Base
 {
-	public override void Interact()
+	public override void Interact(Actor actor)
 	{
-		throw new System.NotImplementedException();
+		base.Interact(actor);
 	}
 
 	public override void StopInteract()

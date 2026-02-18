@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public class BehaviourTree : MonoBehaviour
+namespace BehaviourTrees
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+	public class BehaviourTree
+	{
+		private BTNode m_rootNode;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+		public BehaviourTree(BehaviourTree behaviourTree)
+		{
+			this.behaviourTree = behaviourTree;
+		}
+
+		public void TickBehaviourTree()
+		{
+			m_rootNode.Evaluate();
+		}
+	}
 }

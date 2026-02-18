@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
+using BehaviourTrees;
 
 [RequireComponent(typeof(ActorStats), typeof(NavMeshAgent))]
 public class Actor : MonoBehaviour
@@ -60,15 +59,32 @@ public class Actor : MonoBehaviour
 			return;
 
 		m_objective = newObjective;
+
+		// Set this actors behaviour tree
+		BehaviourTree behaviourTree = new BehaviourTree(m_objective.GetBehaviourTree());
+		m_behaviourTree = behaviourTree;
+
 		m_navAgent.SetDestination(m_objective.transform.position);
 	}
 
 	public void TickBehaviour()
 	{
-		if(m_actorState == EActorState.STATE_Follow && m_navAgent.enabled && 
-			m_targetFollowTransform != null)
+		if (m_navAgent.enabled)
 		{
-			m_navAgent.SetDestination(m_targetFollowTransform.position);
+			switch (m_actorState)
+			{
+				case EActorState.STATE_OffDuty:
+					break;
+				case EActorState.STATE_Follow:
+					if(m_targetFollowTransform != null)
+						m_navAgent.SetDestination(m_targetFollowTransform.position);
+					break;
+
+				case EActorState.STATE_Working:
+					if (m_behaviourTree != null)
+						m_behaviourTree.TickBehaviourTree();
+					break;
+			}
 		}
 	}
 
@@ -146,7 +162,7 @@ public class Actor : MonoBehaviour
 			// Set objective to the closest task.
 			if (aio != null)
 			{
-				SetTask(aio);
+				aio.Interact(this);
 			}
 		}
 	}

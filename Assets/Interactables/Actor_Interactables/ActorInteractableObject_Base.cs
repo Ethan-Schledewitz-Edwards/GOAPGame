@@ -3,6 +3,9 @@ using UnityEngine;
 
 public abstract class ActorInteractableObject_Base : MonoBehaviour
 {
+	[Header("Behaviour Tree")]
+	[SerializeField] private BehaviourTree m_behaviourTree;
+
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
 	[SerializeField] private float m_formationRadius = 1;
@@ -13,9 +16,6 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 	public void AssignActor()
 	{
 		m_actorsPresent++;
-
-		if (m_actorsPresent == m_actorsNeeded)
-			Interact();
 
 		if (m_actorsPresent > m_actorsNeeded)
 			UpdateSpeed(m_actorsPresent - m_actorsNeeded);
@@ -40,7 +40,11 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 		float angle = m_actorsPresent * Mathf.PI * 2f / m_actorsNeeded;
 		return transform.position + new Vector3(Mathf.Cos(angle) * m_formationRadius, 0, Mathf.Sin(angle) * m_formationRadius);
 	}
-	public abstract void Interact();
+
+	public virtual void Interact(Actor actor)
+	{
+		actor.SetTask(this);
+	}
 
 	public abstract void StopInteract();
 
@@ -48,4 +52,6 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 	/// Notifies an interactable that it has extra actors to increase the speed of its function
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
+
+	public BehaviourTree GetBehaviourTree() => m_behaviourTree;
 }
