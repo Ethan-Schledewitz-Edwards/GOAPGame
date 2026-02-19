@@ -61,7 +61,7 @@ public class Actor : MonoBehaviour
 		m_objective = newObjective;
 
 		// Set this actors behaviour tree
-		BehaviourTree behaviourTree = new BehaviourTree(m_objective.GetBehaviourTree());
+		BehaviourTree behaviourTree = m_objective.GetBehaviourTree(this.transform);
 		m_behaviourTree = behaviourTree;
 
 		m_navAgent.SetDestination(m_objective.transform.position);
@@ -163,6 +163,7 @@ public class Actor : MonoBehaviour
 			if (aio != null)
 			{
 				aio.Interact(this);
+				SetTask(aio);
 			}
 		}
 	}

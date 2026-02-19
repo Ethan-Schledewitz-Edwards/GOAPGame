@@ -1,11 +1,10 @@
+using BehaviourTrees;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public abstract class ActorInteractableObject_Base : MonoBehaviour
 {
-	[Header("Behaviour Tree")]
-	[SerializeField] private BehaviourTree m_behaviourTree;
-
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
 	[SerializeField] private float m_formationRadius = 1;
@@ -41,10 +40,7 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 		return transform.position + new Vector3(Mathf.Cos(angle) * m_formationRadius, 0, Mathf.Sin(angle) * m_formationRadius);
 	}
 
-	public virtual void Interact(Actor actor)
-	{
-		actor.SetTask(this);
-	}
+	public abstract void Interact(Actor actor);
 
 	public abstract void StopInteract();
 
@@ -53,5 +49,5 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
 
-	public BehaviourTree GetBehaviourTree() => m_behaviourTree;
+	public abstract BehaviourTree GetBehaviourTree(Transform userTransform);
 }

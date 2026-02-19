@@ -15,7 +15,7 @@ namespace BehaviourTrees
 	{
 		protected EBTNodeState m_nodeState;
 
-		private BTNode m_parentNode;
+		protected BTNode m_parentNode;
 		protected List<BTNode> m_childNodes = new List<BTNode>();
 
 		private Dictionary<string, object> m_dataCtx = new Dictionary<string, object>();
@@ -36,6 +36,11 @@ namespace BehaviourTrees
 		public void SetParent(BTNode node)
 		{
 			m_parentNode = node;
+		}
+
+		public BTNode GetParent()
+		{
+			return m_parentNode;
 		}
 
 		private void AddChild(BTNode node) 

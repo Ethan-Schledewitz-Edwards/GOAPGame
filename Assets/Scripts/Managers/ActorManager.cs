@@ -50,6 +50,12 @@ public class ActorManager : MonoBehaviour
 	{
 		if (m_actors.Count > 0) 
 		{
+			foreach (Actor actor in m_actors)
+			{
+				actor.TickBehaviour();
+			}
+
+			/*
 			int actorsToTickThisFrame = Mathf.Max(1, Mathf.RoundToInt(m_actors.Count * Time.deltaTime));
 
 			for (int i = 0; i < actorsToTickThisFrame; i++)
@@ -59,6 +65,7 @@ public class ActorManager : MonoBehaviour
 				m_actors[nextActorIndex].TickBehaviour();
 				nextActorIndex++;
 			}
+			*/
 		}
 	}
 }
