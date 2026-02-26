@@ -1,6 +1,7 @@
+using BehaviourTrees;
 using UnityEngine;
 using UnityEngine.AI;
-using BehaviourTrees;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(ActorStats), typeof(NavMeshAgent))]
 public class Actor : MonoBehaviour
@@ -9,11 +10,13 @@ public class Actor : MonoBehaviour
 	private const float k_interactionDist = 3.0f;
 	private const float k_waitingForJobLimit = 10.0f;
 
-	// Components
-	[SerializeField] private LayerMask m_interactionLayers;
+    private const float k_rotSpeed = 24.0f;
 
-	private ActorStats m_actorHealth;
-	private NavMeshAgent m_navAgent;
+    // Components
+    [SerializeField] private LayerMask m_interactionLayers;
+
+    public ActorStats ActorHealth { get; private set; }
+    public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
 	private BehaviourTree m_behaviourTree = null;
@@ -30,16 +33,8 @@ public class Actor : MonoBehaviour
 
 	private void Awake()
 	{
-		m_actorHealth = GetComponent<ActorStats>();
-		m_navAgent = GetComponent<NavMeshAgent>();
-	}
-	#endregion
-
-	#region Monobehaviour Callbacks
-
-	private void Update()
-	{
-		HandleTaskSearch();
+		ActorHealth = GetComponent<ActorStats>();
+        NavAgent = GetComponent<NavMeshAgent>();
 	}
 	#endregion
 
@@ -55,21 +50,28 @@ public class Actor : MonoBehaviour
 
 	public void SetTask(ActorInteractableObject_Base newObjective)
 	{
-		if (newObjective == null)
+		if (m_objective == newObjective)
 			return;
 
 		m_objective = newObjective;
 
-		// Set this actors behaviour tree
-		BehaviourTree behaviourTree = m_objective.GetBehaviourTree(this.transform);
+		// Ignore null references
+        if (newObjective == null)
+            return;
+
+        m_objective.Interact(this);
+        NavAgent.SetDestination(m_objective.GetActorPositon());
+
+        // Set this actors behaviour tree
+        BehaviourTree behaviourTree = m_objective.GetBehaviourTree(transform, this);
 		m_behaviourTree = behaviourTree;
+    }
 
-		m_navAgent.SetDestination(m_objective.transform.position);
-	}
-
-	public void TickBehaviour()
+    public void TickBehaviour()
 	{
-		if (m_navAgent.enabled)
+        HandleTaskSearch();
+
+        if (NavAgent.enabled)
 		{
 			switch (m_actorState)
 			{
@@ -77,7 +79,7 @@ public class Actor : MonoBehaviour
 					break;
 				case EActorState.STATE_Follow:
 					if(m_targetFollowTransform != null)
-						m_navAgent.SetDestination(m_targetFollowTransform.position);
+						NavAgent.SetDestination(m_targetFollowTransform.position);
 					break;
 
 				case EActorState.STATE_Working:
@@ -86,12 +88,34 @@ public class Actor : MonoBehaviour
 					break;
 			}
 		}
-	}
+
+		HandleRotation();
+    }
+
+	private void HandleRotation()
+	{
+		if(m_objective != null)
+		{
+            Vector3 dirToTarget = m_objective.transform.position - transform.position;
+			dirToTarget.y = 0;
+
+			// Smoothly look at target
+            Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, k_rotSpeed * Time.deltaTime);
+        }
+    }
 
 	#region Commands
 
 	public void FollowPlayer(Transform Player)
 	{
+		// Reset task
+		if(m_objective != null)
+		{
+            m_objective.StopInteract();
+            m_objective = null;
+		}
+
 		SetState(EActorState.STATE_Follow);
 		SetFollowTransform(Player);
 	}
@@ -101,7 +125,7 @@ public class Actor : MonoBehaviour
 		SetState(EActorState.STATE_Working);
 		SetFollowTransform(null);
 
-		m_navAgent.SetDestination(destination);
+		NavAgent.SetDestination(destination);
 	}
 	#endregion
 
@@ -143,7 +167,7 @@ public class Actor : MonoBehaviour
 		bool isJobNeeded = m_actorState == EActorState.STATE_Working &&
 			m_objective == null;
 
-		if (isJobNeeded && m_navAgent.remainingDistance < 1)
+		if (isJobNeeded && NavAgent.remainingDistance < 1)
 		{
 			// Track time spent searching for a job
 			m_timeFindingJob += Time.deltaTime;
@@ -160,9 +184,10 @@ public class Actor : MonoBehaviour
 			ActorInteractableObject_Base aio = SearchForTask();
 
 			// Set objective to the closest task.
-			if (aio != null)
+			if (aio != null && 
+				aio.TryGetComponent(out HealthComponent healthComp) && 
+				!healthComp.GetIsDead())
 			{
-				aio.Interact(this);
 				SetTask(aio);
 			}
 		}

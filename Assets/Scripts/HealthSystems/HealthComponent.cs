@@ -89,7 +89,11 @@ public partial class HealthComponent : MonoBehaviour
 		}
 	}
 
-	protected virtual void OnDie()
+    public float GetHealth() => m_health;
+
+    public bool GetIsDead() => m_isDead;
+
+    protected virtual void OnDie()
 	{
 		// Spawn destruction particles for all clients
 		if (m_destrcutionParticles != null)

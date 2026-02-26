@@ -1,18 +1,28 @@
 using BehaviourTrees;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public abstract class ActorInteractableObject_Base : MonoBehaviour
 {
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
-	[SerializeField] private float m_formationRadius = 1;
+	[SerializeField] private float m_formationRadius = 2;
 
 	// System
 	private int m_actorsPresent = 0;
 
-	public void AssignActor()
+    public virtual void Interact(Actor actor)
+    {
+        AssignActor();
+    }
+
+    public virtual void StopInteract()
+    {
+        ReleaseActor();
+    }
+
+    #region Actor handling
+
+    private void AssignActor()
 	{
 		m_actorsPresent++;
 
@@ -20,7 +30,7 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 			UpdateSpeed(m_actorsPresent - m_actorsNeeded);
 	}
 
-	public void ReleaseActor()
+	private void ReleaseActor()
 	{
 		if (m_actorsPresent == 0)
 			return;
@@ -31,23 +41,31 @@ public abstract class ActorInteractableObject_Base : MonoBehaviour
 			StopInteract();
 	}
 
-	/// <summary>
-	/// Returns a valid position for an actor to move to on the interactables formation radius
-	/// </summary>
-	public Vector3 GetActorPositon()
-	{
-		float angle = m_actorsPresent * Mathf.PI * 2f / m_actorsNeeded;
-		return transform.position + new Vector3(Mathf.Cos(angle) * m_formationRadius, 0, Mathf.Sin(angle) * m_formationRadius);
-	}
-
-	public abstract void Interact(Actor actor);
-
-	public abstract void StopInteract();
+    #endregion
 
 	/// <summary>
 	/// Notifies an interactable that it has extra actors to increase the speed of its function
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
 
-	public abstract BehaviourTree GetBehaviourTree(Transform userTransform);
+	public abstract BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp);
+
+	#region Utility
+
+	/// <summary>
+	/// Returns a valid position for an actor to move to on the interactables formation radius
+	/// </summary>
+	public Vector3 GetActorPositon()
+	{
+        float angle = m_actorsPresent * Mathf.PI * 2f / 12;
+
+        float x = Mathf.Cos(angle) * m_formationRadius;
+        float z = Mathf.Sin(angle) * m_formationRadius;
+
+		Debug.Log(transform.position + new Vector3(x, 0, z));
+
+		return transform.position + new Vector3(x, 0, z);
+
+    }
+    #endregion
 }

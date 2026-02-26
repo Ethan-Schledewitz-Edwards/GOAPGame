@@ -2,24 +2,25 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(HealthComponent))]
 public class Stone_AIO : ActorInteractableObject_Base
 {
-	public override void Interact(Actor actor)
+    public override void Interact(Actor actor)
+    {
+        base.Interact(actor);
+    }
+
+    public override void StopInteract()
+    {
+        base.StopInteract();
+    }
+
+    public override void UpdateSpeed(int extra)
 	{
 		
 	}
 
-	public override void StopInteract()
-	{
-		throw new System.NotImplementedException();
-	}
-
-	public override void UpdateSpeed(int extra)
-	{
-		throw new System.NotImplementedException();
-	}
-
-	public override BehaviourTree GetBehaviourTree(Transform userTransform)
+	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
 	{
 		BehaviourTree tree = new BehaviourTree();
 
@@ -28,11 +29,11 @@ public class Stone_AIO : ActorInteractableObject_Base
 			new BTSequence(new List<BTNode>
 			{
 				new CheckForTargetTask(userTransform),
-				new DestroyTask(userTransform)
+				new HarvestTask(userTransform, userActorComp)
 			})
 		});
 
-		root.SetData("target", this.transform);
+		root.SetData("target", transform);
 
 		tree.SetTree(root);
 

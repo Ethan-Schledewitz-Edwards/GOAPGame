@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 namespace BehaviourTrees
 {
