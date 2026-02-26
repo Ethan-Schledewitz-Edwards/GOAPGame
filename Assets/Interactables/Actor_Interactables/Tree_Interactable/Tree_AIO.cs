@@ -25,9 +25,9 @@ public class Tree_AIO : ActorInteractableObject_Base
 	{
         BehaviourTree tree = new BehaviourTree();
 
-        BTNode root = new BTSelector(new List<BTNode>
+        BTNodeBase root = new BTSelector(new List<BTNodeBase>
         {
-            new BTSequence(new List<BTNode>
+            new BTSequence(new List<BTNodeBase>
             {
                 new CheckForTargetTask(userTransform),
                 new HarvestTask(userTransform, userActorComp)

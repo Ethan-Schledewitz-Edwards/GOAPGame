@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace BehaviourTrees
 {
-	public class BTSelector : BTNode
+	public class BTSelector : BTNodeBase
 	{
 		public BTSelector() : base() { }
-		public BTSelector(List<BTNode> children) : base(children) { }
+		public BTSelector(List<BTNodeBase> children) : base(children) { }
 
 		public override EBTNodeState Evaluate()
 		{
-			foreach (BTNode i in m_childNodes)
+			foreach (BTNodeBase i in m_childNodes)
 			{
 				switch (i.Evaluate())
 				{

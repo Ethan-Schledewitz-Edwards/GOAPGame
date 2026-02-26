@@ -2,7 +2,7 @@ using BehaviourTrees;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MoveToTargetTask : BTNode
+public class MoveToTargetTask : BTNodeBase
 {
 	private Transform m_transform;
 	private NavMeshAgent m_agent;

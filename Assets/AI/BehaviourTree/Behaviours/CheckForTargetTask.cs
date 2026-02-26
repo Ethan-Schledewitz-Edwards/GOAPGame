@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using UnityEngine;
 
-public class CheckForTargetTask : BTNode
+public class CheckForTargetTask : BTNodeBase
 {
 	private const float k_interactionDist = 3.0f;
 

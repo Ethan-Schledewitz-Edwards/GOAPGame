@@ -1,7 +1,7 @@
 using UnityEngine;
 using BehaviourTrees;
 
-public class HarvestTask : BTNode
+public class HarvestTask : BTNodeBase
 {
 	private const int m_timeBetweenAttacks = 2;
 

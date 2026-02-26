@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace BehaviourTrees
 {
-	public class BTSequence : BTNode
+	public class BTSequence : BTNodeBase
 	{
 		public BTSequence() : base() { }
-		public BTSequence(List<BTNode> children) : base(children) { }
+		public BTSequence(List<BTNodeBase> children) : base(children) { }
 
 		public override EBTNodeState Evaluate()
 		{
 			bool isAnyChildRunning = false;
 
-			foreach (BTNode i in m_childNodes)
+			foreach (BTNodeBase i in m_childNodes)
 			{
 				switch(i.Evaluate())
 				{

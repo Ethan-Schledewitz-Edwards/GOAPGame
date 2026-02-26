@@ -9,39 +9,39 @@ namespace BehaviourTrees
 		STATE_FAILURE
 	}
 
-	public class BTNode
+	public abstract class BTNodeBase
 	{
 		protected EBTNodeState m_nodeState;
 
-		protected BTNode m_parentNode;
-		protected List<BTNode> m_childNodes = new List<BTNode>();
+		protected BTNodeBase m_parentNode;
+		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
 
 		private Dictionary<string, object> m_dataCtx = new Dictionary<string, object>();
 
-		public BTNode()
+		public BTNodeBase()
 		{
 			m_parentNode = null;
 		}
 
-		public BTNode(List<BTNode> children)
+		public BTNodeBase(List<BTNodeBase> children)
 		{
-			foreach (BTNode i in children)
+			foreach (BTNodeBase i in children)
 			{
 				AddChild(i);
 			}
 		}
 
-		public void SetParent(BTNode node)
+		public void SetParent(BTNodeBase node)
 		{
 			m_parentNode = node;
 		}
 
-		public BTNode GetParent()
+		public BTNodeBase GetParent()
 		{
 			return m_parentNode;
 		}
 
-		private void AddChild(BTNode node) 
+		private void AddChild(BTNodeBase node) 
 		{
 			node.SetParent(this);
 			m_childNodes.Add(node);
@@ -61,7 +61,7 @@ namespace BehaviourTrees
 			if(m_dataCtx.TryGetValue(key, out value))
 				return value;
 
-			BTNode node = m_parentNode;
+			BTNodeBase node = m_parentNode;
 			while (node != null) 
 			{ 
 				value = node.GetData(key);
@@ -82,7 +82,7 @@ namespace BehaviourTrees
 				return true;
 			}
 
-			BTNode node = m_parentNode;
+			BTNodeBase node = m_parentNode;
 			while (node != null)
 			{
 				bool cleared = node.ClearData(key);
