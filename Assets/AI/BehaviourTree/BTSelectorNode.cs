@@ -1,14 +1,19 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BehaviourTrees
 {
-	public class BTSelector : BTNodeBase
+	public class BTSelectorNode : BTNodeBase
 	{
-		public BTSelector() : base() { }
-		public BTSelector(List<BTNodeBase> children) : base(children) { }
+        #region Constructors
 
-		public override EBTNodeState Evaluate()
+        public BTSelectorNode() : base() { }
+		public BTSelectorNode(List<BTNodeBase> children) : base(children) { }
+        #endregion
+
+        /// <summary>
+        /// Evaluates children in order and returns if one has not failed.
+        /// </summary>
+        public override EBTNodeState Evaluate()
 		{
 			foreach (BTNodeBase i in m_childNodes)
 			{
@@ -16,14 +21,14 @@ namespace BehaviourTrees
 				{
 					case EBTNodeState.STATE_FAILURE:
 						continue;
+
 					case EBTNodeState.STATE_SUCSESS:
 						m_nodeState = EBTNodeState.STATE_SUCSESS; 
 						return m_nodeState;
+
 					case EBTNodeState.STATE_RUNNING:
 						m_nodeState = EBTNodeState.STATE_RUNNING;
 						return m_nodeState;
-					default:
-						continue;
 
 				}
 			}
@@ -31,6 +36,5 @@ namespace BehaviourTrees
 			m_nodeState = EBTNodeState.STATE_FAILURE;
 			return m_nodeState;
 		}
-
 	}
 }

@@ -5,15 +5,13 @@ public class HarvestTask : BTNodeBase
 {
 	private const int m_timeBetweenAttacks = 2;
 
-	private Transform m_transform;
 	private Actor m_actorComponent;
 
 
 	private float m_attackTimer;
 
-	public HarvestTask(Transform transform, Actor actor)
+	public HarvestTask(Actor actor)
 	{
-		m_transform = transform;
 		m_actorComponent = actor;
 	}
 

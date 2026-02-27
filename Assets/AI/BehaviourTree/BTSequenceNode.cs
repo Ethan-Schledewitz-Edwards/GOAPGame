@@ -1,14 +1,19 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BehaviourTrees
 {
-	public class BTSequence : BTNodeBase
+	public class BTSequenceNode : BTNodeBase
 	{
-		public BTSequence() : base() { }
-		public BTSequence(List<BTNodeBase> children) : base(children) { }
+        #region Constructors
 
-		public override EBTNodeState Evaluate()
+        public BTSequenceNode() : base() { }
+		public BTSequenceNode(List<BTNodeBase> children) : base(children) { }
+        #endregion
+
+        /// <summary>
+        /// Returns success only if all children succeed, returning failure immediately if any child fails.
+        /// </summary>
+        public override EBTNodeState Evaluate()
 		{
 			bool isAnyChildRunning = false;
 
@@ -19,21 +24,18 @@ namespace BehaviourTrees
 					case EBTNodeState.STATE_FAILURE:
 						m_nodeState = EBTNodeState.STATE_FAILURE;
 						return m_nodeState;
+
 					case EBTNodeState.STATE_SUCSESS:
 						continue;
+
 					case EBTNodeState.STATE_RUNNING:
 						isAnyChildRunning = true;
 						continue;
-					default:
-						m_nodeState = EBTNodeState.STATE_SUCSESS;
-						return m_nodeState;
-
 				}
 			}
 
 			m_nodeState = isAnyChildRunning ? EBTNodeState.STATE_RUNNING : EBTNodeState.STATE_SUCSESS;
 			return m_nodeState;
 		}
-
 	}
 }

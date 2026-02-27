@@ -18,11 +18,16 @@ namespace BehaviourTrees
 
 		private Dictionary<string, object> m_dataCtx = new Dictionary<string, object>();
 
-		public BTNodeBase()
+        #region Consturctors
+
+        public BTNodeBase()
 		{
 			m_parentNode = null;
 		}
 
+		/// <summary>
+		/// Fills the nodes list of children on construction
+		/// </summary>
 		public BTNodeBase(List<BTNodeBase> children)
 		{
 			foreach (BTNodeBase i in children)
@@ -30,26 +35,29 @@ namespace BehaviourTrees
 				AddChild(i);
 			}
 		}
+        #endregion
 
-		public void SetParent(BTNodeBase node)
+        public virtual EBTNodeState Evaluate() => EBTNodeState.STATE_FAILURE;
+
+        private void AddChild(BTNodeBase node)
+        {
+            node.SetParentNode(this);
+            m_childNodes.Add(node);
+        }
+
+        public void SetParentNode(BTNodeBase node)
 		{
 			m_parentNode = node;
 		}
 
-		public BTNodeBase GetParent()
+		public BTNodeBase GetParentNode()
 		{
 			return m_parentNode;
 		}
 
-		private void AddChild(BTNodeBase node) 
-		{
-			node.SetParent(this);
-			m_childNodes.Add(node);
-		}
+        #region Node Data
 
-		public virtual EBTNodeState Evaluate() => EBTNodeState.STATE_FAILURE;
-
-		public void SetData(string key, object value)
+        public void SetData(string key, object value)
 		{
 			m_dataCtx[key] = value;
 		}
@@ -94,5 +102,6 @@ namespace BehaviourTrees
 
 			return false;
 		}
-	}
+        #endregion
+    }
 }
