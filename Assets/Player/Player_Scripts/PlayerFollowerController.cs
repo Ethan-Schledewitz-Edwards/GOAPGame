@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PlayerFollowerController : MonoBehaviour, IInputHandler
 {
 	// Constants
-	private const float k_selectionRadius = 5.0f;
+	private const float k_selectionRadius = 1.0f;
 
 	private Camera m_mainCamera;
 	private Vector2 m_mousePosition;
