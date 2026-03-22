@@ -11,12 +11,11 @@ public class ActorManager : MonoBehaviour
 
 	private List<Actor> m_actors = new List<Actor>(k_initialActors);
 
-	private int nextActorIndex = 0;
-
 	private void Start()
 	{
 		int sqrt = Mathf.CeilToInt(Mathf.Sqrt(k_initialActors));
 
+		int nextActorIndex = 0;
 		for (int x = 0; x < sqrt; x++)
 		{
 			for (int z = 0; z < sqrt; z++)
@@ -25,8 +24,11 @@ public class ActorManager : MonoBehaviour
 					return;
 
 				Actor actor = Instantiate(m_actorPrefab, null);
+				actor.name = $"{m_actorPrefab.name}: {nextActorIndex}";
 				actor.transform.position = new Vector3(x, 1, z);
 				m_actors.Add(actor);
+
+				nextActorIndex++;
 			}
 		}
 	}

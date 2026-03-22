@@ -25,7 +25,7 @@ public class BerryBushAIO : ActorInteractableObjectBase
         {
             new BTSequenceNode(new List<BTNodeBase>
             {
-                new CheckForTargetTask(userTransform),
+                new CheckForTargetTask(userActorComp, userTransform),
                 new HarvestTask(userActorComp)
             })
         });

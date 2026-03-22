@@ -8,7 +8,6 @@ public class HarvestTask : BTNodeBase
 
 	private Actor m_actorComponent;
 
-
 	private float m_attackTimer;
 
 	public HarvestTask(Actor actor)
@@ -21,44 +20,25 @@ public class HarvestTask : BTNodeBase
 		Transform target = (Transform)GetData("target");
 		HealthComponent harvestable = null;
 
-		if(target.TryGetComponent(out HealthComponent health))
+		if(target != null && target.TryGetComponent(out HealthComponent health))
+		{
 			harvestable = health;
 
-		m_attackTimer += Time.deltaTime;
-		if(m_attackTimer >= m_timeBetweenAttacks)
-		{
-			m_attackTimer = 0;
-			Debug.Log("ATTACK");
-
-			if (harvestable != null) 
+			m_attackTimer += Time.deltaTime;
+			if (m_attackTimer >= m_timeBetweenAttacks)
 			{
-				Vector3 harvestablePos = harvestable.transform.position;
-				Vector3 attackDir = harvestable.transform.position - m_actorComponent.transform.position;
+				m_attackTimer = 0;
+				Debug.Log("ATTACK");
 
-				// Reduce object hitpoints
-				harvestable.TryTakeDamage(2, harvestable.transform.position, attackDir);
+				if (harvestable != null)
+				{
+					Vector3 harvestablePos = harvestable.transform.position;
+					Vector3 attackDir = harvestable.transform.position - m_actorComponent.transform.position;
+
+					// Reduce object hitpoints
+					harvestable.TryTakeDamage(2, harvestable.transform.position, attackDir);
+				}
 			}
-        }
-
-		if(harvestable != null)
-		{
-            bool isTargetDead = harvestable.GetIsDead();
-            if (isTargetDead)
-            {
-                ClearData("target");
-                m_actorComponent.SetTask(null);
-
-				// Try to sort the harvested items
-				TrySortItems(harvestable.transform.position);
-			}
-        }
-		else
-		{
-			ClearData("target");
-			m_actorComponent.SetTask(null);
-
-			// Try to sort the harvested items
-			TrySortItems(m_actorComponent.transform.position);
 		}
 
 		m_nodeState = EBTNodeState.STATE_RUNNING;

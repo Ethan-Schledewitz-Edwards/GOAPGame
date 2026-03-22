@@ -25,7 +25,7 @@ public class StoneAIO : ActorInteractableObjectBase
 		{
 			new BTSequenceNode(new List<BTNodeBase>
 			{
-				new CheckForTargetTask(userTransform),
+				new CheckForTargetTask(userActorComp, userTransform),
 				new HarvestTask(userActorComp)
 			})
 		});
@@ -33,7 +33,6 @@ public class StoneAIO : ActorInteractableObjectBase
 		root.SetData("target", transform);
 
 		tree.SetTree(root);
-
 		return tree;
 	}
 }

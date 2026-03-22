@@ -65,7 +65,6 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 		Debug.Log(transform.position + new Vector3(x, 0, z));
 
 		return transform.position + new Vector3(x, 0, z);
-
     }
     #endregion
 }

@@ -41,6 +41,8 @@ public class Actor : MonoBehaviour
 	public void SetState(EActorState state)
 	{
 		m_actorState = state;
+
+		Debug.Log($"{transform.name}'s state: { m_actorState}");
 	}
 
 	public void SetFollowTransform(Transform newTarget)
