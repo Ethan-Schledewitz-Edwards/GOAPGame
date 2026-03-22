@@ -23,7 +23,7 @@ public class Actor : MonoBehaviour
 
 	// System
 	private Transform m_targetFollowTransform;
-	private ActorInteractableObject_Base m_objective;
+	private ActorInteractableObjectBase m_objective;
 
 	private EActorState m_actorState = default;
 
@@ -48,7 +48,7 @@ public class Actor : MonoBehaviour
 		m_targetFollowTransform = newTarget;
 	}
 
-	public void SetTask(ActorInteractableObject_Base newObjective)
+	public void SetTask(ActorInteractableObjectBase newObjective)
 	{
 		if (m_objective == newObjective)
 			return;
@@ -132,9 +132,9 @@ public class Actor : MonoBehaviour
 	#region Working
 
 	// Searches for a task within a radius
-	private ActorInteractableObject_Base SearchForTask()
+	private ActorInteractableObjectBase SearchForTask()
 	{
-		ActorInteractableObject_Base closestTask = null;
+		ActorInteractableObjectBase closestTask = null;
 
 		// Try to select actors
 		Vector3 pos = transform.position;
@@ -147,7 +147,7 @@ public class Actor : MonoBehaviour
 				continue;
 
 			// Try to get interactable component
-			if (i.TryGetComponent(out ActorInteractableObject_Base aio))
+			if (i.TryGetComponent(out ActorInteractableObjectBase aio))
 			{
 				float dist = Vector3.Distance(transform.position, aio.transform.position);
 				if (dist < closestDist)
@@ -181,7 +181,7 @@ public class Actor : MonoBehaviour
 			}
 
 			// Search for the nearest task
-			ActorInteractableObject_Base aio = SearchForTask();
+			ActorInteractableObjectBase aio = SearchForTask();
 
 			// Set objective to the closest task.
 			if (aio != null && 

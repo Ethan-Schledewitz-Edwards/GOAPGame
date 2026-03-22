@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 [RequireComponent(typeof(AudioSource))]
-public partial class HealthComponent : MonoBehaviour
+public class HealthComponent : MonoBehaviour
 {
 	[field: Header("Properties")]
 	[field: SerializeField] public int m_MaxHealth { get; private set; } = 100;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(HealthComponent))]
-public class Stone_AIO : ActorInteractableObject_Base
+public class Stone_AIO : ActorInteractableObjectBase
 {
     public override void Interact(Actor actor)
     {
