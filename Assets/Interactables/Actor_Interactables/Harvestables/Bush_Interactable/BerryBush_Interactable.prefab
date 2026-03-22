@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 1277335746136491743}
   - component: {fileID: 2433887510100883446}
   - component: {fileID: 5744823466444581015}
+  - component: {fileID: 8688295563202346330}
   - component: {fileID: 2795405278785063932}
   - component: {fileID: 5897039968420933990}
   - component: {fileID: 2135166451630542805}
-  - component: {fileID: 8205674231545601535}
   m_Layer: 7
-  m_Name: Bush_Interactable
+  m_Name: BerryBush_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,6 +116,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8688295563202346330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651098431254088994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a0abde219a355543bda2eb0245500cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HarvestableHealth
+  <m_MaxHealth>k__BackingField: 10
+  <m_IsDestroyedOnDeath>k__BackingField: 0
+  m_damageParticles: {fileID: 0}
+  m_destrcutionParticles: {fileID: 0}
+  m_damageSounds: []
+  m_dieSounds: []
+  m_lootTable: {fileID: 11400000, guid: 27408dd6e6859e04695bf5a5123d49fe, type: 2}
+  m_minTableRollsOnDeath: 2
+  m_maxtableRollsOnDeath: 4
 --- !u!114 &2795405278785063932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,21 +264,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8205674231545601535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7651098431254088994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6ed14ad0a0af2944b5e3627c69f46ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  <m_MaxHealth>k__BackingField: 2
-  <m_IsDestroyedOnDeath>k__BackingField: 0
-  m_damageParticles: {fileID: 0}
-  m_destrcutionParticles: {fileID: 0}
-  m_damageSounds: []
-  m_dieSounds: []

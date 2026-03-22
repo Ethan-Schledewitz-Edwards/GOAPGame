@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cca799cce3dc89b408708cab416bd281, type: 3}
+  m_Name: 2_Berry_ItemData
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  <ItemID>k__BackingField: 2
+  <ItemName>k__BackingField: Berry
+  <ItemPrefab>k__BackingField: {fileID: 0}

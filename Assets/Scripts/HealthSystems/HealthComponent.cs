@@ -59,6 +59,7 @@ public class HealthComponent : MonoBehaviour
 			return;
 
 		RemoveHealth(amount);
+		OnTakeDamage();
 
 		TrySpawnBloodEffects(hitPos, hitDir);
 	}
@@ -92,6 +93,12 @@ public class HealthComponent : MonoBehaviour
     public float GetHealth() => m_health;
 
     public bool GetIsDead() => m_isDead;
+
+	protected virtual void OnTakeDamage()
+	{
+		if (m_isDead) 
+			return;
+	}
 
     protected virtual void OnDie()
 	{

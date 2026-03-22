@@ -48,6 +48,11 @@ public class Actor : MonoBehaviour
 		m_targetFollowTransform = newTarget;
 	}
 
+	public void SetBehaviourTree(BehaviourTree behaviourTree)
+	{
+		m_behaviourTree = behaviourTree;
+	}
+
 	public void SetTask(ActorInteractableObjectBase newObjective)
 	{
 		if (m_objective == newObjective)
@@ -64,8 +69,8 @@ public class Actor : MonoBehaviour
 
         // Set this actors behaviour tree
         BehaviourTree behaviourTree = m_objective.GetBehaviourTree(transform, this);
-		m_behaviourTree = behaviourTree;
-    }
+		SetBehaviourTree(behaviourTree);
+	}
 
     public void TickBehaviour()
 	{

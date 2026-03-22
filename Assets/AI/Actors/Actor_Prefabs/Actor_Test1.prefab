@@ -260,7 +260,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6662613928143633748}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43e5ecb7e34681248b368217a8a0849f, type: 3}
+  m_Script: {fileID: 11500000, guid: 28670dbf66acb38429c205e09de9635b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorStats
   <m_MaxHealth>k__BackingField: 100

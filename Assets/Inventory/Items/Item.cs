@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Item : ActorInteractableObjectBase
 {
+	[field: SerializeField] public ItemData ItemData { get; private set; }
+
 
 	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
 	{

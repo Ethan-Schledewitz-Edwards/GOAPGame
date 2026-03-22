@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(HarvestableHealth))]
-public class Bush_AIO : ActorInteractableObjectBase
+public class TreeAIO : ActorInteractableObjectBase
 {
-    public override void Interact(Actor actor)
-    {
-        base.Interact(actor);
-    }
 
-    public override void StopInteract()
-    {
-        base.StopInteract();
-    }
+	public override void Interact(Actor actor)
+	{
+		base.Interact(actor);
+	}
 
-    public override void UpdateSpeed(int extra)
-    {
+	public override void StopInteract()
+	{
+		base.StopInteract();
+	}
 
-    }
+	public override void UpdateSpeed(int extra){}
 
-    public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
-    {
+	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
+	{
         BehaviourTree tree = new BehaviourTree();
 
         BTNodeBase root = new BTSelectorNode(new List<BTNodeBase>
@@ -30,7 +28,7 @@ public class Bush_AIO : ActorInteractableObjectBase
             {
                 new CheckForTargetTask(userTransform),
                 new HarvestTask(userActorComp)
-            })
+			})
         });
 
         root.SetData("target", transform);

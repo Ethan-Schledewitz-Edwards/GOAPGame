@@ -1,5 +1,6 @@
-using UnityEngine;
 using BehaviourTrees;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class HarvestTask : BTNodeBase
 {
@@ -18,9 +19,9 @@ public class HarvestTask : BTNodeBase
 	public override EBTNodeState Evaluate()
 	{
 		Transform target = (Transform)GetData("target");
-		HarvestableHealth harvestable = null;
+		HealthComponent harvestable = null;
 
-		if(target.TryGetComponent(out HarvestableHealth health))
+		if(target.TryGetComponent(out HealthComponent health))
 			harvestable = health;
 
 		m_attackTimer += Time.deltaTime;
@@ -29,8 +30,14 @@ public class HarvestTask : BTNodeBase
 			m_attackTimer = 0;
 			Debug.Log("ATTACK");
 
-			// Reduce object hitpoints
-			harvestable?.RemoveHealth(2);
+			if (harvestable != null) 
+			{
+				Vector3 harvestablePos = harvestable.transform.position;
+				Vector3 attackDir = harvestable.transform.position - m_actorComponent.transform.position;
+
+				// Reduce object hitpoints
+				harvestable.TryTakeDamage(2, harvestable.transform.position, attackDir);
+			}
         }
 
 		if(harvestable != null)
@@ -40,10 +47,41 @@ public class HarvestTask : BTNodeBase
             {
                 ClearData("target");
                 m_actorComponent.SetTask(null);
-            }
+
+				// Try to sort the harvested items
+				TrySortItems(harvestable.transform.position);
+			}
         }
+		else
+		{
+			ClearData("target");
+			m_actorComponent.SetTask(null);
+
+			// Try to sort the harvested items
+			TrySortItems(m_actorComponent.transform.position);
+		}
 
 		m_nodeState = EBTNodeState.STATE_RUNNING;
 		return m_nodeState;
+	}
+
+	private void TrySortItems(Vector3 searchPosition)
+	{
+		BehaviourTree tree = new BehaviourTree();
+
+		BTNodeBase root = new BTSelectorNode(new List<BTNodeBase>
+		{
+			new BTSequenceNode(new List<BTNodeBase>
+			{
+				new SortTask(m_actorComponent, searchPosition)
+			})
+		});
+
+		root.SetData("searchPosition", searchPosition);
+
+		tree.SetTree(root);
+
+		m_actorComponent.SetBehaviourTree(tree);
+		Debug.Log("START SEACHIN YO");
 	}
 }

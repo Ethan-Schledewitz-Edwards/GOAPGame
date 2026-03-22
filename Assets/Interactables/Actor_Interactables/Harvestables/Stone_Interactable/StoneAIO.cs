@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(HarvestableHealth))]
-public class Stone_AIO : ActorInteractableObjectBase
+public class StoneAIO : ActorInteractableObjectBase
 {
     public override void Interact(Actor actor)
     {
@@ -15,10 +15,7 @@ public class Stone_AIO : ActorInteractableObjectBase
         base.StopInteract();
     }
 
-    public override void UpdateSpeed(int extra)
-	{
-		
-	}
+    public override void UpdateSpeed(int extra){}
 
 	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
 	{
