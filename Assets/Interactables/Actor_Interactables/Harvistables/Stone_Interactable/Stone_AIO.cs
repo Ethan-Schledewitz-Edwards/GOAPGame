@@ -2,7 +2,7 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(HealthComponent))]
+[RequireComponent(typeof(HarvestableHealth))]
 public class Stone_AIO : ActorInteractableObjectBase
 {
     public override void Interact(Actor actor)

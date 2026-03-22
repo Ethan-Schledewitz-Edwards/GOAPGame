@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
-[RequireComponent(typeof(ActorStats), typeof(NavMeshAgent))]
+[RequireComponent(typeof(ActorHealth), typeof(NavMeshAgent))]
 public class Actor : MonoBehaviour
 {
 	// Constants
@@ -15,7 +15,7 @@ public class Actor : MonoBehaviour
     // Components
     [SerializeField] private LayerMask m_interactionLayers;
 
-    public ActorStats ActorHealth { get; private set; }
+    public ActorHealth ActorHealth { get; private set; }
     public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
@@ -33,7 +33,7 @@ public class Actor : MonoBehaviour
 
 	private void Awake()
 	{
-		ActorHealth = GetComponent<ActorStats>();
+		ActorHealth = GetComponent<ActorHealth>();
         NavAgent = GetComponent<NavMeshAgent>();
 	}
 	#endregion

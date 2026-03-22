@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ActorStats : HealthComponent
+public class ActorHealth : HealthComponent
 {
 	[field: SerializeField] public int m_MaxHunger { get; private set; } = 100;
 	private int m_hunger = 100;

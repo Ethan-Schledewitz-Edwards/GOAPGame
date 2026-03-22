@@ -18,10 +18,10 @@ public class HarvestTask : BTNodeBase
 	public override EBTNodeState Evaluate()
 	{
 		Transform target = (Transform)GetData("target");
-		HealthComponent healthComponent = null;
+		HarvestableHealth harvestable = null;
 
-		if(target.TryGetComponent(out HealthComponent health))
-			healthComponent = health;
+		if(target.TryGetComponent(out HarvestableHealth health))
+			harvestable = health;
 
 		m_attackTimer += Time.deltaTime;
 		if(m_attackTimer >= m_timeBetweenAttacks)
@@ -30,12 +30,12 @@ public class HarvestTask : BTNodeBase
 			Debug.Log("ATTACK");
 
 			// Reduce object hitpoints
-			healthComponent?.RemoveHealth(2);
+			harvestable?.RemoveHealth(2);
         }
 
-		if(healthComponent != null)
+		if(harvestable != null)
 		{
-            bool isTargetDead = healthComponent.GetIsDead();
+            bool isTargetDead = harvestable.GetIsDead();
             if (isTargetDead)
             {
                 ClearData("target");
