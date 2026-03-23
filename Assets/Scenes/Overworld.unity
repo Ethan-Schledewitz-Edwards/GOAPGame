@@ -675,10 +675,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 657835484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aafcade53534a4f40a5bebfec19d6429, type: 3}
+  m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
+  itemType: {fileID: 0}
   maxCapacity: 100
 --- !u!65 &657835487
 BoxCollider:
@@ -1178,10 +1178,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1353951290}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aafcade53534a4f40a5bebfec19d6429, type: 3}
+  m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
+  itemType: {fileID: 0}
   maxCapacity: 100
 --- !u!4 &1404546241 stripped
 Transform:

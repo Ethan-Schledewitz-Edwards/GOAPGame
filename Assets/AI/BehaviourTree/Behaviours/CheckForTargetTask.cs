@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CheckForTargetTask : BTNodeBase
 {
-	private const float k_interactionDist = 3.0f;
 	private static int m_interactionLayerMask = 1 << LayerMask.NameToLayer("Interaction");
 
 	private Actor m_actorComponent;
@@ -23,7 +22,7 @@ public class CheckForTargetTask : BTNodeBase
 
 		// Check surroundings
 		Collider[] hitColliders = Physics.OverlapSphere(m_actorTransform.position,
-				k_interactionDist,
+				m_actorComponent.InteractionDist,
 				m_interactionLayerMask,
 				QueryTriggerInteraction.Collide);
 
@@ -54,12 +53,8 @@ public class CheckForTargetTask : BTNodeBase
 		}
 
 		// Break out of target search
-		m_timeSearching += Time.deltaTime;
-		if(m_timeSearching > 10.0f)
-		{
-			ClearData("target");
-			m_actorComponent.SetTask(null);
-		}
+		ClearData("target");
+		m_actorComponent.SetTask(null);
 
 		m_nodeState = EBTNodeState.STATE_FAILURE;
 		return m_nodeState;

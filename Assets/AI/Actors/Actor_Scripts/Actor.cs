@@ -1,13 +1,12 @@
 using BehaviourTrees;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(ActorHealth), typeof(NavMeshAgent))]
 public class Actor : MonoBehaviour
 {
 	// Constants
-	private const float k_interactionDist = 3.0f;
+	public float InteractionDist { get; private set; }  = 3.0f;
 	private const float k_waitingForJobLimit = 10.0f;
 
     private const float k_rotSpeed = 24.0f;
@@ -145,7 +144,7 @@ public class Actor : MonoBehaviour
 
 		// Try to select actors
 		Vector3 pos = transform.position;
-		Collider[] hitColliders = Physics.OverlapSphere(pos, k_interactionDist, m_interactionLayers, QueryTriggerInteraction.Collide);
+		Collider[] hitColliders = Physics.OverlapSphere(pos, InteractionDist, m_interactionLayers, QueryTriggerInteraction.Collide);
 
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)

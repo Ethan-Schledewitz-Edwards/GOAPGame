@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ItemStorage_AIO : MonoBehaviour
+public class ItemStorageAIO : MonoBehaviour
 {
 	[Header("Building Configuration")]
 	[SerializeField] private ItemData itemType;
