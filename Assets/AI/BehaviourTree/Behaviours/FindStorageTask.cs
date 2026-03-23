@@ -44,7 +44,8 @@ public class FindStorageTask : BTNodeBase
 		{
 			Debug.Log($"{m_actorComponent.name} found storage: {closestStorage.name}");
 
-			SetData("target", closestStorage);
+			m_parentNode.SetData("target", closestStorage.transform);
+
 			m_nodeState = EBTNodeState.STATE_SUCSESS;
 			return m_nodeState;
 		}

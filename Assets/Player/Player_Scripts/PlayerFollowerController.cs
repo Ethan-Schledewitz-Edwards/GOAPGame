@@ -38,17 +38,21 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 	public void Subscribe()
 	{
 		InputManager.Controls.Player.Look.performed += OnMouseInput;
+
 		InputManager.Controls.Player.Primary.performed += OnPrimaryInput;
-		InputManager.Controls.Player.Primary.canceled += OnPrimaryInput;
+
 		InputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
 	}
 
 	public void UnSubscribe()
 	{
 		InputManager.Controls.Player.Look.performed -= OnMouseInput;
+
 		InputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
-		InputManager.Controls.Player.Primary.canceled -= OnPrimaryInput;
+
 		InputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.canceled -= OnSecondaryInput;
 	}
 
 	private void OnMouseInput(InputAction.CallbackContext context)
@@ -58,12 +62,12 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
 	{
-		m_isSummonHeld = context.ReadValueAsButton();
+		TryAssignActor(m_cursorVisualizer.position);
 	}
 
 	private void OnSecondaryInput(InputAction.CallbackContext context)
 	{
-		TryAssignActor(m_cursorVisualizer.position);
+		m_isSummonHeld = context.ReadValueAsButton();
 	}
 	#endregion
 

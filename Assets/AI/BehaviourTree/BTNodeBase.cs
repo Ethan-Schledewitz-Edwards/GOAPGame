@@ -73,26 +73,33 @@ namespace BehaviourTrees
 
         public void SetData(string key, object value)
 		{
+			// Find the root of the tree to set the data
+			var current = this;
+			while (current.m_parentNode != null)
+			{
+				current = current.m_parentNode;
+			}
+
 			m_dataCtx[key] = value;
 		}
 
 		public object GetData(string key)
 		{
-			object value = null;
+			BTNodeBase current = this;
 
-			if(m_dataCtx.TryGetValue(key, out value))
-				return value;
-
-			BTNodeBase node = m_parentNode;
-			while (node != null) 
-			{ 
-				value = node.GetData(key);
-				if(value != null) 
+			while (current != null)
+			{
+				// Check if the current node has the data
+				if (current.m_dataCtx.TryGetValue(key, out object value))
+				{
 					return value;
+				}
 
-				node = node.m_parentNode;
+				// If not, move up to the parent and loop again
+				current = current.m_parentNode;
 			}
 
+			// The root was hit but no data could be found
 			return null;
 		}
 

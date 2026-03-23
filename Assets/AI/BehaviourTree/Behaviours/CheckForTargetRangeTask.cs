@@ -38,7 +38,7 @@ public class CheckForTargetRangeTask : BTNodeBase
 			// Try to find a new target
 			if (hitColliders.Length > 0) 
 			{
-				m_parentNode.GetParentNode().SetData("target", hitColliders[0].transform);
+				m_parentNode.SetData("target", hitColliders[0].transform);
 
 				m_nodeState = EBTNodeState.STATE_SUCSESS;
 				return m_nodeState;
