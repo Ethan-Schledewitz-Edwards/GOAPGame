@@ -18,6 +18,8 @@ namespace BehaviourTrees
 
 		private Dictionary<string, object> m_dataCtx = new Dictionary<string, object>();
 
+		private bool m_hasBeganEvaluation = false;
+
         #region Consturctors
 
         public BTNodeBase()
@@ -37,7 +39,19 @@ namespace BehaviourTrees
 		}
         #endregion
 
-        public virtual EBTNodeState Evaluate() => EBTNodeState.STATE_FAILURE;
+        public virtual EBTNodeState Evaluate()
+		{
+			// Dirty flag to allow logic for a notes first evaluation
+			if (!m_hasBeganEvaluation)
+			{
+				m_hasBeganEvaluation = true;
+				OnFirstEvaluate();
+			}
+
+			return EBTNodeState.STATE_FAILURE;
+		} 
+
+		protected virtual void OnFirstEvaluate() {}
 
         private void AddChild(BTNodeBase node)
         {

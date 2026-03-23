@@ -28,7 +28,10 @@ public class HarvestableAIO : ActorInteractableObjectBase
 			{
 				new CheckForTargetTask(userActorComp, userTransform),
 				new HarvestTask(userActorComp)
-			})
+			}),
+
+			// Try and sort the harvested items
+			new SortTask(userActorComp)
 		});
 
 		root.SetData("target", transform);

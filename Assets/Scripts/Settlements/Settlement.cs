@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SettlementManager : MonoBehaviour
+public class Settlement : MonoBehaviour
 {
 	[SerializeField] ItemStorageAIO[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
 
@@ -12,12 +12,12 @@ public class SettlementManager : MonoBehaviour
 		m_itemStorageBuildings.AddRange(m_StorageBuildingsTemp);
 	}
 
-	ItemStorageAIO TryFindResourceStorage(int itemID)
+	public ItemStorageAIO TryFindResourceStorage(int itemID)
 	{
 		// Find a free item storage building for the correct item ID
 		foreach (ItemStorageAIO i in m_itemStorageBuildings)
 		{
-			if(i != null)
+			if (i != null)
 			{
 				// Skip containers of the wrong type
 				if (i.ItemType.ItemID != itemID)

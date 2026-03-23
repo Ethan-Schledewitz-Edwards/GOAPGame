@@ -15,6 +15,8 @@ public class MoveToTargetTask : BTNodeBase
 
 	public override EBTNodeState Evaluate()
 	{
+		base.Evaluate();
+
 		Transform target = (Transform)GetData("target");
 
 		// Set destination if not within range

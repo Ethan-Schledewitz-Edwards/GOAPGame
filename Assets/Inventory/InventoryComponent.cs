@@ -1,16 +1,13 @@
 using UnityEngine;
 
+[System.Serializable]
 public class InventoryComponent : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+	public Inventory Inventory { get; private set; }
+	[SerializeField] private int m_inventorySize;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	protected virtual void Awake()
+	{
+		Inventory = new Inventory(m_inventorySize);
+	}
 }

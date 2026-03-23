@@ -18,6 +18,8 @@ public class CheckForTargetTask : BTNodeBase
 
 	public override EBTNodeState Evaluate()
 	{
+		base.Evaluate();
+
 		object target = GetData("target");
 
 		// Check surroundings
@@ -51,10 +53,6 @@ public class CheckForTargetTask : BTNodeBase
 				return m_nodeState;
 			}
 		}
-
-		// Break out of target search
-		ClearData("target");
-		m_actorComponent.SetTask(null);
 
 		m_nodeState = EBTNodeState.STATE_FAILURE;
 		return m_nodeState;

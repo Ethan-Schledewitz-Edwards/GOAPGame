@@ -6,21 +6,22 @@ using UnityEngine.AI;
 public class Actor : MonoBehaviour
 {
 	// Constants
-	public float InteractionDist { get; private set; }  = 3.0f;
 	private const float k_waitingForJobLimit = 10.0f;
-
     private const float k_rotSpeed = 24.0f;
+	public float InteractionDist { get; private set; } = 3.0f;
 
-    // Components
-    [SerializeField] private LayerMask m_interactionLayers;
-
+	// Components
+	[SerializeField] private LayerMask m_interactionLayers;
     public ActorHealth ActorHealth { get; private set; }
-    public NavMeshAgent NavAgent { get; private set; }
+	public InventoryComponent ActorInventory { get; private set; }
+	public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
 	private BehaviourTree m_behaviourTree = null;
 
 	// System
+	public int SettlementID { get; private set; } = 0;
+
 	private Transform m_targetFollowTransform;
 	private ActorInteractableObjectBase m_objective;
 
@@ -190,10 +191,13 @@ public class Actor : MonoBehaviour
 			ActorInteractableObjectBase aio = SearchForTask();
 
 			// Set objective to the closest task.
-			if (aio != null && 
-				aio.TryGetComponent(out HealthComponent healthComp) && 
-				!healthComp.GetIsDead())
+			if (aio != null)
 			{
+				// Skip dead AIOs
+				if (aio.TryGetComponent(out HealthComponent healthComp) &&
+				healthComp.GetIsDead())
+					return;
+
 				SetTask(aio);
 			}
 		}
