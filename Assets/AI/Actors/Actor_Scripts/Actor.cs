@@ -2,7 +2,7 @@ using BehaviourTrees;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(ActorHealth), typeof(NavMeshAgent))]
+[RequireComponent(typeof(ActorHealth), typeof(NavMeshAgent), typeof(ActorInventory))]
 public class Actor : MonoBehaviour
 {
 	// Constants
@@ -13,7 +13,7 @@ public class Actor : MonoBehaviour
 	// Components
 	[SerializeField] private LayerMask m_interactionLayers;
     public ActorHealth ActorHealth { get; private set; }
-	public InventoryComponent ActorInventory { get; private set; }
+	public ActorInventory ActorInventory { get; private set; }
 	public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
@@ -34,6 +34,7 @@ public class Actor : MonoBehaviour
 	private void Awake()
 	{
 		ActorHealth = GetComponent<ActorHealth>();
+		ActorInventory = GetComponent<ActorInventory>();
         NavAgent = GetComponent<NavMeshAgent>();
 	}
 	#endregion

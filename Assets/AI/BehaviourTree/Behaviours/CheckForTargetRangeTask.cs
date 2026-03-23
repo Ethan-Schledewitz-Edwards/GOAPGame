@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using UnityEngine;
 
-public class CheckForTargetTask : BTNodeBase
+public class CheckForTargetRangeTask : BTNodeBase
 {
 	private static int m_interactionLayerMask = 1 << LayerMask.NameToLayer("Interaction");
 
@@ -10,7 +10,12 @@ public class CheckForTargetTask : BTNodeBase
 
 	float m_timeSearching;
 
-	public CheckForTargetTask(Actor actorComponent, Transform actorTransform)
+	/// <summary>
+	/// Creates a task which is used to detect if a "target" data's game object is within range
+	/// </summary>
+	/// <param name="actorComponent">The target actor</param>
+	/// <param name="actorTransform">The actors transform</param>
+	public CheckForTargetRangeTask(Actor actorComponent, Transform actorTransform)
 	{
 		m_actorComponent = actorComponent;
 		m_actorTransform = actorTransform; 

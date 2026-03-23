@@ -26,7 +26,7 @@ public class HarvestableAIO : ActorInteractableObjectBase
 		{
 			new BTSequenceNode(new List<BTNodeBase>
 			{
-				new CheckForTargetTask(userActorComp, userTransform),
+				new CheckForTargetRangeTask(userActorComp, userTransform),
 				new HarvestTask(userActorComp)
 			}),
 

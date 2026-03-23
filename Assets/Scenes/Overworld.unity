@@ -678,7 +678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 0}
+  itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
   maxCapacity: 100
 --- !u!65 &657835487
 BoxCollider:
@@ -851,7 +851,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2c24a535b6f0248824a798cce56f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettlementManager
-  m_SettlementsTemp: []
+  m_SettlementsTemp:
+  - {fileID: 1368818300}
 --- !u!4 &747388425
 Transform:
   m_ObjectHideFlags: 0
@@ -1182,7 +1183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 0}
+  itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
   maxCapacity: 100
 --- !u!1 &1368818298
 GameObject:
@@ -1229,8 +1230,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Settlement
   m_StorageBuildingsTemp:
-  - {fileID: 657835486}
   - {fileID: 1353951295}
+  - {fileID: 657835486}
 --- !u!4 &1404546241 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1156241568186023914, guid: fdb71477e7259a849995091bad84df3e, type: 3}

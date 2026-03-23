@@ -10,9 +10,13 @@ public class HarvestTask : BTNodeBase
 
 	private float m_attackTimer;
 
-	public HarvestTask(Actor actor)
+	/// <summary>
+	/// Creates a task which is used to harvest a "target"
+	/// </summary>
+	/// <param name="actor">The target actor</param>
+	public HarvestTask(Actor actorComponent)
 	{
-		m_actorComponent = actor;
+		m_actorComponent = actorComponent;
 	}
 
 	public override EBTNodeState Evaluate()

@@ -224,12 +224,13 @@ GameObject:
   m_Component:
   - component: {fileID: 2239435831216304708}
   - component: {fileID: 3572725124524958921}
+  - component: {fileID: 7588105204703722454}
   - component: {fileID: 1045364547215510978}
   - component: {fileID: 43451550283000952}
   - component: {fileID: 8676248710036981082}
   - component: {fileID: 8496172798646482293}
   m_Layer: 6
-  m_Name: Actor_Test1
+  m_Name: Actor_Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -272,6 +273,19 @@ MonoBehaviour:
   <m_MaxHunger>k__BackingField: 100
   <m_MaxTiredness>k__BackingField: 100
   <m_MaxHapiness>k__BackingField: 100
+--- !u!114 &7588105204703722454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryComponent
+  m_inventorySize: 1
 --- !u!114 &1045364547215510978
 MonoBehaviour:
   m_ObjectHideFlags: 0

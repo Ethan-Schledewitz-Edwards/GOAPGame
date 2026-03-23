@@ -60,7 +60,6 @@ public class InventorySlot
 		SlotChanged();
 	}
 
-
 	public void AddToStack(int amount)
 	{
 		AmountInSlot += amount;

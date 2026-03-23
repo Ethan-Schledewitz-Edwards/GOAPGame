@@ -7,7 +7,7 @@ public class Item : ActorInteractableObjectBase
 {
 	[field: SerializeField] public ItemData ItemData { get; private set; }
 
-	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
+	public override BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComp)
 	{
 		if(ItemData == null)
 			return null;
@@ -16,7 +16,9 @@ public class Item : ActorInteractableObjectBase
 
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			new FindStorageTask(userActorComp, ItemData.ItemID)
+			new FindStorageTask(actorComp, ItemData.ItemID),
+			new MoveToTargetDataTask(actorComp, actorTransform),
+			new CheckForTargetRangeTask(actorComp, actorTransform)
 		});
 
 		tree.SetTree(root);

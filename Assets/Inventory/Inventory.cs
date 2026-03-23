@@ -7,10 +7,10 @@ using System;
 public class Inventory
 {
 	[Header("Slots")]
-	public List<InventorySlot> m_Slots { get; private set; }
+	public List<InventorySlot> Slots { get; private set; }
 
 	//The size of the inventory list
-	public int Size => m_Slots.Count;
+	public int Size => Slots.Count;
 
 	public event Action<InventorySlot> OnSlotChanged;
 
@@ -26,12 +26,12 @@ public class Inventory
 		}
 
 		// Make list
-		m_Slots = new List<InventorySlot>(size);
+		Slots = new List<InventorySlot>(size);
 
 		// Fill list
 		for (int i = 0; i < size; i++)
 		{
-			m_Slots.Add(new InventorySlot(SlotChangedAction));
+			Slots.Add(new InventorySlot(SlotChangedAction));
 		}
 	}
 
@@ -41,7 +41,7 @@ public class Inventory
 	public bool ContainsItem(ItemData itemData, out InventorySlot slot)
 	{
 		slot = null;
-		foreach (InventorySlot i in m_Slots)
+		foreach (InventorySlot i in Slots)
 		{
 			if (i.SlotsItem == itemData)
 			{
@@ -57,8 +57,8 @@ public class Inventory
 	/// <param name="slotsContainingItem">a list of slots containing that item type</param>
 	public bool ContainsItem(ItemData itemData, out List<InventorySlot> slotsContainingItem)
 	{
-		slotsContainingItem = m_Slots.Where(i => i.SlotsItem == itemData).ToList();
-		return m_Slots == null ? false : true;
+		slotsContainingItem = Slots.Where(i => i.SlotsItem == itemData).ToList();
+		return Slots == null ? false : true;
 	}
 
 	/// <summary>
@@ -67,7 +67,7 @@ public class Inventory
 	public int GetTotalOfItem(ItemData itemData)
 	{
 		int count = 0;
-		foreach (InventorySlot i in m_Slots)
+		foreach (InventorySlot i in Slots)
 		{
 			if (i.SlotsItem != itemData)
 				continue;
@@ -79,7 +79,7 @@ public class Inventory
 
 	public bool TryGetEmptySlot(out InventorySlot emptySlot)
 	{
-		emptySlot = m_Slots.FirstOrDefault(i => !i.SlotsItem);
+		emptySlot = Slots.FirstOrDefault(i => !i.SlotsItem);
 		return emptySlot == null ? false : true;
 	}
 

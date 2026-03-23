@@ -5,9 +5,9 @@ public class SettlementManager : MonoBehaviour
 {
 	public static SettlementManager Instance;
 
-	[SerializeField] Settlement[] m_SettlementsTemp;// Remove this when the player can define settlements
+	[SerializeField] Settlement[] m_SettlementsTemp; // Remove this when the player can define settlements
 
-	public Dictionary<int, Settlement> WorldSettlements;
+	public Dictionary<int, Settlement> WorldSettlements = new Dictionary<int, Settlement>();
 
 	private void Awake()
 	{

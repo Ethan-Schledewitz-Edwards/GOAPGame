@@ -4,7 +4,7 @@ using UnityEngine;
 public class InventoryComponent : MonoBehaviour
 {
 	public Inventory Inventory { get; private set; }
-	[SerializeField] private int m_inventorySize;
+	[SerializeField] private int m_inventorySize = 1;
 
 	protected virtual void Awake()
 	{
