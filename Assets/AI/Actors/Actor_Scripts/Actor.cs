@@ -7,7 +7,9 @@ public class Actor : MonoBehaviour
 {
 	// Constants
 	private const float k_waitingForJobLimit = 10.0f;
-    private const float k_rotSpeed = 24.0f;
+	private const float k_followDist = 1.2f;
+	private const float k_workingDist = 0.15f;
+	private const float k_rotSpeed = 24.0f;
 	public float InteractionDist { get; private set; } = 3.0f;
 
 	// Components
@@ -41,6 +43,8 @@ public class Actor : MonoBehaviour
 	{
 		m_actorState = state;
 
+		NavAgent.stoppingDistance = state == EActorState.STATE_Follow ? k_followDist : k_workingDist;
+
 		Debug.Log($"{transform.name}'s state: { m_actorState}");
 	}
 
@@ -61,6 +65,7 @@ public class Actor : MonoBehaviour
 
 		// Follow the player
 		SetState(EActorState.STATE_OffDuty);
+		NavAgent.stoppingDistance = k_workingDist;
 	}
 
 	public void SetFollowTransform(Transform newTarget)

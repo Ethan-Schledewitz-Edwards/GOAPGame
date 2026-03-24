@@ -106,22 +106,19 @@ public class HarvestableHealth : HealthComponent
 			if(item == null) 
 				continue;
 
-			if(hitColliders.Length > 0)
+			foreach (Collider hitCollider in hitColliders)
 			{
-				Collider hitCollider = hitColliders[i];
-
-				// Assign actor to the dropped item
 				if (hitCollider.TryGetComponent(out Actor actor))
 				{
 					BehaviourTree actorBT = actor.BehaviourTree;
 
 					// Ensure the actor was responsible for destroying this harvestable
-					if (actorBT != null && 
+					if (actorBT != null &&
 						actorBT.TryGetData("targetTransform", out object targetTransform) &&
 						transform == (Transform)targetTransform)
 					{
-						Debug.Log("THIS SHOULD HAPPEN BRO");
 						actor.SetTask(item);
+						break;
 					}
 				}
 			}
