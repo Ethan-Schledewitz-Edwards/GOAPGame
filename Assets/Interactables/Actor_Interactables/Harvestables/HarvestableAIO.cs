@@ -18,20 +18,14 @@ public class HarvestableAIO : ActorInteractableObjectBase
 
 	public override void UpdateSpeed(int extra) { }
 
-	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp)
+	public override BehaviourTree GetBehaviourTree(Transform userTransform, Actor actorComponent)
 	{
 		BehaviourTree tree = new BehaviourTree();
 
-		BTNodeBase root = new BTSelectorNode(new List<BTNodeBase>
+		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			new BTSequenceNode(new List<BTNodeBase>
-			{
-				new CheckForTargetRangeTask(userActorComp, userTransform),
-				new HarvestTask(userActorComp)
-			}),
-
-			// Try and sort the harvested items
-			new SortTask(userActorComp)
+			new CheckForTargetRangeTask(actorComponent, userTransform),
+			new HarvestTask(actorComponent)
 		});
 
 		root.SetData("targetTransform", transform);

@@ -17,17 +17,15 @@ public class Actor : MonoBehaviour
 	public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
-	private BehaviourTree m_behaviourTree = null;
+	public BehaviourTree BehaviourTree { get; private set; }  = null;
 
 	// System
 	public int SettlementID { get; private set; } = 0;
-
-	private Transform m_targetFollowTransform;
-	private ActorInteractableObjectBase m_objective;
-
 	private EActorState m_actorState = default;
-
 	private float m_timeFindingJob;
+
+	private Transform m_targetFollowTransform;// Used while in the follow state
+	private ActorInteractableObjectBase m_objective;
 
 	#region Initialization
 
@@ -46,6 +44,25 @@ public class Actor : MonoBehaviour
 		Debug.Log($"{transform.name}'s state: { m_actorState}");
 	}
 
+	private void ClearState()
+	{
+		// Reset task
+		if (m_objective != null)
+		{
+			m_objective.StopInteract();
+			m_objective = null;
+		}
+
+		// Reset behaviour
+		SetBehaviourTree(null);
+		m_timeFindingJob = 0;
+
+		// Try to drop item
+
+		// Follow the player
+		SetState(EActorState.STATE_OffDuty);
+	}
+
 	public void SetFollowTransform(Transform newTarget)
 	{
 		m_targetFollowTransform = newTarget;
@@ -53,7 +70,7 @@ public class Actor : MonoBehaviour
 
 	public void SetBehaviourTree(BehaviourTree behaviourTree)
 	{
-		m_behaviourTree = behaviourTree;
+		BehaviourTree = behaviourTree;
 	}
 
 	public void SetTask(ActorInteractableObjectBase newObjective)
@@ -71,8 +88,7 @@ public class Actor : MonoBehaviour
         NavAgent.SetDestination(m_objective.GetActorPositon());
 
         // Set this actors behaviour tree
-        BehaviourTree behaviourTree = m_objective.GetBehaviourTree(transform, this);
-		SetBehaviourTree(behaviourTree);
+		SetBehaviourTree(m_objective.GetBehaviourTree(transform, this));
 	}
 
     public void TickBehaviour()
@@ -91,8 +107,8 @@ public class Actor : MonoBehaviour
 					break;
 
 				case EActorState.STATE_Working:
-					if (m_behaviourTree != null)
-						m_behaviourTree.TickBehaviourTree();
+					if (BehaviourTree != null)
+						BehaviourTree.TickBehaviourTree();
 					break;
 			}
 		}
@@ -117,13 +133,10 @@ public class Actor : MonoBehaviour
 
 	public void FollowPlayer(Transform Player)
 	{
-		// Reset task
-		if(m_objective != null)
-		{
-            m_objective.StopInteract();
-            m_objective = null;
-		}
+		// Clear the actors state
+		ClearState();
 
+		// Follow the player
 		SetState(EActorState.STATE_Follow);
 		SetFollowTransform(Player);
 	}
@@ -183,8 +196,9 @@ public class Actor : MonoBehaviour
 			// Become off-duty
 			if (m_timeFindingJob >= k_waitingForJobLimit)
 			{
-				SetState(EActorState.STATE_OffDuty);
-				m_timeFindingJob = 0;
+				// Clear the actors state
+				ClearState();
+
 				return;
 			}
 

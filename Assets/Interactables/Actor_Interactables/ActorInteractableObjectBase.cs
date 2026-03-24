@@ -48,7 +48,7 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
 
-	public abstract BehaviourTree GetBehaviourTree(Transform userTransform, Actor userActorComp);
+	public abstract BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComponent);
 
 	#region Utility
 

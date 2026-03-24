@@ -101,6 +101,19 @@ public class InventorySlot
 		SlotChanged();
 	}
 
+	public void DropFromStack(int amount, Vector3 WorldDropPos)
+	{
+		AmountInSlot -= amount;
+
+		if (AmountInSlot <= 0)
+		{
+			ClearSlot();
+			return;
+		}
+
+		SlotChanged();
+	}
+
 	public bool IsRoomAvailable(int amount, out int roomRemaining)
 	{
 		roomRemaining = (SlotsItem == null) ? 0 : SlotsItem.MaxAmount - AmountInSlot;

@@ -1,14 +1,20 @@
 using BehaviourTrees;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Item : ActorInteractableObjectBase
 {
+	// Components
 	public Rigidbody RB { get; private set; }
 
+	[Header("Item Data")]
 	[field: SerializeField] public ItemData ItemData { get; private set; }
 	[field: SerializeField] public int StackSize { get; private set; } = 1;
+
+	// Events
+	public Action<Item> OnPickup;
 
 	public void Awake()
 	{
@@ -43,7 +49,10 @@ public class Item : ActorInteractableObjectBase
 			return;
 
 		// Add to actor inventory
-		actor.ActorInventory.Inventory.TryAddItem(this);
+		bool isItemAdded = actor.ActorInventory.Inventory.TryAddItem(this);
+
+		if(isItemAdded)
+			OnPickup?.Invoke(this);
 	}
 
 	public override void StopInteract()
