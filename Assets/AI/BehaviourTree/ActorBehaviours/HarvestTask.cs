@@ -23,7 +23,7 @@ public class HarvestTask : BTNodeBase
 	{
 		base.Evaluate();
 
-		Transform target = (Transform)GetData("target");
+		Transform target = (Transform)GetData("targetTransform");
 		HealthComponent harvestable = null;
 
 		if(target != null && target.TryGetComponent(out HealthComponent health))

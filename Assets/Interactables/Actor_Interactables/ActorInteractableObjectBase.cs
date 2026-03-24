@@ -62,8 +62,6 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
         float x = Mathf.Cos(angle) * m_formationRadius;
         float z = Mathf.Sin(angle) * m_formationRadius;
 
-		Debug.Log(transform.position + new Vector3(x, 0, z));
-
 		return transform.position + new Vector3(x, 0, z);
     }
     #endregion

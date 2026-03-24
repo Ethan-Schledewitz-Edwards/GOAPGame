@@ -22,14 +22,19 @@ public class MoveToTargetDataTask : BTNodeBase
 	{
 		base.Evaluate();
 
-		Transform target = (Transform)GetData("target");
+		Transform targetPosition = (Transform)GetData("targetPositionTransform");
 
-		if (target != null) 
+		if (targetPosition != null) 
 		{
+			Vector3 targetPos = targetPosition.position;
+			float dist = Vector3.Distance(m_actorTransform.position, targetPos);
+
+			bool isInRange = (dist <= 0.3f);
+
 			// Set destination if not within range
-			if (Vector3.Distance(m_actorTransform.position, target.position) > 0.1f)
+			if (!isInRange)
 			{
-				m_actorComponent.NavAgent.SetDestination(target.position);
+				m_actorComponent.NavAgent.SetDestination(targetPos);
 			}
 			else
 			{

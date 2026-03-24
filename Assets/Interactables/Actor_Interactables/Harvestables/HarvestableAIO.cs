@@ -34,7 +34,7 @@ public class HarvestableAIO : ActorInteractableObjectBase
 			new SortTask(userActorComp)
 		});
 
-		root.SetData("target", transform);
+		root.SetData("targetTransform", transform);
 
 		tree.SetTree(root);
 

@@ -23,13 +23,10 @@ public class DepositTask : BTNodeBase
 	{
 		base.Evaluate();
 
-		Transform target = (Transform)GetData("target");
-		ItemStorageAIO itemStorage = null;
+		Transform target = (Transform)GetData("targetTransform");
 
 		if (target != null && target.TryGetComponent(out ItemStorageAIO storage))
 		{
-			itemStorage = storage;
-
 			Inventory actorInventory = m_actorComponent.ActorInventory.Inventory;
 
 			// Add the actors first held item
@@ -45,8 +42,6 @@ public class DepositTask : BTNodeBase
 				// Skip empty slots
 				if (itemData == null || stackSize <= 0)
 					continue;
-
-				Debug.Log("WHAT");
 
 				// Attempt Deposit
 				bool isItemAdded = storage.InventoryComponent.Inventory.TryAddItem(itemData, stackSize);

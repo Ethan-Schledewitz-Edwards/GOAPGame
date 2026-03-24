@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BehaviourTrees
 {
@@ -71,6 +72,11 @@ namespace BehaviourTrees
 
         #region Node Data
 
+		/// <summary>
+		/// Recursively travels up the tree until the root, then adds data to the roots context dictionary.
+		/// </summary>
+		/// <param name="key">The name of the data</param>
+		/// <param name="value">The data value</param>
         public void SetData(string key, object value)
 		{
 			// Find the root of the tree to set the data
@@ -80,9 +86,14 @@ namespace BehaviourTrees
 				current = current.m_parentNode;
 			}
 
-			m_dataCtx[key] = value;
+			current.m_dataCtx[key] = value;
 		}
 
+		/// <summary>
+		/// Recursively travels up the tree until the root, then checks the root for data.
+		/// </summary>
+		/// <param name="key">The name of the data</param>
+		/// <param name="value">The data value</param>
 		public object GetData(string key)
 		{
 			BTNodeBase current = this;
@@ -111,10 +122,11 @@ namespace BehaviourTrees
 				return true;
 			}
 
-			BTNodeBase node = m_parentNode;
+			BTNodeBase node = this;
 			while (node != null)
 			{
 				bool cleared = node.ClearData(key);
+
 				if (cleared)
 					return true;
 
