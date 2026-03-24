@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorInventory
   m_inventorySize: 1
-  m_heldItemPosition: {fileID: 0}
+  m_heldItemPosition: {fileID: 8522574657822210537}
 --- !u!114 &1045364547215510978
 MonoBehaviour:
   m_ObjectHideFlags: 0
