@@ -8,8 +8,6 @@ public class CheckForTargetRangeTask : BTNodeBase
 	private Actor m_actorComponent;
 	private Transform m_actorTransform;
 
-	float m_timeSearching;
-
 	/// <summary>
 	/// Creates a task which is used to detect if a "target" data's game object is within range
 	/// </summary>

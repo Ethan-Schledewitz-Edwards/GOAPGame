@@ -32,6 +32,7 @@ Transform:
   - {fileID: 6798743840010475944}
   - {fileID: 4612920253190593174}
   - {fileID: 8935704658792509295}
+  - {fileID: 8522574657822210537}
   m_Father: {fileID: 2239435831216304708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &376443378259679983
@@ -214,6 +215,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5597617739765684482
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8522574657822210537}
+  m_Layer: 6
+  m_Name: HeldItemPos
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8522574657822210537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5597617739765684482}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.085, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4076327792798967286}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6662613928143633748
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +256,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2239435831216304708}
   - component: {fileID: 3572725124524958921}
-  - component: {fileID: 7588105204703722454}
+  - component: {fileID: 4082727915801813119}
   - component: {fileID: 1045364547215510978}
   - component: {fileID: 43451550283000952}
   - component: {fileID: 8676248710036981082}
@@ -273,7 +305,7 @@ MonoBehaviour:
   <m_MaxHunger>k__BackingField: 100
   <m_MaxTiredness>k__BackingField: 100
   <m_MaxHapiness>k__BackingField: 100
---- !u!114 &7588105204703722454
+--- !u!114 &4082727915801813119
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -282,10 +314,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6662613928143633748}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
+  m_Script: {fileID: 11500000, guid: 605a7f7c775bec446bb6c0fd47f91466, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryComponent
+  m_EditorClassIdentifier: Assembly-CSharp::ActorInventory
   m_inventorySize: 1
+  m_heldItemPosition: {fileID: 0}
 --- !u!114 &1045364547215510978
 MonoBehaviour:
   m_ObjectHideFlags: 0

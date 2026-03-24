@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   <ItemID>k__BackingField: 0
   <ItemName>k__BackingField: Wood
+  <MaxAmount>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 8278289620774005518, guid: ef83c1d186251ad47aae7488708f1e49, type: 3}

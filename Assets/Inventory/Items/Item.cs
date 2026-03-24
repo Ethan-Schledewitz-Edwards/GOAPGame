@@ -6,6 +6,7 @@ using UnityEngine;
 public class Item : ActorInteractableObjectBase
 {
 	[field: SerializeField] public ItemData ItemData { get; private set; }
+	[field: SerializeField] public int StackSize { get; private set; } = 1;
 
 	public override BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComp)
 	{
@@ -18,7 +19,8 @@ public class Item : ActorInteractableObjectBase
 		{
 			new FindStorageTask(actorComp, ItemData.ItemID),
 			new MoveToTargetDataTask(actorComp, actorTransform),
-			new CheckForTargetRangeTask(actorComp, actorTransform)
+			new CheckForTargetRangeTask(actorComp, actorTransform),
+			new DepositTask(actorComp, actorTransform)
 		});
 
 		tree.SetTree(root);
@@ -33,8 +35,8 @@ public class Item : ActorInteractableObjectBase
 		if (ItemData == null)
 			return;
 
-		// Add to actor inventory slot
-		actor.ActorInventory.Inventory.AddItem(ItemData, 1);
+		// Add to actor inventory
+		actor.ActorInventory.Inventory.TryAddItem(this);
 	}
 
 	public override void StopInteract()
@@ -43,4 +45,12 @@ public class Item : ActorInteractableObjectBase
 	}
 
 	public override void UpdateSpeed(int extra){}
+
+	public void SetAmount(int amount)
+	{
+		StackSize = amount;
+
+		if(StackSize <= 0)
+			Destroy(gameObject);
+	}
 }

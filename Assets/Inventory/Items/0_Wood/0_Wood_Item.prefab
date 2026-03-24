@@ -129,6 +129,7 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_formationRadius: 1
   <ItemData>k__BackingField: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
+  <StackSize>k__BackingField: 1
 --- !u!54 &4050243795390475422
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -643,8 +643,9 @@ GameObject:
   - component: {fileID: 657835489}
   - component: {fileID: 657835488}
   - component: {fileID: 657835487}
-  - component: {fileID: 657835486}
-  m_Layer: 0
+  - component: {fileID: 657835491}
+  - component: {fileID: 657835490}
+  m_Layer: 7
   m_Name: StoneStorage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,20 +667,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1869414631}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &657835486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 657835484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-  maxCapacity: 100
 --- !u!65 &657835487
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -758,6 +745,32 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 657835484}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &657835490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 657835484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemStorageAIO
+  m_itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
+--- !u!114 &657835491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 657835484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryComponent
+  m_inventorySize: 100
 --- !u!1 &746061955
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,7 +1084,8 @@ GameObject:
   - component: {fileID: 1353951292}
   - component: {fileID: 1353951291}
   - component: {fileID: 1353951295}
-  m_Layer: 0
+  - component: {fileID: 1353951296}
+  m_Layer: 7
   m_Name: WoodStorage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1183,8 +1197,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageBuilding
-  itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-  maxCapacity: 100
+  m_itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
+--- !u!114 &1353951296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353951290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryComponent
+  m_inventorySize: 100
 --- !u!1 &1368818298
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,7 +1257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settlement
   m_StorageBuildingsTemp:
   - {fileID: 1353951295}
-  - {fileID: 657835486}
+  - {fileID: 657835490}
 --- !u!4 &1404546241 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1156241568186023914, guid: fdb71477e7259a849995091bad84df3e, type: 3}

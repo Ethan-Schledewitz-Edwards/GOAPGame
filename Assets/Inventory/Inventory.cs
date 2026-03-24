@@ -9,7 +9,7 @@ public class Inventory
 	[Header("Slots")]
 	public List<InventorySlot> Slots { get; private set; }
 
-	//The size of the inventory list
+	// The size of the inventory list
 	public int Size => Slots.Count;
 
 	public event Action<InventorySlot> OnSlotChanged;
@@ -83,16 +83,22 @@ public class Inventory
 		return emptySlot == null ? false : true;
 	}
 
-	public bool AddItem(ItemData addedItem, int Amount)
+	/// <summary>
+	/// Attempts to add an item to this inventory
+	/// </summary>
+	/// <param name="addedItem">The identifier value of the item</param>
+	/// <param name="amount">The amount to be added</param>
+	/// <returns>True if the item was added to this inventory</returns>
+	public bool TryAddItem(ItemData addedItemData, int amount)
 	{
 		// Check if any slots contain an item of the same type
-		if (ContainsItem(addedItem, out List<InventorySlot> slotsWithItems))
+		if (ContainsItem(addedItemData, out List<InventorySlot> slotsWithItems))
 		{
 			foreach (var slot in slotsWithItems)
 			{
-				if (slot.IsRoomAvailable(Amount, out _))
+				if (slot.IsRoomAvailable(amount, out _))
 				{
-					slot.AddToStack(Amount);
+					slot.AddToStack(amount);
 					return true;
 				}
 			}
@@ -101,9 +107,30 @@ public class Inventory
 		// Check for first empty slot
 		if (TryGetEmptySlot(out InventorySlot emptySlot))
 		{
-			emptySlot.AddItem(addedItem, Amount);
+			emptySlot.AddItem(addedItemData, amount);
 			return true;
 		}
+
 		return false;
+	}
+
+	/// <summary>
+	/// Attempts to add an item game object into this inventory
+	/// </summary>
+	/// <param name="addedItem">The item object to be added</param>
+	/// <returns>True if the item was added</returns>
+	public bool TryAddItem(Item addedItem)
+	{
+		ItemData itemData = addedItem.ItemData;
+		int amount = addedItem.StackSize;
+
+		// Try to add the item
+		bool isItemAdded = TryAddItem(itemData, amount);
+
+		// Destroy the item game object if a slot was found
+		if (isItemAdded)
+			addedItem.SetAmount(0);
+
+		return isItemAdded;
 	}
 }

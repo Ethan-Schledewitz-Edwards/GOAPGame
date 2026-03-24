@@ -1,17 +1,16 @@
 using UnityEngine;
 
+[RequireComponent (typeof(InventoryComponent))]
 public class ItemStorageAIO : MonoBehaviour
 {
+	public InventoryComponent InventoryComponent { get; private set; }
+
 	[Header("Building Configuration")]
-	[SerializeField] private ItemData itemType;
-	[SerializeField] private int maxCapacity = 100;
+	[SerializeField] private ItemData m_itemType;
+	public ItemData ItemType => m_itemType;
 
-	private int currentStock = 0;
-	public ItemData ItemType => itemType;
-
-	public void AddItem(int amount)
+	private void Awake()
 	{
-		currentStock = Mathf.Min(currentStock + amount, maxCapacity);
-		Debug.Log($"Stored {amount} of {itemType.ItemName}. Total: {currentStock}");
+		InventoryComponent = GetComponent<InventoryComponent>();
 	}
 }
