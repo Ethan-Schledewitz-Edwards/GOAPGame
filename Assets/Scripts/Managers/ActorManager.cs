@@ -35,7 +35,7 @@ public class ActorManager : MonoBehaviour
 
 	private void Update()
 	{
-		TickActors();
+		TickActors(Time.deltaTime);
 	}
 
 	public void AddActor(Actor actor)
@@ -48,13 +48,13 @@ public class ActorManager : MonoBehaviour
 		m_actors.Remove(actor);
 	}
 
-	private void TickActors()
+	private void TickActors(float t)
 	{
 		if (m_actors.Count > 0) 
 		{
 			foreach (Actor actor in m_actors)
 			{
-				actor.TickBehaviour();
+				actor.TickBehaviour(t);
 			}
 
 			/*

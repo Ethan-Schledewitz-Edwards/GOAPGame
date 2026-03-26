@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,19 +8,49 @@ public class Actor : MonoBehaviour
 {
 	// Constants
 	private const float k_waitingForJobLimit = 10.0f;
+
 	private const float k_followDist = 1.2f;
 	private const float k_workingDist = 0.15f;
+
+	private const float k_followSpeed = 5.2f;
+	private const float k_workingSpeed = 4.5f;
+	private const float k_offDutySpeed = 2f;
+
 	private const float k_rotSpeed = 24.0f;
 	public float InteractionDist { get; private set; } = 3.0f;
 
-	// Components
+	[Header("Parameters")]
 	[SerializeField] private LayerMask m_interactionLayers;
-    public ActorHealth ActorHealth { get; private set; }
+
+	// Components
+	public ActorHealth ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public NavMeshAgent NavAgent { get; private set; }
 
 	// Executors
 	public BehaviourTree BehaviourTree { get; private set; }  = null;
+
+	[Header("Sensors")]
+	[SerializeField] ActorSensor destinationSensor;
+	[SerializeField] ActorSensor attackSensor;
+
+	[Header("Knowledge")]
+	[SerializeField] Transform m_home; // Where the actor sleeps
+	[SerializeField] Transform m_foodStorage; // Where the actor sleeps
+	[SerializeField] Transform m_woodStorage; // Where the actor sleeps
+	[SerializeField] Transform m_stoneStorage; // Where the actor sleeps
+
+	private GameObject m_target;
+	private Vector3 m_destination;
+
+	private ActorGoal m_currentGoal;
+	public ActionPlan m_actionPlan { get; private set; }
+	public ActorAction currentAction { get; private set; }
+
+	public Dictionary<string, ActorBelief> beliefs;
+	public HashSet<ActorAction> actions;
+	public HashSet<ActorGoal> goals;
+
 
 	// System
 	public int SettlementID { get; private set; } = 0;
@@ -37,11 +68,82 @@ public class Actor : MonoBehaviour
 		ActorInventory = GetComponent<ActorInventory>();
         NavAgent = GetComponent<NavMeshAgent>();
 	}
+
+	private void Start()
+	{
+		SetupBeliefs();
+		SetupActions();
+		SetupGoals();
+	}
+
+	private void OnEnable()
+	{
+		destinationSensor.OnTargetChanged += HandleTargetChanged;
+	}
+
+	private void OnDisable()
+	{
+		destinationSensor.OnTargetChanged -= HandleTargetChanged;
+	}
+
+	private void SetupBeliefs()
+	{
+		beliefs = new Dictionary<string, ActorBelief>();
+		BeliefFactory beliefFactory = new BeliefFactory(this, beliefs);
+
+		beliefFactory.AddBelief("None", () => false);
+		beliefFactory.AddBelief("ActorIdle", () => !NavAgent.hasPath);
+		beliefFactory.AddBelief("ActorMoving", () => NavAgent.hasPath);
+	}
+
+	private void SetupActions()
+	{
+		actions = new HashSet<ActorAction>();
+
+		actions.Add(new ActorAction.ActionBuilder("Relax")
+			.BuildWithStrategy(new IdleStrategy(5))
+			.AddEffect(beliefs["None"])
+			.Build());
+
+		actions.Add(new ActorAction.ActionBuilder("Wander")
+			.BuildWithStrategy(new WanderStrategy(NavAgent, 10))
+			.AddEffect(beliefs["ActorMoving"])
+			.Build());
+	}
+
+	private void SetupGoals()
+	{
+		goals = new HashSet<ActorGoal>();
+
+		goals.Add(new ActorGoal.GoalBuilder("Rest")
+			.BuildWithPriority(1)
+			.BuildWithDesiredEffect(beliefs["None"])
+			.Build());
+
+		goals.Add(new ActorGoal.GoalBuilder("Wander")
+			.BuildWithPriority(1)
+			.BuildWithDesiredEffect(beliefs["ActorMoving"])
+			.Build());
+	}
+
 	#endregion
 
 	public void SetState(EActorState state)
 	{
 		m_actorState = state;
+
+		switch (state)
+		{
+			case EActorState.STATE_OffDuty:
+				NavAgent.speed = k_offDutySpeed;
+				break;
+			case EActorState.STATE_Follow:
+				NavAgent.speed = k_followSpeed;
+				break;
+			case EActorState.STATE_Working:
+				NavAgent.speed = k_workingSpeed;
+				break;
+		}
 
 		NavAgent.stoppingDistance = state == EActorState.STATE_Follow ? k_followDist : k_workingDist;
 
@@ -96,9 +198,11 @@ public class Actor : MonoBehaviour
 		SetBehaviourTree(m_objective.GetBehaviourTree(transform, this));
 	}
 
-    public void TickBehaviour()
+    public void TickBehaviour(float t)
 	{
-        HandleTaskSearch();
+		ActorHealth?.TickStats(t);
+
+		HandleTaskSearch();
 
         if (NavAgent.enabled)
 		{
@@ -133,6 +237,15 @@ public class Actor : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, k_rotSpeed * Time.deltaTime);
         }
     }
+
+	#region GOAP
+
+	private void HandleTargetChanged()
+	{
+		currentAction = null;
+		m_currentGoal = null;
+	}
+	#endregion
 
 	#region Commands
 
