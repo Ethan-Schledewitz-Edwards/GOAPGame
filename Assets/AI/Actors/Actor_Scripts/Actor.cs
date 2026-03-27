@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -29,6 +30,7 @@ public class Actor : MonoBehaviour
 
 	// Executors
 	public BehaviourTree BehaviourTree { get; private set; }  = null;
+	private IGoapPlanner m_goapPlanner;
 
 	[Header("Sensors")]
 	[SerializeField] ActorSensor destinationSensor;
@@ -43,9 +45,10 @@ public class Actor : MonoBehaviour
 	private GameObject m_target;
 	private Vector3 m_destination;
 
+	private ActorGoal m_lastGoal;
 	private ActorGoal m_currentGoal;
-	public ActionPlan m_actionPlan { get; private set; }
-	public ActorAction currentAction { get; private set; }
+	private ActionPlan m_actionPlan;
+	private ActorAction m_currentAction;
 
 	public Dictionary<string, ActorBelief> beliefs;
 	public HashSet<ActorAction> actions;
@@ -67,6 +70,8 @@ public class Actor : MonoBehaviour
 		ActorHealth = GetComponent<ActorHealth>();
 		ActorInventory = GetComponent<ActorInventory>();
         NavAgent = GetComponent<NavMeshAgent>();
+
+		m_goapPlanner = new GoapPlanner();
 	}
 
 	private void Start()
@@ -209,6 +214,7 @@ public class Actor : MonoBehaviour
 			switch (m_actorState)
 			{
 				case EActorState.STATE_OffDuty:
+					TickGoapPlanner(t);
 					break;
 				case EActorState.STATE_Follow:
 					if(m_targetFollowTransform != null)
@@ -242,8 +248,36 @@ public class Actor : MonoBehaviour
 
 	private void HandleTargetChanged()
 	{
-		currentAction = null;
+		m_currentAction = null;
 		m_currentGoal = null;
+	}
+
+	private void TickGoapPlanner(float t)
+	{
+		// Update the actors plan and current action if they dont have one
+		if(m_currentAction == null)
+		{
+			CalculatePlan();
+		}
+	}
+
+	private void CalculatePlan()
+	{
+		float priorityLevel = m_currentGoal?.Priority ?? 0;
+
+		HashSet<ActorGoal> goalsToCheck = goals;
+
+		// Only check higher priority goals if the actor already has one
+		if(m_currentGoal != null)
+		{
+			goalsToCheck = new HashSet<ActorGoal>(goals.Where(g => g.Priority > priorityLevel));
+		}
+
+		ActionPlan potentialPlan = m_goapPlanner.Plan(this, goalsToCheck, m_lastGoal);
+		if (potentialPlan != null)
+		{
+			m_actionPlan = potentialPlan;
+		}
 	}
 	#endregion
 
