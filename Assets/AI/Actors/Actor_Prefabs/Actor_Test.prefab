@@ -499,13 +499,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorStats
   <m_MaxHealth>k__BackingField: 100
-  <m_IsDestroyedOnDeath>k__BackingField: 0
+  <m_IsDestroyedOnDeath>k__BackingField: 1
   m_damageParticles: {fileID: 0}
   m_destrcutionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
   <m_MaxHunger>k__BackingField: 100
-  <m_MaxTiredness>k__BackingField: 100
+  <Hunger>k__BackingField: 100
+  <m_MaxRest>k__BackingField: 100
+  <Rest>k__BackingField: 100
   <m_MaxHapiness>k__BackingField: 100
 --- !u!114 &4082727915801813119
 MonoBehaviour:
@@ -539,10 +541,6 @@ MonoBehaviour:
     m_Bits: 128
   destinationSensor: {fileID: 7958439274468723181}
   attackSensor: {fileID: 659178778942180411}
-  m_home: {fileID: 0}
-  m_foodStorage: {fileID: 0}
-  m_woodStorage: {fileID: 0}
-  m_stoneStorage: {fileID: 0}
 --- !u!82 &43451550283000952
 AudioSource:
   m_ObjectHideFlags: 0

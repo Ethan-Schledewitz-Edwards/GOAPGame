@@ -54,7 +54,8 @@ public class ActorManager : MonoBehaviour
 		{
 			foreach (Actor actor in m_actors)
 			{
-				actor.TickBehaviour(t);
+				if (actor != null)
+					actor.TickBehaviour(t);
 			}
 
 			/*

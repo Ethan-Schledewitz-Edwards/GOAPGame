@@ -5,7 +5,7 @@ public class ActorHealth : HealthComponent
 	// Constants
 	private const float m_hungerDegredation = 0.2f;
 	private const float m_tirednessDegredation = 0.2f;
-	private const float m_baseHealthDegredation = 0.5f;
+	private const float m_baseHealthDegredation = 2f;
 
 	private float m_healthInterval;
 
