@@ -115,7 +115,7 @@ public class Actor : MonoBehaviour
 		beliefFactory.AddBelief("RestHealthy", () => ActorHealth.Rest > 50.0f);
 
 		beliefFactory.AddPosBelief("ActorAtFoodStorage", 3f, m_foodStorage.DepositPosition.position);
-		beliefFactory.AddPosBelief("AgentAtHome", 3f, m_home.transform.position);
+		beliefFactory.AddPosBelief("ActortAtHome", 3f, m_home.transform.position);
 	}
 
 	private void SetupActions()
