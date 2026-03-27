@@ -1,10 +1,13 @@
+using System.Linq;
 using UnityEngine;
 
 public class ActorInventory : InventoryComponent
 {
 	[SerializeField] private Transform m_heldItemPosition;
+	[SerializeField] private Transform m_dropItemPosition;
 
 	// System
+	private int m_interactionLayerMask;
 	private InventorySlot m_heldItemSlot;
 
 	#region Monobehaviour Callbacks
@@ -12,6 +15,8 @@ public class ActorInventory : InventoryComponent
 	protected override void Awake()
 	{
 		base.Awake();
+
+		m_interactionLayerMask = LayerMask.NameToLayer("Interaction");
 
 		m_heldItemSlot = Inventory.Slots[0];
 	}
@@ -29,8 +34,10 @@ public class ActorInventory : InventoryComponent
 
 	private void UpdateHeldItem(InventorySlot inventorySlot)
 	{
+		TryDropHeldItem();
+
 		// Destroy any present children
-		if(m_heldItemPosition.childCount > 0)
+		if (m_heldItemPosition.childCount > 0)
 		{
 			for (int i = m_heldItemPosition.childCount - 1; i >= 0; i--)
 			{
@@ -48,8 +55,37 @@ public class ActorInventory : InventoryComponent
 			);
 
 			item.RB.constraints = RigidbodyConstraints.FreezeAll;
-
 			item.gameObject.layer = 0;
+		}
+	}
+
+	public void TryDropHeldItem()
+	{
+		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
+		foreach (Transform child in allChildren)
+		{
+			Debug.Log(child.name);
+			if (child != null && child.TryGetComponent(out Item item))
+			{
+				child.parent = null;
+				child.position = m_dropItemPosition.position;
+
+				item.RB.constraints = RigidbodyConstraints.None;
+				child.gameObject.layer = m_interactionLayerMask;
+			}
+		}
+	}
+
+	public void TryDestroyHeldItem()
+	{
+		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
+		foreach (Transform child in allChildren)
+		{
+			Debug.Log(child.name);
+			if (child != null && child.TryGetComponent(out Item item))
+			{
+				Destroy(child.gameObject);
+			}
 		}
 	}
 }

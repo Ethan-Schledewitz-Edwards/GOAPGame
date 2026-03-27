@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private const float k_gravity = 15;
 
 	// Collision Values
-	private LayerMask collisionLayerMask;
+	private LayerMask m_collisionLayerMask;
 	private const float k_horizontalSize = .5f;
 	private const float k_verticalSize = 2;
 
@@ -79,10 +79,10 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		m_rb.isKinematic = true;
 		m_rb.freezeRotation = true;
 
-		collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
+		m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
 		m_col.layerOverridePriority = 100;
 
-		LayerMask colliderMask = collisionLayerMask | LayerMask.GetMask("Trigger");
+		LayerMask colliderMask = m_collisionLayerMask | LayerMask.GetMask("Trigger");
 		m_col.excludeLayers = ~colliderMask;
 		m_col.includeLayers = colliderMask;
 
@@ -203,7 +203,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 			out hitInfo,
 			Quaternion.identity,
 			maxDist + k_HitEpsilon,
-			collisionLayerMask,
+			m_collisionLayerMask,
 			QueryTriggerInteraction.Ignore
 		);
 
@@ -235,7 +235,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 				k_horizontalSize / 2f - k_HitEpsilon
 			),
 			Quaternion.identity,
-			collisionLayerMask,
+			m_collisionLayerMask,
 			QueryTriggerInteraction.Ignore
 		);
 
@@ -641,7 +641,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 			Vector3.down,
 			out RaycastHit hit2,
 			k_GroundCheckDist * 2,
-			collisionLayerMask,
+			m_collisionLayerMask,
 			QueryTriggerInteraction.Ignore
 		))
 		{

@@ -50,6 +50,7 @@ public class DepositTask : BTNodeBase
 				if (isItemAdded)
 				{
 					Debug.Log("PUT ITEM IN deposit");
+					m_actorComponent.ActorInventory.TryDestroyHeldItem();
 					slot.ClearSlot();
 				}
 			}

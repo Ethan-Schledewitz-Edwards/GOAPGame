@@ -3,9 +3,8 @@ using UnityEngine.AI;
 
 public class WanderStrategy : IActionStrategy
 {
-	public bool IsStrategyPossible => true;
-
-	public bool IsStrategyComplete { get; private set; }
+	public bool IsStrategyPossible => !IsStrategyComplete;
+	public bool IsStrategyComplete => m_navMeshAgent.remainingDistance <= .5f && !m_navMeshAgent.pathPending;
 
 	readonly NavMeshAgent m_navMeshAgent;
 	readonly float m_wanderRadius;

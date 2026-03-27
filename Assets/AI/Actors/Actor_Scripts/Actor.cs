@@ -171,6 +171,7 @@ public class Actor : MonoBehaviour
 		m_timeFindingJob = 0;
 
 		// Try to drop item
+		ActorInventory.TryDropHeldItem();
 
 		// Follow the player
 		SetState(EActorState.STATE_OffDuty);
@@ -266,11 +267,12 @@ public class Actor : MonoBehaviour
 				NavAgent.ResetPath();
 
 				m_currentGoal = m_actionPlan.GoalToAcheive;
-				m_currentAction = m_actionPlan.Actions.Pop();
-				m_currentAction.StartAction();
-
 				Debug.Log($"Goal: {m_currentGoal.GoalName} with {m_actionPlan.Actions.Count} actions in plan");
+
+				m_currentAction = m_actionPlan.Actions.Pop();
 				Debug.Log($"Popped action: {m_currentAction.ActionName}");
+
+				m_currentAction.StartAction();
 			}
 		}
 

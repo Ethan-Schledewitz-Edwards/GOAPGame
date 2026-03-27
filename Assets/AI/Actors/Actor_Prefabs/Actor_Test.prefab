@@ -32,7 +32,6 @@ Transform:
   - {fileID: 6798743840010475944}
   - {fileID: 4612920253190593174}
   - {fileID: 8935704658792509295}
-  - {fileID: 8522574657822210537}
   m_Father: {fileID: 2239435831216304708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &376443378259679983
@@ -282,7 +281,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorSensor
   m_detectionRadius: 5
-  m_timerInteral: 1
+  m_timerInterval: 1
 --- !u!1 &4495396585808001830
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorSensor
   m_detectionRadius: 5
-  m_timerInteral: 1
+  m_timerInterval: 1
 --- !u!1 &5597617739765684482
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,12 +374,43 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5597617739765684482}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.085, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9925, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4076327792798967286}
+  m_Father: {fileID: 2239435831216304708}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5770968536417069625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5089042427203968515}
+  m_Layer: 6
+  m_Name: DropitemPos
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5089042427203968515
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5770968536417069625}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.64, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2239435831216304708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5903296637217535906
 GameObject:
@@ -452,6 +482,8 @@ Transform:
   m_Children:
   - {fileID: 4076327792798967286}
   - {fileID: 6014446224231834510}
+  - {fileID: 8522574657822210537}
+  - {fileID: 5089042427203968515}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3572725124524958921
@@ -489,6 +521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorInventory
   m_inventorySize: 1
   m_heldItemPosition: {fileID: 8522574657822210537}
+  m_dropItemPosition: {fileID: 5089042427203968515}
 --- !u!114 &1045364547215510978
 MonoBehaviour:
   m_ObjectHideFlags: 0
