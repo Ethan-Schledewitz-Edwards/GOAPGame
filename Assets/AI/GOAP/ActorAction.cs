@@ -17,16 +17,16 @@ public class ActorAction
 		ActionName = actionName;
 	}
 
-	private void StartAction()
+	public void StartAction()
 	{
 		actionStrategy.StartStrategy();
 	}
 
-	private void TickAction(float deltaTime)
+	public void TickAction(float t)
 	{
 		// Ensure the action is possible
 		if (actionStrategy.IsStrategyPossible)
-			actionStrategy.TickStrategy(deltaTime);
+			actionStrategy.TickStrategy(t);
 
 		// Stop if the strategy is still executing
 		if (!actionStrategy.IsStrategyComplete)

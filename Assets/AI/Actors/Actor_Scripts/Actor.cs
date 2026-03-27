@@ -258,6 +258,38 @@ public class Actor : MonoBehaviour
 		if(m_currentAction == null)
 		{
 			CalculatePlan();
+
+			if(m_actionPlan != null && m_actionPlan.Actions.Count > 0)
+			{
+				NavAgent.ResetPath();
+
+				m_currentGoal = m_actionPlan.GoalToAcheive;
+				m_currentAction = m_actionPlan.Actions.Pop();
+				m_currentAction.StartAction();
+
+				Debug.Log($"Goal: {m_currentGoal.GoalName} with {m_actionPlan.Actions.Count} actions in plan");
+				Debug.Log($"Popped action: {m_currentAction.ActionName}");
+			}
+		}
+
+		// If we have a current action, execute it
+		if (m_actionPlan != null && m_currentAction != null) 
+		{
+			m_currentAction.TickAction(t);
+
+			if (m_currentAction.Complete)
+			{
+				Debug.Log($"{m_currentAction.ActionName} is complete");
+				m_currentAction.StopAction();
+
+				if (m_actionPlan.Actions.Count == 0) 
+				{
+					Debug.Log($"{this.name}'s plan is complete!");
+					m_lastGoal = m_currentGoal;
+					m_currentGoal = null;
+					m_currentAction = null;
+				}
+			}
 		}
 	}
 
