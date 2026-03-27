@@ -76,6 +76,8 @@ public class Actor : MonoBehaviour
 
 	private void Start()
 	{
+		SetState(EActorState.STATE_OffDuty);
+
 		SetupBeliefs();
 		SetupActions();
 		SetupGoals();

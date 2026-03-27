@@ -5,7 +5,7 @@ using UnityEngine;
 public class ActorSensor : MonoBehaviour
 {
 	[SerializeField] private float m_detectionRadius = 3.0f;
-	[SerializeField] private float m_timerInteral = 1.0f;
+	[SerializeField] private float m_timerInterval = 1.0f;
 
 	private SphereCollider m_SensorCollider;
 
@@ -31,7 +31,7 @@ public class ActorSensor : MonoBehaviour
 	{
 		m_timer += Time.deltaTime;
 
-		if(m_timer > m_timerInteral)
+		if(m_timer > m_timerInterval)
 		{
 			m_timer = 0;
 			UpdateTargetPos(m_target);

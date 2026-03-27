@@ -21,6 +21,8 @@ public class IdleStrategy : IActionStrategy
 
 	void IActionStrategy.TickStrategy(float t) 
 	{
+		Debug.Log("WHAT");
+
 		m_timer += t;
 		if(m_timer > m_duration)
 		{
