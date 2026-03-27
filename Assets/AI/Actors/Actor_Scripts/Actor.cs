@@ -138,7 +138,7 @@ public class Actor : MonoBehaviour
 			.Build());
 
 		actions.Add(new ActorAction.ActionBuilder("Eat")
-			.BuildWithStrategy(new IdleStrategy(5))
+			.BuildWithStrategy(new EatStrategy(this, m_foodStorage, 5))
 			.AddPrecondition(beliefs["ActorAtFoodStorage"])
 			.AddEffect(beliefs["HungerHealthy"])
 			.Build());
@@ -202,7 +202,7 @@ public class Actor : MonoBehaviour
 		m_timeFindingJob = 0;
 
 		// Try to drop item
-		ActorInventory.TryDropHeldItem();
+		ActorInventory.Inventory.Slots[0].ClearSlot();
 
 		// Follow the player
 		SetState(EActorState.STATE_OffDuty);
@@ -288,8 +288,26 @@ public class Actor : MonoBehaviour
 
 	private void TickGoapPlanner(float t)
 	{
+		// If we don't have an action, try to get the next one from the CURRENT plan
+
+		if (m_currentAction == null && m_actionPlan != null && m_actionPlan.Actions.Count > 0)
+		{
+			m_currentAction = m_actionPlan.Actions.Pop();
+
+			if (m_currentAction.ActionPreconditions.All(b => b.Evaluate()))
+			{
+				m_currentAction.StartAction();
+			}
+			else
+			{
+				// Plan failed - preconditions not met for next step
+				m_currentAction = null;
+				m_actionPlan = null;
+			}
+		}
+
 		// Update the actors plan and current action if they dont have one
-		if(m_currentAction == null)
+		if (m_currentAction == null)
 		{
 			CalculatePlan();
 
@@ -303,7 +321,16 @@ public class Actor : MonoBehaviour
 				m_currentAction = m_actionPlan.Actions.Pop();
 				Debug.Log($"Popped action: {m_currentAction.ActionName}");
 
-				m_currentAction.StartAction();
+				// Verify all precodnitions
+				if(m_currentAction.ActionPreconditions.All(b => b.Evaluate()))
+				{
+					m_currentAction.StartAction();
+				}
+				else
+				{
+					m_currentAction = null;
+					m_currentGoal = null;
+				}
 			}
 		}
 
@@ -317,12 +344,14 @@ public class Actor : MonoBehaviour
 				Debug.Log($"{m_currentAction.ActionName} is complete");
 				m_currentAction.StopAction();
 
+				m_currentAction = null;
+
 				if (m_actionPlan.Actions.Count == 0) 
 				{
 					Debug.Log($"{this.name}'s plan is complete!");
 					m_lastGoal = m_currentGoal;
 					m_currentGoal = null;
-					m_currentAction = null;
+					m_actionPlan = null;
 				}
 			}
 		}

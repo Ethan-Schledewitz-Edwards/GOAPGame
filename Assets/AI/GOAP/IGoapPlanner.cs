@@ -46,7 +46,9 @@ public class GoapPlanner : IGoapPlanner
 
 	bool FindPath(PlannerNode parent, HashSet<ActorAction> actorActions)
 	{
-		foreach (ActorAction action in actorActions)
+		var orderedActions = actorActions.OrderBy(a => a.ActionCost);
+
+		foreach (ActorAction action in orderedActions)
 		{
 			var requiredEffects = parent.RequiredEffects;
 
