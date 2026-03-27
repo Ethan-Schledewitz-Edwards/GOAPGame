@@ -1,7 +1,8 @@
+using BehaviourTrees;
 using UnityEngine;
 
 [RequireComponent (typeof(InventoryComponent))]
-public class ItemStorageAIO : MonoBehaviour
+public class ItemStorageAIO : ActorInteractableObjectBase
 {
 	public InventoryComponent InventoryComponent { get; private set; }
 
@@ -14,5 +15,15 @@ public class ItemStorageAIO : MonoBehaviour
 	private void Awake()
 	{
 		InventoryComponent = GetComponent<InventoryComponent>();
+	}
+
+	public override void UpdateSpeed(int extra)
+	{
+		
+	}
+
+	public override BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComponent)
+	{
+		return null;
 	}
 }

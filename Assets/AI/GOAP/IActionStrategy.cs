@@ -5,9 +5,9 @@ public interface IActionStrategy
     public bool IsStrategyPossible { get; }
 	public bool IsStrategyComplete { get; }
 
-	void StartStrategy(){}
+	public void StartStrategy(){}
 
-	void TickStrategy(float t){}
+	public void TickStrategy(float t){}
 
-	void StopStrategy(){}
+	public void StopStrategy(){}
 }

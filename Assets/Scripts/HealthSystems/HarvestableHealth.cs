@@ -98,6 +98,8 @@ public class HarvestableHealth : HealthComponent
 				m_actorLayerMask,
 				QueryTriggerInteraction.Collide);
 
+		HashSet<Actor> assignedActors = new HashSet<Actor>();
+
 		for (int i = 0;i < m_droppedItems.Count; i++)
 		{
 			Item item = m_droppedItems[i];
@@ -110,6 +112,9 @@ public class HarvestableHealth : HealthComponent
 			{
 				if (hitCollider.TryGetComponent(out Actor actor))
 				{
+					if (assignedActors.Contains(actor))
+						continue;
+
 					BehaviourTree actorBT = actor.BehaviourTree;
 
 					// Ensure the actor was responsible for destroying this harvestable
@@ -118,6 +123,7 @@ public class HarvestableHealth : HealthComponent
 						transform == (Transform)targetTransform)
 					{
 						actor.SetTask(item);
+						assignedActors.Add(actor);
 						break;
 					}
 				}

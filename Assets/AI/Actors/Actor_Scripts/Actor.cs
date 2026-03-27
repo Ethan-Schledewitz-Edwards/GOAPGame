@@ -37,10 +37,10 @@ public class Actor : MonoBehaviour
 	[SerializeField] ActorSensor attackSensor;
 
 	[Header("Knowledge")]
-	[SerializeField] Transform m_home; // Where the actor sleeps
-	[SerializeField] Transform m_foodStorage; // Where the actor sleeps
-	[SerializeField] Transform m_woodStorage; // Where the actor sleeps
-	[SerializeField] Transform m_stoneStorage; // Where the actor sleeps
+	ActorHouseAIO m_home; // Where the actor sleeps
+	ItemStorageAIO m_foodStorage; // Where the actor sleeps
+	ItemStorageAIO m_woodStorage; // Where the actor sleeps
+	ItemStorageAIO m_stoneStorage; // Where the actor sleeps
 
 	private GameObject m_target;
 	private Vector3 m_destination;
@@ -57,6 +57,8 @@ public class Actor : MonoBehaviour
 
 	// System
 	public int SettlementID { get; private set; } = 0;
+	private int m_houseID = 0;
+
 	private EActorState m_actorState = default;
 	private float m_timeFindingJob;
 
@@ -77,6 +79,11 @@ public class Actor : MonoBehaviour
 	private void Start()
 	{
 		SetState(EActorState.STATE_OffDuty);
+
+		m_home = SettlementManager.Instance.WorldSettlements[SettlementID].TryFindActorHouse(m_houseID);
+		m_foodStorage = SettlementManager.Instance.WorldSettlements[SettlementID].TryFindResourceStorage(2);
+		m_woodStorage = SettlementManager.Instance.WorldSettlements[SettlementID].TryFindResourceStorage(0);
+		m_stoneStorage = SettlementManager.Instance.WorldSettlements[SettlementID].TryFindResourceStorage(1);
 
 		SetupBeliefs();
 		SetupActions();
@@ -101,6 +108,14 @@ public class Actor : MonoBehaviour
 		beliefFactory.AddBelief("None", () => false);
 		beliefFactory.AddBelief("ActorIdle", () => !NavAgent.hasPath);
 		beliefFactory.AddBelief("ActorMoving", () => NavAgent.hasPath);
+
+		beliefFactory.AddBelief("HungerLow", () => ActorHealth.Hunger < 45.0f);
+		beliefFactory.AddBelief("HungerHealthy", () => ActorHealth.Hunger > 60.0f);
+		beliefFactory.AddBelief("RestLow", () => ActorHealth.Rest < 20.0f);
+		beliefFactory.AddBelief("RestHealthy", () => ActorHealth.Rest > 50.0f);
+
+		beliefFactory.AddPosBelief("ActorAtFoodStorage", 3f, m_foodStorage.DepositPosition.position);
+		beliefFactory.AddPosBelief("AgentAtHome", 3f, m_home.transform.position);
 	}
 
 	private void SetupActions()
@@ -116,6 +131,17 @@ public class Actor : MonoBehaviour
 			.BuildWithStrategy(new WanderStrategy(NavAgent, 10))
 			.AddEffect(beliefs["ActorMoving"])
 			.Build());
+
+		actions.Add(new ActorAction.ActionBuilder("MoveToFood")
+			.BuildWithStrategy(new MoveStrategy(NavAgent,() => m_foodStorage.DepositPosition.position))
+			.AddEffect(beliefs["ActorAtFoodStorage"])
+			.Build());
+
+		actions.Add(new ActorAction.ActionBuilder("Eat")
+			.BuildWithStrategy(new IdleStrategy(5))
+			.AddPrecondition(beliefs["ActorAtFoodStorage"])
+			.AddEffect(beliefs["HungerHealthy"])
+			.Build());
 	}
 
 	private void SetupGoals()
@@ -130,6 +156,11 @@ public class Actor : MonoBehaviour
 		goals.Add(new ActorGoal.GoalBuilder("Wander")
 			.BuildWithPriority(1)
 			.BuildWithDesiredEffect(beliefs["ActorMoving"])
+			.Build());
+
+		goals.Add(new ActorGoal.GoalBuilder("KeepFed")
+			.BuildWithPriority(2)
+			.BuildWithDesiredEffect(beliefs["HungerHealthy"])
 			.Build());
 	}
 

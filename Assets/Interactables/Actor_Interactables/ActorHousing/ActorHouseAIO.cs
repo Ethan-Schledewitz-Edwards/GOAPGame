@@ -1,16 +1,24 @@
+using BehaviourTrees;
 using UnityEngine;
 
-public class ActorHouseAIO : MonoBehaviour
+public class ActorHouseAIO : ActorInteractableObjectBase
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+	[Header("Building Configuration")]
+	[field: SerializeField] public Transform EntrancePosition { get; private set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+	private void Awake()
+	{
+		
+	}
+
+	public override void UpdateSpeed(int extra)
+	{
+
+	}
+
+	public override BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComponent)
+	{
+		return null;
+	}
 }
