@@ -57,6 +57,11 @@ public class DepositTask : BTNodeBase
 
 			m_doneDepositing = true;
 		}
+		else if (target == null)
+		{
+			m_nodeState = EBTNodeState.STATE_FAILURE;
+			return m_nodeState;
+		}
 
 		if (m_doneDepositing)
 		{

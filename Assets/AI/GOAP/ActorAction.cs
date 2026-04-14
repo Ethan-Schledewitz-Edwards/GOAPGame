@@ -6,7 +6,7 @@ public class ActorAction
 	public string ActionName { get; private set; }
 	public float ActionCost { get; private set; }
 
-	public HashSet<ActorBelief> ActionPreconditions { get; private set; } = new(); // What the actor belives to be tru before they execute an action
+	public HashSet<ActorBelief> ActionPreconditions { get; private set; } = new(); // What the actor belives to be true before they execute an action
 	public HashSet<ActorBelief> ActionEffects { get; private set; } = new(); // What the actor belives the results of the action are
 
 	private IActionStrategy actionStrategy;
