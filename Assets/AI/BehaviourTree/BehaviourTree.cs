@@ -4,9 +4,9 @@ namespace BehaviourTrees
 	{
 		private BTNodeBase m_rootNode;
 
-		public void TickBehaviourTree()
+		public void TickBehaviourTree(float t)
 		{
-			m_rootNode.Evaluate();
+			m_rootNode.Evaluate(t);
 		}
 
 		public void SetTree(BTNodeBase rootNode)

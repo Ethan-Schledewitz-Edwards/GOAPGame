@@ -2,10 +2,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
+[RequireComponent(typeof(CapsuleCollider))]
 public class PlayerController : MonoBehaviour, IInputHandler
 {
-	// Constants
+	#region Constants
+
 	private const float k_HitEpsilon = 0.02f; // Min distance to wall
 	private const float k_GroundCheckDist = 0.01f;
 	private const float k_StopEpsilon = 0.001f; // Stop when <= this speed
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	// Normals with Y greater than this are walkable
 	private const float k_maxWalkableAngle = 45;
-	private static float minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * k_maxWalkableAngle);
+	private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * k_maxWalkableAngle);
 
 	// Jumping
 	private const float k_jumpForce = 7;
@@ -37,7 +38,14 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private const float k_horizontalSize = .5f;
 	private const float k_verticalSize = 2;
 
+	#endregion
+
 	#region System Vars
+
+	// Components
+	private Rigidbody m_rb;
+	private CapsuleCollider m_col;
+	private Player m_player;
 
 	// Movement type
 	[SerializeField] private EMovementMode movementMode;
@@ -47,24 +55,19 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		Animation,
 	}
 
-	// Components
-	private Rigidbody m_rb;
-	private CapsuleCollider m_col;
-	private Player m_player;
+	// System Vars
+	private Vector2 m_inputDir;
+	private Vector3 m_velocity;
+	private Vector3 m_position;
+	private Quaternion m_rotation;
 
-	// Fields
-	private Vector2 inputDir;
-	private Vector3 velocity;
-	private Vector3 position;
-	private Quaternion rotation;
+	private bool m_isGrounded;
+	private bool m_isJumpPressed;
 
-	private bool isGrounded;
-	private bool isJumpPressed;
+	private int m_framesStuck = 0;
+	private bool m_justJumped;
 
-	private int framesStuck = 0;
-	private bool justJumped;
-
-	private GameObject surfaceObject;
+	private GameObject m_surfaceObject;
 
 	#endregion
 
@@ -86,6 +89,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		m_col.excludeLayers = ~colliderMask;
 		m_col.includeLayers = colliderMask;
 
+		m_position = transform.position;
 		UpdateCollider();
 	}
 
@@ -108,7 +112,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 		if (InputManager.ControlMode != InputManager.ControlType.Player)
 		{
-			inputDir = Vector2.zero;
+			m_inputDir = Vector2.zero;
 		}
 
 		switch (movementMode)
@@ -122,19 +126,19 @@ public class PlayerController : MonoBehaviour, IInputHandler
 				break;
 		}
 
-		if (!float.IsNaN(position.x) && !float.IsNaN(position.y) && !float.IsNaN(position.z))
+		if (!float.IsNaN(m_position.x) && !float.IsNaN(m_position.y) && !float.IsNaN(m_position.z))
 		{
-			m_rb.MovePosition(position);
+			m_rb.MovePosition(m_position);
 		}
 		else
 		{
 			Debug.LogError("Position is NaN, skipping MovePosition.");
-			velocity = Vector3.zero;
+			m_velocity = Vector3.zero;
 		}
 
 		UpdateCollider();
 
-		justJumped = false;
+		m_justJumped = false;
 	}
 	#endregion
 
@@ -142,14 +146,14 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void OnMoveInput(InputAction.CallbackContext context)
 	{
-		inputDir = context.ReadValue<Vector2>();
+		m_inputDir = context.ReadValue<Vector2>();
 	}
 
 	private void OnJumpInput(InputAction.CallbackContext context)
 	{
-		isJumpPressed = context.ReadValueAsButton();
+		m_isJumpPressed = context.ReadValueAsButton();
 
-		if (isJumpPressed && isGrounded)
+		if (m_isJumpPressed && m_isGrounded)
 			Jump();
 	}
 
@@ -168,7 +172,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		InputManager.Controls.Player.Jump.performed -= OnJumpInput;
 		InputManager.Controls.Player.Jump.canceled -= OnJumpInput;
 
-		inputDir = Vector2.zero;
+		m_inputDir = Vector2.zero;
 	}
 	#endregion
 
@@ -176,10 +180,10 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void Jump()
 	{
-		velocity.y += k_jumpForce;
+		m_velocity.y += k_jumpForce;
 
-		isGrounded = false;
-		justJumped = true;
+		m_isGrounded = false;
+		m_justJumped = true;
 	}
 
 	#endregion
@@ -228,7 +232,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		float halfHeight = GetColliderHeight() / 2f;
 		Collider[] colliders = Physics.OverlapBox
 		(
-			position + Vector3.up * halfHeight, new Vector3
+			m_position + Vector3.up * halfHeight, new Vector3
 			(
 				k_horizontalSize / 2f - k_HitEpsilon,
 				halfHeight - k_HitEpsilon,
@@ -241,20 +245,20 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 		if (colliders.Length > 0)
 		{
-			++framesStuck;
+			++m_framesStuck;
 
 			Debug.LogWarning("Player stuck!");
 
-			if (framesStuck > 5)
+			if (m_framesStuck > 5)
 			{
 				Debug.Log("Wow, you're REALLY stuck.");
-				velocity = Vector3.zero;
-				position += Vector3.up * 0.5f;
+				m_velocity = Vector3.zero;
+				m_position += Vector3.up * 0.5f;
 			}
 
 			if (Physics.ComputePenetration(
 				m_col,
-				position,
+				m_position,
 				transform.rotation,
 				colliders[0],
 				colliders[0].transform.position,
@@ -263,19 +267,19 @@ public class PlayerController : MonoBehaviour, IInputHandler
 				out float dist
 			))
 			{
-				position += dir * (dist + k_HitEpsilon * 2.0f);
-				velocity = Vector3.zero;
+				m_position += dir * (dist + k_HitEpsilon * 2.0f);
+				m_velocity = Vector3.zero;
 			}
 			else
 			{
-				velocity = Vector3.zero;
-				position += Vector3.up * 0.5f;
+				m_velocity = Vector3.zero;
+				m_position += Vector3.up * 0.5f;
 			}
 
 			return true;
 		}
 
-		framesStuck = 0;
+		m_framesStuck = 0;
 
 		return false;
 	}
@@ -414,7 +418,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void Friction(float friction)
 	{
-		float speed = velocity.magnitude;
+		float speed = m_velocity.magnitude;
 
 		float control = Mathf.Max(speed, k_maxSpeed);
 
@@ -423,7 +427,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		if (speed != 0)
 		{
 			float mult = newSpeed / speed;
-			velocity *= mult;
+			m_velocity *= mult;
 		}
 	}
 
@@ -432,30 +436,30 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		float add = acceleration * maxSpeed * Time.fixedDeltaTime;
 
 		// Clamp added velocity in acceleration direction
-		float speed = Vector3.Dot(dir, velocity);
+		float speed = Vector3.Dot(dir, m_velocity);
 
 		if (speed + add > maxSpeed)
 		{
 			add = Mathf.Max(maxSpeed - speed, 0);
 		}
 
-		velocity += add * dir;
+		m_velocity += add * dir;
 	}
 
 	private void PlayerMovement()
 	{
 		// Project inputDir onto the XZ plane
-		Vector3 moveDir = (Vector3.forward * inputDir.y + Vector3.right * inputDir.x).normalized;
+		Vector3 moveDir = (Vector3.forward * m_inputDir.y + Vector3.right * m_inputDir.x).normalized;
 
 		if (moveDir.sqrMagnitude > 0.01f)
 		{
 			HandleRotation(moveDir);
 		}
 
-		isGrounded = GroundCheck(position, out surfaceObject);
+		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
 
 		// Pick movement method
-		if (isGrounded)
+		if (m_isGrounded)
 		{
 			GroundMove(moveDir);
 		}
@@ -469,28 +473,28 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void AnimationMovement()
 	{
-		isGrounded = GroundCheck(position, out surfaceObject);
+		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
 		StuckCheck();
 	}
 
 	private void GroundMove(Vector3 moveDir)
 	{
-		velocity.y = 0;
+		m_velocity.y = 0;
 
 		Friction(k_friction);
 
-		float desiredSpeed = k_walkingSpeed * inputDir.magnitude;
+		float desiredSpeed = k_walkingSpeed * m_inputDir.magnitude;
 		Accelerate(moveDir, k_acceleration, desiredSpeed);
 
 		// Clamp Speed
-		float speed = velocity.magnitude;
+		float speed = m_velocity.magnitude;
 		if (speed > k_walkingSpeed)
 		{
 			float mult = k_walkingSpeed / speed;
-			velocity *= mult;
+			m_velocity *= mult;
 		}
 
-		if (velocity.sqrMagnitude == 0)
+		if (m_velocity.sqrMagnitude == 0)
 		{
 			return;
 		}
@@ -502,8 +506,8 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private bool StepMove()
 	{
 		// Do the regular move
-		Vector3 prevPosition = position;
-		Vector3 prevVelocity = velocity;
+		Vector3 prevPosition = m_position;
+		Vector3 prevVelocity = m_velocity;
 		CollideAndSlide(ref prevPosition, ref prevVelocity);
 
 		// Move down to ground
@@ -519,9 +523,9 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		}
 
 		// Move up and try another move, stepping over stuff
-		CastHull(position, Vector3.up, k_stepHeight, out RaycastHit upHit);
-		Vector3 steppedPosition = position + Vector3.up * upHit.distance;
-		Vector3 steppVelocity = velocity;
+		CastHull(m_position, Vector3.up, k_stepHeight, out RaycastHit upHit);
+		Vector3 steppedPosition = m_position + Vector3.up * upHit.distance;
+		Vector3 steppVelocity = m_velocity;
 
 		CollideAndSlide(ref steppedPosition, ref steppVelocity);
 
@@ -534,50 +538,50 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		// If we stepped onto air, just do the regular move
 		if (!stepGrounded)
 		{
-			position = prevPosition;
-			velocity = prevVelocity;
+			m_position = prevPosition;
+			m_velocity = prevVelocity;
 			return false;
 		}
 
 		// Otherwise, pick the move that goes the furthest
-		if (Vector3.Distance(position, prevPosition) >= Vector3.Distance(position, steppedPosition))
+		if (Vector3.Distance(m_position, prevPosition) >= Vector3.Distance(m_position, steppedPosition))
 		{
-			position = prevPosition;
-			velocity = prevVelocity;
+			m_position = prevPosition;
+			m_velocity = prevVelocity;
 			return false;
 		}
 
-		position = steppedPosition;
-		velocity = steppVelocity;
-		surfaceObject = stepSurface;
-		isGrounded = stepGrounded;
+		m_position = steppedPosition;
+		m_velocity = steppVelocity;
+		m_surfaceObject = stepSurface;
+		m_isGrounded = stepGrounded;
 
-		velocity.y = Mathf.Max(velocity.y, prevVelocity.y); // funny quake ramp jumps
+		m_velocity.y = Mathf.Max(m_velocity.y, prevVelocity.y); // funny quake ramp jumps
 		return true;
 	}
 
 	private void AirMove(Vector3 moveDir)
 	{
-		float desiredSpeed = k_airSpeed * inputDir.magnitude;
+		float desiredSpeed = k_airSpeed * m_inputDir.magnitude;
 		Accelerate(moveDir, k_airAcceleration, desiredSpeed);
 
-		float yVel = velocity.y;
-		velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
-		CollideAndSlide(ref position, ref velocity);
-		velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
+		float yVel = m_velocity.y;
+		m_velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
+		CollideAndSlide(ref m_position, ref m_velocity);
+		m_velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
 
-		isGrounded = GroundCheck(position, out surfaceObject);
+		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
 	}
 
 	public void Teleport(Vector3 position)
 	{
-		this.position = position;
-		transform.position = this.position;
+		this.m_position = position;
+		transform.position = this.m_position;
 	}
 
 	public void Stop()
 	{
-		velocity = Vector3.zero;
+		m_velocity = Vector3.zero;
 	}
 	#endregion
 
@@ -585,13 +589,13 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void HandleRotation(Vector3 moveDir)
 	{
-		Quaternion prevRot = rotation;
+		Quaternion prevRot = m_rotation;
 
 		Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-		rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
+		m_rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
 
 		// Rotate player mesh
-		m_player.PlayerMesh.rotation = rotation;
+		m_player.PlayerMesh.rotation = m_rotation;
 	}
 
 	#endregion
@@ -620,11 +624,11 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private bool GroundCheck(Vector3 position, out GameObject surfaceObject)
 	{
 		surfaceObject = null;
-		if (justJumped) return false;
+		if (m_justJumped) return false;
 
 		if (CastHull(position, Vector3.down, k_GroundCheckDist, out RaycastHit hit))
 		{
-			if (hit.normal.y > minWalkableNormalY)
+			if (hit.normal.y > s_minWalkableNormalY)
 			{
 				surfaceObject = hit.collider.gameObject;
 				return true;
@@ -645,7 +649,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 			QueryTriggerInteraction.Ignore
 		))
 		{
-			if (hit2.normal.y > minWalkableNormalY)
+			if (hit2.normal.y > s_minWalkableNormalY)
 			{
 				surfaceObject = hit2.collider.gameObject;
 				return true;

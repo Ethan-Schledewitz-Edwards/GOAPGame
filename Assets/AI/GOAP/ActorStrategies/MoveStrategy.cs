@@ -4,25 +4,25 @@ using UnityEngine.AI;
 
 public class MoveStrategy : IActionStrategy
 {
-	readonly NavMeshAgent m_navMeshAgent;
+	readonly Actor m_actor;
 	readonly Func<Vector3> m_destination;
 
 	public bool IsStrategyPossible => !IsStrategyComplete;
-	public bool IsStrategyComplete => m_navMeshAgent.remainingDistance <= .5f && !m_navMeshAgent.pathPending;
+	public bool IsStrategyComplete => !m_actor.IsCalculatingPath() && m_actor.PathDistRemaining() <= .25f;
 
-	public MoveStrategy(NavMeshAgent navMeshAgent, Func<Vector3> destination)
+	public MoveStrategy(Actor actor, Func<Vector3> destination)
 	{
-		m_navMeshAgent = navMeshAgent;
+		m_actor = actor;
 		m_destination = destination;
 	}
 
 	void IActionStrategy.StartStrategy()
 	{
-		m_navMeshAgent.SetDestination(m_destination());
+		m_actor.SetActorDestination(m_destination());
 	}
 
 	void IActionStrategy.StopStrategy() 
 	{
-		m_navMeshAgent.ResetPath();
+		m_actor.ClearActorDestination();
 	}
 }

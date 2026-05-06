@@ -13,11 +13,11 @@ namespace BehaviourTrees
         /// <summary>
         /// Evaluates children in order and returns if one has not failed.
         /// </summary>
-        public override EBTNodeState Evaluate()
+        public override EBTNodeState Evaluate(float t)
 		{
 			foreach (BTNodeBase i in m_childNodes)
 			{
-				switch (i.Evaluate())
+				switch (i.Evaluate(t))
 				{
 					case EBTNodeState.STATE_FAILURE:
 						continue;

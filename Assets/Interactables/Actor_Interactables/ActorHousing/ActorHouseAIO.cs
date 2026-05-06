@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class ActorHouseAIO : ActorInteractableObjectBase
 {
-	[Header("Building Configuration")]
-	[field: SerializeField] public Transform EntrancePosition { get; private set; }
+	public override bool UseFormationRadius { get => false; }
 
 
 	private void Awake()

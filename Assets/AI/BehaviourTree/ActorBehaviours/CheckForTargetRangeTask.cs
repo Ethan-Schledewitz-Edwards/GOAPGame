@@ -22,9 +22,9 @@ public class CheckForTargetRangeTask : BTNodeBase
 		m_actorTransform = actorTransform; 
 	}
 
-	public override EBTNodeState Evaluate()
+	public override EBTNodeState Evaluate(float t)
 	{
-		base.Evaluate();
+		base.Evaluate(t);
 
 		Transform targetTransform = (Transform)GetData("targetTransform");
 

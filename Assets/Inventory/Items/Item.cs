@@ -6,8 +6,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Item : ActorInteractableObjectBase
 {
+	public override bool UseFormationRadius { get => false; }
+
 	// Components
-	public Rigidbody RB { get; private set; }
+	private Rigidbody m_rb;
 
 	[Header("Item Data")]
 	[field: SerializeField] public ItemData ItemData { get; private set; }
@@ -18,7 +20,7 @@ public class Item : ActorInteractableObjectBase
 
 	public void Awake()
 	{
-		RB = GetComponent<Rigidbody>();
+		m_rb = GetComponent<Rigidbody>();
 	}
 
 	public override BehaviourTree GetBehaviourTree(Transform actorTransform, Actor actorComp)
@@ -68,5 +70,10 @@ public class Item : ActorInteractableObjectBase
 
 		if(StackSize <= 0)
 			Destroy(gameObject);
+	}
+
+	public void ConstrainPhysics(bool isConstrained)
+	{
+		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}
 }

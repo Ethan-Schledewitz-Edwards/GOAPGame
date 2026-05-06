@@ -5,7 +5,10 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 {
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
+	[SerializeField] private Transform m_interactOffset;
+	public abstract bool UseFormationRadius { get; }
 	[SerializeField] private float m_formationRadius = 2;
+
 
 	// System
 	private int m_actorsPresent = 0;
@@ -52,17 +55,29 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 
 	#region Utility
 
+	public Transform GetInteractionOffsetTransform()
+	{
+		return m_interactOffset ? m_interactOffset : transform;
+	}
+
 	/// <summary>
 	/// Returns a valid position for an actor to move to on the interactables formation radius
 	/// </summary>
-	public Vector3 GetActorPositon()
+	public Vector3 GetInteractionPositon()
 	{
-        float angle = m_actorsPresent * Mathf.PI * 2f / 12;
+		Vector3 interactOffset = GetInteractionOffsetTransform().position;
 
-        float x = Mathf.Cos(angle) * m_formationRadius;
-        float z = Mathf.Sin(angle) * m_formationRadius;
+		if (UseFormationRadius)
+		{
+			float angle = m_actorsPresent * Mathf.PI * 2f / 12;
 
-		return transform.position + new Vector3(x, 0, z);
+			float x = Mathf.Cos(angle) * m_formationRadius;
+			float z = Mathf.Sin(angle) * m_formationRadius;
+
+			return interactOffset + new Vector3(x, 0, z);
+		}
+
+		return interactOffset;
     }
     #endregion
 }

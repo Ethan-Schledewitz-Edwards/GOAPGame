@@ -21,9 +21,9 @@ public class FindStorageTask : BTNodeBase
 		m_itemID = itemID;
 	}
 
-	public override EBTNodeState Evaluate()
+	public override EBTNodeState Evaluate(float t)
 	{
-		base.Evaluate();
+		base.Evaluate(t);
 
 		SettlementManager settlementManager = SettlementManager.Instance;
 		ItemStorageAIO closestStorage = null;
@@ -45,7 +45,7 @@ public class FindStorageTask : BTNodeBase
 			Debug.Log($"{m_actorComponent.name} found storage: {closestStorage.name}");
 
 			SetData("targetTransform", closestStorage.transform);
-			SetData("targetPositionTransform", closestStorage.DepositPosition);
+			SetData("targetPositionTransform", closestStorage.GetInteractionOffsetTransform());
 
 			m_nodeState = EBTNodeState.STATE_SUCSESS;
 			return m_nodeState;

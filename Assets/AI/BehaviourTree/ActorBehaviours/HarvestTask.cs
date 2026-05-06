@@ -19,18 +19,18 @@ public class HarvestTask : BTNodeBase
 		m_actorComponent = actorComponent;
 	}
 
-	public override EBTNodeState Evaluate()
+	public override EBTNodeState Evaluate(float t)
 	{
-		base.Evaluate();
+		base.Evaluate(t);
 
 		Transform target = (Transform)GetData("targetTransform");
-		HealthComponent harvestable = null;
+		Entity harvestable = null;
 
-		if(target != null && target.TryGetComponent(out HealthComponent health))
+		if(target != null && target.TryGetComponent(out Entity health))
 		{
 			harvestable = health;
 
-			m_attackTimer += Time.deltaTime;
+			m_attackTimer += t;
 			if (m_attackTimer >= m_timeBetweenAttacks)
 			{
 				m_attackTimer = 0;

@@ -4,14 +4,14 @@ using UnityEngine.AI;
 public class WanderStrategy : IActionStrategy
 {
 	public bool IsStrategyPossible => !IsStrategyComplete;
-	public bool IsStrategyComplete => m_navMeshAgent.remainingDistance <= .5f && !m_navMeshAgent.pathPending;
+	public bool IsStrategyComplete => !m_actor.IsCalculatingPath() && m_actor.PathDistRemaining() <= .25f;
 
-	readonly NavMeshAgent m_navMeshAgent;
+	readonly Actor m_actor;
 	readonly float m_wanderRadius;
 
-	public WanderStrategy(NavMeshAgent navMeshAgent, float wanderRadius)
+	public WanderStrategy(Actor actor, float wanderRadius)
 	{
-		m_navMeshAgent = navMeshAgent;
+		m_actor = actor;
 		m_wanderRadius = wanderRadius;
 	}
 
@@ -24,9 +24,9 @@ public class WanderStrategy : IActionStrategy
 			randomDir.y = 0;
 
 			NavMeshHit hit;
-			if(NavMesh.SamplePosition(m_navMeshAgent.transform.position + randomDir, out hit, m_wanderRadius, 1))
+			if(NavMesh.SamplePosition(m_actor.transform.position + randomDir, out hit, m_wanderRadius, 1))
 			{
-				m_navMeshAgent.SetDestination(hit.position);
+				m_actor.SetActorDestination(hit.position);
 				return;
 			}
 		}

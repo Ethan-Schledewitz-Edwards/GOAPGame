@@ -54,7 +54,7 @@ public class ActorInventory : InventoryComponent
 				m_heldItemPosition
 			);
 
-			item.RB.constraints = RigidbodyConstraints.FreezeAll;
+			item.ConstrainPhysics(false);
 			item.gameObject.layer = 0;
 		}
 	}
@@ -70,7 +70,7 @@ public class ActorInventory : InventoryComponent
 				child.parent = null;
 				child.position = m_dropItemPosition.position;
 
-				item.RB.constraints = RigidbodyConstraints.None;
+				item.ConstrainPhysics(true);
 				child.gameObject.layer = m_interactionLayerMask;
 			}
 		}

@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class MoveToTargetDataTask : BTNodeBase
 {
-	private Actor m_actorComponent;
+	private Actor m_actor;
 	private Transform m_actorTransform;
 
 	/// <summary>
@@ -14,13 +14,13 @@ public class MoveToTargetDataTask : BTNodeBase
 	/// <param name="navMeshAgent">The actors nav agent component</param>
 	public MoveToTargetDataTask(Actor actorComponent, Transform actorTransform)
 	{
-		m_actorComponent = actorComponent;
+		m_actor = actorComponent;
 		m_actorTransform = actorTransform;
 	}
 
-	public override EBTNodeState Evaluate()
+	public override EBTNodeState Evaluate(float t)
 	{
-		base.Evaluate();
+		base.Evaluate(t);
 
 		Transform targetPosition = (Transform)GetData("targetPositionTransform");
 
@@ -34,7 +34,7 @@ public class MoveToTargetDataTask : BTNodeBase
 			// Set destination if not within range
 			if (!isInRange)
 			{
-				m_actorComponent.NavAgent.SetDestination(targetPos);
+				m_actor.SetActorDestination(targetPos);
 			}
 			else
 			{

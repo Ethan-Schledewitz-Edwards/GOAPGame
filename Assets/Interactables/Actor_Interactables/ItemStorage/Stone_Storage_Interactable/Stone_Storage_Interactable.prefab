@@ -62,7 +62,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfdd6ed334e5d274c8ee765c49138839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageAIO
-  <DepositPosition>k__BackingField: {fileID: 249155638142965169}
+  m_actorsNeeded: 1
+  m_interactOffset: {fileID: 249155638142965169}
+  m_formationRadius: 2
   m_itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
 --- !u!208 &7252548703486566623
 NavMeshObstacle:

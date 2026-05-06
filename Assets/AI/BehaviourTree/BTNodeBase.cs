@@ -40,7 +40,7 @@ namespace BehaviourTrees
 		}
         #endregion
 
-        public virtual EBTNodeState Evaluate()
+        public virtual EBTNodeState Evaluate(float t)
 		{
 			// Dirty flag to allow logic for a notes first evaluation
 			if (!m_hasBeganEvaluation)

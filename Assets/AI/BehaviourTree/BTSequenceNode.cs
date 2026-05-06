@@ -13,13 +13,13 @@ namespace BehaviourTrees
         /// <summary>
         /// Returns success only if all children succeed, returning failure immediately if any child fails.
         /// </summary>
-        public override EBTNodeState Evaluate()
+        public override EBTNodeState Evaluate(float t)
 		{
 			bool isAnyChildRunning = false;
 
 			foreach (BTNodeBase i in m_childNodes)
 			{
-				switch(i.Evaluate())
+				switch(i.Evaluate(t))
 				{
 					case EBTNodeState.STATE_FAILURE:
 						m_nodeState = EBTNodeState.STATE_FAILURE;

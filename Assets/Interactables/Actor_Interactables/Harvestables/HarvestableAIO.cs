@@ -2,9 +2,10 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(HarvestableHealth))]
+[RequireComponent(typeof(HarvestableEntity))]
 public class HarvestableAIO : ActorInteractableObjectBase
 {
+	public override bool UseFormationRadius { get => true; }
 
 	public override void Interact(Actor actor)
 	{

@@ -115,7 +115,7 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 		if (followerToThrow != null) 
 		{ 
 			RemoveFollower(followerToThrow);
-			followerToThrow.GoToDestination(throwPosition);
+			followerToThrow.InvestigatePosition(throwPosition);
 		}
 	}
 

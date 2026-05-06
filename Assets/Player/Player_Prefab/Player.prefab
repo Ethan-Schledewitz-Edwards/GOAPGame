@@ -497,10 +497,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba8dab82247dc04283d7f923d7bd719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <m_MaxHealth>k__BackingField: 100
-  <m_IsDestroyedOnDeath>k__BackingField: 0
+  <MaxHealth>k__BackingField: 100
+  <IsDestroyedOnDeath>k__BackingField: 0
   m_damageParticles: {fileID: 0}
-  m_destrcutionParticles: {fileID: 0}
+  m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
   <PlayerCamera>k__BackingField: {fileID: 1121418079944000196}
@@ -835,7 +835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9044187b1cd834785466bf405beb9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraRig
-  defaultOffset: {x: 0, y: 8, z: -8}
+  defaultOffset: {x: 0, y: 8, z: -7}
   isCenteredOnStart: 1
   isWorldSpaceOffset: 1
   isPositionFollowEnabled: 1
