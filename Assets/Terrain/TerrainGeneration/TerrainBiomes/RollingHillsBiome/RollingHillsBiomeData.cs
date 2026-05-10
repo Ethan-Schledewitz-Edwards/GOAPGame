@@ -19,7 +19,7 @@ public class RollingHillsBiomeData : TerrainBiomeData
 
 	public override float Lacunarity => 2.0f;
 
-	public override int GetTileData(int seed, int terrainHeight, int worldX, int worldY, int worldZ)
+	public override int GenerateTileData(int seed, int terrainHeight, int worldY)
 	{
 		// Grass
 		if (worldY == terrainHeight) 
@@ -37,12 +37,6 @@ public class RollingHillsBiomeData : TerrainBiomeData
 		if (worldY == 0) 
 			return 1;
 
-		// Either feature or air
-		return TryFeatureTile(seed, terrainHeight, worldX, worldY, worldZ);
-	}
-
-	public override int TryFeatureTile(int seed, int terrainHeight, int worldX, int worldY, int worldZ)
-	{
 		return 0;
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Loads chunks based on the player's current position
+/// Loads chunks based on the player's current position.
 /// </summary>
 public class TerrainLoader : MonoBehaviour
 {
@@ -16,6 +16,7 @@ public class TerrainLoader : MonoBehaviour
 
 	private bool m_isDirty = false;
 	private bool m_isProcessing = false;
+
 	public event Action OnTerrainFinishedLoading;
 
 	private void Awake()
@@ -25,15 +26,15 @@ public class TerrainLoader : MonoBehaviour
 
 	private void Start()
 	{
-		GatherChunks();
+		LoadBatchOfChunks();
 	}
 
 	private void Update()
 	{
-		GatherChunks();
+		LoadBatchOfChunks();
 	}
 
-	private void GatherChunks()
+	private void LoadBatchOfChunks()
 	{
 		// Ignore requests for new batches if processing
 		if (m_isProcessing) 

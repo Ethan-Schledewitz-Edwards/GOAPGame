@@ -4,10 +4,7 @@ public static class TerrainChunkUtilities
 {
 	#region Directions
 
-	/// <summary>
-	/// Returns the eight cardinal directions and then up and down.
-	/// </summary>
-	public static Vector3Int[] BitmaskDirections = new Vector3Int[]
+	public static Vector3Int[] GetCardinalIntercardinalDirections = new Vector3Int[]
 	{
 		// Cardinal directions
 		Vector3Int.forward,// North
@@ -20,13 +17,27 @@ public static class TerrainChunkUtilities
 		new Vector3Int(1, 0, -1),// South-East
 		new Vector3Int(-1, 0, -1),// South-West
 		new Vector3Int(-1, 0, 1),// North-West
-
-		// Up and Down directions
-		Vector3Int.up,// Up
-		Vector3Int.down// Down
 	};
 
-	public static Vector2Int[] CardinalDirections2D = new[]
+	public static Vector3Int[] GetCardinalIntercardinalDirectionsVertical = new Vector3Int[]
+{
+		// Cardinal directions
+		Vector3Int.forward,// North
+		Vector3Int.right,// East
+		Vector3Int.back,// South
+		Vector3Int.left,// West
+
+		// Corner directions
+		new Vector3Int(1, 0, 1),// North-East
+		new Vector3Int(1, 0, -1),// South-East
+		new Vector3Int(-1, 0, -1),// South-West
+		new Vector3Int(-1, 0, 1),// North-West
+
+		Vector3Int.up,// South-West
+		Vector3Int.down,// North-West
+};
+
+	public static Vector2Int[] GetCardinalDirections2D = new[]
 {
 		Vector2Int.up,// North
 		Vector2Int.right,// East
@@ -155,9 +166,10 @@ public static class TerrainChunkUtilities
 	/// <summary>
 	/// Checks if a neighboring block in a given direction is solid
 	/// </summary>
-	public static bool IsNeighborTileSolid(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos, Vector3Int dir)
+	public static bool IsNeighborTileSolid(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos, Vector3Int dir, out int neighboursTileID)
 	{
 		Vector3Int offsetPos = localPos + dir;
+		neighboursTileID = 0;
 
 		// Ignore positions out of chunk y bounds
 		if (offsetPos.y >= WorldBuilder.s_ChunkSize.y ||
@@ -165,10 +177,9 @@ public static class TerrainChunkUtilities
 			return false;
 
 		// Get the nighbours ID
-		int tileID = 0;
 		if (IsPosInChunk(chunkTiles, offsetPos))
 		{
-			tileID = chunkTiles[offsetPos.x, offsetPos.y, offsetPos.z];	
+			neighboursTileID = chunkTiles[offsetPos.x, offsetPos.y, offsetPos.z];	
 		}
 		else
 		{
@@ -177,15 +188,15 @@ public static class TerrainChunkUtilities
 			Vector3Int neighborWorldPos = currentWorldPos + dir;
 			Vector2Int neighbourChunkXZ = WorldToChunkXZ(neighborWorldPos);
 
-			if (WorldBuilder.s_ActiveChunks.TryGetValue(neighbourChunkXZ, out (TerrainChunk chunk, GameObject chunkObject) value))
+			if (WorldBuilder.s_WorldData.TryGetValue(neighbourChunkXZ, out TerrainChunk neighborChunk))
 			{
 				Vector3Int localNeighbourPos = WorldToTile(neighborWorldPos, neighbourChunkXZ);
-				int[,,] neighborTileData = value.chunk.TileData;
+				int[,,] neighborTileData = neighborChunk.TileData;
 
 				// Ensure the calculated local position is valid for the neighbor chunk before accessing it
 				if (IsPosInChunk(neighborTileData, localNeighbourPos))
 				{
-					tileID = neighborTileData[localNeighbourPos.x, localNeighbourPos.y, localNeighbourPos.z];
+					neighboursTileID = neighborTileData[localNeighbourPos.x, localNeighbourPos.y, localNeighbourPos.z];
 				}
 			}
 			else
@@ -193,13 +204,8 @@ public static class TerrainChunkUtilities
 		}
 
 		// Check if the nighbour is air
-		if (tileID != 0)
+		if (neighboursTileID > 0)
 		{
-			// Ignore feature tiles
-			int tileIndex = tileID - 1;
-			if (WorldBuilder.TileIndex.Tiles[tileID - 1] is FeatureTileData featureData)
-				return false;
-
 			return true;
 		}
 		else

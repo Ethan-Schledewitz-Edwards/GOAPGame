@@ -2,8 +2,16 @@ using UnityEngine;
 
 public class TerrainChunk
 {
-	public Vector2Int ChunkXZ;
-	public int[,,] TileData;
+	public Vector2Int ChunkXZ { get; private set; }
+	public int[,,] TileData { get; private set; }
+
+	public EChunkGenerationState ChunkGenerationState { get; private set; }
+	public enum EChunkGenerationState
+	{
+		Empty,
+		BaseTerrain,
+		Decorated
+	}
 
 	public System.Action<Vector2Int> OnChunkUpdate;
 
@@ -11,6 +19,13 @@ public class TerrainChunk
 	{
 		ChunkXZ = chunkXZ;
 		TileData = tileData;
+
+		ChunkGenerationState = EChunkGenerationState.Empty;
+	}
+
+	public void SetGenerationState(EChunkGenerationState newGenerationState)
+	{
+		ChunkGenerationState = newGenerationState;
 	}
 
 	public void UpdateChunk()
@@ -18,26 +33,21 @@ public class TerrainChunk
 		OnChunkUpdate?.Invoke(ChunkXZ);
 	}
 
-	public void SetTile(Vector3Int localPos, int newID)
+	public void SetTilesID(Vector3Int localPos, int newID)
 	{
 		TileData[localPos.x, localPos.y, localPos.z] = newID;
 		UpdateChunk();
 
 		// Update neighbour chunks if the updated tile was on a boarder
-		Vector3Int[] bitmaskDirs = TerrainChunkUtilities.BitmaskDirections;
+		Vector3Int[] intercadinalDirs = TerrainChunkUtilities.GetCardinalIntercardinalDirections;
 
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < intercadinalDirs.Length; i++)
 		{
-			if (!TerrainChunkUtilities.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, bitmaskDirs[i], out Vector2Int neighbourXZ))
+			if (!TerrainChunkUtilities.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, intercadinalDirs[i], out Vector2Int neighbourXZ))
 			{
 				TerrainChunk terrainChunk = WorldBuilder.s_ActiveChunks[neighbourXZ].chunkData;
 				terrainChunk.UpdateChunk();
 			}
 		}
-	}
-
-	public int GetTileID(Vector3Int localPos)
-	{
-		return TileData[localPos.x, localPos.y, localPos.z];
 	}
 }

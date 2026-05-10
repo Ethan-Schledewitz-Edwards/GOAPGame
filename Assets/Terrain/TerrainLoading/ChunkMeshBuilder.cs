@@ -10,7 +10,7 @@ using UnityEngine;
 /// Using this data, a mesh is built and features are spawned. 
 /// The final mesh data is passed to the world generator.
 /// </summary>
-public class ChunkBuilder
+public class ChunkMeshBuilder
 {
 	// Sub-classes
 	public class GeneratingChunkMesh
@@ -32,7 +32,7 @@ public class ChunkBuilder
 
 	#region Constructor
 
-	public ChunkBuilder(WorldBuilder worldBuilder, TileIndex tileIndex)
+	public ChunkMeshBuilder(WorldBuilder worldBuilder, TileIndex tileIndex)
 	{
 		this.m_tileIndex = tileIndex;
 		this.m_worldBuilder = worldBuilder;
@@ -67,22 +67,28 @@ public class ChunkBuilder
 		for (int i = 0; i < 8; i++)
 		{
 			Vector3Int cornerPos = localPos + MarchingTable.Corners[i];
+			if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighboursTileID))
+			{
+				if(neighboursTileID > 0)
+				{
+					// Ignore feature tiles
+					if (m_tileIndex.Tiles[neighboursTileID - 1] is FeatureTileData)
+						continue;
 
-			if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i]))
-				configBitmask |= 1 << i;
+					configBitmask |= 1 << i;
+				}
+			}
 		}
 
 		// Skip air or blocked cubes
 		if (configBitmask == 0 || configBitmask == 255)
 			return;
 
-		int tileIndex = tileID; // Remap value for the tile data array
-
 		// Ensure only voxel tiles are meshed
-		if (m_tileIndex.Tiles[tileIndex] is VoxelTileData voxelData)
+		if (m_tileIndex.Tiles[tileID] is VoxelTileData voxelData)
 		{
-			if (!trianglesByMaterial.ContainsKey(tileIndex))
-				trianglesByMaterial[tileIndex] = new List<int>();
+			if (!trianglesByMaterial.ContainsKey(tileID))
+				trianglesByMaterial[tileID] = new List<int>();
 
 			// Generate triangles
 			int edgeIndex = 0;
@@ -97,9 +103,9 @@ public class ChunkBuilder
 				int idx3 = MarchingTable.Triangles[configBitmask, edgeIndex + 2];
 
 				// Reverse wind the vertices
-				AddVertexAndIndex(idx1, localPos, vertices, trianglesByMaterial[tileIndex]);
-				AddVertexAndIndex(idx3, localPos, vertices, trianglesByMaterial[tileIndex]);
-				AddVertexAndIndex(idx2, localPos, vertices, trianglesByMaterial[tileIndex]);
+				AddVertexAndIndex(idx1, localPos, vertices, trianglesByMaterial[tileID]);
+				AddVertexAndIndex(idx3, localPos, vertices, trianglesByMaterial[tileID]);
+				AddVertexAndIndex(idx2, localPos, vertices, trianglesByMaterial[tileID]);
 
 				edgeIndex += 3;
 			}

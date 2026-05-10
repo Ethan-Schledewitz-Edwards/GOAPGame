@@ -129,13 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35261e2297c89874f968abad8444feab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableEntity
-  <MaxHealth>k__BackingField: 100
+  <MaxHealth>k__BackingField: 5
   <IsDestroyedOnDeath>k__BackingField: 0
   m_damageParticles: {fileID: 0}
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
-  m_lootTable: {fileID: 0}
+  m_lootTable: {fileID: 11400000, guid: d3d47778be417234b80fe8b0f96bba10, type: 2}
   m_minTableRollsOnDeath: 2
   m_maxtableRollsOnDeath: 4
   m_isDamagable: 1

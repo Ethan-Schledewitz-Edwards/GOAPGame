@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 public abstract class TerrainBiomeData : ScriptableObject
 {
@@ -63,14 +64,70 @@ public abstract class TerrainBiomeData : ScriptableObject
 		return (int)final;
 	}
 
-	public abstract int GetTileData(int seed, int terrainHeight, int worldX, int worldY, int worldZ);
+	public abstract int GenerateTileData(int seed, int terrainHeight, int worldY);
 
-	public abstract int TryFeatureTile(int seed, int terrainHeight, int worldX, int worldY, int worldZ);
+	public int TryGenerateFeatureTileData(int seed, TerrainChunk terrainChunk, int terrainHeight, int localX, int localY, int localZ)
+	{
+		if (localY != terrainHeight + 1) 
+			return 0;
+
+		Vector3Int localPos = new Vector3Int(localX, localY, localZ);
+		bool isPlacementValid = true;
+
+		for (int x = -1; x <= 1; x++)
+		{
+			for (int z = -1; z <= 1; z++)
+			{
+				for (int y = -1; y <= 1; y++)
+				{
+					// Skip the spot where the feature itself will sit
+					if (x == 0 && y == 0 && z == 0) 
+						continue;
+
+					Vector3Int offset = new Vector3Int(x, y, z);
+					bool isSolid = TerrainChunkUtilities.IsNeighborTileSolid(terrainChunk.ChunkXZ, terrainChunk.TileData, localPos, offset, out _);
+
+					if (y == -1) // The 9 tiles underneath the potential feature
+					{
+						if (!isSolid) 
+						{ 
+							isPlacementValid = false;
+							break; 
+						}
+					}
+					else // The tiles are on the same level or above the potential feature
+					{
+						if (isSolid) 
+						{ 
+							isPlacementValid = false; 
+							break; 
+						}
+					}
+				}
+				if (!isPlacementValid) 
+					break;
+			}
+			if (!isPlacementValid) 
+				break;
+		}
+
+		if (isPlacementValid)
+		{
+			Vector3Int worldPos = TerrainChunkUtilities.TileToWorldspace(localPos, terrainChunk.ChunkXZ);
+			float spawnChance = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
+			if (spawnChance < 0.05f)
+			{
+				return (spawnChance < 0.025f) ? 5 : 6;
+			}
+		}
+
+		return 0;
+	}
 
 	// <summary>
-	/// Generates a deterministic random float between 0.0 and 1.0 based on a set of coordinates
+	/// Generates a deterministic random float between 0.0 and 1.0 based on a set of coordinates.
 	/// </summary>
-	protected float PerCoordinateRandom(int seed, int x, int y, int z)
+	private float PerCoordinateRandom(int seed, int x, int y, int z)
 	{
 		// Scramble the input using large primes
 		uint h = (uint)seed ^ (uint)x * 73856093u ^ (uint)z * 19349663u ^ (uint)y * 83492791u;

@@ -19,7 +19,7 @@ public class PlainsBiomeData : TerrainBiomeData
 
 	public override float Lacunarity => 2.0f;
 
-	public override int GetTileData(int seed, int terrainHeight, int worldX, int worldY, int worldZ)
+	public override int GenerateTileData(int seed, int terrainHeight, int worldY)
 	{
 		// Grass
 		if (worldY == terrainHeight)
@@ -37,23 +37,6 @@ public class PlainsBiomeData : TerrainBiomeData
 		if (worldY == 0)
 			return 4;
 
-		// Either feature or air
-		return TryFeatureTile(seed, terrainHeight, worldX, worldY, worldZ);
-	}
-
-	public override int TryFeatureTile(int seed, int terrainHeight, int worldX, int worldY, int worldZ)
-	{
-		if (worldY == terrainHeight + 1) // Only spawn one above the height
-		{
-			// Convert the hash result to a 0.0 - 1.0 float
-			float spawnChance = PerCoordinateRandom(seed, worldX, worldY, worldZ);
-
-			if (spawnChance < 0.05f)
-			{
-				return (spawnChance < 0.025f) ? 5 : 6;
-			}
-		}
-
-		return 0; // No feature
+		return 0;
 	}
 }
