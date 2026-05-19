@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 public abstract class TerrainBiomeData : ScriptableObject
 {
@@ -17,57 +16,45 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 	public abstract float Lacunarity { get; } // Controls how quickly the frequency increases for each octave (lower values result in smoother transitions
 
+	[field: SerializeField] public FeatureWeighting[] featureWeightings { get; private set; }
+
+	// System
+	private FastNoiseLite terrainNoise;
+	private int currentInitializedSeed = int.MinValue;
+
 	/// <summary>
-	/// Uses perlin noise along with terrain generation parameters to determine the ground height
+	/// Uses perlin noise along with terrain generation parameters to determine the ground height.
 	/// </summary>
-	public int GetTerrainHeight(int seed, float x, float z)
+	public int GetTerrainHeight(int seed, float worldX, float worldZ)
 	{
-		float total = 0f;
-		float amplitude = Amplitude;
-		float frequency = Frequency;
-		float totalAmplitude = 0;
-
-		int floor = Floor;
-		int peak = Peak;
-		int octaves = Octaves;
-
-		// Octaves
-		System.Random rng = new System.Random(seed);
-		Vector2[] octaveOffsets = new Vector2[octaves];
-		for (int i = 0; i < octaves; i++)
+		if(terrainNoise == null || currentInitializedSeed != seed)
 		{
-			float offsetX = rng.Next(-100000, 100000);
-			float offsetY = rng.Next(-100000, 100000);
-			octaveOffsets[i] = new Vector2(offsetX, offsetY);
+			terrainNoise = new FastNoiseLite();
+			currentInitializedSeed = seed;
+
+			terrainNoise.SetSeed(seed);
+			terrainNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+			terrainNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
+			terrainNoise.SetFractalOctaves(Octaves);
+			terrainNoise.SetFractalLacunarity(Lacunarity);
+			terrainNoise.SetFractalGain(Persistence);
 		}
 
-		// Sample noise
-		for (int i = 0; i < octaves; i++)
-		{
-			float xSample = (x * frequency) + octaveOffsets[i].x;
-			float ySample = (z * frequency) + octaveOffsets[i].y;
-			float noiseSample = Mathf.PerlinNoise(xSample, ySample);
-			total += noiseSample * amplitude;
+		float rawNoise = terrainNoise.GetNoise(worldX * Frequency, worldZ * Frequency);
+		float normalizedNoise = (rawNoise * 0.5f) + 0.5f;
 
-			totalAmplitude += amplitude;
-
-			amplitude *= Persistence;
-			frequency *= Lacunarity;
-		}
-
-		// Normalize total to between zero and one
-		total /= totalAmplitude;
-
-		// Remap normalized value to desired height range of biome
-		float final = total * (peak - floor) + floor;
-
-		return (int)final;
+		float finalHeight = (normalizedNoise * (Peak - Floor)) + Floor;
+		return Mathf.RoundToInt(finalHeight);
 	}
 
 	public abstract int GenerateTileData(int seed, int terrainHeight, int worldY);
 
 	public int TryGenerateFeatureTileData(int seed, TerrainChunk terrainChunk, int terrainHeight, int localX, int localY, int localZ)
 	{
+		if (featureWeightings == null || featureWeightings.Length == 0)
+			return 0;
+
+		// Only place features on the surface
 		if (localY != terrainHeight + 1) 
 			return 0;
 
@@ -114,10 +101,33 @@ public abstract class TerrainBiomeData : ScriptableObject
 		if (isPlacementValid)
 		{
 			Vector3Int worldPos = TerrainChunkUtilities.TileToWorldspace(localPos, terrainChunk.ChunkXZ);
-			float spawnChance = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
-			if (spawnChance < 0.05f)
+			float spawnRoll = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
+
+			float totalWeight = 0f;
+			foreach (var weighting in featureWeightings)
 			{
-				return (spawnChance < 0.025f) ? 5 : 6;
+				if (spawnRoll >= weighting.SpawnThreshold)
+				{
+					totalWeight += weighting.SelectionWeight;
+				}
+			}
+
+			// If no features fit the current coordinate density threshold, return air
+			if (totalWeight <= 0f)
+				return 0;
+
+			float selectionRoll = PerCoordinateRandom(seed + 9999, worldPos.x, worldPos.y, worldPos.z) * totalWeight;
+			float currentWeightSum = 0f;
+			foreach (var weighting in featureWeightings)
+			{
+				if (spawnRoll >= weighting.SpawnThreshold)
+				{
+					currentWeightSum += weighting.SelectionWeight;
+					if (selectionRoll <= currentWeightSum)
+					{
+						return weighting.Feature_TileID;
+					}
+				}
 			}
 		}
 
@@ -141,5 +151,17 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 		// Normalize
 		return h / (float)uint.MaxValue;
+	}
+
+	[System.Serializable]
+	public class FeatureWeighting
+	{
+		[field: SerializeField] public int Feature_TileID { get; private set; }
+
+		[Tooltip("The relative chance of this feature picking chosen compared to others in the same biome.")]
+		[Range(0, 100)] public float SelectionWeight = 10f;
+
+		[Tooltip("The minimum noise threshold required for this specific feature to spawn.")]
+		[Range(0, 1)] public float SpawnThreshold = 0.4f;
 	}
 }

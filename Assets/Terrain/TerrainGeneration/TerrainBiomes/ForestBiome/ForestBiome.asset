@@ -9,13 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c0af286e13228c4d8564ae979262057, type: 3}
-  m_Name: PlainsBiome
-  m_EditorClassIdentifier: Assembly-CSharp::PlainsBiome
+  m_Script: {fileID: 11500000, guid: a334e50b664b9324ba4be512b4feca15, type: 3}
+  m_Name: ForestBiome
+  m_EditorClassIdentifier: Assembly-CSharp::ForestBiomeData
   <featureWeightings>k__BackingField:
+  - <Feature_TileID>k__BackingField: 7
+    SelectionWeight: 80
+    SpawnThreshold: 0.954
   - <Feature_TileID>k__BackingField: 5
-    SelectionWeight: 50
-    SpawnThreshold: 0.992
+    SelectionWeight: 10
+    SpawnThreshold: 0.998
   - <Feature_TileID>k__BackingField: 6
-    SelectionWeight: 50
-    SpawnThreshold: 0.99
+    SelectionWeight: 10
+    SpawnThreshold: 0.996

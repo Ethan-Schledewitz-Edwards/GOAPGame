@@ -4,6 +4,7 @@ public class TerrainChunk
 {
 	public Vector2Int ChunkXZ { get; private set; }
 	public int[,,] TileData { get; private set; }
+	public int[,] BiomeMap { get; private set; }
 
 	public EChunkGenerationState ChunkGenerationState { get; private set; }
 	public enum EChunkGenerationState
@@ -15,10 +16,11 @@ public class TerrainChunk
 
 	public System.Action<Vector2Int> OnChunkUpdate;
 
-	public TerrainChunk(Vector2Int chunkXZ, int[,,] tileData)
+	public TerrainChunk(Vector2Int chunkXZ, int[,,] tileData, int[,] biomeMap)
 	{
 		ChunkXZ = chunkXZ;
 		TileData = tileData;
+		BiomeMap = biomeMap;
 
 		ChunkGenerationState = EChunkGenerationState.Empty;
 	}

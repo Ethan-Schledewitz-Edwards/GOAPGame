@@ -1,9 +1,8 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RollingHillsBiome", menuName = "Biomes/RollingHillsBiome")]
-public class RollingHillsBiomeData : TerrainBiomeData
+public class RollingHillsBiome : TerrainBiomeData
 {
 	public override int Floor => 1;
 
@@ -11,7 +10,7 @@ public class RollingHillsBiomeData : TerrainBiomeData
 
 	public override float Amplitude => 24.0f;
 
-	public override float Frequency => 0.02f;
+	public override float Frequency => 2f;
 
 	public override int Octaves => 3;
 

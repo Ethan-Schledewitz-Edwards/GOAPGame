@@ -69,9 +69,9 @@ public class WorldBuilder : MonoBehaviour
 					m_chunkBuilder.QueueDataToGenerate(new ChunkDataBuilder.GeneratingChunk
 					{
 						ChunkXZ = XZCoord,
-						OnGenerationComplete = (data) =>
+						OnGenerationComplete = (tileData, biomeMap) =>
 						{
-							TerrainChunk newChunk = new TerrainChunk(XZCoord, data);
+							TerrainChunk newChunk = new TerrainChunk(XZCoord, tileData, biomeMap);
 							newChunk.SetGenerationState(TerrainChunk.EChunkGenerationState.BaseTerrain);
 							s_WorldData.TryAdd(XZCoord, newChunk);
 							s_pendingChunks.Remove(XZCoord);

@@ -9,13 +9,15 @@ using UnityEngine;
 /// </summary>
 public class ChunkDataBuilder
 {
-	float k_maxIslandRadius = 512f;
-	float k_oceanFalloff = 400f; // The distance away from the center where the land begins to lower into the sea.
-	float k_biomeBlendingStrength = 12f;
+	int k_maxIslandRadius = 512;
+	int k_oceanFalloff = 400; // The distance away from the center where the land begins to lower into the sea.
+	int k_biomeBlendRad = 8;
 
 	[Header("Components")]
 	private WorldBuilder m_worldBuilder;
 	private BiomeIndex m_biomeIndex;
+
+	private FastNoiseLite noise = new FastNoiseLite();
 
 	[Header("System")]
 	private Queue<GeneratingChunk> m_chunkQueue = new Queue<GeneratingChunk>();
@@ -24,7 +26,7 @@ public class ChunkDataBuilder
 	public class GeneratingChunk
 	{
 		public Vector2Int ChunkXZ;
-		public System.Action<int[,,]> OnGenerationComplete;
+		public System.Action<int[,,], int[,]> OnGenerationComplete;
 	}
 
 	public ChunkDataBuilder(WorldBuilder worldBuilder, BiomeIndex biomeIndex)
@@ -40,13 +42,133 @@ public class ChunkDataBuilder
 		m_chunkQueue.Enqueue(data);
 	}
 
-	private int GetBiome(int seed, float worldX, float worldZ)
+	/// <summary>
+	/// Generates a chunks base terrain tile data.
+	/// </summary>
+	public void GenerateChunkTerrainData(int worldSeed, Vector2Int chunkXZ, int[,,] tileData, int[,] biomeMap)
+	{
+		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+
+		int mapWidth = biomeMap.GetLength(0);
+		int mapDepth = biomeMap.GetLength(1);
+
+		// Pre-Calculate biome data
+		for (int x = 0; x < mapWidth; x++)
+		{
+			for (int z = 0; z < mapDepth; z++)
+			{
+				int worldX = (x - k_biomeBlendRad) + (chunkXZ.x * ChunkSize.x);
+				int worldZ = (z - k_biomeBlendRad) + (chunkXZ.y * ChunkSize.z);
+				biomeMap[x, z] = GetBiome(worldSeed, worldX, worldZ);
+			}
+		}
+
+		// Generate terrain
+		for (int x = 0; x < ChunkSize.x; x++)
+		{
+			for (int z = 0; z < ChunkSize.z; z++)
+			{
+				int height = GetTileHeight(worldSeed, chunkXZ, biomeMap, x, z);
+				int biomeIndex = biomeMap[x + k_biomeBlendRad, z + k_biomeBlendRad];
+
+				// Set tile data
+				for (int y = 0; y < ChunkSize.y; y++)
+				{
+					int tileID = m_biomeIndex.Biomes[biomeIndex].TerrainBiome.GenerateTileData(worldSeed, height, y);
+					tileData[x, y, z] = tileID;
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Decorates a surrounded chunk with features dependant on biome
+	/// </summary>
+	public void DecorateChunk(TerrainChunk centerChunk)
+	{
+		// Only decorate chunks containing nothing but terrain
+		if (centerChunk.ChunkGenerationState != TerrainChunk.EChunkGenerationState.BaseTerrain)
+			return;
+
+		int worldSeed = WorldBuilder.s_Seed;
+		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+		Vector2Int chunkXZ = centerChunk.ChunkXZ;
+
+		for (int x = 0; x < ChunkSize.x; x++)
+		{
+			for (int z = 0; z < ChunkSize.z; z++)
+			{
+				int height = GetTileHeight(worldSeed, chunkXZ, centerChunk.BiomeMap, x, z);
+				int biomeID = centerChunk.BiomeMap[x, z];
+
+				// Set tile data
+				for (int y = height + 1; y < ChunkSize.y; y++)
+				{
+					int tileID = m_biomeIndex.Biomes[biomeID].TerrainBiome.TryGenerateFeatureTileData(worldSeed, centerChunk, height, x, y, z);
+					centerChunk.TileData[x, y, z] = tileID;
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Converts world generation parameters into blocks.
+	/// Once blocks are decided, their data is built into a chunk.
+	/// </summary>
+	private IEnumerator GenerateChunkBaseData(Vector2Int chunkXZ, System.Action<int[,,], int[,]> callback)
+	{
+		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+		int worldSeed = WorldBuilder.s_Seed;
+
+		int[,,] tileData = new int[ChunkSize.x, ChunkSize.y, ChunkSize.z];
+
+		int mapWidth = ChunkSize.x + (k_biomeBlendRad * 2);
+		int mapDepth = ChunkSize.z + (k_biomeBlendRad * 2);
+		int[,] biomeMap = new int[mapWidth, mapDepth];
+
+		Task t = Task.Run(() =>
+		{
+			GenerateChunkTerrainData(worldSeed, chunkXZ, tileData, biomeMap);
+		});
+
+		yield return new WaitUntil(() => t.IsCompleted);
+
+		if (t.Exception != null)
+		{
+			Debug.LogError(t.Exception);
+			yield break;
+		}
+
+		callback(tileData, biomeMap);
+	}
+
+	/// <summary>
+	/// Builds all of the chunks present in the queue.
+	/// </summary>
+	private IEnumerator BuildChunksFromQueue()
+	{
+		while (m_isGenerationEnabled)
+		{
+			if (m_chunkQueue.Count > 0)
+			{
+				GeneratingChunk chunk = m_chunkQueue.Dequeue();
+				yield return m_worldBuilder.StartCoroutine(GenerateChunkBaseData(chunk.ChunkXZ, chunk.OnGenerationComplete));
+			}
+
+			yield return null;
+		}
+	}
+
+	private int GetBiome(int worldSeed, float worldX, float worldZ)
 	{
 		float tempScale = m_biomeIndex.TempuratureMapScale;
 		float humidityScale = m_biomeIndex.HumidityMapScale;
 
-		float temp = Mathf.PerlinNoise((worldX + seed) * tempScale, (worldZ + seed) * tempScale);
-		float humidity = Mathf.PerlinNoise((worldX + seed + 1000) * humidityScale, (worldZ + seed + 1000) * humidityScale); // Offset by 1000 so the noise maps are not the same
+		float rawTemp = noise.GetNoise(worldX * tempScale, worldZ * tempScale);
+		float temp = (rawTemp * 0.5f) + 0.5f;
+
+		float rawHumidity = noise.GetNoise((worldX + 10000f) * humidityScale, (worldZ + 10000f) * humidityScale); // Offset humidity so it does not overlap with temp
+		float humidity = (rawHumidity * 0.5f) + 0.5f;
 
 		int bestIndex = 0;
 		float minDiff = float.MaxValue;
@@ -69,137 +191,62 @@ public class ChunkDataBuilder
 		return bestIndex;
 	}
 
-	private float GetHumidity(int seed, float worldX, float worldZ)
-	{
-		float humidityScale = m_biomeIndex.HumidityMapScale;
-
-		float humidity = Mathf.PerlinNoise((worldX + seed) * humidityScale, (worldZ + seed) * humidityScale); // Offset by 1000 so the noise maps are not the same
-		return humidity;
-	}
-
-	private float GetTemperature(int seed, float worldX, float worldZ)
-	{
-		float tempScale = m_biomeIndex.TempuratureMapScale;
-
-		float offset = 10000f;
-		float temp = Mathf.PerlinNoise((worldX + seed + offset) * tempScale, (worldZ + seed + offset) * tempScale);
-
-		return temp;
-	}
-
-	/// <summary>
-	/// Generates a chunks base terrain tile data.
-	/// </summary>
-	public void GenerateChunkTerrainData(int[,,] tileData, Vector2Int chunkXZ, int worldSeed)
+	private int GetTileHeight(int worldSeed, Vector2Int chunkXZ, int[,] biomeMap, int localX, int localZ)
 	{
 		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
-
-		for (int x = 0; x < ChunkSize.x; x++)
-		{
-			for (int z = 0; z < ChunkSize.z; z++)
-			{
-				var (height, biome) = GetTileData(worldSeed, chunkXZ, x, z);
-
-				// Set tile data
-				for (int y = 0; y < ChunkSize.y; y++)
-				{
-					int tileID = m_biomeIndex.Biomes[biome].TerrainBiome.GenerateTileData(worldSeed, height, y);
-					tileData[x, y, z] = tileID;
-				}
-			}
-		}
-	}
-
-	/// <summary>
-	/// Decorates a surrounded chunk with features dependant on biome
-	/// </summary>
-	public void DecorateChunk(TerrainChunk centerChunk)
-	{
-		// Only decorate chunks containing nothing but terrain
-		if (centerChunk.ChunkGenerationState != TerrainChunk.EChunkGenerationState.BaseTerrain) 
-			return;
-
-		int worldSeed = WorldBuilder.s_Seed;
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
-		Vector2Int chunkXZ = centerChunk.ChunkXZ;
-
-		for (int x = 0; x < ChunkSize.x; x++)
-		{
-			for (int z = 0; z < ChunkSize.z; z++)
-			{
-				var (height, biome) = GetTileData(worldSeed, chunkXZ, x, z);
-
-				// Set tile data
-				for (int y = height + 1; y < ChunkSize.y; y++)
-				{
-					int tileID = m_biomeIndex.Biomes[biome].TerrainBiome.TryGenerateFeatureTileData(worldSeed, centerChunk, height, x, y, z);
-					centerChunk.TileData[x, y, z] = tileID;
-				}
-			}
-		}
-	}
-
-	/// <summary>
-	/// Converts world generation parameters into blocks.
-	/// Once blocks are decided, their data is built into a chunk.
-	/// </summary>
-	private IEnumerator GenerateChunkBaseData(Vector2Int chunkXZ, System.Action<int[,,]> callback)
-	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
-		int worldSeed = WorldBuilder.s_Seed;
-
-		int[,,] tileData = new int[ChunkSize.x, ChunkSize.y, ChunkSize.z];
-
-		Task t = Task.Run(() =>
-		{
-			GenerateChunkTerrainData(tileData, chunkXZ, worldSeed);
-		});
-
-		yield return new WaitUntil(() => t.IsCompleted);
-
-		if (t.Exception != null)
-		{
-			Debug.LogError(t.Exception);
-			yield break;
-		}
-
-		callback(tileData);
-	}
-
-	/// <summary>
-	/// Builds all of the chunks present in the queue.
-	/// </summary>
-	private IEnumerator BuildChunksFromQueue()
-	{
-		while (m_isGenerationEnabled)
-		{
-			if (m_chunkQueue.Count > 0)
-			{
-				GeneratingChunk chunk = m_chunkQueue.Dequeue();
-				yield return m_worldBuilder.StartCoroutine(GenerateChunkBaseData(chunk.ChunkXZ, chunk.OnGenerationComplete));
-			}
-
-			yield return null;
-		}
-	}
-
-	private (int height, int biomeID) GetTileData(int worldSeed, Vector2Int chunkXZ, int localX, int localZ)
-	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
-
 		int worldX = localX + (chunkXZ.x * ChunkSize.x);
 		int worldZ = localZ + (chunkXZ.y * ChunkSize.z);
 
-		// Get biome
-		int biomeID = GetBiome(worldSeed, worldX, worldZ);
-		TerrainBiomeData biome = m_biomeIndex.Biomes[biomeID].TerrainBiome;
+		float totalHeight = 0f;
+		float totalWeight = 0f;
 
+		int centerX = localX + k_biomeBlendRad;
+		int centerZ = localZ + k_biomeBlendRad;
+
+		// Check if a tile requires blending
+		int centerBiomeID = biomeMap[centerX, centerZ];
+		bool needsBlending = false;
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (biomeMap[centerX + i * k_biomeBlendRad, centerZ + j * k_biomeBlendRad] != centerBiomeID)
+				{
+					needsBlending = true;
+					break;
+				}
+			}
+			if (needsBlending) break;
+		}
+
+		// Island fallof
 		float distFromCenter = Vector2.Distance(new Vector2(worldX, worldZ), Vector2.zero);
 		float mask = 1.0f - Mathf.Clamp01((distFromCenter - k_oceanFalloff) / (k_maxIslandRadius - k_oceanFalloff));
 
-		int height = Mathf.RoundToInt(biome.GetTerrainHeight(worldSeed, worldX, worldZ) * mask);
-		height = Mathf.Clamp(height, 0, ChunkSize.y - 1);
+		if (needsBlending)
+		{
+			// Blend height with neighbour block biomes
+			for (int x = -k_biomeBlendRad; x <= k_biomeBlendRad; x++)
+			{
+				for (int z = -k_biomeBlendRad; z <= k_biomeBlendRad; z++)
+				{
+					int neighbourBiomeID = biomeMap[centerX + x, centerZ + z];
+					TerrainBiomeData neighborBiome = m_biomeIndex.Biomes[neighbourBiomeID].TerrainBiome;
 
-		return (height, biomeID);
+					float heightValue = neighborBiome.GetTerrainHeight(worldSeed, worldX, worldZ);
+
+					// Closer neighbours matter more
+					float weight = 1f / ((x * x + z * z) + 1f);
+					totalHeight += heightValue * weight;
+					totalWeight += weight;
+				}
+			}
+
+			float finalHeight = totalHeight / totalWeight;
+
+			return Mathf.Clamp(Mathf.RoundToInt(finalHeight * mask), 0, ChunkSize.y - 1);
+		}
+		else
+			return Mathf.RoundToInt(m_biomeIndex.Biomes[centerBiomeID].TerrainBiome.GetTerrainHeight(worldSeed, worldX, worldZ) * mask);
 	}
 }

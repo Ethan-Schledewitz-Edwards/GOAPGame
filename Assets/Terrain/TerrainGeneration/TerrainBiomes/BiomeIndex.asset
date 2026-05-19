@@ -19,5 +19,8 @@ MonoBehaviour:
   - <TerrainBiome>k__BackingField: {fileID: 11400000, guid: 606b0214dd4d9c34dbdd7a44fcdb816f, type: 2}
     TargetTemperature: 0.5
     TargetHumidity: 0.7
-  <TempuratureMapScale>k__BackingField: 0.002
-  <HumidityMapScale>k__BackingField: 0.003
+  - <TerrainBiome>k__BackingField: {fileID: 11400000, guid: 23e2820851bb1a24ea837e14931f6ddb, type: 2}
+    TargetTemperature: 0.6
+    TargetHumidity: 0.7
+  <TempuratureMapScale>k__BackingField: 0.2
+  <HumidityMapScale>k__BackingField: 0.3
