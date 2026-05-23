@@ -1,0 +1,16 @@
+{
+    "name": "AI.GOAP",
+    "rootNamespace": "",
+    "references": [
+        "GUID:034986700f8ed6c499c3c658f56a9386"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

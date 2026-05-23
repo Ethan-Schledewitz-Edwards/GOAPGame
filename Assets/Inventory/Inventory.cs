@@ -113,24 +113,4 @@ public class Inventory
 
 		return false;
 	}
-
-	/// <summary>
-	/// Attempts to add an item game object into this inventory
-	/// </summary>
-	/// <param name="addedItem">The item object to be added</param>
-	/// <returns>True if the item was added</returns>
-	public bool TryAddItem(Item addedItem)
-	{
-		ItemData itemData = addedItem.ItemData;
-		int amount = addedItem.StackSize;
-
-		// Try to add the item
-		bool isItemAdded = TryAddItem(itemData, amount);
-
-		// Destroy the item game object if a slot was found
-		if (isItemAdded)
-			addedItem.SetAmount(0);
-
-		return isItemAdded;
-	}
 }

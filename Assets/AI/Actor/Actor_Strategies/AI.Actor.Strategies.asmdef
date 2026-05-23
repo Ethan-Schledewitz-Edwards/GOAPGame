@@ -1,0 +1,17 @@
+{
+    "name": "AI.Actor.Strategies",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4df6dcccc3c2ae343a4f25a63bb8d093",
+        "GUID:676265e488059e94fbd99c873246cfec"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

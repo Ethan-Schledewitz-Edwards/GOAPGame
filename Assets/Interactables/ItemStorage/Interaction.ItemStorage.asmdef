@@ -1,0 +1,19 @@
+{
+    "name": "Interactiables.ItemStorage",
+    "rootNamespace": "",
+    "references": [
+        "GUID:034986700f8ed6c499c3c658f56a9386",
+        "GUID:19a69fce138124240bfff07f6ef69a21",
+        "GUID:b48868d35af4eec479739e3be8ceee92",
+        "GUID:15cbcd698449d1447949dd751890c776"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

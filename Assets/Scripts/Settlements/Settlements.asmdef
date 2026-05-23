@@ -1,0 +1,18 @@
+{
+    "name": "Settlements",
+    "rootNamespace": "",
+    "references": [
+        "GUID:034986700f8ed6c499c3c658f56a9386",
+        "GUID:2835da38d3c9f3b4aa1f68509ddbe70e",
+        "GUID:19a69fce138124240bfff07f6ef69a21"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

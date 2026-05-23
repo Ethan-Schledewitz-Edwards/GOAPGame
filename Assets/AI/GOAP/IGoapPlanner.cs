@@ -4,31 +4,31 @@ using UnityEngine;
 
 public interface IGoapPlanner
 {
-    ActionPlan Plan(Actor actor, HashSet<ActorGoal> goals, ActorGoal lastGoal);
+    GoapPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal);
 }
 
 public class GoapPlanner : IGoapPlanner
 {
-	public ActionPlan Plan(Actor actor, HashSet<ActorGoal> goals, ActorGoal lastGoal)
+	public GoapPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal)
 	{
 		// Order goals by priority
-		List<ActorGoal> sortedGoals = goals
+		List<AgentGoal> sortedGoals = goals
 			.Where(g => g.DesiredEffects.Any(b => !b.Evaluate()))
 			.OrderByDescending(g => g == lastGoal ? g.Priority -0.01 : g.Priority)
 			.ToList();
 
 		// Try to solve the goals in order
-		foreach (ActorGoal g in sortedGoals)
+		foreach (AgentGoal g in sortedGoals)
 		{
 			PlannerNode goalNode = new PlannerNode(null, null, g.DesiredEffects, 0);
 
-			if(FindPath(goalNode, actor.Actions))
+			if(FindPath(goalNode, goapAgent.Actions))
 			{
 				// If the goal has no leaves and no actions to perform, try a different goal
 				if (goalNode.IsLeafDead)
 					continue;
 
-				Stack<ActorAction> actionStack = new Stack<ActorAction>();
+				Stack<AgentAction> actionStack = new Stack<AgentAction>();
 				while(goalNode.ChildLeaves.Count > 0)
 				{
 					var cheapestLeafNode = goalNode.ChildLeaves.OrderBy(leaf => leaf.Cost).First();
@@ -36,7 +36,7 @@ public class GoapPlanner : IGoapPlanner
 					actionStack.Push(cheapestLeafNode.Action);
 				}
 
-				return new ActionPlan(g, actionStack, goalNode.Cost);
+				return new GoapPlan(g, actionStack, goalNode.Cost);
 			}
 		}
 
@@ -44,11 +44,11 @@ public class GoapPlanner : IGoapPlanner
 		return null;
 	}
 
-	bool FindPath(PlannerNode parent, HashSet<ActorAction> actorActions)
+	bool FindPath(PlannerNode parent, HashSet<AgentAction> actorActions)
 	{
 		var orderedActions = actorActions.OrderBy(a => a.ActionCost);
 
-		foreach (ActorAction action in orderedActions)
+		foreach (AgentAction action in orderedActions)
 		{
 			var requiredEffects = parent.RequiredEffects;
 
@@ -63,11 +63,11 @@ public class GoapPlanner : IGoapPlanner
 
 			if (action.ActionEffects.Any(requiredEffects.Contains))
 			{
-				var newRequiredEffects = new HashSet<ActorBelief>(requiredEffects);
+				var newRequiredEffects = new HashSet<AgentBelief>(requiredEffects);
 				newRequiredEffects.ExceptWith(action.ActionEffects);
 				newRequiredEffects.UnionWith(action.ActionPreconditions);
 
-				var newAvailableActions = new HashSet<ActorAction>(actorActions);
+				var newAvailableActions = new HashSet<AgentAction>(actorActions);
 				newAvailableActions.Remove(action);
 
 				var newNode = new PlannerNode(parent, action, newRequiredEffects, parent.Cost + action.ActionCost);
@@ -94,18 +94,18 @@ public class GoapPlanner : IGoapPlanner
 public class PlannerNode
 {
 	public PlannerNode Parent {  get; private set; }
-	public ActorAction Action { get; private set; }
-	public HashSet<ActorBelief> RequiredEffects { get; private set; }
+	public AgentAction Action { get; private set; }
+	public HashSet<AgentBelief> RequiredEffects { get; private set; }
 	public List<PlannerNode> ChildLeaves { get; private set; }
 	public float Cost { get; private set; }
 
 	public bool IsLeafDead => ChildLeaves.Count == 0 && Action == null;
 
-	public PlannerNode (PlannerNode parent, ActorAction action, HashSet<ActorBelief> requiredEffects, float cost)
+	public PlannerNode (PlannerNode parent, AgentAction action, HashSet<AgentBelief> requiredEffects, float cost)
 	{
 		Parent = parent;
 		Action = action;
-		RequiredEffects = new HashSet<ActorBelief>(requiredEffects);
+		RequiredEffects = new HashSet<AgentBelief>(requiredEffects);
 		ChildLeaves = new List<PlannerNode>();
 		Cost = cost;
 	}
