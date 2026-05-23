@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 [RequireComponent(typeof(AudioSource), typeof(Rigidbody))]
-public class Entity : MonoBehaviour
+public class HealthComponent : MonoBehaviour
 {
 	// Components
 	protected AudioSource m_audioSource;

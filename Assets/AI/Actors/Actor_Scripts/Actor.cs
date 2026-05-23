@@ -5,36 +5,36 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(ActorEntity), typeof(NavMeshAgent), typeof(ActorInventory))]
-public class Actor : MonoBehaviour
+[RequireComponent(typeof(ActorHealthComponent), typeof(NavMeshAgent), typeof(ActorInventory))]
+public class Actor : Entity
 {
 	#region Constants
-	private const float k_nearRange = 16.0f;
-	private const float k_nearRangeSqrt = k_nearRange * k_nearRange;
-	private const float k_distantRange = 32.0f;
-	private const float k_distantRangeSqrt = k_distantRange * k_distantRange;
+	private const float c_nearRange = 16.0f;
+	private const float c_nearRangeSqrt = c_nearRange * c_nearRange;
+	private const float c_distantRange = 32.0f;
+	private const float c_distantRangeSqrt = c_distantRange * c_distantRange;
 
-	private const float k_waitingForJobLimit = 10.0f;
+	private const float c_waitingForJobLimit = 10.0f;
 
-	private const float k_followDist = 1.2f;
-	private const float k_workingDist = 0.15f;
+	private const float c_followDist = 1.2f;
+	private const float c_workingDist = 0.15f;
 
-	private const float k_followSpeed = 5.2f;
-	private const float k_workingSpeed = 4.5f;
-	private const float k_offDutySpeed = 2f;
+	private const float c_followSpeed = 5.2f;
+	private const float c_workingSpeed = 4.5f;
+	private const float c_offDutySpeed = 2f;
 
-	private const float k_rotSpeed = 24.0f;
+	private const float c_rotSpeed = 24.0f;
 	#endregion
 
 	// Components
-	public ActorEntity ActorHealth { get; private set; }
+	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	[field: SerializeField] public GameObject Mesh { get; private set; }
 	public NavMeshAgent NavAgent { get; private set; }
 
 	[Header("Parameters")]
-	[SerializeField] private LayerMask m_interactionLayers;
 	public float InteractionDist { get; private set; } = 3.0f;
+	[SerializeField] private LayerMask m_interactionLayers;
 
 	[Header("Simulation & Navigation")]
 	private EActorSimFidelity m_simFidelity;
@@ -60,9 +60,9 @@ public class Actor : MonoBehaviour
 	private ActionPlan m_actionPlan;
 	private ActorAction m_currentAction;
 
-	public Dictionary<string, ActorBelief> beliefs;
-	public HashSet<ActorAction> actions;
-	public HashSet<ActorGoal> goals;
+	public Dictionary<string, ActorBelief> Beliefs { get; private set; }
+	public HashSet<ActorAction> Actions { get; private set; }
+	public HashSet<ActorGoal> Goals { get; private set; }
 
 	// System
 	public int SettlementID { get; private set; } = 0;
@@ -71,14 +71,14 @@ public class Actor : MonoBehaviour
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
 
-	private Transform m_targetFollowTransform;// Used while in the follow state
+	private Transform m_targetFollowTransform; // Used while in the follow state
 	private ActorInteractableObjectBase m_objective;
 
 	#region Initialization
 
 	private void Awake()
 	{
-		ActorHealth = GetComponent<ActorEntity>();
+		ActorHealth = GetComponent<ActorHealthComponent>();
 		ActorInventory = GetComponent<ActorInventory>();
 		NavAgent = GetComponent<NavMeshAgent>();
 
@@ -101,8 +101,8 @@ public class Actor : MonoBehaviour
 
 	private void SetupBeliefs()
 	{
-		beliefs = new Dictionary<string, ActorBelief>();
-		BeliefFactory beliefFactory = new BeliefFactory(this, beliefs);
+		Beliefs = new Dictionary<string, ActorBelief>();
+		BeliefFactory beliefFactory = new BeliefFactory(this, Beliefs);
 
 		beliefFactory.AddBelief("None", () => false);
 		beliefFactory.AddBelief("ActorIdle", () => !NavAgent.hasPath);
@@ -119,47 +119,47 @@ public class Actor : MonoBehaviour
 
 	private void SetupActions()
 	{
-		actions = new HashSet<ActorAction>();
+		Actions = new HashSet<ActorAction>();
 
-		actions.Add(new ActorAction.ActionBuilder("Relax")
+		Actions.Add(new ActorAction.ActionBuilder("Relax")
 			.BuildWithStrategy(new IdleStrategy(5))
-			.AddEffect(beliefs["None"])
+			.AddEffect(Beliefs["None"])
 			.Build());
 
-		actions.Add(new ActorAction.ActionBuilder("Wander")
+		Actions.Add(new ActorAction.ActionBuilder("Wander")
 			.BuildWithStrategy(new WanderStrategy(this, 10))
-			.AddEffect(beliefs["ActorMoving"])
+			.AddEffect(Beliefs["ActorMoving"])
 			.Build());
 
-		actions.Add(new ActorAction.ActionBuilder("MoveToFood")
+		Actions.Add(new ActorAction.ActionBuilder("MoveToFood")
 			.BuildWithStrategy(new MoveStrategy(this, () => m_foodStorage.GetInteractionPositon()))
-			.AddEffect(beliefs["ActorAtFoodStorage"])
+			.AddEffect(Beliefs["ActorAtFoodStorage"])
 			.Build());
 
-		actions.Add(new ActorAction.ActionBuilder("Eat")
+		Actions.Add(new ActorAction.ActionBuilder("Eat")
 			.BuildWithStrategy(new EatStrategy(this, m_foodStorage, 5))
-			.AddPrecondition(beliefs["ActorAtFoodStorage"])
-			.AddEffect(beliefs["HungerHealthy"])
+			.AddPrecondition(Beliefs["ActorAtFoodStorage"])
+			.AddEffect(Beliefs["HungerHealthy"])
 			.Build());
 	}
 
 	private void SetupGoals()
 	{
-		goals = new HashSet<ActorGoal>();
+		Goals = new HashSet<ActorGoal>();
 
-		goals.Add(new ActorGoal.GoalBuilder("Rest")
+		Goals.Add(new ActorGoal.GoalBuilder("Rest")
 			.BuildWithPriority(1)
-			.BuildWithDesiredEffect(beliefs["None"])
+			.BuildWithDesiredEffect(Beliefs["None"])
 			.Build());
 
-		goals.Add(new ActorGoal.GoalBuilder("Wander")
+		Goals.Add(new ActorGoal.GoalBuilder("Wander")
 			.BuildWithPriority(1)
-			.BuildWithDesiredEffect(beliefs["ActorMoving"])
+			.BuildWithDesiredEffect(Beliefs["ActorMoving"])
 			.Build());
 
-		goals.Add(new ActorGoal.GoalBuilder("KeepFed")
+		Goals.Add(new ActorGoal.GoalBuilder("KeepFed")
 			.BuildWithPriority(2)
-			.BuildWithDesiredEffect(beliefs["HungerHealthy"])
+			.BuildWithDesiredEffect(Beliefs["HungerHealthy"])
 			.Build());
 	}
 
@@ -205,20 +205,20 @@ public class Actor : MonoBehaviour
 		switch (state)
 		{
 			case EActorState.STATE_OffDuty:
-				NavAgent.speed = k_offDutySpeed;
+				NavAgent.speed = c_offDutySpeed;
 				break;
 			case EActorState.STATE_Follow:
-				NavAgent.speed = k_followSpeed;
+				NavAgent.speed = c_followSpeed;
 				break;
 			case EActorState.STATE_SearchingForWork:
-				NavAgent.speed = k_workingSpeed;
+				NavAgent.speed = c_workingSpeed;
 				break;
 			case EActorState.STATE_Working:
-				NavAgent.speed = k_workingSpeed;
+				NavAgent.speed = c_workingSpeed;
 				break;
 		}
 
-		NavAgent.stoppingDistance = state == EActorState.STATE_Follow ? k_followDist : k_workingDist;
+		NavAgent.stoppingDistance = state == EActorState.STATE_Follow ? c_followDist : c_workingDist;
 
 		Debug.Log($"{transform.name}'s state: {m_logicExecutorState}");
 	}
@@ -240,7 +240,7 @@ public class Actor : MonoBehaviour
 		ActorInventory.Inventory.Slots[0].ClearSlot();
 
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
-		NavAgent.stoppingDistance = k_workingDist;
+		NavAgent.stoppingDistance = c_workingDist;
 
 		SetFollowTransform(null);
 		ClearActorDestination();
@@ -266,11 +266,11 @@ public class Actor : MonoBehaviour
 
 	public void UpdateActorSimFidelity(float distToPlayerSqrt)
 	{
-		if (distToPlayerSqrt < k_nearRangeSqrt)
+		if (distToPlayerSqrt < c_nearRangeSqrt)
 		{
 			TrySetActorSimFidelity(EActorSimFidelity.Realtime);
 		}
-		else if (distToPlayerSqrt < k_distantRangeSqrt)
+		else if (distToPlayerSqrt < c_distantRangeSqrt)
 		{
 			TrySetActorSimFidelity(EActorSimFidelity.Near);
 		}
@@ -377,7 +377,7 @@ public class Actor : MonoBehaviour
 
 			// Smoothly look at target
 			Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
-			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, k_rotSpeed * t);
+			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * t);
 		}
 	}
 
@@ -410,7 +410,7 @@ public class Actor : MonoBehaviour
 					if (lookDir.sqrMagnitude > 0.1f)
 					{
 						Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
-						transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, k_rotSpeed * t);
+						transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * t);
 					}
 				}
 
@@ -583,12 +583,12 @@ public class Actor : MonoBehaviour
 	{
 		float priorityLevel = m_currentGoal?.Priority ?? 0;
 
-		HashSet<ActorGoal> goalsToCheck = goals;
+		HashSet<ActorGoal> goalsToCheck = Goals;
 
 		// Only check higher priority goals if the actor already has one
 		if (m_currentGoal != null)
 		{
-			goalsToCheck = new HashSet<ActorGoal>(goals.Where(g => g.Priority > priorityLevel));
+			goalsToCheck = new HashSet<ActorGoal>(Goals.Where(g => g.Priority > priorityLevel));
 		}
 
 		ActionPlan potentialPlan = m_goapPlanner.Plan(this, goalsToCheck, m_lastGoal);
@@ -688,7 +688,7 @@ public class Actor : MonoBehaviour
 			m_timeFindingJob += t;
 
 			// Become off-duty
-			if (m_timeFindingJob >= k_waitingForJobLimit)
+			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
 				// Clear the actors state
 				ClearLogicExecutorState();
@@ -702,7 +702,7 @@ public class Actor : MonoBehaviour
 			if (aio != null)
 			{
 				// Skip dead AIOs
-				if (aio.TryGetComponent(out Entity healthComp) &&
+				if (aio.TryGetComponent(out HealthComponent healthComp) &&
 				healthComp.GetIsDead())
 					return;
 

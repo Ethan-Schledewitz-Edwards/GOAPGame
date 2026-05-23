@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 using BehaviourTrees;
 
-public class HarvestableEntity : Entity
+public class HarvestableHealthComponent : HealthComponent
 {
 	// Constants
-	private const float k_assignRange = 5.0f;
+	private const float c_assignRange = 5.0f;
 
 	[Header("Loot")]
 	[SerializeField] private LootTable m_lootTable;
@@ -99,7 +98,7 @@ public class HarvestableEntity : Entity
 	{
 		// Find nearby actors
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position,
-				k_assignRange,
+				c_assignRange,
 				m_actorLayerMask,
 				QueryTriggerInteraction.Collide);
 

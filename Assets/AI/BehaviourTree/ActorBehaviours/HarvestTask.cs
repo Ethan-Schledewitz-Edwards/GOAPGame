@@ -24,9 +24,9 @@ public class HarvestTask : BTNodeBase
 		base.Evaluate(t);
 
 		Transform target = (Transform)GetData("targetTransform");
-		Entity harvestable = null;
+		HealthComponent harvestable = null;
 
-		if(target != null && target.TryGetComponent(out Entity health))
+		if(target != null && target.TryGetComponent(out HealthComponent health))
 		{
 			harvestable = health;
 

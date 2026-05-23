@@ -22,7 +22,7 @@ public class GoapPlanner : IGoapPlanner
 		{
 			PlannerNode goalNode = new PlannerNode(null, null, g.DesiredEffects, 0);
 
-			if(FindPath(goalNode, actor.actions))
+			if(FindPath(goalNode, actor.Actions))
 			{
 				// If the goal has no leaves and no actions to perform, try a different goal
 				if (goalNode.IsLeafDead)
