@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -5,6 +6,10 @@ public class ActorInventory : InventoryComponent
 {
 	[SerializeField] private Transform m_heldItemPosition;
 	[SerializeField] private Transform m_dropItemPosition;
+
+	// Events
+	public event Action<Item> OnPickedUpItem;
+	public event Action<Item> OnDroppedItem;
 
 	// System
 	private int m_interactionLayerMask;
@@ -53,6 +58,9 @@ public class ActorInventory : InventoryComponent
 				Quaternion.identity, 
 				m_heldItemPosition
 			);
+
+			if (itemObject.TryGetComponent(out Item item))
+				OnPickedUpItem?.Invoke(item);
 		}
 	}
 
@@ -69,6 +77,7 @@ public class ActorInventory : InventoryComponent
 
 				item.ConstrainPhysics(true);
 				child.gameObject.layer = m_interactionLayerMask;
+				OnDroppedItem?.Invoke(item);
 			}
 		}
 	}
@@ -79,7 +88,7 @@ public class ActorInventory : InventoryComponent
 		foreach (Transform child in allChildren)
 		{
 			Debug.Log(child.name);
-			if (child != null && child.TryGetComponent(out Item item))
+			if (child != null)
 			{
 				Destroy(child.gameObject);
 			}

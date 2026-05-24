@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class AIPathing : MonoBehaviour
 {
 	#region Constants
@@ -28,12 +29,16 @@ public class AIPathing : MonoBehaviour
 
 	[Header("Simulation & Navigation")]
 	private EPathingSimFidelity m_simFidelity;
-	private GameObject m_target;
 	private Vector3 m_destination;
 	private Vector3[] m_pathCorners;
 	private int m_cornersPassed;// Used in non-realtime simulations
 	public NavMeshPath CurrentPath { get; private set; }
 	private Coroutine m_destinationCoroutine;
+
+	private void Awake()
+	{
+		NavAgent = GetComponent<NavMeshAgent>();
+	}
 
 	#region Simulation Fidelity
 

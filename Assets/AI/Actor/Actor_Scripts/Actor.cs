@@ -170,7 +170,9 @@ public class Actor : Entity, IInteractor
 
 	public void TickBehaviour(float t)
 	{
-		if(BehaviourTreeExecutor == null || GOAPAgentComp == null) 
+		if(AIPathing == null ||
+			BehaviourTreeExecutor == null || 
+			GOAPAgentComp == null) 
 			return;
 
 		ActorHealth?.TickStats(t);
