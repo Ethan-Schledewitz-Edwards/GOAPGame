@@ -63,6 +63,20 @@ public static class TerrainChunkUtilities
 	}
 
 	/// <summary>
+	/// Returns the chunkXZ of a given worldspace coordinate.
+	/// </summary>
+	public static Vector2Int WorldToChunkXZ(Vector3 worldPos)
+	{
+		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+
+		return new Vector2Int
+		(
+			Mathf.FloorToInt(worldPos.x / (float)chunkSize.x),
+			Mathf.FloorToInt(worldPos.z / (float)chunkSize.z)
+		);
+	}
+
+	/// <summary>
 	/// Returns the worldspace position of a given chunkXZ.
 	/// </summary>
 	public static Vector3Int ChunkXZToWorld(Vector2Int ChunkXZ)
@@ -188,10 +202,10 @@ public static class TerrainChunkUtilities
 			Vector3Int neighborWorldPos = currentWorldPos + dir;
 			Vector2Int neighbourChunkXZ = WorldToChunkXZ(neighborWorldPos);
 
-			if (WorldBuilder.s_WorldData.TryGetValue(neighbourChunkXZ, out TerrainChunk neighborChunk))
+			if (WorldBuilder.s_ActiveChunks.TryGetValue(neighbourChunkXZ, out var neighborChunk))
 			{
 				Vector3Int localNeighbourPos = WorldToTile(neighborWorldPos, neighbourChunkXZ);
-				int[,,] neighborTileData = neighborChunk.TileData;
+				int[,,] neighborTileData = neighborChunk.chunkData.TileData;
 
 				// Ensure the calculated local position is valid for the neighbor chunk before accessing it
 				if (IsPosInChunk(neighborTileData, localNeighbourPos))

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TerrainChunk
@@ -5,6 +6,7 @@ public class TerrainChunk
 	public Vector2Int ChunkXZ { get; private set; }
 	public int[,,] TileData { get; private set; }
 	public int[,] BiomeMap { get; private set; }
+	public HashSet<string> ResidentEntityIDs { get; private set; } = new HashSet<string>();
 
 	public EChunkGenerationState ChunkGenerationState { get; private set; }
 	public enum EChunkGenerationState
@@ -47,9 +49,21 @@ public class TerrainChunk
 		{
 			if (!TerrainChunkUtilities.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, intercadinalDirs[i], out Vector2Int neighbourXZ))
 			{
-				TerrainChunk terrainChunk = WorldBuilder.s_ActiveChunks[neighbourXZ].chunkData;
-				terrainChunk.UpdateChunk();
+				if (WorldBuilder.s_ActiveChunks.TryGetValue(neighbourXZ, out var neighbour))
+				{
+					neighbour.chunkData.UpdateChunk();
+				}
 			}
 		}
+	}
+
+	public void RegisterEntity(string entityID)
+	{
+		ResidentEntityIDs.Add(entityID);
+	}
+
+	public void UnregisterEntity(string entityID)
+	{
+		ResidentEntityIDs.Remove(entityID);
 	}
 }

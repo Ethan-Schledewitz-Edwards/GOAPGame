@@ -48,7 +48,7 @@ public class ActorManager : MonoBehaviour
 				Actor actor = Instantiate(m_actorPrefab, null);
 				actor.name = $"{m_actorPrefab.name}: {nextActorIndex}";
 				actor.transform.position = new Vector3(x, 5, z);
-				m_actors.Add(actor);
+				AddActor(actor);
 
 				nextActorIndex++;
 			}

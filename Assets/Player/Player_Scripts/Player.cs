@@ -14,4 +14,15 @@ public class Player : Entity
 		PlayerController = GetComponent<PlayerController>();
 		PlayerHealthComponent = GetComponent<PlayerHealthComponent>();
 	}
+
+	protected override void UpdatePosition()
+	{
+		Vector3 prevPos = m_position;
+		base.UpdatePosition();
+
+		if (prevPos != m_position)
+		{
+			ActorManager.Instance.SetPlayerPosition(m_position);
+		}
+	}
 }

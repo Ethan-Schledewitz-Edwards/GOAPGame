@@ -52,6 +52,8 @@ public class ActorStrategyBuilder : MonoBehaviour
 		beliefFactory.AddBelief("HungerHealthy", () => m_actor.ActorHealth.Hunger > 60.0f);
 		beliefFactory.AddBelief("RestLow", () => m_actor.ActorHealth.Rest < 20.0f);
 		beliefFactory.AddBelief("RestHealthy", () => m_actor.ActorHealth.Rest > 50.0f);
+		beliefFactory.AddBelief("HapinessLow", () => m_actor.ActorHealth.Hapiness < 40.0f);
+		beliefFactory.AddBelief("HapinessHealthy", () => m_actor.ActorHealth.Hapiness > 60.0f);
 
 		m_goapAgent.UpdateBeliefs(beliefs);
 	}

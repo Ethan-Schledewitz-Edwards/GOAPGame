@@ -22,9 +22,10 @@ public class WorldBuilder : MonoBehaviour
 	[Header("Seed")]
 	public readonly static int s_Seed  = 64;
 
-	[Header("System")]
-	public static readonly Dictionary<Vector2Int, TerrainChunk> s_WorldData = new Dictionary<Vector2Int, TerrainChunk>();
+	public static System.Func<Vector2Int, TerrainChunk> OnRequestChunkData;
+	public static System.Action<TerrainChunk> OnReleaseChunkData;
 
+	[Header("System")]
 	public static Dictionary<Vector2Int, (TerrainChunk chunkData, GameObject gameObject)> s_ActiveChunks = 
 		new Dictionary<Vector2Int, (TerrainChunk chunkData, GameObject gameObject)>();
 
@@ -45,38 +46,46 @@ public class WorldBuilder : MonoBehaviour
 		m_chunkMesher = new ChunkMeshBuilder(this, m_tileIndex);
 	}
 
+
 	/// <summary>
 	/// Places a chunk GameObject in world space based on the data assigned to the chunks coordinates.
 	/// </summary>
 	public IEnumerator CreateActiveChunk(Vector2Int chunkXZ)
 	{
-		if (s_ActiveChunks.ContainsKey(chunkXZ) || s_requestedChunks.Contains(chunkXZ))
+		if ((s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null) || s_requestedChunks.Contains(chunkXZ))
 			yield break;
 
 		s_requestedChunks.Add(chunkXZ);
 
-		// Request a chunk and its eight neighbours data
+		// Ensure the target and all 8 neighbors have their base data ready
 		for (int x = -1; x <= 1; x++)
 		{
 			for (int z = -1; z <= 1; z++)
 			{
 				Vector2Int XZCoord = chunkXZ + new Vector2Int(x, z);
 
-				if (!s_WorldData.ContainsKey(XZCoord) && !s_pendingChunks.Contains(XZCoord))
+				if (!s_ActiveChunks.ContainsKey(XZCoord) && !s_pendingChunks.Contains(XZCoord))
 				{
-					s_pendingChunks.Add(XZCoord);
-
-					m_chunkBuilder.QueueDataToGenerate(new ChunkDataBuilder.GeneratingChunk
+					TerrainChunk savedChunk = OnRequestChunkData?.Invoke(XZCoord);
+					if (savedChunk != null)
 					{
-						ChunkXZ = XZCoord,
-						OnGenerationComplete = (tileData, biomeMap) =>
+						s_ActiveChunks.TryAdd(XZCoord, (savedChunk, null));
+					}
+					else
+					{
+						s_pendingChunks.Add(XZCoord);
+						m_chunkBuilder.QueueDataToGenerate(new ChunkDataBuilder.GeneratingChunk
 						{
-							TerrainChunk newChunk = new TerrainChunk(XZCoord, tileData, biomeMap);
-							newChunk.SetGenerationState(TerrainChunk.EChunkGenerationState.BaseTerrain);
-							s_WorldData.TryAdd(XZCoord, newChunk);
-							s_pendingChunks.Remove(XZCoord);
-						}
-					});
+							ChunkXZ = XZCoord,
+							OnGenerationComplete = (tileData, biomeMap) =>
+							{
+								TerrainChunk newChunk = new TerrainChunk(XZCoord, tileData, biomeMap);
+								newChunk.SetGenerationState(TerrainChunk.EChunkGenerationState.BaseTerrain);
+								s_ActiveChunks.TryAdd(XZCoord, (newChunk, null));
+								s_pendingChunks.Remove(XZCoord);
+							}
+						});
+					}
 				}
 			}
 		}
@@ -85,7 +94,7 @@ public class WorldBuilder : MonoBehaviour
 		yield return new WaitUntil(() => CheckNeighborhoodReady(chunkXZ));
 
 		// Decorate the target once all eight neihbours have terrain data
-		TerrainChunk targetChunk = s_WorldData[chunkXZ];
+		TerrainChunk targetChunk = s_ActiveChunks[chunkXZ].chunkData;
 		if (targetChunk.ChunkGenerationState == TerrainChunk.EChunkGenerationState.BaseTerrain)
 		{
 			m_chunkBuilder.DecorateChunk(targetChunk);
@@ -104,8 +113,12 @@ public class WorldBuilder : MonoBehaviour
 		chunkObject.transform.position = new Vector3(chunkXZ.x * s_ChunkSize.x, 0f, chunkXZ.y * s_ChunkSize.z);
 		chunkObject.isStatic = true;
 
-		// If the data generated again, destroy the duplicate
-		if (!s_ActiveChunks.TryAdd(chunkXZ, (targetChunk, chunkObject)))
+		// Replace the empty object with the new mesh
+		if (s_ActiveChunks.ContainsKey(chunkXZ))
+		{
+			s_ActiveChunks[chunkXZ] = (targetChunk, chunkObject);
+		}
+		else // If the data generated again, destroy the duplicate
 		{
 			Destroy(chunkObject);
 			s_requestedChunks.Remove(chunkXZ);
@@ -113,6 +126,16 @@ public class WorldBuilder : MonoBehaviour
 		}
 
 		targetChunk.OnChunkUpdate += OnChunkUpdate; // Subscribe to chunk updates
+
+		// Tell neighbouring chunks about a the new active chunk
+		for (int i = 0; i < 4; i++)
+		{
+			Vector2Int neighbourToUpdate = chunkXZ + TerrainChunkUtilities.GetCardinalDirections2D[i];
+			if (s_ActiveChunks.ContainsKey(neighbourToUpdate))
+			{
+				s_ActiveChunks[neighbourToUpdate].chunkData.UpdateChunk();
+			}
+		}
 
 		// Convert the chunk's data into a mesh
 		Mesh chunkMesh = null;
@@ -131,7 +154,7 @@ public class WorldBuilder : MonoBehaviour
 		yield return new WaitUntil(() => chunkMesh != null);
 
 		// Apply the generated mesh to the gameobject if the player has not unloaded the chunk
-		if(s_ActiveChunks.ContainsKey(chunkXZ))
+		if(s_ActiveChunks.ContainsKey(chunkXZ) && s_ActiveChunks[chunkXZ].gameObject != null)
 		{
 			// Visualize chunk with final mesh
 			MeshRenderer meshRenderer = chunkObject.GetComponent<MeshRenderer>();
@@ -142,16 +165,6 @@ public class WorldBuilder : MonoBehaviour
 
 			MeshCollider meshCollider = chunkObject.GetComponent<MeshCollider>();
 			meshCollider.sharedMesh = meshFilter.mesh;
-
-			// Tell neighbouring chunks about a the new active chunk
-			for (int i = 0; i < 4; i++)
-			{
-				Vector2Int neighbourToUpdate = chunkXZ + TerrainChunkUtilities.GetCardinalDirections2D[i];
-				if (s_WorldData.ContainsKey(chunkXZ + TerrainChunkUtilities.GetCardinalDirections2D[i]))
-				{
-					s_WorldData[neighbourToUpdate].UpdateChunk();
-				}
-			}
 			
 			// Spawn all feature tiles
 			for (int x = 0; x < s_ChunkSize.x; x++)
@@ -199,28 +212,32 @@ public class WorldBuilder : MonoBehaviour
 
 	public void RemoveActiveChunk(Vector2Int chunkXZ)
 	{
-		var value = s_ActiveChunks[chunkXZ];
+		if (!s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple))
+			return;
 
 		if (s_requestedChunks.Contains(chunkXZ))
 			s_requestedChunks.Remove(chunkXZ);
 
-		value.chunkData.OnChunkUpdate -= OnChunkUpdate;
-		Destroy(value.gameObject);
+		// Unhook updates & destroy physical representations
+		activeChunkTuple.chunkData.OnChunkUpdate -= OnChunkUpdate;
+		Destroy(activeChunkTuple.gameObject);
 
-		if(s_ActiveChunks.ContainsKey(chunkXZ))
-			s_ActiveChunks.Remove(chunkXZ);
+		if (activeChunkTuple.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
+			OnReleaseChunkData?.Invoke(activeChunkTuple.chunkData);
+
+		s_ActiveChunks.Remove(chunkXZ);
 	}
 
 	public void OnChunkUpdate(Vector2Int chunkXZ)
 	{
-		if (s_ActiveChunks.ContainsKey(chunkXZ) && !s_requestedChunks.Contains(chunkXZ))
+		if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null && !s_requestedChunks.Contains(chunkXZ))
 		{
-			GameObject chunk = s_ActiveChunks[chunkXZ].gameObject;
+			GameObject chunk = activeChunk.gameObject;
 			MeshFilter meshFilter = chunk.GetComponent<MeshFilter>();
 			MeshCollider meshCollider = chunk.GetComponent<MeshCollider>();
 			MeshRenderer meshRenderer = chunk.GetComponent<MeshRenderer>();
 
-			StartCoroutine(m_chunkMesher.GenerateMesh(chunkXZ, s_WorldData[chunkXZ].TileData, (mesh, materials) =>
+			StartCoroutine(m_chunkMesher.GenerateMesh(chunkXZ, activeChunk.chunkData.TileData, (mesh, materials) =>
 			{
 				meshFilter.mesh = mesh;
 				meshCollider.sharedMesh = mesh;
@@ -236,10 +253,10 @@ public class WorldBuilder : MonoBehaviour
 			for (int z = -1; z <= 1; z++)
 			{
 				Vector2Int coord = centerXZ + new Vector2Int(x, z);
-				if (!s_WorldData.ContainsKey(coord)) 
+				if (!s_ActiveChunks.TryGetValue(coord, out var neighbor))
 					return false;
 
-				if (s_WorldData[coord].ChunkGenerationState == TerrainChunk.EChunkGenerationState.Empty)
+				if (neighbor.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Empty)
 					return false;
 			}
 		}
