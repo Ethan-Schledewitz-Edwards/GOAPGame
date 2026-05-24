@@ -15,7 +15,7 @@ public class Settlement : MonoBehaviour
 		m_actorHouses.AddRange(m_HousingBuildingsTemp);
 	}
 
-	public Transform TryFindResourceStorage(int itemID)
+	public ItemStorageAIO TryFindResourceStorage(int itemID)
 	{
 		// Find a free item storage building for the correct item ID
 		foreach (ItemStorageAIO i in m_itemStorageBuildings)
@@ -26,7 +26,7 @@ public class Settlement : MonoBehaviour
 				if (i.ItemType.ItemID != itemID)
 					continue;
 
-				return i.transform;
+				return i;
 			}
 		}
 

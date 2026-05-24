@@ -32,10 +32,10 @@ public class Item : ActorInteractableObjectBase
 
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			new FindStorageTask(actorComp, ItemData.ItemID),
-			new MoveToTargetDataTask(actorComp, actorTransform),
-			new CheckForTargetRangeTask(actorComp, actorTransform),
-			new DepositTask(actorComp, actorTransform)
+			//new FindStorageTask(behaviourTreeExecutor, ItemData.ItemID),
+			//new MoveToTargetDataTask(behaviourTreeExecutor, actorTransform),
+			//new CheckForTargetRangeTask(behaviourTreeExecutor, actorTransform),
+			//new DepositTask(behaviourTreeExecutor, actorTransform)
 		});
 
 		tree.SetTree(root);

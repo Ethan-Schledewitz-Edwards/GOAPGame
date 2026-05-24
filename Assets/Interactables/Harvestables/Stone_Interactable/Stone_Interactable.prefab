@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 3693947387263482992}
   - component: {fileID: 6091415495895850696}
   - component: {fileID: 256306946655672370}
-  - component: {fileID: 1841711966073031218}
   - component: {fileID: 701279514476395803}
+  - component: {fileID: 7278653846236663314}
   - component: {fileID: 7778713525522197618}
   - component: {fileID: 184311212865065229}
   - component: {fileID: 5277061767280288441}
@@ -117,28 +117,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1841711966073031218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 860123527070760326}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35261e2297c89874f968abad8444feab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HarvestableEntity
-  <MaxHealth>k__BackingField: 5
-  <IsDestroyedOnDeath>k__BackingField: 0
-  m_damageParticles: {fileID: 0}
-  m_destructionParticles: {fileID: 0}
-  m_damageSounds: []
-  m_dieSounds: []
-  m_lootTable: {fileID: 11400000, guid: d3d47778be417234b80fe8b0f96bba10, type: 2}
-  m_minTableRollsOnDeath: 2
-  m_maxtableRollsOnDeath: 4
-  m_isDamagable: 1
 --- !u!114 &701279514476395803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,6 +132,28 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 0}
   m_formationRadius: 2
+--- !u!114 &7278653846236663314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860123527070760326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad2432f77cf337d4da0a8233e0e6f46c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HarvestableHealthComponent
+  <MaxHealth>k__BackingField: 10
+  <IsDestroyedOnDeath>k__BackingField: 1
+  m_damageParticles: {fileID: 0}
+  m_destructionParticles: {fileID: 0}
+  m_damageSounds: []
+  m_dieSounds: []
+  m_itemTable: {fileID: 11400000, guid: d3d47778be417234b80fe8b0f96bba10, type: 2}
+  m_minTableRollsOnDeath: 2
+  m_maxtableRollsOnDeath: 4
+  m_isDamagable: 1
 --- !u!208 &7778713525522197618
 NavMeshObstacle:
   m_ObjectHideFlags: 0

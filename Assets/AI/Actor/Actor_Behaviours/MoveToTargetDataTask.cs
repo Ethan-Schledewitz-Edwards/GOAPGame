@@ -36,7 +36,7 @@ public class MoveToTargetDataTask : BTNodeBase
 				// Set destination if not within range
 				if (!isInRange)
 				{
-					actor.SetActorDestination(targetPos);
+					actor.AIPathing.SetDestination(targetPos);
 				}
 				else
 				{

@@ -13,7 +13,7 @@ public class ItemTable : ScriptableObject
 
 	[SerializeField] private LootEntry[] lootEntries;
 
-	public Item GetRandomLoot(bool cannotReturnNull)
+	public GameObject GetRandomLoot(bool cannotReturnNull)
 	{
 		int maxAttempts = 10;
 		int attempts = 0;

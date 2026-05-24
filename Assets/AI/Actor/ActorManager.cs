@@ -19,7 +19,6 @@ public class ActorManager : MonoBehaviour
 	private const int k_initialActors = 12;// For debug
 	#endregion
 
-	[SerializeField] private GameManager m_gameManager;
 	[SerializeField] private Actor m_actorPrefab;
 
 	private List<Actor> m_actors = new List<Actor>(k_initialActors);
@@ -36,8 +35,6 @@ public class ActorManager : MonoBehaviour
 
 	private void Start()
 	{
-		SaveManager.Instance.OnGameLoaded += OnGameLoaded;
-
 		int sqrt = Mathf.CeilToInt(Mathf.Sqrt(k_initialActors));
 
 		int nextActorIndex = 0;
@@ -58,10 +55,18 @@ public class ActorManager : MonoBehaviour
 		}
 	}
 
+	private void OnEnable()
+	{
+		SaveManager.Instance.OnGameLoaded += OnGameLoaded;
+	}
+
+	private void OnDisable()
+	{
+		SaveManager.Instance.OnGameLoaded -= OnGameLoaded;
+	}
+
 	private void Update()
 	{
-		m_playerPosition = m_gameManager.PlayerObject.transform.position;
-
 		TickActors(Time.deltaTime);
 	}
 
@@ -120,7 +125,7 @@ public class ActorManager : MonoBehaviour
 				if (actor != null)
 				{
 					float distToPlayerSqrt = (m_playerPosition - actor.transform.position).sqrMagnitude;
-					actor.UpdateActorSimFidelity(distToPlayerSqrt);
+					actor.AIPathing.UpdateActorSimFidelity(distToPlayerSqrt);
 
 					actor.TickBehaviour(k_tpsThreshold);
 				}
@@ -128,5 +133,10 @@ public class ActorManager : MonoBehaviour
 
 			m_accumulatedTime -= k_tpsThreshold;
 		}
+	}
+
+	public void SetPlayerPosition(Vector3 playerPosition)
+	{
+		m_playerPosition = playerPosition;
 	}
 }

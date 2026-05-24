@@ -170,8 +170,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorHouseAIO
   m_actorsNeeded: 1
+  m_interactOffset: {fileID: 3401569928963846146}
   m_formationRadius: 2
-  <EntrancePosition>k__BackingField: {fileID: 3401569928963846146}
 --- !u!208 &560292491455914045
 NavMeshObstacle:
   m_ObjectHideFlags: 0

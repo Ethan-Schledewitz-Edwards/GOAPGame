@@ -231,7 +231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3156336087541255401
 Transform:
   m_ObjectHideFlags: 0
@@ -275,12 +275,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3551762128199530985}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 970c94341ce995940a7bbc32ce90155f, type: 3}
+  m_Script: {fileID: 11500000, guid: 30482a10ee194154c8e1b38bec243952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorSensor
-  m_detectionRadius: 5
+  m_detectionRadius: 3
   m_timerInterval: 1
 --- !u!1 &4495396585808001830
 GameObject:
@@ -299,7 +299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8441753089272682315
 Transform:
   m_ObjectHideFlags: 0
@@ -343,12 +343,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495396585808001830}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 970c94341ce995940a7bbc32ce90155f, type: 3}
+  m_Script: {fileID: 11500000, guid: 30482a10ee194154c8e1b38bec243952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorSensor
-  m_detectionRadius: 5
+  m_detectionRadius: 3
   m_timerInterval: 1
 --- !u!1 &5597617739765684482
 GameObject:
@@ -454,15 +454,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2239435831216304708}
-  - component: {fileID: 3572725124524958921}
   - component: {fileID: 1045364547215510978}
+  - component: {fileID: 3333077740091554456}
   - component: {fileID: 4082727915801813119}
+  - component: {fileID: 5168363217589708835}
+  - component: {fileID: 986855869424821196}
+  - component: {fileID: 3683834564411842312}
   - component: {fileID: 43451550283000952}
   - component: {fileID: 8676248710036981082}
   - component: {fileID: 8496172798646482293}
   - component: {fileID: 5922516635318417160}
   m_Layer: 6
-  m_Name: Actor_Test
+  m_Name: Actor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -487,29 +490,6 @@ Transform:
   - {fileID: 5089042427203968515}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3572725124524958921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6662613928143633748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 368d9ccb6b561e8469d14afbea6fa587, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorStats
-  <MaxHealth>k__BackingField: 100
-  <IsDestroyedOnDeath>k__BackingField: 1
-  m_damageParticles: {fileID: 0}
-  m_destructionParticles: {fileID: 0}
-  m_damageSounds: []
-  m_dieSounds: []
-  <m_MaxHunger>k__BackingField: 100
-  <Hunger>k__BackingField: 100
-  <m_MaxRest>k__BackingField: 100
-  <Rest>k__BackingField: 100
-  <m_MaxHapiness>k__BackingField: 100
 --- !u!114 &1045364547215510978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,10 +502,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 852fecdcf5542e845b8511513c69e706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Actor
-  <Mesh>k__BackingField: {fileID: 132224909216287539}
   m_interactionLayers:
     serializedVersion: 2
     m_Bits: 128
+  <BehaviourTreeExecutor>k__BackingField: {fileID: 0}
+  <GOAPAgentComp>k__BackingField: {fileID: 0}
+--- !u!114 &3333077740091554456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0de4ddc84aba71948b5f67f88b62e569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AI.Actors::ActorHealthComponent
+  <MaxHealth>k__BackingField: 100
+  <IsDestroyedOnDeath>k__BackingField: 1
+  m_damageParticles: {fileID: 0}
+  m_destructionParticles: {fileID: 0}
+  m_damageSounds: []
+  m_dieSounds: []
+  <MaxHunger>k__BackingField: 100
+  <Hunger>k__BackingField: 100
+  <MaxRest>k__BackingField: 100
+  <Rest>k__BackingField: 100
+  <MaxHapiness>k__BackingField: 100
+  <Hapiness>k__BackingField: 100
 --- !u!114 &4082727915801813119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -541,6 +546,43 @@ MonoBehaviour:
   m_inventorySize: 1
   m_heldItemPosition: {fileID: 8522574657822210537}
   m_dropItemPosition: {fileID: 5089042427203968515}
+--- !u!114 &5168363217589708835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eba4674b51ea6044b2c333d09f5bf83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AI.Pathing::AIPathing
+  <Mesh>k__BackingField: {fileID: 132224909216287539}
+--- !u!114 &986855869424821196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4473a4d7bc24304cb3114f8785ff7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AI.BehaviourTrees::BehaviourTreeExecutor
+--- !u!114 &3683834564411842312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29aa28031bb69324a894a68367bff975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AI.GOAP::GOAPAgent
 --- !u!82 &43451550283000952
 AudioSource:
   m_ObjectHideFlags: 0

@@ -4,19 +4,24 @@ using UnityEngine.AI;
 public class WanderStrategy : IActionStrategy
 {
 	public bool IsStrategyPossible => !IsStrategyComplete;
-	public bool IsStrategyComplete => !m_actor.IsCalculatingPath() && m_actor.PathDistRemaining() <= .25f;
+	public bool IsStrategyComplete => CheckPath();
 
-	readonly Actor m_actor;
+	readonly GOAPAgent m_agent;
+	readonly AIPathing m_aiPathing;
 	readonly float m_wanderRadius;
 
-	public WanderStrategy(Actor actor, float wanderRadius)
+	public WanderStrategy(GOAPAgent agent, float wanderRadius)
 	{
-		m_actor = actor;
+		m_agent = agent;
+		m_aiPathing = m_agent.transform.GetComponent<AIPathing>();
 		m_wanderRadius = wanderRadius;
 	}
 
 	void IActionStrategy.StartStrategy()
 	{
+		if (m_aiPathing == null)
+			return;
+
 		// Try to find a random location nearby
 		for (int i = 0; i < 8; i++)
 		{
@@ -24,11 +29,20 @@ public class WanderStrategy : IActionStrategy
 			randomDir.y = 0;
 
 			NavMeshHit hit;
-			if(NavMesh.SamplePosition(m_actor.transform.position + randomDir, out hit, m_wanderRadius, 1))
+			if (NavMesh.SamplePosition(m_agent.transform.position + randomDir, out hit, m_wanderRadius, 1))
 			{
-				m_actor.SetActorDestination(hit.position);
+				m_aiPathing.SetDestination(hit.position);
 				return;
 			}
 		}
+	}
+
+	private bool CheckPath()
+	{
+		if (m_aiPathing == null)
+			return false;
+
+		bool isPathComplete = !m_aiPathing.IsCalculatingPath() && m_aiPathing.PathDistRemaining() <= .25f;
+		return isPathComplete;
 	}
 }

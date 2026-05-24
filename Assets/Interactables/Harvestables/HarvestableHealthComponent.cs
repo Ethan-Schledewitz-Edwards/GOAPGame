@@ -73,17 +73,20 @@ public class HarvestableHealthComponent : HealthComponent
 	{
 		if (m_itemTable != null)
 		{
-			Item lootToDrop = m_itemTable.GetRandomLoot(isLootGuaranteed);
+			GameObject lootToDrop = m_itemTable.GetRandomLoot(isLootGuaranteed);
 
 			// Spawn the generated loot
 			if (lootToDrop != null)
 			{
-				Item spawnedItem = Instantiate(lootToDrop, null);
+				GameObject spawnedItem = Instantiate(lootToDrop, null);
 				spawnedItem.transform.position = pos;
 
-				// Track the dropped item
-				m_droppedItems.Add(spawnedItem);
-				spawnedItem.OnPickup += RemoveTrackedItem;
+				if(spawnedItem.TryGetComponent(out Item item))
+				{
+					// Track the dropped item
+					m_droppedItems.Add(item);
+					item.OnPickup += RemoveTrackedItem;
+				}
 			}
 		}
 	}

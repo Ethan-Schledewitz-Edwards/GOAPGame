@@ -4,12 +4,12 @@ using UnityEngine;
 
 public interface IGoapPlanner
 {
-    GoapPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal);
+    AgentPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal);
 }
 
 public class GoapPlanner : IGoapPlanner
 {
-	public GoapPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal)
+	public AgentPlan Plan(GOAPAgent goapAgent, HashSet<AgentGoal> goals, AgentGoal lastGoal)
 	{
 		// Order goals by priority
 		List<AgentGoal> sortedGoals = goals
@@ -36,7 +36,7 @@ public class GoapPlanner : IGoapPlanner
 					actionStack.Push(cheapestLeafNode.Action);
 				}
 
-				return new GoapPlan(g, actionStack, goalNode.Cost);
+				return new AgentPlan(g, actionStack, goalNode.Cost);
 			}
 		}
 

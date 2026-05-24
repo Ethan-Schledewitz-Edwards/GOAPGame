@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EatStrategy : IActionStrategy
 {
-	private Actor m_actor;
+	readonly GOAPAgent m_agent;
+	readonly Actor m_actor;
 	private ItemStorageAIO m_storage;
 	private float m_duration;
 	private float m_timer;
@@ -10,9 +11,10 @@ public class EatStrategy : IActionStrategy
 	public bool IsStrategyPossible => m_storage != null && m_storage.InventoryComponent.Inventory.Slots[0].SlotsItem;
 	public bool IsStrategyComplete { get; private set; }
 
-	public EatStrategy(Actor actor, ItemStorageAIO itemStorageAIO, float duration)
+	public EatStrategy(GOAPAgent agent, ItemStorageAIO itemStorageAIO, float duration)
 	{
-		m_actor = actor;
+		m_agent = agent;
+		m_actor = m_agent.transform.GetComponent<Actor>();
 		m_storage = itemStorageAIO;
 		m_duration = duration;
 	}

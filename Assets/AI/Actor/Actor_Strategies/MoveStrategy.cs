@@ -4,25 +4,36 @@ using UnityEngine.AI;
 
 public class MoveStrategy : IActionStrategy
 {
-	readonly Actor m_actor;
+	readonly GOAPAgent m_agent;
+	readonly AIPathing m_aiPathing;
 	readonly Func<Vector3> m_destination;
 
 	public bool IsStrategyPossible => !IsStrategyComplete;
-	public bool IsStrategyComplete => !m_actor.IsCalculatingPath() && m_actor.PathDistRemaining() <= .25f;
+	public bool IsStrategyComplete => CheckPath();
 
-	public MoveStrategy(Actor actor, Func<Vector3> destination)
+	public MoveStrategy(GOAPAgent agent, Func<Vector3> destination)
 	{
-		m_actor = actor;
+		m_agent = agent;
+		m_aiPathing = m_agent.transform.GetComponent<AIPathing>();
 		m_destination = destination;
 	}
 
 	void IActionStrategy.StartStrategy()
 	{
-		m_actor.SetActorDestination(m_destination());
+		m_agent.NotifyNewDestination(m_destination());
 	}
 
 	void IActionStrategy.StopStrategy() 
 	{
-		m_actor.ClearActorDestination();
+		m_agent.NotifyClearDestination();
+	}
+
+	private bool CheckPath()
+	{
+		if (m_aiPathing == null)
+			return false;
+
+		bool isPathComplete = !m_aiPathing.IsCalculatingPath() && m_aiPathing.PathDistRemaining() <= .25f;
+		return isPathComplete;
 	}
 }

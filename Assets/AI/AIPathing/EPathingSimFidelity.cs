@@ -1,4 +1,4 @@
-public enum EActorSimFidelity 
+public enum EPathingSimFidelity 
 {
     Realtime,
 	Near,

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
+
 
 public class GOAPAgent : MonoBehaviour
 {
@@ -11,18 +10,27 @@ public class GOAPAgent : MonoBehaviour
 
 	private AgentGoal m_lastGoal;
 	private AgentGoal m_currentGoal;
-	private GoapPlan m_actionPlan;
+	private AgentPlan m_actionPlan;
 	private AgentAction m_currentAction;
 
 	public Dictionary<string, AgentBelief> Beliefs { get; private set; } = new Dictionary<string, AgentBelief>();
 	public HashSet<AgentAction> Actions { get; private set; } = new HashSet<AgentAction>();
 	public HashSet<AgentGoal> Goals { get; private set; } = new HashSet<AgentGoal>();
 
+	// Events
+	public event Action<Vector3> OnFoundDestination;
+	public event Action OnClearDestination;
+
+	private void Awake()
+	{
+		m_goapPlanner = new GoapPlanner();
+	}
+
 	public void UpdateBeliefs(Dictionary<string, AgentBelief> newBeliefs)
 	{
-		if (newBeliefs == null) return;
+		if (newBeliefs == null) 
+			return;
 
-		// Loop through and either add the new key or overwrite the existing one
 		foreach (var kvp in newBeliefs)
 		{
 			Beliefs[kvp.Key] = kvp.Value;
@@ -33,8 +41,6 @@ public class GOAPAgent : MonoBehaviour
 	{
 		if (newActions == null) return;
 
-		// UnionWith adds all elements from the incoming collection to the HashSet, 
-		// ignoring any that already exist.
 		Actions.UnionWith(newActions);
 	}
 
@@ -42,15 +48,7 @@ public class GOAPAgent : MonoBehaviour
 	{
 		if (newGoals == null) return;
 
-		// Same as actions—this merges the new goals into the existing HashSet.
 		Goals.UnionWith(newGoals);
-	}
-
-	public event Action OnClearDestination;
-
-	private void Awake()
-	{
-		m_goapPlanner = new GoapPlanner();
 	}
 
 	private void HandleTargetChanged()
@@ -86,7 +84,7 @@ public class GOAPAgent : MonoBehaviour
 			if (m_actionPlan != null && m_actionPlan.Actions.Count > 0)
 			{
 				// Reset path
-				OnClearDestination?.Invoke();
+				NotifyClearDestination();
 
 				m_currentGoal = m_actionPlan.GoalToAcheive;
 				Debug.Log($"Goal: {m_currentGoal.GoalName} with {m_actionPlan.Actions.Count} actions in plan");
@@ -142,10 +140,20 @@ public class GOAPAgent : MonoBehaviour
 			goalsToCheck = new HashSet<AgentGoal>(Goals.Where(g => g.Priority > priorityLevel));
 		}
 
-		GoapPlan potentialPlan = m_goapPlanner.Plan(this, goalsToCheck, m_lastGoal);
+		AgentPlan potentialPlan = m_goapPlanner.Plan(this, goalsToCheck, m_lastGoal);
 		if (potentialPlan != null)
 		{
 			m_actionPlan = potentialPlan;
 		}
+	}
+
+	public void NotifyNewDestination(Vector3 destination)
+	{
+		OnFoundDestination?.Invoke(destination);
+	}
+
+	public void NotifyClearDestination()
+	{
+		OnClearDestination?.Invoke();
 	}
 }
