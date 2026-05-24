@@ -33,6 +33,24 @@ public class Settlement : MonoBehaviour
 		return null;
 	}
 
+	public ActorInteractableObjectBase FindClosestBuildingOfType(int itemID)
+	{
+		// Find a free item storage building for the correct item ID
+		foreach (ItemStorageAIO i in m_itemStorageBuildings)
+		{
+			if (i != null)
+			{
+				// Skip containers of the wrong type
+				if (i.ItemType.ItemID != itemID)
+					continue;
+
+				return i;
+			}
+		}
+
+		return null;
+	}
+
 	public ActorHouseAIO TryFindActorHouse(int houseID)
 	{
 		for (int i = 0; i < m_actorHouses.Count; ++i)

@@ -42,7 +42,6 @@ public class Actor : Entity, IInteractor
 
 	// System
 	public int SettlementID { get; private set; } = 0;
-
 	private int m_houseID = 0;
 
 	private EActorState m_logicExecutorState = default;
@@ -65,7 +64,6 @@ public class Actor : Entity, IInteractor
 	private void Start()
 	{
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
-		UpdateActorKnowledge();
 	}
 
 	private void OnEnable()
@@ -84,86 +82,6 @@ public class Actor : Entity, IInteractor
 			GOAPAgentComp.OnFoundDestination -= AIPathing.SetDestination;
 			GOAPAgentComp.OnClearDestination -= AIPathing.ClearDestination;
 		}
-	}
-
-	private void UpdateActorKnowledge()
-	{
-		if (GOAPAgentComp != null)
-		{
-			UpdateBeliefs();
-			UpdateActions();
-			UpdateGoals();
-		}
-	}
-
-	private void UpdateBeliefs()
-	{
-		Dictionary<string, AgentBelief> beliefs = new Dictionary<string, AgentBelief>();
-		BeliefFactory beliefFactory = new BeliefFactory(GOAPAgentComp, beliefs);
-
-		beliefFactory.AddBelief("None", () => false);
-		beliefFactory.AddBelief("ActorIdle", () => !AIPathing.NavAgent.hasPath);
-		beliefFactory.AddBelief("ActorMoving", () => AIPathing.NavAgent.hasPath);
-
-		beliefFactory.AddBelief("HungerLow", () => ActorHealth.Hunger < 45.0f);
-		beliefFactory.AddBelief("HungerHealthy", () => ActorHealth.Hunger > 60.0f);
-		beliefFactory.AddBelief("RestLow", () => ActorHealth.Rest < 20.0f);
-		beliefFactory.AddBelief("RestHealthy", () => ActorHealth.Rest > 50.0f);
-
-		//beliefFactory.AddPosBelief("ActorAtFoodStorage", 3f, m_foodStorage.GetInteractionPositon());
-		//beliefFactory.AddPosBelief("ActortAtHome", 3f, m_home.transform.position);
-
-		GOAPAgentComp.UpdateBeliefs(beliefs);
-	}
-
-	private void UpdateActions()
-	{
-		HashSet<AgentAction> actions = new HashSet<AgentAction>();
-
-		//actions.Add(new AgentAction.ActionBuilder("Relax")
-		//	.BuildWithStrategy(new IdleStrategy(5))
-		//	.AddEffect(GOAPAgentComp.Beliefs["None"])
-		//	.Build());
-
-		//actions.Add(new AgentAction.ActionBuilder("Wander")
-		//	.BuildWithStrategy(new WanderStrategy(this, 10))
-		//	.AddEffect(GOAPAgentComp.Beliefs["ActorMoving"])
-		//	.Build());
-
-		//actions.Add(new AgentAction.ActionBuilder("MoveToFood")
-		//	.BuildWithStrategy(new MoveStrategy(this, () => m_foodStorage.GetInteractionPositon()))
-		//	.AddEffect(GOAPAgentComp.Beliefs["ActorAtFoodStorage"])
-		//	.Build());
-
-		//actions.Add(new AgentAction.ActionBuilder("Eat")
-		//	.BuildWithStrategy(new EatStrategy(this, m_foodStorage, 5))
-		//	.AddPrecondition(GOAPAgentComp.Beliefs["ActorAtFoodStorage"])
-		//	.AddEffect(GOAPAgentComp.Beliefs["HungerHealthy"])
-		//	.Build());
-
-		GOAPAgentComp.UpdateActions(actions);
-	}
-
-	private void UpdateGoals()
-	{
-		HashSet<AgentGoal> goals = new HashSet<AgentGoal>();
-
-		goals.Add(new AgentGoal.GoalBuilder("Rest")
-			.BuildWithPriority(1)
-			.BuildWithDesiredEffect(GOAPAgentComp.Beliefs["None"])
-			.Build());
-
-		goals.Add(new AgentGoal.GoalBuilder("Wander")
-			.BuildWithPriority(1)
-			.BuildWithDesiredEffect(GOAPAgentComp.Beliefs["ActorMoving"])
-			.Build());
-
-		goals.Add(new AgentGoal.GoalBuilder("KeepFed")
-			.BuildWithPriority(2)
-			.BuildWithDesiredEffect(GOAPAgentComp.Beliefs["HungerHealthy"])
-			.Build());
-
-		GOAPAgentComp.UpdateGoals(goals);
 	}
 
 	#endregion
@@ -195,7 +113,8 @@ public class Actor : Entity, IInteractor
 				break;
 		}
 
-		AIPathing.HandleRotation(m_objective.transform.position, t);
+		if (m_objective != null)
+			AIPathing.HandleRotation(m_objective.transform.position, t);
 	}
 
 	#region Actor Logic Executor
