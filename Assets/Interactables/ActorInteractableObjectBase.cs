@@ -9,9 +9,8 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 	public abstract bool UseFormationRadius { get; }
 	[SerializeField] private float m_formationRadius = 2;
 
-
 	// System
-	private int m_actorsPresent = 0;
+	private int m_actorsPresent = 0; // How many actors are currently using the interactable
 
     public virtual void Interact(IInteractor interactor)
     {

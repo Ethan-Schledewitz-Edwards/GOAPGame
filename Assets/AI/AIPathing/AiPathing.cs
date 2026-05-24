@@ -11,15 +11,6 @@ public class AIPathing : MonoBehaviour
 	private const float c_distantRange = 32.0f;
 	private const float c_distantRangeSqrt = c_distantRange * c_distantRange;
 
-	private const float c_waitingForJobLimit = 10.0f;
-
-	private const float c_followDist = 1.2f;
-	private const float c_workingDist = 0.15f;
-
-	private const float c_followSpeed = 5.2f;
-	private const float c_workingSpeed = 4.5f;
-	private const float c_offDutySpeed = 2f;
-
 	private const float c_rotSpeed = 24.0f;
 	#endregion
 

@@ -1,24 +1,52 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Settlement : MonoBehaviour
 {
-	[SerializeField] ItemStorageAIO[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
 	[SerializeField] ActorHouseAIO[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
+	[SerializeField] ItemStorageAIO[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
 
-	private List<ItemStorageAIO> m_itemStorageBuildings = new List<ItemStorageAIO>();
-	private List<ActorHouseAIO> m_actorHouses = new List<ActorHouseAIO>();
+	public List<ActorHouseAIO> ActorHouses { get; private set; } = new List<ActorHouseAIO>();
+	public List<ItemStorageAIO> ItemStorageBuildings { get; private set; } = new List<ItemStorageAIO>();
+
+	public event Action<Vector3> OnSettlementBoundsUpdated;
 
 	private void Awake()
 	{
-		m_itemStorageBuildings.AddRange(m_StorageBuildingsTemp);
-		m_actorHouses.AddRange(m_HousingBuildingsTemp);
+		ActorHouses.AddRange(m_HousingBuildingsTemp);
+		ItemStorageBuildings.AddRange(m_StorageBuildingsTemp);
+	}
+
+	public void AddActorHouse(ActorHouseAIO actorHouse)
+	{
+		ActorHouses.Add(actorHouse);
+		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+	}
+
+	public void AddStorageBuilding(ItemStorageAIO storageBuilding)
+	{
+		ItemStorageBuildings.Add(storageBuilding);
+		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+	}
+
+	public ActorHouseAIO TryAssignActorHouse()
+	{
+		foreach (ActorHouseAIO i in ActorHouses)
+		{
+			if (i.ActorsAssigned >= i.MaxCapacity)
+				continue;
+
+			return (i);
+		}
+
+		return null;
 	}
 
 	public ItemStorageAIO TryFindResourceStorage(int itemID)
 	{
 		// Find a free item storage building for the correct item ID
-		foreach (ItemStorageAIO i in m_itemStorageBuildings)
+		foreach (ItemStorageAIO i in ItemStorageBuildings)
 		{
 			if (i != null)
 			{
@@ -33,34 +61,9 @@ public class Settlement : MonoBehaviour
 		return null;
 	}
 
-	public ActorInteractableObjectBase FindClosestBuildingOfType(int itemID)
+	public Vector3 GetSettlementCenter()
 	{
-		// Find a free item storage building for the correct item ID
-		foreach (ItemStorageAIO i in m_itemStorageBuildings)
-		{
-			if (i != null)
-			{
-				// Skip containers of the wrong type
-				if (i.ItemType.ItemID != itemID)
-					continue;
-
-				return i;
-			}
-		}
-
-		return null;
-	}
-
-	public ActorHouseAIO TryFindActorHouse(int houseID)
-	{
-		for (int i = 0; i < m_actorHouses.Count; ++i)
-		{
-			if (i == houseID)
-			{
-				return m_actorHouses[i];
-			}
-		}
-
-		return null;
+		Vector3 center = Vector3.zero;
+		return center;
 	}
 }

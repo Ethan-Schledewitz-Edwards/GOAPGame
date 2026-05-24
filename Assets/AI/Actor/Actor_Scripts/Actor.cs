@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,21 +10,12 @@ using UnityEngine.AI;
 public class Actor : Entity, IInteractor
 {
 	#region Constants
-	private const float c_nearRange = 16.0f;
-	private const float c_nearRangeSqrt = c_nearRange * c_nearRange;
-	private const float c_distantRange = 32.0f;
-	private const float c_distantRangeSqrt = c_distantRange * c_distantRange;
-
 	private const float c_waitingForJobLimit = 10.0f;
-
 	private const float c_followDist = 1.2f;
 	private const float c_workingDist = 0.15f;
-
 	private const float c_followSpeed = 5.2f;
 	private const float c_workingSpeed = 4.5f;
 	private const float c_offDutySpeed = 2f;
-
-	private const float c_rotSpeed = 24.0f;
 	#endregion
 
 	// Components
@@ -37,12 +29,16 @@ public class Actor : Entity, IInteractor
 	[SerializeField] private LayerMask m_interactionLayers;
 
 	// Executors
-	[field: SerializeField] public BehaviourTreeExecutor BehaviourTreeExecutor { get; private set; } = null;
+	[field: SerializeField] public BehaviourTreeExecutor BehaviourTreeExecutor { get; private set; }
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
+
+	// Events
+	public event Action<int> OnSettlementUpdated;
+	public event Action<int> OnHouseUpdated;
 
 	// System
 	public int SettlementID { get; private set; } = 0;
-	private int m_houseID = 0;
+	public int HouseID { get; private set; } = 0;
 
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
@@ -116,6 +112,23 @@ public class Actor : Entity, IInteractor
 		if (m_objective != null)
 			AIPathing.HandleRotation(m_objective.transform.position, t);
 	}
+
+	#region Actor Knowledge
+
+	public void SetSettlementID(int id)
+	{
+		SettlementID = id;
+		OnSettlementUpdated?.Invoke(SettlementID);
+	}
+
+	public void SetHouseID(int id)
+	{
+		HouseID = id;
+		SettlementManager.Instance.WorldSettlements[SettlementID].TryAssignActorHouse();
+		OnHouseUpdated?.Invoke(id);
+	}
+
+	#endregion
 
 	#region Actor Logic Executor
 
