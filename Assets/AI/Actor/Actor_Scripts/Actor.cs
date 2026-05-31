@@ -19,6 +19,9 @@ public class Actor : Entity, IInteractor
 	#endregion
 
 	// Components
+	public Transform Transform => gameObject.transform;
+	public BehaviourTreeExecutor BehaviourTreeExecutor => m_behaviourTreeExecutor;
+	private BehaviourTreeExecutor m_behaviourTreeExecutor;
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public InventoryComponent InventoryComponent => ActorInventory;
@@ -29,7 +32,6 @@ public class Actor : Entity, IInteractor
 	[SerializeField] private LayerMask m_interactionLayers;
 
 	// Executors
-	[field: SerializeField] public BehaviourTreeExecutor BehaviourTreeExecutor { get; private set; }
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
 
 	// Events
@@ -39,6 +41,7 @@ public class Actor : Entity, IInteractor
 	// System
 	public int SettlementID { get; private set; } = 0;
 	public int HouseID { get; private set; } = 0;
+
 
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
@@ -53,7 +56,7 @@ public class Actor : Entity, IInteractor
 		ActorHealth = GetComponent<ActorHealthComponent>();
 		ActorInventory = GetComponent<ActorInventory>();
 		AIPathing = GetComponent<AIPathing>();
-		BehaviourTreeExecutor = GetComponent<BehaviourTreeExecutor>();
+		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutor>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
 	}
 
@@ -78,6 +81,11 @@ public class Actor : Entity, IInteractor
 			GOAPAgentComp.OnFoundDestination -= AIPathing.SetDestination;
 			GOAPAgentComp.OnClearDestination -= AIPathing.ClearDestination;
 		}
+	}
+
+	private void DefineBehaviourTrees()
+	{
+
 	}
 
 	#endregion
@@ -105,7 +113,7 @@ public class Actor : Entity, IInteractor
 
 			case EActorState.STATE_Working:
 				if (BehaviourTreeExecutor != null)
-					BehaviourTreeExecutor.BehaviourTree.TickBehaviourTree(t);
+					BehaviourTreeExecutor.TickBehaviour(t);
 				break;
 		}
 
@@ -124,7 +132,6 @@ public class Actor : Entity, IInteractor
 	public void SetHouseID(int id)
 	{
 		HouseID = id;
-		SettlementManager.Instance.WorldSettlements[SettlementID].TryAssignActorHouse();
 		OnHouseUpdated?.Invoke(id);
 	}
 
@@ -173,7 +180,7 @@ public class Actor : Entity, IInteractor
 		}
 
 		// Reset behaviour
-		BehaviourTreeExecutor?.SetBehaviourTree(null);
+		BehaviourTreeExecutor?.SetCurrentBehaviourTree(null);
 		m_timeFindingJob = 0;
 
 		// Try to drop item
@@ -227,9 +234,6 @@ public class Actor : Entity, IInteractor
 
 		m_objective.Interact(this);
 		AIPathing.SetDestination(m_objective.GetInteractionPositon());
-
-		// Set this actors behaviour tree
-		BehaviourTreeExecutor?.SetBehaviourTree(m_objective.GetBehaviourTree(transform, BehaviourTreeExecutor));
 
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}

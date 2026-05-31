@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface IInteractor
 {
-    InventoryComponent InventoryComponent { get; }
+	Transform Transform { get; }
+	InventoryComponent InventoryComponent { get; }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Item : ActorInteractableObjectBase
 {
-	public override bool UseFormationRadius { get => false; }
+	private static BehaviourTree m_ItemBT;
 
 	// Components
 	private Rigidbody m_rb;
@@ -18,29 +18,26 @@ public class Item : ActorInteractableObjectBase
 	// Events
 	public Action<Item> OnPickup;
 
+	// System
+	public override bool UseFormationRadius { get => false; }
+
 	public void Awake()
 	{
 		m_rb = GetComponent<Rigidbody>();
-	}
 
-	public override BehaviourTree GetBehaviourTree(Transform actorTransform, BehaviourTreeExecutor behaviourTreeExecutor)
-	{
-		if(ItemData == null)
-			return null;
-
-		BehaviourTree tree = new BehaviourTree();
-
-		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+		if (m_ItemBT == null)
 		{
-			//new FindStorageTask(behaviourTreeExecutor, ItemData.ItemID),
-			//new MoveToTargetDataTask(behaviourTreeExecutor, actorTransform),
-			//new CheckForTargetRangeTask(behaviourTreeExecutor, actorTransform),
-			//new DepositTask(behaviourTreeExecutor, actorTransform)
-		});
-
-		tree.SetTree(root);
-
-		return tree;
+			BehaviourTree tree = new BehaviourTree();
+			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+			{
+				new FindStorageTask(),
+				new MoveToTargetDataTask(),
+				new CheckForTargetRangeTask(),
+				new DepositTask()
+			});
+			tree.SetTree(root);
+			m_ItemBT = tree;
+		}
 	}
 
 	public override void Interact(IInteractor interactor)
@@ -53,8 +50,17 @@ public class Item : ActorInteractableObjectBase
 		// Add to actor inventory
 		bool isItemAdded = interactor.InventoryComponent.Inventory.TryAddItem(ItemData, StackSize);
 
-		if(isItemAdded)
+		if (isItemAdded)
+		{
+			BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+			if (executor != null)
+			{
+				executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
+			}
+
+			//HeldItemID
 			OnPickup?.Invoke(this);
+		}
 	}
 
 	public override void StopInteract()
@@ -76,4 +82,6 @@ public class Item : ActorInteractableObjectBase
 	{
 		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}
+
+	public override BehaviourTree GetBehaviourTree() => m_ItemBT;
 }

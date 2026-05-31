@@ -17,8 +17,6 @@ namespace BehaviourTrees
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
 
-		private Dictionary<string, object> m_dataCtx = new Dictionary<string, object>();
-
 		private bool m_hasBeganEvaluation = false;
 
         #region Consturctors
@@ -40,7 +38,7 @@ namespace BehaviourTrees
 		}
         #endregion
 
-        public virtual EBTNodeState Evaluate(float t)
+        public virtual EBTNodeState Evaluate(AIContext aIContext, float t)
 		{
 			// Dirty flag to allow logic for a notes first evaluation
 			if (!m_hasBeganEvaluation)
@@ -69,72 +67,5 @@ namespace BehaviourTrees
 		{
 			return m_parentNode;
 		}
-
-        #region Node Data
-
-		/// <summary>
-		/// Recursively travels up the tree until the root, then adds data to the roots context dictionary.
-		/// </summary>
-		/// <param name="key">The name of the data</param>
-		/// <param name="value">The data value</param>
-        public void SetData(string key, object value)
-		{
-			// Find the root of the tree to set the data
-			var current = this;
-			while (current.m_parentNode != null)
-			{
-				current = current.m_parentNode;
-			}
-
-			current.m_dataCtx[key] = value;
-		}
-
-		/// <summary>
-		/// Recursively travels up the tree until the root, then checks the root for data.
-		/// </summary>
-		/// <param name="key">The name of the data</param>
-		/// <param name="value">The data value</param>
-		public object GetData(string key)
-		{
-			BTNodeBase current = this;
-
-			while (current != null)
-			{
-				// Check if the current node has the data
-				if (current.m_dataCtx.TryGetValue(key, out object value))
-				{
-					return value;
-				}
-
-				// If not, move up to the parent and loop again
-				current = current.m_parentNode;
-			}
-
-			// The root was hit but no data could be found
-			return null;
-		}
-
-		public bool ClearData(string key)
-		{
-			if (m_dataCtx.ContainsKey(key))
-			{
-				m_dataCtx.Remove(key);
-				return true;
-			}
-
-			BTNodeBase node = this;
-			while (node != null)
-			{
-				bool cleared = node.ClearData(key);
-
-				if (cleared)
-					return true;
-
-				node = node.m_parentNode;
-			}
-
-			return false;
-		}
-        #endregion
     }
 }

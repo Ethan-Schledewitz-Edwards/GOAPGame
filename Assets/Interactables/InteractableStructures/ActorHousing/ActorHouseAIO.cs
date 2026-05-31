@@ -1,28 +1,34 @@
 using BehaviourTrees;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ActorHouseAIO : ActorInteractableObjectBase, IInteractableStructure<ActorHouseAIO>
 {
-	public override bool UseFormationRadius { get => false; }
+	private static BehaviourTree m_cachedHousingBT;
 
 	[SerializeField] private float m_maxCapacity = 4f;
 	[SerializeField] private float m_actorsAssigned = 0f;
 	public float MaxCapacity => m_maxCapacity;
 	public float ActorsAssigned => m_actorsAssigned;
+	public override bool UseFormationRadius { get => false; }
 
 	private void Awake()
 	{
-		
+		if (m_cachedHousingBT == null)
+		{
+			BehaviourTree tree = new BehaviourTree();
+			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+			{
+				
+			});
+			tree.SetTree(root);
+			m_cachedHousingBT = tree;
+		}
 	}
 
 	public override void UpdateSpeed(int extra)
 	{
 
-	}
-
-	public override BehaviourTree GetBehaviourTree(Transform actorTransform, BehaviourTreeExecutor behaviourTreeExecutor)
-	{
-		return null;
 	}
 
 	public void AssignActor(out ActorHouseAIO structure)
@@ -34,4 +40,6 @@ public class ActorHouseAIO : ActorInteractableObjectBase, IInteractableStructure
 
 		structure = this;
 	}
+
+	public override BehaviourTree GetBehaviourTree() => m_cachedHousingBT;
 }

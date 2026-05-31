@@ -122,12 +122,14 @@ public class HarvestableHealthComponent : HealthComponent
 					if (assignedActors.Contains(actor))
 						continue;
 
-					BehaviourTree actorBT = actor.BehaviourTreeExecutor.BehaviourTree;
+					BehaviourTree actorBT = actor.BehaviourTreeExecutor.CurrentBehaviourTree;
+					AIContext aiContext = actor.BehaviourTreeExecutor.AIContext;
+					Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
 
 					// Ensure the actor was responsible for destroying this harvestable
 					if (actorBT != null &&
-						actorBT.TryGetData("targetTransform", out object targetTransform) &&
-						transform == (Transform)targetTransform)
+						agentsTarget != null &&
+						transform == agentsTarget)
 					{
 						actor.SetTask(item);
 						assignedActors.Add(actor);

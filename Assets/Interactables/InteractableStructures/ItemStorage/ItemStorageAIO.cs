@@ -1,9 +1,12 @@
 using BehaviourTrees;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(InventoryComponent))]
 public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructure<ItemStorageAIO>
 {
+	private static BehaviourTree m_ItemStorageBT;
+
 	public override bool UseFormationRadius { get => false; }
 
 	[SerializeField] private float m_maxCapacity = 4f;
@@ -18,10 +21,30 @@ public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructur
 	// Components
 	public InventoryComponent InventoryComponent { get; private set; }
 
-
 	private void Awake()
 	{
 		InventoryComponent = GetComponent<InventoryComponent>();
+
+		if(m_ItemStorageBT == null)
+		{
+			BehaviourTree tree = new BehaviourTree();
+			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+			{
+				
+			});
+			tree.SetTree(root);
+			m_ItemStorageBT = tree;
+		}
+	}
+
+	public override void Interact(IInteractor interactor)
+	{
+		base.Interact(interactor);
+
+		if(interactor.Transform.TryGetComponent(out BehaviourTreeExecutor behaviourTreeExecutor))
+		{
+			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
+		}
 	}
 
 	public override void UpdateSpeed(int extra)
@@ -29,13 +52,10 @@ public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructur
 		
 	}
 
-	public override BehaviourTree GetBehaviourTree(Transform actorTransform, BehaviourTreeExecutor behaviourTreeExecutor)
-	{
-		return null;
-	}
-
 	public void AssignActor(out ItemStorageAIO structure)
 	{
 		structure = null; // Storage should not have anyone assigned to it
 	}
+
+	public override BehaviourTree GetBehaviourTree() => m_ItemStorageBT;
 }

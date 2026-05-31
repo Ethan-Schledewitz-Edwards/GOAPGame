@@ -15,16 +15,24 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
     public virtual void Interact(IInteractor interactor)
     {
         AssignActor();
-    }
+
+		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+		if (executor != null)
+		{
+			executor.SetCurrentBehaviourTree(GetBehaviourTree());
+		}
+	}
 
     public virtual void StopInteract()
     {
         ReleaseActor();
     }
 
-    #region Actor handling
+	public abstract BehaviourTree GetBehaviourTree();
 
-    private void AssignActor()
+	#region Actor Handling
+
+	private void AssignActor()
 	{
 		m_actorsPresent++;
 
@@ -49,8 +57,6 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 	/// Notifies an interactable that it has extra actors to increase the speed of its function
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
-
-	public abstract BehaviourTree GetBehaviourTree(Transform actorTransform, BehaviourTreeExecutor behaviourTreeExecutor);
 
 	#region Utility
 

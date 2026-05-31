@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Settlement : MonoBehaviour
 {
-	[SerializeField] ActorHouseAIO[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
-	[SerializeField] ItemStorageAIO[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
+	[SerializeField] ActorInteractableObjectBase[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
+	[SerializeField] ActorInteractableObjectBase[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
 
-	public List<ActorHouseAIO> ActorHouses { get; private set; } = new List<ActorHouseAIO>();
-	public List<ItemStorageAIO> ItemStorageBuildings { get; private set; } = new List<ItemStorageAIO>();
+	public List<ActorInteractableObjectBase> ActorHouses { get; private set; } = new List<ActorInteractableObjectBase>();
+	public List<ActorInteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<ActorInteractableObjectBase>();
 
 	public event Action<Vector3> OnSettlementBoundsUpdated;
 
@@ -18,45 +18,32 @@ public class Settlement : MonoBehaviour
 		ItemStorageBuildings.AddRange(m_StorageBuildingsTemp);
 	}
 
-	public void AddActorHouse(ActorHouseAIO actorHouse)
+	public void AddActorHouse(ActorInteractableObjectBase actorHouse)
 	{
 		ActorHouses.Add(actorHouse);
 		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
 	}
 
-	public void AddStorageBuilding(ItemStorageAIO storageBuilding)
+	public void AddStorageBuilding(ActorInteractableObjectBase storageBuilding)
 	{
 		ItemStorageBuildings.Add(storageBuilding);
 		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
 	}
 
-	public ActorHouseAIO TryAssignActorHouse()
+	public ActorInteractableObjectBase TryFindResourceStorage()
 	{
-		foreach (ActorHouseAIO i in ActorHouses)
-		{
-			if (i.ActorsAssigned >= i.MaxCapacity)
-				continue;
+		//// Find a free item storage building for the correct item ID
+		//foreach (ActorInteractableObjectBase i in ItemStorageBuildings)
+		//{
+		//	if (i != null && i.TryGetComponent(out InventoryComponent inventoryComponent))
+		//	{
+		//		// Skip containers of the wrong type
+		//		if (i.ItemType.ItemID != itemID)
+		//			continue;
 
-			return (i);
-		}
-
-		return null;
-	}
-
-	public ItemStorageAIO TryFindResourceStorage(int itemID)
-	{
-		// Find a free item storage building for the correct item ID
-		foreach (ItemStorageAIO i in ItemStorageBuildings)
-		{
-			if (i != null)
-			{
-				// Skip containers of the wrong type
-				if (i.ItemType.ItemID != itemID)
-					continue;
-
-				return i;
-			}
-		}
+		//		return i;
+		//	}
+		//}
 
 		return null;
 	}
