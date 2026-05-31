@@ -15,6 +15,8 @@ public class WorldBuilder : MonoBehaviour
 	public static TileIndex TileIndex => Instance.m_tileIndex;
 	[SerializeField] private TileIndex m_tileIndex;
 
+	[SerializeField] private Material m_terrainMaterial;
+
 	[Header("Components")]
 	private ChunkDataBuilder m_chunkBuilder;
 	private ChunkMeshBuilder m_chunkMesher;
@@ -139,16 +141,14 @@ public class WorldBuilder : MonoBehaviour
 
 		// Convert the chunk's data into a mesh
 		Mesh chunkMesh = null;
-		Material[] chunkMaterials = null;
 		m_chunkMesher.QueueDataToGenerate(new ChunkMeshBuilder.GeneratingChunkMesh
 		{
 			ChunkXZ = targetChunk.ChunkXZ,
 			TileData = targetChunk.TileData,
 
-			OnComplete = (mesh, materials) =>
+			OnComplete = (mesh) =>
 			{
 				chunkMesh = mesh;
-				chunkMaterials = materials; // Store the materials
 			}
 		});
 		yield return new WaitUntil(() => chunkMesh != null);
@@ -158,7 +158,7 @@ public class WorldBuilder : MonoBehaviour
 		{
 			// Visualize chunk with final mesh
 			MeshRenderer meshRenderer = chunkObject.GetComponent<MeshRenderer>();
-			meshRenderer.materials = chunkMaterials;
+			meshRenderer.material = m_terrainMaterial;
 
 			MeshFilter meshFilter = chunkObject.GetComponent<MeshFilter>();
 			meshFilter.mesh = chunkMesh;
@@ -237,11 +237,20 @@ public class WorldBuilder : MonoBehaviour
 			MeshCollider meshCollider = chunk.GetComponent<MeshCollider>();
 			MeshRenderer meshRenderer = chunk.GetComponent<MeshRenderer>();
 
-			StartCoroutine(m_chunkMesher.GenerateMesh(chunkXZ, activeChunk.chunkData.TileData, (mesh, materials) =>
+			StartCoroutine(m_chunkMesher.GenerateMesh(chunkXZ, activeChunk.chunkData.TileData, (mesh) =>
 			{
-				meshFilter.mesh = mesh;
-				meshCollider.sharedMesh = mesh;
-				meshRenderer.sharedMaterials = materials;
+				if (mesh.vertexCount > 0)
+				{
+					meshFilter.sharedMesh = mesh;
+					meshCollider.sharedMesh = mesh;
+					meshRenderer.material = m_terrainMaterial;
+				}
+				else
+				{
+					// It's an empty chunk
+					meshFilter.sharedMesh = null;
+					meshCollider.sharedMesh = null;
+				}
 			}));
 		}
 	}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(HarvestableHealthComponent))]
-public class HarvestableAIO : ActorInteractableObjectBase
+public class HarvestableIO : InteractableObjectBase
 {
 	private static BehaviourTree m_HarvestBT;
 

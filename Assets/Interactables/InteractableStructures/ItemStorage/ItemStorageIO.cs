@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(InventoryComponent))]
-public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructure<ItemStorageAIO>
+public class ItemStorageIO : InteractableObjectBase, IInteractableStructure<ItemStorageIO>
 {
 	private static BehaviourTree m_ItemStorageBT;
 
@@ -42,7 +42,7 @@ public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructur
 		
 	}
 
-	public void AssignActor(out ItemStorageAIO structure)
+	public void AssignActor(out ItemStorageIO structure)
 	{
 		structure = null; // Storage should not have anyone assigned to it
 	}

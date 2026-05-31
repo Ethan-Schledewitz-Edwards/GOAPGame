@@ -14,7 +14,7 @@ public class FindStorageTask : BTNodeBase
 		int settlementID = aiContext.GetData<int>("SettlementID");
 		int heldItemID = aiContext.GetData<int>("HeldItemID");
 
-		ActorInteractableObjectBase closestStorage = null;
+		InteractableObjectBase closestStorage = null;
 		if (settlementManager.WorldSettlements.Count > 0)
 		{
 			// Find closest friendly settlement

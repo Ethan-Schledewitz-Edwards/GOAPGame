@@ -4,14 +4,14 @@ public class EatStrategy : IActionStrategy
 {
 	readonly GOAPAgent m_agent;
 	readonly Actor m_actor;
-	private ItemStorageAIO m_storage;
+	private ItemStorageIO m_storage;
 	private float m_duration;
 	private float m_timer;
 
 	public bool IsStrategyPossible => m_storage != null && m_storage.InventoryComponent.Inventory.Slots[0].SlotsItem;
 	public bool IsStrategyComplete { get; private set; }
 
-	public EatStrategy(GOAPAgent agent, ItemStorageAIO itemStorageAIO, float duration)
+	public EatStrategy(GOAPAgent agent, ItemStorageIO itemStorageAIO, float duration)
 	{
 		m_agent = agent;
 		m_actor = m_agent.transform.GetComponent<Actor>();

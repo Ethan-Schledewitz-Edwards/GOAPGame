@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e825080ca9603459767e54bfbe4ef8, type: 3}
   m_Name: Bedrock_VoxelTileData
   m_EditorClassIdentifier: 
-  TileMaterial: {fileID: 2100000, guid: ceb474ea4a980314e955532d644f8c4a, type: 2}
+  TileVertexColour:
+    serializedVersion: 2
+    rgba: 4281019179

@@ -169,7 +169,7 @@ public class Actor : Entity, IInteractor
 		// Reset task
 		if (m_targetTransform != null)
 		{
-			if(m_targetTransform.TryGetComponent(out ActorInteractableObjectBase actorInteractableObjectBase))
+			if(m_targetTransform.TryGetComponent(out InteractableObjectBase actorInteractableObjectBase))
 				actorInteractableObjectBase.StopInteract();
 
 			m_targetTransform = null;
@@ -217,7 +217,7 @@ public class Actor : Entity, IInteractor
 
 	#region BT Tasks
 
-	public void SetTask(ActorInteractableObjectBase newObjective)
+	public void SetTask(InteractableObjectBase newObjective)
 	{
 		if (m_targetTransform == newObjective.transform)
 			return;
@@ -233,9 +233,9 @@ public class Actor : Entity, IInteractor
 	}
 
 	// Searches for a task within a radius
-	private ActorInteractableObjectBase SearchForTask()
+	private InteractableObjectBase SearchForTask()
 	{
-		ActorInteractableObjectBase closestTask = null;
+		InteractableObjectBase closestTask = null;
 
 		// Try to select actors
 		Vector3 pos = transform.position;
@@ -248,7 +248,7 @@ public class Actor : Entity, IInteractor
 				continue;
 
 			// Try to get interactable component
-			if (i.TryGetComponent(out ActorInteractableObjectBase aio))
+			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
 				float dist = Vector3.Distance(transform.position, aio.transform.position);
 				if (dist < closestDist)
@@ -282,7 +282,7 @@ public class Actor : Entity, IInteractor
 			}
 
 			// Search for the nearest task
-			ActorInteractableObjectBase aio = SearchForTask();
+			InteractableObjectBase aio = SearchForTask();
 
 			// Set objective to the closest task.
 			if (aio != null)
@@ -297,7 +297,7 @@ public class Actor : Entity, IInteractor
 		}
 	}
 
-	public void InteractorInteracted(ActorInteractableObjectBase actorInteractableObjectBase)
+	public void InteractorInteracted(InteractableObjectBase actorInteractableObjectBase)
 	{
 		SetTask(actorInteractableObjectBase);
 	}

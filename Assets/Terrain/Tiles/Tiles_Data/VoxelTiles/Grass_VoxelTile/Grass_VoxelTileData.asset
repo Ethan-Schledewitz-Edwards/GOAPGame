@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e825080ca9603459767e54bfbe4ef8, type: 3}
   m_Name: Grass_VoxelTileData
   m_EditorClassIdentifier: 
-  TileMaterial: {fileID: 2100000, guid: b17ab82dc98eac74cb14a85884672584, type: 2}
+  TileVertexColour:
+    serializedVersion: 2
+    rgba: 4280453922

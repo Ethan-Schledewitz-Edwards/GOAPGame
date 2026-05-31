@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using UnityEngine;
 
-public abstract class ActorInteractableObjectBase : MonoBehaviour
+public abstract class InteractableObjectBase : MonoBehaviour
 {
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;

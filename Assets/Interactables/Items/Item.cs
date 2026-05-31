@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Item : ActorInteractableObjectBase
+public class Item : InteractableObjectBase
 {
 	private static BehaviourTree m_ItemBT;
 

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Settlement : MonoBehaviour
 {
-	[SerializeField] ActorInteractableObjectBase[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
-	[SerializeField] ActorInteractableObjectBase[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
+	[SerializeField] InteractableObjectBase[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
+	[SerializeField] InteractableObjectBase[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
 
-	public List<ActorInteractableObjectBase> ActorHouses { get; private set; } = new List<ActorInteractableObjectBase>();
-	public List<ActorInteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<ActorInteractableObjectBase>();
+	public List<InteractableObjectBase> ActorHouses { get; private set; } = new List<InteractableObjectBase>();
+	public List<InteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<InteractableObjectBase>();
 
 	public event Action<Vector3> OnSettlementBoundsUpdated;
 
@@ -18,19 +18,19 @@ public class Settlement : MonoBehaviour
 		ItemStorageBuildings.AddRange(m_StorageBuildingsTemp);
 	}
 
-	public void AddActorHouse(ActorInteractableObjectBase actorHouse)
+	public void AddActorHouse(InteractableObjectBase actorHouse)
 	{
 		ActorHouses.Add(actorHouse);
 		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
 	}
 
-	public void AddStorageBuilding(ActorInteractableObjectBase storageBuilding)
+	public void AddStorageBuilding(InteractableObjectBase storageBuilding)
 	{
 		ItemStorageBuildings.Add(storageBuilding);
 		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
 	}
 
-	public ActorInteractableObjectBase TryFindResourceStorage()
+	public InteractableObjectBase TryFindResourceStorage()
 	{
 		//// Find a free item storage building for the correct item ID
 		//foreach (ActorInteractableObjectBase i in ItemStorageBuildings)

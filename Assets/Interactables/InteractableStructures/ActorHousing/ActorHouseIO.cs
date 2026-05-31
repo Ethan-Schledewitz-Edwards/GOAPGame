@@ -2,7 +2,7 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActorHouseAIO : ActorInteractableObjectBase, IInteractableStructure<ActorHouseAIO>
+public class ActorHouseIO : InteractableObjectBase, IInteractableStructure<ActorHouseIO>
 {
 	private static BehaviourTree m_cachedHousingBT;
 
@@ -31,7 +31,7 @@ public class ActorHouseAIO : ActorInteractableObjectBase, IInteractableStructure
 
 	}
 
-	public void AssignActor(out ActorHouseAIO structure)
+	public void AssignActor(out ActorHouseIO structure)
 	{
 		if (ActorsAssigned < MaxCapacity)
 		{
