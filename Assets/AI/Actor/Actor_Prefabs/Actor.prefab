@@ -506,8 +506,7 @@ MonoBehaviour:
   m_interactionLayers:
     serializedVersion: 2
     m_Bits: 128
-  <BehaviourTreeExecutor>k__BackingField: {fileID: 0}
-  <GOAPAgentComp>k__BackingField: {fileID: 0}
+  <GOAPAgentComp>k__BackingField: {fileID: 3683834564411842312}
 --- !u!114 &3333077740091554456
 MonoBehaviour:
   m_ObjectHideFlags: 0

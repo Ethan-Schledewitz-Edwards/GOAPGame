@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class CheckForTargetRangeTask : BTNodeBase
 {
-	private static int m_interactionLayerMask = 1 << LayerMask.NameToLayer("Interaction");
-
 	public override EBTNodeState Evaluate(AIContext aiContext, float t)
 	{
 		base.Evaluate(aiContext, t);
@@ -12,13 +10,13 @@ public class CheckForTargetRangeTask : BTNodeBase
 		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
 		Transform targetTransform = aiContext.GetData<Transform>("TargetTransform");
 		float interactionRange = aiContext.GetData<float>("InteractionDist");
+		int interactionLayer = aiContext.GetData<int>("InteractionLayer");
 
 		// Check surroundings
 		Collider[] hitColliders = Physics.OverlapSphere(executorTransform.position,
 				interactionRange,
-				m_interactionLayerMask,
+				interactionLayer,
 				QueryTriggerInteraction.Collide);
-
 
 		if (targetTransform != null)
 		{

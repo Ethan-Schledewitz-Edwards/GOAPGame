@@ -131,7 +131,7 @@ public class HarvestableHealthComponent : HealthComponent
 						agentsTarget != null &&
 						transform == agentsTarget)
 					{
-						actor.SetTask(item);
+						item.TryInteract(actor);
 						assignedActors.Add(actor);
 						break;
 					}

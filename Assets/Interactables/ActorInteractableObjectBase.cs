@@ -12,14 +12,15 @@ public abstract class ActorInteractableObjectBase : MonoBehaviour
 	// System
 	private int m_actorsPresent = 0; // How many actors are currently using the interactable
 
-    public virtual void Interact(IInteractor interactor)
+    public virtual void TryInteract(IInteractor interactor)
     {
         AssignActor();
+		interactor.InteractorInteracted(this);
 
-		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
-		if (executor != null)
+		if (interactor.Transform.TryGetComponent(out BehaviourTreeExecutor behaviourTreeExecutor))
 		{
-			executor.SetCurrentBehaviourTree(GetBehaviourTree());
+			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
+			behaviourTreeExecutor.AIContext.SetData<Vector3>("TargetPosition", GetInteractionPositon());
 		}
 	}
 

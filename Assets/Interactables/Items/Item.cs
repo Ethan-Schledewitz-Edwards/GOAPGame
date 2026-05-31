@@ -40,9 +40,9 @@ public class Item : ActorInteractableObjectBase
 		}
 	}
 
-	public override void Interact(IInteractor interactor)
+	public override void TryInteract(IInteractor interactor)
 	{
-		base.Interact(interactor);
+		base.TryInteract(interactor);
 
 		if (ItemData == null)
 			return;
@@ -58,7 +58,6 @@ public class Item : ActorInteractableObjectBase
 				executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
 			}
 
-			//HeldItemID
 			OnPickup?.Invoke(this);
 		}
 	}

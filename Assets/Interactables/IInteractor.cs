@@ -4,4 +4,6 @@ public interface IInteractor
 {
 	Transform Transform { get; }
 	InventoryComponent InventoryComponent { get; }
+
+	public void InteractorInteracted(ActorInteractableObjectBase actorInteractableObjectBase);
 }

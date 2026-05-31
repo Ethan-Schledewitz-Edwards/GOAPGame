@@ -1,3 +1,6 @@
+using System;
+using UnityEngine;
+
 namespace BehaviourTrees
 {
 	public class BehaviourTree
@@ -6,7 +9,14 @@ namespace BehaviourTrees
 
 		public void TickBehaviourTree(AIContext aiContext, float t)
 		{
-			m_rootNode.Evaluate(aiContext, t);
+			if (m_rootNode != null)
+			{
+				m_rootNode.Evaluate(aiContext, t);
+			}
+			else
+			{
+				Debug.LogWarning("A behaviour tree is attempting to execute without a root node");
+			}
 		}
 
 		public void SetTree(BTNodeBase rootNode)

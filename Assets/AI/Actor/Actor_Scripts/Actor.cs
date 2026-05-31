@@ -20,8 +20,6 @@ public class Actor : Entity, IInteractor
 
 	// Components
 	public Transform Transform => gameObject.transform;
-	public BehaviourTreeExecutor BehaviourTreeExecutor => m_behaviourTreeExecutor;
-	private BehaviourTreeExecutor m_behaviourTreeExecutor;
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public InventoryComponent InventoryComponent => ActorInventory;
@@ -33,6 +31,8 @@ public class Actor : Entity, IInteractor
 
 	// Executors
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
+	public BehaviourTreeExecutor BehaviourTreeExecutor => m_behaviourTreeExecutor;
+	private BehaviourTreeExecutor m_behaviourTreeExecutor;
 
 	// Events
 	public event Action<int> OnSettlementUpdated;
@@ -46,8 +46,7 @@ public class Actor : Entity, IInteractor
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
 
-	private Transform m_targetFollowTransform; // Used while in the follow state
-	private ActorInteractableObjectBase m_objective;
+	private Transform m_targetTransform; // Used while in the follow state
 
 	#region Initialization
 
@@ -83,11 +82,6 @@ public class Actor : Entity, IInteractor
 		}
 	}
 
-	private void DefineBehaviourTrees()
-	{
-
-	}
-
 	#endregion
 
 	public void TickBehaviour(float t)
@@ -107,8 +101,8 @@ public class Actor : Entity, IInteractor
 				GOAPAgentComp.TickGoapPlanner(t);
 				break;
 			case EActorState.STATE_Follow:
-				if (m_targetFollowTransform != null)
-					AIPathing.SetDestination(m_targetFollowTransform.position);
+				if (m_targetTransform != null)
+					AIPathing.SetDestination(m_targetTransform.position);
 				break;
 
 			case EActorState.STATE_Working:
@@ -117,8 +111,8 @@ public class Actor : Entity, IInteractor
 				break;
 		}
 
-		if (m_objective != null)
-			AIPathing.HandleRotation(m_objective.transform.position, t);
+		if (m_targetTransform != null)
+			AIPathing.HandleRotation(m_targetTransform.position, t);
 	}
 
 	#region Actor Knowledge
@@ -173,10 +167,12 @@ public class Actor : Entity, IInteractor
 	private void ClearLogicExecutorState()
 	{
 		// Reset task
-		if (m_objective != null)
+		if (m_targetTransform != null)
 		{
-			m_objective.StopInteract();
-			m_objective = null;
+			if(m_targetTransform.TryGetComponent(out ActorInteractableObjectBase actorInteractableObjectBase))
+				actorInteractableObjectBase.StopInteract();
+
+			m_targetTransform = null;
 		}
 
 		// Reset behaviour
@@ -189,16 +185,16 @@ public class Actor : Entity, IInteractor
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		AIPathing.NavAgent.stoppingDistance = c_workingDist;
 
-		SetFollowTransform(null);
+		SetTargetTransform(null);
 		AIPathing.ClearDestination();
 	}
 	#endregion
 
 	#region Player Commands
 
-	public void SetFollowTransform(Transform newTarget)
+	public void SetTargetTransform(Transform newTarget)
 	{
-		m_targetFollowTransform = newTarget;
+		m_targetTransform = newTarget;
 	}
 
 	public void FollowPlayer(Transform Player)
@@ -208,13 +204,13 @@ public class Actor : Entity, IInteractor
 
 		// Follow the player
 		SetLogicExecutorState(EActorState.STATE_Follow);
-		SetFollowTransform(Player);
+		SetTargetTransform(Player);
 	}
 
 	public void InvestigatePosition(Vector3 destination)
 	{
 		SetLogicExecutorState(EActorState.STATE_SearchingForWork);
-		SetFollowTransform(null);
+		SetTargetTransform(null);
 		AIPathing.SetDestination(destination);
 	}
 	#endregion
@@ -223,18 +219,16 @@ public class Actor : Entity, IInteractor
 
 	public void SetTask(ActorInteractableObjectBase newObjective)
 	{
-		if (m_objective == newObjective)
+		if (m_targetTransform == newObjective.transform)
 			return;
 
-		m_objective = newObjective;
+		m_targetTransform = newObjective.transform;
 
 		// Ignore null references
 		if (newObjective == null)
 			return;
 
-		m_objective.Interact(this);
-		AIPathing.SetDestination(m_objective.GetInteractionPositon());
-
+		BehaviourTreeExecutor.SetCurrentBehaviourTree(newObjective.GetBehaviourTree());
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
 
@@ -272,7 +266,7 @@ public class Actor : Entity, IInteractor
 	private void TryTaskSearch(float t)
 	{
 		bool isJobNeeded = m_logicExecutorState == EActorState.STATE_SearchingForWork &&
-			m_objective == null;
+			m_targetTransform == null;
 
 		if (isJobNeeded && AIPathing.PathDistRemaining() < 1f)
 		{
@@ -298,9 +292,14 @@ public class Actor : Entity, IInteractor
 				healthComp.GetIsDead())
 					return;
 
-				SetTask(aio);
+				aio.TryInteract(this);
 			}
 		}
+	}
+
+	public void InteractorInteracted(ActorInteractableObjectBase actorInteractableObjectBase)
+	{
+		SetTask(actorInteractableObjectBase);
 	}
 	#endregion
 }

@@ -16,9 +16,10 @@ public class ActorManager : MonoBehaviour
 	private const int k_actorOnlineRange = 15;
 	private const int k_actorOnlineRangeSqrt = k_actorOnlineRange * k_actorOnlineRange;
 
-	private const int k_initialActors = 12;// For debug
+	private const int k_initialActors = 1;// For debug
 	#endregion
 
+	[SerializeField] private Transform m_spawnoffset;
 	[SerializeField] private Actor m_actorPrefab;
 
 	private List<Actor> m_actors = new List<Actor>(k_initialActors);
@@ -47,7 +48,7 @@ public class ActorManager : MonoBehaviour
 
 				Actor actor = Instantiate(m_actorPrefab, null);
 				actor.name = $"{m_actorPrefab.name}: {nextActorIndex}";
-				actor.transform.position = new Vector3(x, 5, z);
+				actor.transform.position = new Vector3(m_spawnoffset.transform.position.x + x, 5, m_spawnoffset.transform.position.z + z);
 				AddActor(actor);
 
 				nextActorIndex++;

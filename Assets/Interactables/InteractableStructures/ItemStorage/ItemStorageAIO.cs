@@ -37,16 +37,6 @@ public class ItemStorageAIO : ActorInteractableObjectBase, IInteractableStructur
 		}
 	}
 
-	public override void Interact(IInteractor interactor)
-	{
-		base.Interact(interactor);
-
-		if(interactor.Transform.TryGetComponent(out BehaviourTreeExecutor behaviourTreeExecutor))
-		{
-			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
-		}
-	}
-
 	public override void UpdateSpeed(int extra)
 	{
 		

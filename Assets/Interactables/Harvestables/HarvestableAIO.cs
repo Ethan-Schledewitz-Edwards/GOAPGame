@@ -17,21 +17,12 @@ public class HarvestableAIO : ActorInteractableObjectBase
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				new CheckForTargetRangeTask(),
+				new MoveToTargetDataTask(),
 				new AttackTask()
 			});
 			tree.SetTree(root);
 			m_HarvestBT = tree;
 		}
-	}
-
-	public override void Interact(IInteractor interactor)
-	{
-		base.Interact(interactor);
-	}
-
-	public override void StopInteract()
-	{
-		base.StopInteract();
 	}
 
 	public override void UpdateSpeed(int extra) { }

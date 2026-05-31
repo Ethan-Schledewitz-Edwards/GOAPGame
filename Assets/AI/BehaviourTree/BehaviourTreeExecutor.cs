@@ -5,16 +5,23 @@ using UnityEngine;
 public class BehaviourTreeExecutor : MonoBehaviour
 {
 	[Header("Parameters")]
-	public float InteractionDist { get; private set; } = 3.0f;
+	private float m_interactionDist = 3.0f;
 
 	// System
-	public AIContext AIContext { get; private set; } = new AIContext();
+	public AIContext AIContext { get; private set; }
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
+
+	private void Awake()
+	{
+		AIContext = new AIContext();
+		AIContext.SetData<Transform>("ExecutorTransform", transform);
+		AIContext.SetData<float>("InteractionDist", m_interactionDist);
+		AIContext.SetData<int>("InteractionLayer", 1 << LayerMask.NameToLayer("Interaction"));
+	}
 
 	public void SetCurrentBehaviourTree(BehaviourTree behaviourTree)
 	{
-		if (CurrentBehaviourTree != null)
-			CurrentBehaviourTree = behaviourTree;
+		CurrentBehaviourTree = behaviourTree;
 	}
 
 	public void TickBehaviour(float t)
@@ -23,11 +30,5 @@ public class BehaviourTreeExecutor : MonoBehaviour
 		{
 			CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
 		}
-	}
-
-	public struct BehaviourTreeDefinition
-	{
-		public string TreeName;
-		public BehaviourTree Tree;
 	}
 }
