@@ -5,7 +5,7 @@ namespace InventorySystem.Items
 	[System.Serializable]
 	public struct ItemQuantity
 	{
-		public string itemName;
+		public ItemData itemType;
 		public int amount;
 	}
 }

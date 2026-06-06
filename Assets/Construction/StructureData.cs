@@ -1,10 +1,20 @@
 using UnityEngine;
+using GenericIndex;
 using InventorySystem.Items;
 
-[CreateAssetMenu(fileName = "StructureData", menuName = "StructureData/StructureData")]
-public class StructureData : ScriptableObject
+[CreateAssetMenu(fileName = "StructureData", menuName = "Structures/StructureData")]
+public class StructureData : ScriptableObject, IIndexedAsset
 {
-    FeatureTileData structureFeatureData;
+	[field: SerializeField] public int ID { get; private set; }
+	[field: SerializeField] public string DisplayName { get; private set; }
+	[field: SerializeField, TextArea(5,5)] public string Description { get; private set; }
 
-	ItemQuantity[] requiredItems;
+	[field: SerializeField] public FeatureTileData StructureFeatureData { get; private set; }
+
+	[field: SerializeField] public ItemQuantity[] RequiredItems { get; private set; }
+
+	public void SetID(int newID)
+	{
+		ID = newID;
+	}
 }

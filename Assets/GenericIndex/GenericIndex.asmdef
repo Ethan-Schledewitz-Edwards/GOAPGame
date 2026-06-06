@@ -1,9 +1,7 @@
 {
-    "name": "InventorySystem",
-    "rootNamespace": "InventorySystem",
-    "references": [
-        "GUID:0eec0e3185c110644ab23d853bdbea41"
-    ],
+    "name": "GenericIndex",
+    "rootNamespace": "GenericIndex",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
