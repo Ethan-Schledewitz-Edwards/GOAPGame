@@ -1,5 +1,7 @@
 using BehaviourTrees;
 using UnityEngine;
+using InventorySystem;
+using InventorySystem.Items;
 
 public class DepositTask : BTNodeBase
 {

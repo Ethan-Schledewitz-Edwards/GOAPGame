@@ -1,9 +1,7 @@
 {
-    "name": "Entity",
-    "rootNamespace": "",
-    "references": [
-        "GUID:ba03907fce1edd444a6619e3f2864f88"
-    ],
+    "name": "InventorySystem",
+    "rootNamespace": "InventorySystem",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

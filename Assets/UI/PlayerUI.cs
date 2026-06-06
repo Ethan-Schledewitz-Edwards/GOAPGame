@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem.HID;
 
 [RequireComponent(typeof(AudioSource))]
 public class PlayerUI : MonoBehaviour
@@ -13,7 +12,7 @@ public class PlayerUI : MonoBehaviour
 	[field: Header("UI Elements")]
 	[field: SerializeField] public HUD HUD { get; private set; }
 	[field: SerializeField] public PauseMenu PauseMenu { get; private set; }
-	[field: SerializeField] public BuildMenu BuildMenu { get; private set; }
+	[field: SerializeField] public ConstructionMenu BuildMenu { get; private set; }
 
 	protected void Awake()
 	{

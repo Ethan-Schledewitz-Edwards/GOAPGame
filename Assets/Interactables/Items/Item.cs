@@ -2,6 +2,7 @@ using BehaviourTrees;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using InventorySystem.Items;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Item : InteractableObjectBase

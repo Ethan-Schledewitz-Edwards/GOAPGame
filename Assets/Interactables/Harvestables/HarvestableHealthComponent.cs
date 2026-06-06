@@ -1,6 +1,7 @@
 using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
+using InventorySystem.Items;
 
 public class HarvestableHealthComponent : HealthComponent
 {

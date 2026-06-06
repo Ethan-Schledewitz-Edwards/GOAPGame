@@ -1,7 +1,10 @@
 {
-    "name": "Inventory",
+    "name": "Construction",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:b85b26eebd1b5c549a59e2da7531da88",
+        "GUID:19a69fce138124240bfff07f6ef69a21"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

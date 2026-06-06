@@ -1,4 +1,5 @@
 using UnityEngine;
+using InventorySystem.Items;
 
 public class EatStrategy : IActionStrategy
 {

@@ -1,12 +1,9 @@
 {
-    "name": "SaveLoad",
+    "name": "Terrain.Loading",
     "rootNamespace": "",
     "references": [
-        "GUID:f7c476b7412a3f2448541c7f6867ba74",
-        "GUID:9ba38f2c76031274599e13fd9c690966",
-        "GUID:19a69fce138124240bfff07f6ef69a21",
-        "GUID:75b67bd2594706742bb0d6e6b501d402",
-        "GUID:ba03907fce1edd444a6619e3f2864f88"
+        "GUID:ba03907fce1edd444a6619e3f2864f88",
+        "GUID:8c4dd21966739024fbd72155091d199e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

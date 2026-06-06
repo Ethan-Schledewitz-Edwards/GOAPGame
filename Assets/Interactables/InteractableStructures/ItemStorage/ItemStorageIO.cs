@@ -1,6 +1,8 @@
 using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
+using InventorySystem;
+using InventorySystem.Items;
 
 [RequireComponent(typeof(InventoryComponent))]
 public class ItemStorageIO : InteractableObjectBase, IInteractableStructure<ItemStorageIO>

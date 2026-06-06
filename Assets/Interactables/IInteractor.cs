@@ -1,4 +1,5 @@
 using UnityEngine;
+using InventorySystem;
 
 public interface IInteractor
 {

@@ -1,8 +1,9 @@
 {
-    "name": "WorldData",
+    "name": "Terrain.Generation",
     "rootNamespace": "",
     "references": [
-        "GUID:8c4dd21966739024fbd72155091d199e"
+        "GUID:b85b26eebd1b5c549a59e2da7531da88",
+        "GUID:fc7511d31bfe16d40b7b18bb9d5245c5"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

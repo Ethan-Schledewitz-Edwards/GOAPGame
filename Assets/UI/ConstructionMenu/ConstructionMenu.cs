@@ -2,9 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
-public class BuildMenu : Menu
+public class ConstructionMenu : Menu
 {
 
 	[Header("Sounds")]
