@@ -11,6 +11,7 @@ public abstract class Menu : UIElement
 	// System
 	public virtual bool IsUnclosable => false;
 	public virtual bool IsHUD => false; // HUD menus don't block camera control
+	public virtual bool IsSubPauseMenu => false; // For menus like "Settings" that can enable in the pause menu
 
 	protected bool m_isMenuActive;
 

@@ -34,12 +34,12 @@ public class SaveManager : MonoBehaviour
 
 	void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Tab))
+		if (Input.GetKeyDown(KeyCode.F1))
 		{
 			SaveGame();
 		}
 
-		if (Input.GetKeyDown(KeyCode.L))
+		if (Input.GetKeyDown(KeyCode.F2))
 		{
 			LoadGame();
 		}

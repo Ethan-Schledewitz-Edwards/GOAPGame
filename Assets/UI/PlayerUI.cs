@@ -13,6 +13,7 @@ public class PlayerUI : MonoBehaviour
 	[field: Header("UI Elements")]
 	[field: SerializeField] public HUD HUD { get; private set; }
 	[field: SerializeField] public PauseMenu PauseMenu { get; private set; }
+	[field: SerializeField] public BuildMenu BuildMenu { get; private set; }
 
 	protected void Awake()
 	{
@@ -20,6 +21,7 @@ public class PlayerUI : MonoBehaviour
 
 		Assert.IsNotNull(PauseMenu);
 		Assert.IsNotNull(HUD);
+		Assert.IsNotNull(BuildMenu);
 	}
 
 	protected void Start()

@@ -71,17 +71,24 @@ public static class MenuManager
 			return;
 		}
 
-		if (s_openMenus.Contains(menu))
+		if (IsMenuOpen(PauseMenu) && !menu.IsSubPauseMenu)
+		{
+			Debug.LogError("Tried to open a non sub-pause menu while the pause menu is active.");
+			return;
+		}
+
+		if (IsMenuOpen(menu))
 		{
 			Debug.LogWarning($"Trying to double add menu {menu.GetType().Name}");
 			return;
 		}
 
+		// Hide the HUD when another menu is open
+		bool shouldHideHud = s_openMenus.Count > 0 && s_openMenus[0].IsHUD && !menu.IsHUD;
+
 		menu.SetMenuActive(true);
 		s_openMenus.Add(menu);
 
-		// Hide the HUD when another menu is open
-		bool shouldHideHud = s_openMenus.Count > 0 && s_openMenus[0].IsHUD && !menu.IsHUD;
 		if (shouldHideHud)
 			HUDSetHidden?.Invoke();
 
