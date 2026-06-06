@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class PlayerInputManager
+public static class InputManager
 {
 	public static Controls Controls { get; private set; }
 	public static ControlType ControlMode { get; private set; }
@@ -44,9 +44,8 @@ public static class PlayerInputManager
 				break;
 		}
 
-		bool cameraControlEnabled = ControlMode == ControlType.Player;
-
-		Cursor.lockState = cameraControlEnabled ? CursorLockMode.Locked : CursorLockMode.None;
-		Cursor.visible = !cameraControlEnabled;
+		bool controlEnabled = ControlMode == ControlType.Disabled;
+		Cursor.lockState = controlEnabled ? CursorLockMode.Locked : CursorLockMode.None;
+		Cursor.visible = !controlEnabled;
 	}
 }

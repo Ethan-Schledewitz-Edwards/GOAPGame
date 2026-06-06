@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	{
 		UpdateCollider();
 
-		if (PlayerInputManager.ControlMode != PlayerInputManager.ControlType.Player)
+		if (InputManager.ControlMode != InputManager.ControlType.Player)
 		{
 			m_inputDir = Vector2.zero;
 		}
@@ -159,18 +159,18 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	public void Subscribe()
 	{
-		PlayerInputManager.Controls.Player.Movement.performed += OnMoveInput;
-		PlayerInputManager.Controls.Player.Movement.canceled += OnMoveInput;
-		PlayerInputManager.Controls.Player.Jump.performed += OnJumpInput;
-		PlayerInputManager.Controls.Player.Jump.canceled += OnJumpInput;
+		InputManager.Controls.Player.Movement.performed += OnMoveInput;
+		InputManager.Controls.Player.Movement.canceled += OnMoveInput;
+		InputManager.Controls.Player.Jump.performed += OnJumpInput;
+		InputManager.Controls.Player.Jump.canceled += OnJumpInput;
 	}
 
 	public void UnSubscribe()
 	{
-		PlayerInputManager.Controls.Player.Movement.performed -= OnMoveInput;
-		PlayerInputManager.Controls.Player.Movement.canceled -= OnMoveInput;
-		PlayerInputManager.Controls.Player.Jump.performed -= OnJumpInput;
-		PlayerInputManager.Controls.Player.Jump.canceled -= OnJumpInput;
+		InputManager.Controls.Player.Movement.performed -= OnMoveInput;
+		InputManager.Controls.Player.Movement.canceled -= OnMoveInput;
+		InputManager.Controls.Player.Jump.performed -= OnJumpInput;
+		InputManager.Controls.Player.Jump.canceled -= OnJumpInput;
 
 		m_inputDir = Vector2.zero;
 	}

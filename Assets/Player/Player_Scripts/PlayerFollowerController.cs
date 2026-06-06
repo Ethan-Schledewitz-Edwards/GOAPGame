@@ -37,22 +37,22 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 
 	public void Subscribe()
 	{
-		PlayerInputManager.Controls.Player.Look.performed += OnMouseInput;
+		InputManager.Controls.Player.Look.performed += OnMouseInput;
 
-		PlayerInputManager.Controls.Player.Primary.performed += OnPrimaryInput;
+		InputManager.Controls.Player.Primary.performed += OnPrimaryInput;
 
-		PlayerInputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
-		PlayerInputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
 	}
 
 	public void UnSubscribe()
 	{
-		PlayerInputManager.Controls.Player.Look.performed -= OnMouseInput;
+		InputManager.Controls.Player.Look.performed -= OnMouseInput;
 
-		PlayerInputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
+		InputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
 
-		PlayerInputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
-		PlayerInputManager.Controls.Player.Secondary.canceled -= OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
+		InputManager.Controls.Player.Secondary.canceled -= OnSecondaryInput;
 	}
 
 	private void OnMouseInput(InputAction.CallbackContext context)
