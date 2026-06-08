@@ -16,7 +16,9 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 	public abstract float Lacunarity { get; } // Controls how quickly the frequency increases for each octave (lower values result in smoother transitions
 
-	[field: SerializeField] public FeatureWeighting[] featureWeightings { get; private set; }
+	[field: SerializeField] public VoxelTileData[] VoxelTileData { get; private set; }
+
+	[field: SerializeField] public FeatureWeighting[] FeatureWeightings { get; private set; }
 
 	// System
 	private FastNoiseLite terrainNoise;
@@ -51,12 +53,12 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 	public int TryGenerateFeatureTileData(int seed, TerrainChunk terrainChunk, int terrainHeight, int localX, int localY, int localZ)
 	{
-		if (featureWeightings == null || featureWeightings.Length == 0)
-			return 0;
+		if (FeatureWeightings == null || FeatureWeightings.Length == 0)
+			return -1;
 
 		// Only place features on the surface
 		if (localY != terrainHeight + 1) 
-			return 0;
+			return -1;
 
 		Vector3Int localPos = new Vector3Int(localX, localY, localZ);
 		bool isPlacementValid = true;
@@ -104,34 +106,34 @@ public abstract class TerrainBiomeData : ScriptableObject
 			float spawnRoll = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
 
 			float totalWeight = 0f;
-			foreach (var weighting in featureWeightings)
+			for (int i = 0; i < FeatureWeightings.Length; i++)
 			{
-				if (spawnRoll >= weighting.SpawnThreshold)
+				if (spawnRoll >= FeatureWeightings[i].SpawnThreshold)
 				{
-					totalWeight += weighting.SelectionWeight;
+					totalWeight += FeatureWeightings[i].SelectionWeight;
 				}
 			}
 
 			// If no features fit the current coordinate density threshold, return air
 			if (totalWeight <= 0f)
-				return 0;
+				return -1;
 
 			float selectionRoll = PerCoordinateRandom(seed + 9999, worldPos.x, worldPos.y, worldPos.z) * totalWeight;
 			float currentWeightSum = 0f;
-			foreach (var weighting in featureWeightings)
+			for (int i = 0; i < FeatureWeightings.Length; i++)
 			{
-				if (spawnRoll >= weighting.SpawnThreshold)
+				if (spawnRoll >= FeatureWeightings[i].SpawnThreshold)
 				{
-					currentWeightSum += weighting.SelectionWeight;
+					currentWeightSum += FeatureWeightings[i].SelectionWeight;
 					if (selectionRoll <= currentWeightSum)
 					{
-						return weighting.Feature_TileID;
+						return FeatureWeightings[i].FeatureTileData.TileID;
 					}
 				}
 			}
 		}
 
-		return 0;
+		return -1;
 	}
 
 	// <summary>
@@ -154,14 +156,14 @@ public abstract class TerrainBiomeData : ScriptableObject
 	}
 
 	[System.Serializable]
-	public class FeatureWeighting
+	public struct FeatureWeighting
 	{
-		[field: SerializeField] public int Feature_TileID { get; private set; }
+		[field: SerializeField] public FeatureTileData FeatureTileData { get; private set; }
 
 		[Tooltip("The relative chance of this feature picking chosen compared to others in the same biome.")]
-		[Range(0, 100)] public float SelectionWeight = 10f;
+		[Range(0, 100)] public float SelectionWeight;
 
 		[Tooltip("The minimum noise threshold required for this specific feature to spawn.")]
-		[Range(0, 1)] public float SpawnThreshold = 0.4f;
+		[Range(0, 1)] public float SpawnThreshold;
 	}
 }

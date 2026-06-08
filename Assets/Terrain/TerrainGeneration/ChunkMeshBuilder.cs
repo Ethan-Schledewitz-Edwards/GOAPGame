@@ -57,55 +57,6 @@ public class ChunkMeshBuilder
 		m_meshQueue.Enqueue(data);
 	}
 
-	private Vector3 InterpolateVertex(Vector3 p1, Vector3 p2, float val1, float val2, float isoLevel = 0.5f)
-	{
-		// If the density exactly matches the isolevel, snap to the corner
-		if (Mathf.Abs(isoLevel - val1) < 0.00001f) 
-			return p1;
-		if (Mathf.Abs(isoLevel - val2) < 0.00001f) 
-			return p2;
-
-		// If both corners have the exact same density, default to p1 (edge case)
-		if (Mathf.Abs(val1 - val2) < 0.00001f) 
-			return p1;
-
-		// Calculate the interpolation weight
-		float t = (isoLevel - val1) / (val2 - val1);
-		return Vector3.Lerp(p1, p2, t);
-	}
-
-	private float GetFakedDensity(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos)
-	{
-		int solidCount = 0;
-		int totalChecked = 0;
-
-		// Sample the immediate 3x3x3 neighborhood
-		for (int x = -1; x <= 1; x++)
-		{
-			for (int y = -1; y <= 1; y++)
-			{
-				for (int z = -1; z <= 1; z++)
-				{
-					Vector3Int offset = new Vector3Int(x, y, z);
-
-					// Using your existing neighbor check
-					if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, offset, out int nID))
-					{
-						// Ignore feature tiles, just like in ProcessTile
-						if (nID > 0 && !(m_tileIndex.Tiles[nID - 1] is FeatureTileData))
-						{
-							solidCount++;
-						}
-					}
-					totalChecked++;
-				}
-			}
-		}
-
-		// Returns a smooth float between 0.0 (pure air) and 1.0 (deep underground)
-		return (float)solidCount / totalChecked;
-	}
-
 	private void ProcessTile(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos, List<Vector3> vertices, List<int> triangles, List<Color32> colors)
 	{
 		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
@@ -118,10 +69,11 @@ public class ChunkMeshBuilder
 			Vector3Int cornerPos = localPos + MarchingTable.Corners[i];
 			if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighboursTileID))
 			{
-				if(neighboursTileID > 0)
+				if(neighboursTileID >= 0 && 
+					neighboursTileID < m_tileIndex.Tiles.Length)
 				{
 					// Ignore feature tiles
-					if (m_tileIndex.Tiles[neighboursTileID - 1] is FeatureTileData)
+					if (m_tileIndex.Tiles[neighboursTileID] is FeatureTileData)
 						continue;
 
 					configBitmask |= 1 << i;
@@ -134,27 +86,101 @@ public class ChunkMeshBuilder
 			return;
 
 		// Ensure only voxel tiles are meshed
-		if (m_tileIndex.Tiles[tileID] is VoxelTileData voxelData)
+		Color32 tileColor = new Color32(255, 255, 255, 255);
+		if (tileID >= 0 && tileID < m_tileIndex.Tiles.Length)
 		{
-			Color32 tileColor = m_tileColorDict[tileID];
-
-			// Generate triangles
-			int edgeIndex = 0;
-			for (int t = 0; t < 5; t++)
+			tileColor = m_tileColorDict[tileID];
+		}
+		else
+		{
+			// Air tiles with gemetry moving through them sample the first valid neighbours colour
+			for (int i = 0; i < 8; i++)
 			{
-				int idx1 = MarchingTable.Triangles[configBitmask, edgeIndex];
-				if (idx1 == -1)return;
-				int idx2 = MarchingTable.Triangles[configBitmask, edgeIndex + 1];
-				int idx3 = MarchingTable.Triangles[configBitmask, edgeIndex + 2];
-
-				// Reverse wind the vertices
-				AddVertexAndIndex(chunkXZ, chunkTiles, idx1, localPos, vertices, triangles, colors, tileColor);
-				AddVertexAndIndex(chunkXZ, chunkTiles, idx3, localPos, vertices, triangles, colors, tileColor);
-				AddVertexAndIndex(chunkXZ, chunkTiles, idx2, localPos, vertices, triangles, colors, tileColor);
-
-				edgeIndex += 3;
+				if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighborID))
+				{
+					if (neighborID >= 0 && neighborID < m_tileIndex.Tiles.Length && m_tileColorDict.ContainsKey(neighborID))
+					{
+						tileColor = m_tileColorDict[neighborID];
+						break;
+					}
+				}
 			}
 		}
+
+		int edgeIndex = 0;
+		for (int t = 0; t < 5; t++)
+		{
+			int idx1 = MarchingTable.Triangles[configBitmask, edgeIndex];
+			if (idx1 == -1)
+				break; // Correctly breaks out of triangle loops
+
+			int idx2 = MarchingTable.Triangles[configBitmask, edgeIndex + 1];
+			int idx3 = MarchingTable.Triangles[configBitmask, edgeIndex + 2];
+
+			// Reverse wind the vertices
+			AddVertexAndIndex(chunkXZ, chunkTiles, idx1, localPos, vertices, triangles, colors, tileColor);
+			AddVertexAndIndex(chunkXZ, chunkTiles, idx3, localPos, vertices, triangles, colors, tileColor);
+			AddVertexAndIndex(chunkXZ, chunkTiles, idx2, localPos, vertices, triangles, colors, tileColor);
+
+			edgeIndex += 3;
+		}
+	}
+
+	private Vector3 InterpolateVertex(Vector3 p1, Vector3 p2, float val1, float val2, float isoLevel = 0.5f)
+	{
+		// If the density exactly matches the isolevel, snap to the corner
+		if (Mathf.Abs(isoLevel - val1) < 0.00001f)
+			return p1;
+		if (Mathf.Abs(isoLevel - val2) < 0.00001f)
+			return p2;
+
+		// If both corners have the exact same density, default to p1 (edge case)
+		if (Mathf.Abs(val1 - val2) < 0.00001f)
+			return p1;
+
+		// Calculate the interpolation weight
+		float t = (isoLevel - val1) / (val2 - val1);
+		return Vector3.Lerp(p1, p2, t);
+	}
+
+	private float GetFakedDensity(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos)
+	{
+		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		int solidCount = 0;
+		int totalChecked = 0;
+
+		// Sample the immediate 3x3x3 neighborhood
+		for (int x = -1; x <= 1; x++)
+		{
+			for (int y = -1; y <= 1; y++)
+			{
+				for (int z = -1; z <= 1; z++)
+				{
+					Vector3Int offset = new Vector3Int(x, y, z);
+					Vector3Int targetPos = localPos + offset;
+
+					if (targetPos.y < 0 || targetPos.y >= chunkSize.y)
+					{
+						targetPos.y = Mathf.Clamp(targetPos.y, 0, chunkSize.y - 1);
+					}
+
+					// Using your existing neighbor check
+					if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, offset, out int tileId))
+					{
+						if (tileId >= 0 && 
+							tileId < m_tileIndex.Tiles.Length && 
+							!(m_tileIndex.Tiles[tileId] is FeatureTileData))
+						{
+							solidCount++;
+						}
+					}
+					totalChecked++;
+				}
+			}
+		}
+
+		// Returns a smooth float between 0.0 (pure air) and 1.0 (deep underground)
+		return (float)solidCount / totalChecked;
 	}
 
 	private void AddVertexAndIndex(Vector2Int chunkXZ, int[,,] chunkTiles, int edgeIdx, Vector3Int cubePos, List<Vector3> vertices, List<int> triangles, List<Color32> colors, Color32 color)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GenericIndex
 {
-	public abstract class GenericIndex<T> : ScriptableObject where T : ScriptableObject, IIndexedAsset
+	public abstract class GenericIndexBase<T> : ScriptableObject where T : ScriptableObject, IIndexedAsset
 	{
 		[field: SerializeField] public T[] Assets { get; private set; }
 

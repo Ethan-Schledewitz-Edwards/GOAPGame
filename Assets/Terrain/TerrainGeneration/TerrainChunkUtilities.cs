@@ -183,7 +183,7 @@ public static class TerrainChunkUtilities
 	public static bool IsNeighborTileSolid(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos, Vector3Int dir, out int neighboursTileID)
 	{
 		Vector3Int offsetPos = localPos + dir;
-		neighboursTileID = 0;
+		neighboursTileID = -1;
 
 		// Ignore positions out of chunk y bounds
 		if (offsetPos.y >= WorldBuilder.s_ChunkSize.y ||
@@ -218,7 +218,7 @@ public static class TerrainChunkUtilities
 		}
 
 		// Check if the nighbour is air
-		if (neighboursTileID > 0)
+		if (neighboursTileID >= 0)
 		{
 			return true;
 		}

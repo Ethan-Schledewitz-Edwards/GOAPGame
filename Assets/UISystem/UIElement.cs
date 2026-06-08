@@ -4,8 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public class UIElement : MonoBehaviour
 {
-	internal PlayerUI m_playerUI;
-
 	protected CanvasGroup m_canvasGroup;
 	protected RectTransform m_rectTransform;
 

@@ -25,12 +25,6 @@ public class PlayerUI : MonoBehaviour
 
 	protected void Start()
 	{
-		UIElement[] elements = GetComponentsInChildren<UIElement>(includeInactive: true);
-		foreach (var element in elements)
-		{
-			element.m_playerUI = this;
-		}
-
 		MenuManager.OpenMenu(HUD);
 
 		//Player.Health.OnGameStateChange += ShowPlayerStateScreen;

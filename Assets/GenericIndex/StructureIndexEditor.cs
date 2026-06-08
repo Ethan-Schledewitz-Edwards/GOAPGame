@@ -14,7 +14,7 @@ namespace GenericIndex
 
 			// Check via reflection if this object's class derives from GenericIndex<>
 			Type targetType = target.GetType();
-			bool isGenericIndex = IsSubclassOfRawGeneric(typeof(GenericIndex<>), targetType);
+			bool isGenericIndex = IsSubclassOfRawGeneric(typeof(GenericIndexBase<>), targetType);
 
 			if (!isGenericIndex) return;
 

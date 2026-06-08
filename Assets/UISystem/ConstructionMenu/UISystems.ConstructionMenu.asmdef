@@ -1,0 +1,21 @@
+{
+    "name": "UISystems.ConstructionMenu",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e549e5c8d4b5b14cafd196c6dc8eb10",
+        "GUID:8bc4cdfcc3ea536488dde889105f8a36",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:73b12e1e80bff624a9b5c87c009bb089",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:553751e538aa0874d9351ac2f1e0dc17"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

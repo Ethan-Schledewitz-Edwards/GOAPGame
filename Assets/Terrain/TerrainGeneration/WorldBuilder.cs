@@ -175,11 +175,9 @@ public class WorldBuilder : MonoBehaviour
 					{
 						int tileID = targetChunk.TileData[x, y, z];
 
-						if(tileID > 0)
+						if(tileID >= 0 && tileID < m_tileIndex.Tiles.Length)
 						{
-							int tileIndex = tileID - 1; // Remap value for the tile data array
-
-							if (m_tileIndex.Tiles[tileIndex] is FeatureTileData featureData)
+							if (m_tileIndex.Tiles[tileID] is FeatureTileData featureData)
 							{
 								GameObject featureTile = GameObject.Instantiate
 									(
@@ -192,8 +190,6 @@ public class WorldBuilder : MonoBehaviour
 							}
 						}
 					}
-
-					// Probably put a loop here spawning all entities saved in the chunks data too
 				}
 			}
 		}

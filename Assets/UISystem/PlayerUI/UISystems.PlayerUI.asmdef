@@ -1,0 +1,19 @@
+{
+    "name": "UISystems.PlayerUI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e549e5c8d4b5b14cafd196c6dc8eb10",
+        "GUID:540b4f36835ad864ba3a720e93a486e8",
+        "GUID:64255011166fdef47baf0caae5649a10",
+        "GUID:40a88d1782b700648aff3872e5c706dc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

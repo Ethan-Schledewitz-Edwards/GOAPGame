@@ -99,7 +99,7 @@ public class ChunkDataBuilder
 			for (int z = 0; z < ChunkSize.z; z++)
 			{
 				int height = GetTileHeight(worldSeed, chunkXZ, centerChunk.BiomeMap, x, z);
-				int biomeID = centerChunk.BiomeMap[x, z];
+				int biomeID = centerChunk.BiomeMap[x + k_biomeBlendRad, z + k_biomeBlendRad];
 
 				// Set tile data
 				for (int y = height + 1; y < ChunkSize.y; y++)

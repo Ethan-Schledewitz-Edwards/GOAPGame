@@ -22,20 +22,20 @@ public class PlainsBiomeData : TerrainBiomeData
 	{
 		// Grass
 		if (worldY == terrainHeight)
-			return 1;
+			return VoxelTileData[0].TileID;
 
 		// Dirt
 		if (worldY < terrainHeight && worldY > terrainHeight - 4)
-			return 2;
+			return VoxelTileData[1].TileID;
 
 		// Stone
 		if (worldY <= terrainHeight - 4 && worldY > 0)
-			return 3;
+			return VoxelTileData[2].TileID;
 
 		// Bedrock
 		if (worldY == 0)
-			return 4;
+			return VoxelTileData[3].TileID;
 
-		return 0;
+		return -1;
 	}
 }

@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a334e50b664b9324ba4be512b4feca15, type: 3}
   m_Name: ForestBiome
   m_EditorClassIdentifier: Assembly-CSharp::ForestBiomeData
-  <featureWeightings>k__BackingField:
-  - <Feature_TileID>k__BackingField: 7
+  <VoxelTileData>k__BackingField:
+  - {fileID: 11400000, guid: de8da6911a10d9f479ad6907d325364c, type: 2}
+  - {fileID: 11400000, guid: b2fc4097f3b106e44a0585203d9ebd3a, type: 2}
+  - {fileID: 11400000, guid: 67fe7988b96d19a42bc937de1150458e, type: 2}
+  - {fileID: 11400000, guid: feb5c45dbe15e394193fa667e4365674, type: 2}
+  <FeatureWeightings>k__BackingField:
+  - <FeatureTileData>k__BackingField: {fileID: 11400000, guid: 26020d98cadf65546b34109bc36602bd, type: 2}
     SelectionWeight: 80
-    SpawnThreshold: 0.954
-  - <Feature_TileID>k__BackingField: 5
-    SelectionWeight: 10
-    SpawnThreshold: 0.998
-  - <Feature_TileID>k__BackingField: 6
-    SelectionWeight: 10
-    SpawnThreshold: 0.996
+    SpawnThreshold: 0.98
+  - <FeatureTileData>k__BackingField: {fileID: 11400000, guid: 3ea8d8a3a3df348429c23d53d3354ee6, type: 2}
+    SelectionWeight: 20
+    SpawnThreshold: 0.98
