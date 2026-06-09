@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,31 +10,60 @@ namespace GenericIndex
 	{
 		public override void OnInspectorGUI()
 		{
-			// Draw the fields (the array)
-			DrawDefaultInspector();
-
-			// Check via reflection if this object's class derives from GenericIndex<>
 			Type targetType = target.GetType();
 			bool isGenericIndex = IsSubclassOfRawGeneric(typeof(GenericIndexBase<>), targetType);
 
-			if (!isGenericIndex) return;
+			if (!isGenericIndex)
+			{
+				DrawDefaultInspector();
+				return;
+			}
 
+			DrawDefaultInspector();
 			GUILayout.Space(15);
-			GUI.backgroundColor = new Color(0.2f, 0.8f, 0.4f);
 
+			Color originalColor = GUI.backgroundColor;
+
+			GUI.backgroundColor = new Color(0.2f, 0.8f, 0.4f);
 			if (GUILayout.Button("Find All Assets & Auto-Assign IDs", GUILayout.Height(40)))
 			{
 				if (EditorUtility.DisplayDialog("Populate Generic Index?",
-					"This will scan your project, overwrite this array, and reset all IDs. Proceed?", "Yes", "No"))
+					"This will scan your project, append new unique assets, and re-assign all IDs. Proceed?", "Yes", "No"))
 				{
-					// Find and invoke the PopulateAndAssignIDs method dynamically
-					var method = targetType.GetMethod("PopulateAndAssignIDs");
+					var method = targetType.GetMethod("PopulateUniqueAssets", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 					if (method != null)
 					{
 						method.Invoke(target, null);
 					}
+					else
+					{
+						Debug.LogError("Could not find method 'PopulateUniqueAssets' via reflection.");
+					}
 				}
 			}
+
+			GUILayout.Space(5);
+
+			GUI.backgroundColor = new Color(0.2f, 0.6f, 1f);
+			if (GUILayout.Button("Auto-Assign IDs (Current Array)", GUILayout.Height(40)))
+			{
+				if (EditorUtility.DisplayDialog("Auto-Assign IDs?",
+					"This will reset all IDs to match the current order of your data array. Proceed?", "Yes", "No"))
+				{
+					var method = targetType.GetMethod("AssignNewIDs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+					if (method != null)
+					{
+						method.Invoke(target, null);
+					}
+					else
+					{
+						Debug.LogError("Could not find method 'AssignNewIDs' via reflection. Ensure it is not misspelled.");
+					}
+				}
+			}
+
+			// Restore color state
+			GUI.backgroundColor = originalColor;
 		}
 
 		// Helper method to check open generic base classes
