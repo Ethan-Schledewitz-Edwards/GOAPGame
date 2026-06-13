@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class StructureOptionButton : MonoBehaviour, IRecyclableCell<StructureData>
 {
-	private RectTransform m_rectTransform;
-	public RectTransform RectTransform => m_rectTransform;
+	[SerializeField] private GameObject m_prefab;
+	public GameObject Prefab => m_prefab;
 
-	private GameObject m_gameObject;
+	[SerializeField] private GameObject m_gameObject;
 	public GameObject GameObject => m_gameObject;
+
+	[SerializeField] private RectTransform m_rectTransform;
+	public RectTransform RectTransform => m_rectTransform;
 
 	[SerializeField] private TextMeshProUGUI m_structureTitleText;
 	[SerializeField] private TextMeshProUGUI m_cellIDText;

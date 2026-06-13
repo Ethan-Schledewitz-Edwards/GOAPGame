@@ -7,7 +7,7 @@ namespace UISystems.RecyclingScrollRect
 {
 	public abstract class RecyclingScrollRectBase<T> : MonoBehaviour
 	{
-		[field: SerializeField] public T[] Data { get; private set; }
+		protected virtual T[] m_data { get; private set; }
 
 		[Header("Cells")]
 		[SerializeField] private GameObject m_cellPrefab;
@@ -24,13 +24,14 @@ namespace UISystems.RecyclingScrollRect
 		[SerializeField] private float m_recyclingThreshold = 0.1f;
 		[SerializeField] private RectTransform m_viewport, m_content;
 
+		// System
 		private List<RectTransform> m_cellRectPool = new List<RectTransform>();
 
 		private float m_cellWidth, m_cellHeight;
 		private float m_spacingX;
 
-		private int m_topVirtualIndex;
-		private int m_bottomVirtualIndex;
+		private int m_topCellIndex;
+		private int m_bottomCellIndex;
 		private int m_poolSize;
 
 		protected virtual void Start()
@@ -40,7 +41,7 @@ namespace UISystems.RecyclingScrollRect
 
 		public void InitializeSystem()
 		{
-			if (Data == null || Data.Length == 0) 
+			if (m_data == null || m_data.Length == 0) 
 				return;
 
 			SetTopAnchor(m_content);
@@ -50,7 +51,7 @@ namespace UISystems.RecyclingScrollRect
 			InitializeCellPool();
 
 			// Set content height based on total rows generated
-			int totalRows = Mathf.CeilToInt((float)Data.Length / (m_isGrid ? m_columns : 1));
+			int totalRows = Mathf.CeilToInt((float)m_data.Length / (m_isGrid ? m_columns : 1));
 			float totalContentHeight = m_cellMarginY + (totalRows * m_cellHeight) + (Mathf.Max(0, totalRows - 1) * m_cellPaddingY);
 			m_content.sizeDelta = new Vector2(m_content.sizeDelta.x, totalContentHeight);
 			SetTopAnchor(m_content);
@@ -93,34 +94,30 @@ namespace UISystems.RecyclingScrollRect
 				m_spacingX = m_columns > 1 ? (viewportWidth - totalDesiredWidth) / (m_columns - 1) : 0f;
 			}
 
-			float requiredCoverage = m_minPoolCoverage * m_viewport.rect.height;
-			float currentCoverage = 0;
-			int calculatedPoolSize = 0;
-
-			while ((calculatedPoolSize < m_minPoolSize || currentCoverage < requiredCoverage) && calculatedPoolSize < Data.Length)
+			float requiredRectCoverage = m_viewport.rect.height * m_minPoolCoverage;
+			float currentRectCoverage = 0;
+			int currentPoolSize = 0;
+			while ((currentPoolSize < m_minPoolSize || currentRectCoverage < requiredRectCoverage) && currentPoolSize < m_data.Length)
 			{
 				GameObject spawnedObj = Instantiate(m_cellPrefab);
 				RectTransform itemRect = spawnedObj.GetComponent<RectTransform>();
 				itemRect.SetParent(m_content, false);
 				m_cellRectPool.Add(itemRect);
 
-				calculatedPoolSize++;
-				int currentRows = Mathf.CeilToInt((float)calculatedPoolSize / (m_isGrid ? m_columns : 1));
-				currentCoverage = m_cellMarginY + (currentRows * m_cellHeight) + ((currentRows - 1) * m_cellPaddingY);
+				currentPoolSize++;
+				int currentRows = Mathf.CeilToInt((float)currentPoolSize / (m_isGrid ? m_columns : 1));
+				currentRectCoverage = m_cellMarginY + (currentRows * m_cellHeight) + ((currentRows - 1) * m_cellPaddingY);
 			}
 
 			m_poolSize = m_cellRectPool.Count;
-			m_topVirtualIndex = 0;
-			m_bottomVirtualIndex = m_poolSize - 1;
+			m_topCellIndex = 0;
+			m_bottomCellIndex = m_poolSize - 1;
 
 			// Update visual locations matching data offsets
 			for (int i = 0; i < m_poolSize; i++)
 			{
 				PositionCellAtIndex(m_cellRectPool[i], i);
 			}
-
-			if (m_cellPrefab.scene.IsValid())
-				m_cellPrefab.SetActive(false);
 		}
 
 		public void OnScrollValueChanged(Vector2 scrollDirection)
@@ -133,35 +130,35 @@ namespace UISystems.RecyclingScrollRect
 
 			float topVisibleLimit = m_content.anchoredPosition.y - thresholdBuffer;
 			float bottomVisibleLimit = m_content.anchoredPosition.y + localViewportHeight + thresholdBuffer;
-			bool processingRecycle = true;
 
+			bool processingRecycle = true;
 			int safetyLoopCounter = 0;
 			while (processingRecycle && safetyLoopCounter < m_poolSize)
 			{
 				processingRecycle = false;
 				safetyLoopCounter++;
 
-				float topCellBottomY = Mathf.Abs(GetCellAnchoredY(m_topVirtualIndex)) + m_cellHeight;
-				float bottomCellTopY = Mathf.Abs(GetCellAnchoredY(m_bottomVirtualIndex));
+				float topCellBottomY = Mathf.Abs(GetCellAnchoredY(m_topCellIndex)) + m_cellHeight;
+				float bottomCellTopY = Mathf.Abs(GetCellAnchoredY(m_bottomCellIndex));
 
 				// Check Top-To-Bottom recycling trigger
-				if (topCellBottomY < topVisibleLimit && m_bottomVirtualIndex < Data.Length - 1)
+				if (topCellBottomY < topVisibleLimit && m_bottomCellIndex < m_data.Length - 1)
 				{
-					int activePoolIndex = m_topVirtualIndex % m_poolSize;
-					m_topVirtualIndex++;
-					m_bottomVirtualIndex++;
+					int activePoolIndex = m_topCellIndex % m_poolSize;
+					m_topCellIndex++;
+					m_bottomCellIndex++;
 
-					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_bottomVirtualIndex);
+					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_bottomCellIndex);
 					processingRecycle = true;
 				}
 				// Check Bottom-To-Top recycling trigger
-				else if (bottomCellTopY > bottomVisibleLimit && m_topVirtualIndex > 0)
+				else if (bottomCellTopY > bottomVisibleLimit && m_topCellIndex > 0)
 				{
-					int activePoolIndex = m_bottomVirtualIndex % m_poolSize;
-					m_topVirtualIndex--;
-					m_bottomVirtualIndex--;
+					int activePoolIndex = m_bottomCellIndex % m_poolSize;
+					m_topCellIndex--;
+					m_bottomCellIndex--;
 
-					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_topVirtualIndex);
+					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_topCellIndex);
 					processingRecycle = true;
 				}
 			}
@@ -175,7 +172,7 @@ namespace UISystems.RecyclingScrollRect
 
 			if (cellRect.TryGetComponent<IRecyclableCell<T>>(out var cellComp))
 			{
-				cellComp.ConfigureCell(virtualIndex, Data);
+				cellComp.ConfigureCell(virtualIndex, m_data);
 			}
 		}
 
