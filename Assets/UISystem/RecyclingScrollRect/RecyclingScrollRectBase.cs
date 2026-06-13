@@ -194,7 +194,6 @@ namespace UISystems.RecyclingScrollRect
 
 			DefineViewportBounds();
 
-			// Convert world limits for quick boundary assessments
 			float bottomCellMaxY = m_cellRectPool[m_bottomMostCellIndex].position.y + (m_cellHeight / 2f);
 			float topCellMinY = m_cellRectPool[m_topMostCellIndex].position.y - (m_cellHeight / 2f);
 
@@ -244,7 +243,8 @@ namespace UISystems.RecyclingScrollRect
 					m_cellRectPool[m_topMostCellIndex].anchoredPosition = new Vector2(m_cellRectPool[m_topMostCellIndex].anchoredPosition.x, posY);
 				}
 
-				//m_cellComponentPool[m_topMostCellIndex].ConfigureCell(m_currentItemCount, dataList);
+				if (m_cellRectPool[m_bottomMostCellIndex].TryGetComponent<IRecyclableCell<T>>(out var cellComp))
+					cellComp.ConfigureCell(m_currentItemCount, Data);
 
 				m_bottomMostCellIndex = m_topMostCellIndex;
 				m_topMostCellIndex = (m_topMostCellIndex + 1) % m_cellRectPool.Count;
@@ -305,7 +305,8 @@ namespace UISystems.RecyclingScrollRect
 				}
 
 				m_currentItemCount--;
-				//m_cellComponentPool[m_bottomMostCellIndex].ConfigureCell(m_currentItemCount - m_cellRectPool.Count, dataList);
+				if (m_cellRectPool[m_bottomMostCellIndex].TryGetComponent<IRecyclableCell<T>>(out var cellComp))
+					cellComp.ConfigureCell(m_currentItemCount - m_cellRectPool.Count, Data);
 
 				m_topMostCellIndex = m_bottomMostCellIndex;
 				m_bottomMostCellIndex = (m_bottomMostCellIndex - 1 + m_cellRectPool.Count) % m_cellRectPool.Count;
