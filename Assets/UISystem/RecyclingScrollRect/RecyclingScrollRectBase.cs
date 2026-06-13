@@ -12,10 +12,11 @@ namespace UISystems.RecyclingScrollRect
 		[Header("Cells")]
 		[SerializeField] private GameObject m_cellPrefab;
 		[SerializeField] private float m_desiredCellWidth = 256, m_desiredCellHeight = 256;
-		[SerializeField] private float m_cellMarginX = 12, m_cellPaddingY = 12;
+		[SerializeField] private float m_cellMarginX = 16, m_cellMarginY = 16;
+		[SerializeField] private float m_cellPaddingY = 12;
 		[SerializeField] private bool m_isGrid = true;
 		[SerializeField] private int m_columns = 4;
-		[SerializeField] private float m_minPoolCoverage = 1.5f; // Extra sizing allocation multiplier
+		[SerializeField] private float m_minPoolCoverage = 1.5f;
 		[SerializeField] private int m_minPoolSize = 10;
 
 		[Header("Rect Properties")]
@@ -25,16 +26,12 @@ namespace UISystems.RecyclingScrollRect
 
 		private List<RectTransform> m_cellRectPool = new List<RectTransform>();
 
-		private Bounds m_recyclableViewBounds;
-		private readonly Vector3[] m_corners = new Vector3[4];
-
 		private float m_cellWidth, m_cellHeight;
+		private float m_spacingX;
 
-		// Trackers for recycling loops
-		private int m_currentItemCount;
-		private int m_topMostCellIndex, m_bottomMostCellIndex;
-		private int m_topMostCellColumn, m_bottomMostCellColumn;
-		private bool m_isRecycling;
+		private int m_topVirtualIndex;
+		private int m_bottomVirtualIndex;
+		private int m_poolSize;
 
 		protected virtual void Start()
 		{
@@ -49,36 +46,14 @@ namespace UISystems.RecyclingScrollRect
 			SetTopAnchor(m_content);
 			m_content.anchoredPosition = Vector2.zero;
 
-			DefineViewportBounds();
+			m_cellHeight = m_desiredCellHeight;
 			InitializeCellPool();
 
 			// Set content height based on total rows generated
-			int noOfRows = Mathf.CeilToInt((float)m_cellRectPool.Count / m_columns);
-			m_content.sizeDelta = new Vector2(m_content.sizeDelta.x, noOfRows * m_desiredCellHeight);
+			int totalRows = Mathf.CeilToInt((float)Data.Length / (m_isGrid ? m_columns : 1));
+			float totalContentHeight = m_cellMarginY + (totalRows * m_cellHeight) + (Mathf.Max(0, totalRows - 1) * m_cellPaddingY);
+			m_content.sizeDelta = new Vector2(m_content.sizeDelta.x, totalContentHeight);
 			SetTopAnchor(m_content);
-		}
-
-		private void DefineViewportBounds()
-		{
-			if (m_viewport == null)
-			{
-				Debug.LogError("Viewport RectTransform is missing. Cannot define recycling bounds.", this);
-				return;
-			}
-
-			// Index order: [0]Bottom-Left, [1]Top-Left, [2]Top-Right, [3] Bottom-Right
-			m_viewport.GetWorldCorners(m_corners);
-
-			// Calculate the height of the visible viewport
-			float viewportHeight = m_corners[2].y - m_corners[0].y;
-
-			// Determine the extra padding to apply to the top and bottom
-			float threshHold = m_recyclingThreshold * viewportHeight;
-
-			// Expand the min/max vectors of our bounding box by the threshold
-			Vector3 minBounds = new Vector3(m_corners[0].x, m_corners[0].y - threshHold, m_corners[0].z);
-			Vector3 maxBounds = new Vector3(m_corners[2].x, m_corners[2].y + threshHold, m_corners[2].z);
-			m_recyclableViewBounds.SetMinMax(minBounds, maxBounds);
 		}
 
 		private void InitializeCellPool()
@@ -95,23 +70,13 @@ namespace UISystems.RecyclingScrollRect
 				return;
 
 			RectTransform prefabRect = m_cellPrefab.GetComponent<RectTransform>();
-
 			if (m_isGrid) 
 				SetTopLeftAnchor(prefabRect);
 			else 
 				SetTopAnchor(prefabRect);
 
-			m_topMostCellColumn = 0; 
-			m_bottomMostCellColumn = 0;
-
-			float currentPoolCoverage = 0;
-			int poolSize = 0;
-			float posX = 0;
-			float posY = 0;
-
 			float viewportWidth = m_viewport.rect.width;
 			float totalDesiredWidth = m_columns * m_desiredCellWidth;
-			float m_spacingX;
 
 			if (totalDesiredWidth > viewportWidth)
 			{
@@ -125,233 +90,126 @@ namespace UISystems.RecyclingScrollRect
 				m_cellWidth = m_desiredCellWidth;
 
 				// Distribute the extra space
-				if (m_columns > 1)
-				{
-					float extraSpace = viewportWidth - totalDesiredWidth;
-					m_spacingX = extraSpace / (m_columns - 1);
-				}
-				else
-					m_spacingX = 0f;
+				m_spacingX = m_columns > 1 ? (viewportWidth - totalDesiredWidth) / (m_columns - 1) : 0f;
 			}
 
-			m_cellHeight = (m_desiredCellHeight / m_desiredCellWidth) * m_desiredCellWidth;
-
 			float requiredCoverage = m_minPoolCoverage * m_viewport.rect.height;
-			int minCalculatedPoolSize = Mathf.Min(m_minPoolSize, Data.Length);
+			float currentCoverage = 0;
+			int calculatedPoolSize = 0;
 
-			while ((poolSize < minCalculatedPoolSize || currentPoolCoverage < requiredCoverage) && poolSize < Data.Length)
+			while ((calculatedPoolSize < m_minPoolSize || currentCoverage < requiredCoverage) && calculatedPoolSize < Data.Length)
 			{
 				GameObject spawnedObj = Instantiate(m_cellPrefab);
 				RectTransform itemRect = spawnedObj.GetComponent<RectTransform>();
-				itemRect.name = $"Cell_{poolSize}";
-				itemRect.sizeDelta = new Vector2(m_cellWidth, m_cellHeight);
 				itemRect.SetParent(m_content, false);
-
 				m_cellRectPool.Add(itemRect);
 
-				if (m_isGrid)
-				{
-					posX = m_bottomMostCellColumn * (m_cellWidth + m_spacingX);
-					itemRect.anchoredPosition = new Vector2(posX, posY - m_cellPaddingY);
-					if (++m_bottomMostCellColumn >= m_columns)
-					{
-						m_bottomMostCellColumn = 0;
-						posY -= (m_cellHeight + m_cellPaddingY);
-						currentPoolCoverage += m_cellHeight;
-					}
-				}
-				else
-				{
-					itemRect.anchoredPosition = new Vector2(0, posY - m_cellPaddingY);
-					posY -= (m_cellHeight + m_cellPaddingY);
-					currentPoolCoverage += m_cellHeight;
-				}
-
-				// Configure the cell
-				if (spawnedObj.TryGetComponent<IRecyclableCell<T>>(out var cellComp))
-					cellComp.ConfigureCell(poolSize, Data);
-
-				poolSize++;
+				calculatedPoolSize++;
+				int currentRows = Mathf.CeilToInt((float)calculatedPoolSize / (m_isGrid ? m_columns : 1));
+				currentCoverage = m_cellMarginY + (currentRows * m_cellHeight) + ((currentRows - 1) * m_cellPaddingY);
 			}
 
-			if (m_isGrid)
+			m_poolSize = m_cellRectPool.Count;
+			m_topVirtualIndex = 0;
+			m_bottomVirtualIndex = m_poolSize - 1;
+
+			// Update visual locations matching data offsets
+			for (int i = 0; i < m_poolSize; i++)
 			{
-				m_bottomMostCellColumn = (m_bottomMostCellColumn - 1 + m_columns) % m_columns;
+				PositionCellAtIndex(m_cellRectPool[i], i);
 			}
 
-			m_currentItemCount = m_cellRectPool.Count;
-			m_topMostCellIndex = 0;
-			m_bottomMostCellIndex = m_cellRectPool.Count - 1;
-
-			if (m_cellPrefab.scene.IsValid()) 
+			if (m_cellPrefab.scene.IsValid())
 				m_cellPrefab.SetActive(false);
 		}
 
 		public void OnScrollValueChanged(Vector2 scrollDirection)
 		{
-			if (m_isRecycling || m_cellRectPool == null || m_cellRectPool.Count == 0) 
+			if (m_cellRectPool == null || m_cellRectPool.Count == 0) 
 				return;
 
-			DefineViewportBounds();
+			float localViewportHeight = m_viewport.rect.height;
+			float thresholdBuffer = m_recyclingThreshold * localViewportHeight;
 
-			float bottomCellMaxY = m_cellRectPool[m_bottomMostCellIndex].position.y + (m_cellHeight / 2f);
-			float topCellMinY = m_cellRectPool[m_topMostCellIndex].position.y - (m_cellHeight / 2f);
+			float topVisibleLimit = m_content.anchoredPosition.y - thresholdBuffer;
+			float bottomVisibleLimit = m_content.anchoredPosition.y + localViewportHeight + thresholdBuffer;
+			bool processingRecycle = true;
 
-			if (scrollDirection.y > 0 && bottomCellMaxY > m_recyclableViewBounds.min.y)
+			int safetyLoopCounter = 0;
+			while (processingRecycle && safetyLoopCounter < m_poolSize)
 			{
-				RecycleTopToBottom();
-			}
-			else if (scrollDirection.y < 0 && topCellMinY < m_recyclableViewBounds.max.y)
-			{
-				RecycleBottomToTop();
+				processingRecycle = false;
+				safetyLoopCounter++;
+
+				float topCellBottomY = Mathf.Abs(GetCellAnchoredY(m_topVirtualIndex)) + m_cellHeight;
+				float bottomCellTopY = Mathf.Abs(GetCellAnchoredY(m_bottomVirtualIndex));
+
+				// Check Top-To-Bottom recycling trigger
+				if (topCellBottomY < topVisibleLimit && m_bottomVirtualIndex < Data.Length - 1)
+				{
+					int activePoolIndex = m_topVirtualIndex % m_poolSize;
+					m_topVirtualIndex++;
+					m_bottomVirtualIndex++;
+
+					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_bottomVirtualIndex);
+					processingRecycle = true;
+				}
+				// Check Bottom-To-Top recycling trigger
+				else if (bottomCellTopY > bottomVisibleLimit && m_topVirtualIndex > 0)
+				{
+					int activePoolIndex = m_bottomVirtualIndex % m_poolSize;
+					m_topVirtualIndex--;
+					m_bottomVirtualIndex--;
+
+					PositionCellAtIndex(m_cellRectPool[activePoolIndex], m_topVirtualIndex);
+					processingRecycle = true;
+				}
 			}
 		}
 
-		private Vector2 RecycleTopToBottom()
+		private void PositionCellAtIndex(RectTransform cellRect, int virtualIndex)
 		{
-			m_isRecycling = true;
-			int rowsShifted = 0;
-			float posY = m_isGrid ? m_cellRectPool[m_bottomMostCellIndex].anchoredPosition.y : 0;
-			int additionalRows = 0;
+			cellRect.name = $"Cell_{virtualIndex}";
+			cellRect.anchoredPosition = new Vector2(GetCellAnchoredX(virtualIndex), GetCellAnchoredY(virtualIndex));
+			cellRect.sizeDelta = new Vector2(m_cellWidth, m_cellHeight);
 
-			List<T> dataList = new List<T>(Data);
-
-			while ((m_cellRectPool[m_topMostCellIndex].position.y - (m_cellHeight / 2f)) > m_recyclableViewBounds.max.y && m_currentItemCount < Data.Length)
+			if (cellRect.TryGetComponent<IRecyclableCell<T>>(out var cellComp))
 			{
-				if (m_isGrid)
-				{
-					if (++m_bottomMostCellColumn >= m_columns)
-					{
-						rowsShifted++;
-						m_bottomMostCellColumn = 0;
-						posY = m_cellRectPool[m_bottomMostCellIndex].anchoredPosition.y - m_cellHeight;
-						additionalRows++;
-					}
-
-					float posX = m_bottomMostCellColumn * m_desiredCellWidth;
-					m_cellRectPool[m_topMostCellIndex].anchoredPosition = new Vector2(posX, posY);
-
-					if (++m_topMostCellColumn >= m_columns)
-					{
-						m_topMostCellColumn = 0;
-						additionalRows--;
-					}
-				}
-				else
-				{
-					posY = m_cellRectPool[m_bottomMostCellIndex].anchoredPosition.y - m_cellHeight;
-					m_cellRectPool[m_topMostCellIndex].anchoredPosition = new Vector2(m_cellRectPool[m_topMostCellIndex].anchoredPosition.x, posY);
-				}
-
-				if (m_cellRectPool[m_bottomMostCellIndex].TryGetComponent<IRecyclableCell<T>>(out var cellComp))
-					cellComp.ConfigureCell(m_currentItemCount, Data);
-
-				m_bottomMostCellIndex = m_topMostCellIndex;
-				m_topMostCellIndex = (m_topMostCellIndex + 1) % m_cellRectPool.Count;
-
-				m_currentItemCount++;
-				if (!m_isGrid) rowsShifted++;
+				cellComp.ConfigureCell(virtualIndex, Data);
 			}
-
-			if (m_isGrid)
-			{
-				m_content.sizeDelta += additionalRows * Vector2.up * m_cellHeight;
-				if (additionalRows > 0) rowsShifted -= additionalRows;
-			}
-
-			float shiftAmount = rowsShifted * m_cellHeight;
-			m_cellRectPool.ForEach((cell) => cell.anchoredPosition += Vector2.up * shiftAmount);
-			m_content.anchoredPosition -= Vector2.up * shiftAmount;
-
-			m_isRecycling = false;
-			return -new Vector2(0, shiftAmount);
 		}
 
-		private Vector2 RecycleBottomToTop()
+		private float GetCellAnchoredX(int virtualIndex)
 		{
-			m_isRecycling = true;
-			int rowsShifted = 0;
-			float posY = m_isGrid ? m_cellRectPool[m_topMostCellIndex].anchoredPosition.y : 0;
-			int additionalRows = 0;
+			if (!m_isGrid) 
+				return 0f;
 
-			List<T> dataList = new List<T>(Data);
+			int column = virtualIndex % m_columns;
+			return column * (m_cellWidth + m_spacingX);
+		}
 
-			while ((m_cellRectPool[m_bottomMostCellIndex].position.y + (m_cellHeight / 2f)) < m_recyclableViewBounds.min.y && m_currentItemCount > m_cellRectPool.Count)
-			{
-				if (m_isGrid)
-				{
-					if (--m_topMostCellColumn < 0)
-					{
-						rowsShifted++;
-						m_topMostCellColumn = m_columns - 1;
-						posY = m_cellRectPool[m_topMostCellIndex].anchoredPosition.y + m_cellHeight;
-						additionalRows++;
-					}
-
-					float posX = m_topMostCellColumn * m_desiredCellWidth;
-					m_cellRectPool[m_bottomMostCellIndex].anchoredPosition = new Vector2(posX, posY);
-
-					if (--m_bottomMostCellColumn < 0)
-					{
-						m_bottomMostCellColumn = m_columns - 1;
-						additionalRows--;
-					}
-				}
-				else
-				{
-					posY = m_cellRectPool[m_topMostCellIndex].anchoredPosition.y + m_cellHeight;
-					m_cellRectPool[m_bottomMostCellIndex].anchoredPosition = new Vector2(m_cellRectPool[m_bottomMostCellIndex].anchoredPosition.x, posY);
-					rowsShifted++;
-				}
-
-				m_currentItemCount--;
-				if (m_cellRectPool[m_bottomMostCellIndex].TryGetComponent<IRecyclableCell<T>>(out var cellComp))
-					cellComp.ConfigureCell(m_currentItemCount - m_cellRectPool.Count, Data);
-
-				m_topMostCellIndex = m_bottomMostCellIndex;
-				m_bottomMostCellIndex = (m_bottomMostCellIndex - 1 + m_cellRectPool.Count) % m_cellRectPool.Count;
-			}
-
-			if (m_isGrid)
-			{
-				m_content.sizeDelta += additionalRows * Vector2.up * m_cellHeight;
-				if (additionalRows > 0) rowsShifted -= additionalRows;
-			}
-
-			float shiftAmount = rowsShifted * m_cellHeight;
-			m_cellRectPool.ForEach((cell) => cell.anchoredPosition -= Vector2.up * shiftAmount);
-			m_content.anchoredPosition += Vector2.up * shiftAmount;
-
-			m_isRecycling = false;
-			return new Vector2(0, shiftAmount);
+		private float GetCellAnchoredY(int virtualIndex)
+		{
+			int row = m_isGrid ? (virtualIndex / m_columns) : virtualIndex;
+			return -m_cellMarginY - (row * (m_cellHeight + m_cellPaddingY));
 		}
 
 		private void SetTopAnchor(RectTransform rectTransform)
 		{
-			float width = rectTransform.rect.width;
-			float height = rectTransform.rect.height;
+			Vector2 originalSize = rectTransform.sizeDelta;
 			rectTransform.anchorMin = new Vector2(0.5f, 1);
 			rectTransform.anchorMax = new Vector2(0.5f, 1);
 			rectTransform.pivot = new Vector2(0.5f, 1);
-			rectTransform.sizeDelta = new Vector2(width, height);
+			rectTransform.sizeDelta = originalSize;
 		}
 
 		private void SetTopLeftAnchor(RectTransform rectTransform)
 		{
-			float width = rectTransform.rect.width;
-			float height = rectTransform.rect.height;
+			Vector2 originalSize = rectTransform.sizeDelta;
 			rectTransform.anchorMin = new Vector2(0, 1);
 			rectTransform.anchorMax = new Vector2(0, 1);
 			rectTransform.pivot = new Vector2(0, 1);
-			rectTransform.sizeDelta = new Vector2(width, height);
-		}
-
-		protected virtual void OnDrawGizmos()
-		{
-			Gizmos.color = Color.green;
-			Gizmos.DrawLine(m_recyclableViewBounds.min - new Vector3(2000, 0), m_recyclableViewBounds.min + new Vector3(2000, 0));
-			Gizmos.color = Color.red;
-			Gizmos.DrawLine(m_recyclableViewBounds.max - new Vector3(2000, 0), m_recyclableViewBounds.max + new Vector3(2000, 0));
+			rectTransform.sizeDelta = originalSize;
 		}
 	}
 }
