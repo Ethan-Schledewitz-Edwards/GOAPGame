@@ -113,7 +113,7 @@ public class Actor : Entity, IInteractor
 		}
 
 		if (m_targetTransform != null)
-			AIPathing.HandleRotation(m_targetTransform.position, t);
+			AIPathing.HandleRotation(m_targetTransform.position);
 	}
 
 	#region Actor Knowledge

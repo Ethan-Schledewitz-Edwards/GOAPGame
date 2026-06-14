@@ -62,6 +62,9 @@ public class ConstructionManager : MonoBehaviour
 			// Move the mesh out of the ground based on bounds
 			Bounds bounds = mesh.bounds;
 			blueprintObject.transform.position = position + new Vector3(0, bounds.extents.y, 0);
+
+			BoxCollider bpBoxCol = blueprintObject.AddComponent<BoxCollider>();
+			bpBoxCol.size = bounds.size;
 		}
 		else
 		{

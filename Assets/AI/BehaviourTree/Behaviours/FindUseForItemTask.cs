@@ -52,6 +52,6 @@ public class FindUseForItemTask : BTNodeBase
 	{
 		base.OnFirstEvaluate();
 
-		Debug.Log("Begin storage search");
+		Debug.Log("Trying to find a resource deposit.");
 	}
 }

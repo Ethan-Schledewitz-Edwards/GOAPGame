@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
 {
-	private static BehaviourTree m_cachedBlueprintBT;
+	private static BehaviourTree s_cachedBlueprintBT;
+
+	private const string c_interactionLayer = "Interaction";
 
 	public event Action<BlueprintIO> BlueprintCompleted;
 
@@ -19,7 +22,7 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 	private void Awake()
 	{
-		if (m_cachedBlueprintBT == null)
+		if (s_cachedBlueprintBT == null)
 		{
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
@@ -27,8 +30,10 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 				
 			});
 			tree.SetTree(root);
-			m_cachedBlueprintBT = tree;
+			s_cachedBlueprintBT = tree;
 		}
+
+		gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 	}
 
 	public override void UpdateSpeed(int extra)
@@ -56,5 +61,5 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		BlueprintCompleted?.Invoke(this);
 	}
 
-	public override BehaviourTree GetBehaviourTree() => m_cachedBlueprintBT;
+	public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
 }

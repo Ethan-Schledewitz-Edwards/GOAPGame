@@ -147,7 +147,7 @@ public class AIPathing : MonoBehaviour
 		}
 	}
 
-	public void HandleRotation(Vector3 targetLocation, float t)
+	public void HandleRotation(Vector3 targetLocation)
 	{
 		if (targetLocation != Vector3.zero)
 		{
@@ -156,7 +156,7 @@ public class AIPathing : MonoBehaviour
 
 			// Smoothly look at target
 			Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
-			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * t);
+			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * Time.deltaTime);
 		}
 	}
 
