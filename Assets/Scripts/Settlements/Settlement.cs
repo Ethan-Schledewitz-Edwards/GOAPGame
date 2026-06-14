@@ -1,56 +1,164 @@
+using InventorySystem;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Settlement : MonoBehaviour
+[Serializable]
+public class Settlement
 {
-	[SerializeField] InteractableObjectBase[] m_HousingBuildingsTemp;// Remove this when the player can build storage containers
-	[SerializeField] InteractableObjectBase[] m_StorageBuildingsTemp;// Remove this when the player can build storage containers
-
-	public List<InteractableObjectBase> ActorHouses { get; private set; } = new List<InteractableObjectBase>();
-	public List<InteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<InteractableObjectBase>();
-
 	public event Action<Vector3> OnSettlementBoundsUpdated;
 
-	private void Awake()
+	public int SettlementID { get; private set; }
+	public bool IsSettlementFriendly { get; private set; }
+	public bool IsSettlementBuildable { get; private set; }
+
+	public List<InteractableObjectBase> ActorHouses { get; private set; } = new List<InteractableObjectBase>();
+	public List<InteractableObjectBase> Blueprints { get; private set; } = new List<InteractableObjectBase>();
+	public List<InteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<InteractableObjectBase>();
+
+	public Settlement(int settlementID, bool isSettlementFriendly, bool isSettlementBuildable)
 	{
-		ActorHouses.AddRange(m_HousingBuildingsTemp);
-		ItemStorageBuildings.AddRange(m_StorageBuildingsTemp);
+		SettlementID = SettlementID;
+		IsSettlementFriendly = isSettlementFriendly;
+		IsSettlementBuildable = isSettlementBuildable;
 	}
+
+	#region ManagementMethods
 
 	public void AddActorHouse(InteractableObjectBase actorHouse)
 	{
-		ActorHouses.Add(actorHouse);
-		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		if (actorHouse != null && !ActorHouses.Contains(actorHouse))
+		{
+			ActorHouses.Add(actorHouse);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
+	}
+
+	public void RemoveActorHouse(InteractableObjectBase actorHouse)
+	{
+		if (actorHouse != null && ActorHouses.Contains(actorHouse))
+		{
+			ActorHouses.Remove(actorHouse);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
+	}
+
+	public void AddBlueprint(InteractableObjectBase blueprint)
+	{
+		if (blueprint != null && !Blueprints.Contains(blueprint))
+		{
+			Blueprints.Add(blueprint);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
+	}
+
+	public void RemoveBlueprint(InteractableObjectBase blueprint)
+	{
+		if (blueprint != null && Blueprints.Contains(blueprint))
+		{
+			Blueprints.Remove(blueprint);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
 	}
 
 	public void AddStorageBuilding(InteractableObjectBase storageBuilding)
 	{
-		ItemStorageBuildings.Add(storageBuilding);
-		OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		if (storageBuilding != null && !ItemStorageBuildings.Contains(storageBuilding))
+		{
+			ItemStorageBuildings.Add(storageBuilding);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
 	}
 
-	public InteractableObjectBase TryFindResourceStorage()
+	public void RemoveStorageBuilding(InteractableObjectBase storageBuilding)
 	{
-		//// Find a free item storage building for the correct item ID
-		//foreach (ActorInteractableObjectBase i in ItemStorageBuildings)
-		//{
-		//	if (i != null && i.TryGetComponent(out InventoryComponent inventoryComponent))
-		//	{
-		//		// Skip containers of the wrong type
-		//		if (i.ItemType.ItemID != itemID)
-		//			continue;
-
-		//		return i;
-		//	}
-		//}
-
-		return null;
+		if (storageBuilding != null && ItemStorageBuildings.Contains(storageBuilding))
+		{
+			ItemStorageBuildings.Remove(storageBuilding);
+			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
+		}
 	}
+	#endregion
+
+	public InteractableObjectBase FindActorHouse(Vector3 position)
+	{
+		InteractableObjectBase closest = null;
+		float minDistance = float.MaxValue;
+		foreach (var house in ActorHouses)
+		{
+			if (house == null) 
+				continue;
+			float dist = Vector3.Distance(house.transform.position, position);
+			if (dist < minDistance)
+			{
+				minDistance = dist;
+				closest = house;
+			}
+		}
+		return closest;
+	}
+
+	public InteractableObjectBase FindBlueprint(Vector3 position)
+	{
+		InteractableObjectBase closest = null;
+		float minDistance = float.MaxValue;
+		foreach (var blueprint in Blueprints)
+		{
+			if (blueprint == null) 
+				continue;
+			float dist = Vector3.Distance(blueprint.transform.position, position);
+			if (dist < minDistance)
+			{
+				minDistance = dist;
+				closest = blueprint;
+			}
+		}
+		return closest;
+	}
+
+	public InteractableObjectBase FindItemStorage(Vector3 position)
+	{
+		InteractableObjectBase closest = null;
+		float minDistance = float.MaxValue;
+		foreach (var storage in ItemStorageBuildings)
+		{
+			if (storage == null) 
+				continue;
+			float dist = Vector3.Distance(storage.transform.position, position);
+			if (dist < minDistance)
+			{
+				minDistance = dist;
+				closest = storage;
+			}
+		}
+		return closest;
+	}
+
+	#region Utility
 
 	public Vector3 GetSettlementCenter()
 	{
-		Vector3 center = Vector3.zero;
-		return center;
+		List<InteractableObjectBase> allStructures = new List<InteractableObjectBase>();
+		allStructures.AddRange(ActorHouses);
+		allStructures.AddRange(Blueprints);
+		allStructures.AddRange(ItemStorageBuildings);
+
+		if (allStructures.Count == 0)
+			return Vector3.zero;
+
+		Vector3 totalPosition = Vector3.zero;
+		int validCount = 0;
+
+		foreach (var structure in allStructures)
+		{
+			if (structure != null)
+			{
+				totalPosition += structure.transform.position;
+				validCount++;
+			}
+		}
+
+		return validCount > 0 ? totalPosition / validCount : Vector3.zero;
 	}
+	#endregion
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using InventorySystem.Items;
+using InventorySystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Item : InteractableObjectBase
@@ -31,7 +32,7 @@ public class Item : InteractableObjectBase
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new FindStorageTask(),
+				new FindUseForItemTask(),
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
 				new DepositTask()
@@ -49,17 +50,23 @@ public class Item : InteractableObjectBase
 			return;
 
 		// Add to actor inventory
-		bool isItemAdded = interactor.InventoryComponent.Inventory.TryAddItem(ItemData, StackSize);
-
-		if (isItemAdded)
+		if(interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
 		{
-			BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
-			if (executor != null)
-			{
-				executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
-			}
+			if (inventoryComponent.Inventory == null)
+				return;
 
-			OnPickup?.Invoke(this);
+			bool isItemAdded = inventoryComponent.Inventory.TryAddItem(ItemData, StackSize);
+
+			if (isItemAdded)
+			{
+				BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+				if (executor != null)
+				{
+					executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
+				}
+
+				OnPickup?.Invoke(this);
+			}
 		}
 	}
 

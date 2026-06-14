@@ -152,13 +152,13 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.87182665, y: 0.8870932, z: 1, w: 0.04195804}
+    m_Value: {x: 0.9029613, y: 0.9507009, z: 1, w: 0.04195804}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 0.9774613, y: 1, z: 0.9940102, w: 0}
+    m_Value: {x: 1, y: 0.9949412, z: 0.98868394, w: 0}
   highlights:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.20979021}
+    m_Value: {x: 0.9888797, y: 1, z: 0.9717978, w: 0.20979021}
   shadowsStart:
     m_OverrideState: 1
     m_Value: 0
@@ -186,7 +186,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 0.05
   contrast:
     m_OverrideState: 1
     m_Value: 8
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf1aba9553839d41ae37dd52e9ebcce, type: 3}
   m_Name: MotionBlur
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   mode:
     m_OverrideState: 0
     m_Value: 0

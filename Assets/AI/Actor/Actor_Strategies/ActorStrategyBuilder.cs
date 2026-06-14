@@ -111,7 +111,7 @@ public class ActorStrategyBuilder : MonoBehaviour
 	public void UpdateHouse(int houseID)
 	{
 		int settlementID = m_actor.SettlementID;
-		Vector3 housePos = SettlementManager.Instance.WorldSettlements[settlementID].ActorHouses[houseID].GetInteractionPositon();
+		Vector3 housePos = SettlementManager.s_WorldSettlements[settlementID].ActorHouses[houseID].GetInteractionPositon();
 
 		HashSet<AgentAction> actions = new HashSet<AgentAction>();
 		actions.Add(new AgentAction.ActionBuilder("MoveToHouse")

@@ -106,8 +106,7 @@ public class HarvestableHealthComponent : HealthComponent
 				m_actorLayerMask,
 				QueryTriggerInteraction.Collide);
 
-		HashSet<Actor> assignedActors = new HashSet<Actor>();
-
+		HashSet<IInteractor> interactors = new HashSet<IInteractor>();
 		for (int i = 0;i < m_droppedItems.Count; i++)
 		{
 			Item item = m_droppedItems[i];
@@ -118,23 +117,23 @@ public class HarvestableHealthComponent : HealthComponent
 
 			foreach (Collider hitCollider in hitColliders)
 			{
-				if (hitCollider.TryGetComponent(out Actor actor))
+				if (hitCollider.TryGetComponent(out IInteractor actor))
 				{
-					if (assignedActors.Contains(actor))
+					if (interactors.Contains(actor))
 						continue;
 
-					BehaviourTree actorBT = actor.BehaviourTreeExecutor.CurrentBehaviourTree;
-					AIContext aiContext = actor.BehaviourTreeExecutor.AIContext;
-					Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
-
-					// Ensure the actor was responsible for destroying this harvestable
-					if (actorBT != null &&
-						agentsTarget != null &&
-						transform == agentsTarget)
+					if(actor.Transform.TryGetComponent(out BehaviourTreeExecutor btExecutor))
 					{
-						item.TryInteract(actor);
-						assignedActors.Add(actor);
-						break;
+						AIContext aiContext = btExecutor.AIContext;
+						Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
+
+						// Ensure the actor was responsible for destroying this harvestable
+						if (transform == agentsTarget)
+						{
+							item.TryInteract(actor);
+							interactors.Add(actor);
+							break;
+						}
 					}
 				}
 			}

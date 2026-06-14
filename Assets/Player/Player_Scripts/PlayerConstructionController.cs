@@ -73,7 +73,13 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 		if (m_blueprintStructureData == null)
 			return;
 
-		ConstructionManager.Instance.PlaceStructureBlueprint(m_blueprintStructureData, position);
+		int nearestSettlementID = SettlementManager.GetClosestSettlementID(transform.position, true, true);
+
+		// Create a new player settlement if none were found
+		if (nearestSettlementID == -1)
+			SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
+
+		ConstructionManager.Instance.CreateStructureBlueprint(nearestSettlementID, m_blueprintStructureData, position);
 
 		CancleBlueprintPlacement();
 	}

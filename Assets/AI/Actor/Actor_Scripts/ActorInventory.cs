@@ -61,7 +61,10 @@ public class ActorInventory : InventoryComponent
 			);
 
 			if (itemObject.TryGetComponent(out Item item))
+			{
+				item.ConstrainPhysics(true);
 				OnPickedUpItem?.Invoke(item);
+			}
 		}
 	}
 
@@ -76,7 +79,7 @@ public class ActorInventory : InventoryComponent
 				child.parent = null;
 				child.position = m_dropItemPosition.position;
 
-				item.ConstrainPhysics(true);
+				item.ConstrainPhysics(false);
 				child.gameObject.layer = m_interactionLayerMask;
 				OnDroppedItem?.Invoke(item);
 			}

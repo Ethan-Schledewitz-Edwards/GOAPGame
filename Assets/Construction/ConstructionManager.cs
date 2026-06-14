@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ConstructionManager : MonoBehaviour
 {
@@ -23,7 +23,7 @@ public class ConstructionManager : MonoBehaviour
 		NewDevelopmentAttempted?.Invoke(structureData);
 	}
 
-	public void PlaceStructureBlueprint(StructureData structureData, Vector3 position)
+	public void CreateStructureBlueprint(int settlementID, StructureData structureData, Vector3 position)
 	{
 		if (structureData == null || structureData.StructureFeatureData?.Prefab == null)
 		{
@@ -39,8 +39,7 @@ public class ConstructionManager : MonoBehaviour
 		}
 
 		GameObject blueprintObject = new GameObject(structureData.DisplayName);
-		ActorBlueprintIO blueprintIO = blueprintObject.AddComponent<ActorBlueprintIO>();
-
+		BlueprintIO blueprintIO = blueprintObject.AddComponent<BlueprintIO>();
 
 		// Setup the local interaction offset of the structure being blueprinted
 		Transform interactionTransform = interactableObject.GetInteractionOffsetTransform();
@@ -68,5 +67,19 @@ public class ConstructionManager : MonoBehaviour
 		{
 			blueprintObject.transform.position = position;
 		}
+
+		// Add to settlement
+		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(blueprintIO);
+		blueprintIO.SetSettlementID(settlementID);
+		blueprintIO.BlueprintCompleted += OnBlueprintCompleted;
+	}
+
+	public void OnBlueprintCompleted(BlueprintIO blueprintIO)
+	{
+		blueprintIO.BlueprintCompleted -= OnBlueprintCompleted;
+
+		int settlementID = blueprintIO.SettlementID;
+		SettlementManager.s_WorldSettlements[settlementID].RemoveBlueprint(blueprintIO);
+		Destroy(blueprintIO.gameObject);
 	}
 }

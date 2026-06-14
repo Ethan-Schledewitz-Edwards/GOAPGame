@@ -1,10 +1,15 @@
 using BehaviourTrees;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActorBlueprintIO : InteractableObjectBase, IInteractableStructure<ActorBlueprintIO>
+public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
 {
 	private static BehaviourTree m_cachedBlueprintBT;
+
+	public event Action<BlueprintIO> BlueprintCompleted;
+
+	public int SettlementID { get; private set; }
 
 	[SerializeField] private float m_maxCapacity = 4f;
 	[SerializeField] private float m_actorsAssigned = 0f;
@@ -31,7 +36,7 @@ public class ActorBlueprintIO : InteractableObjectBase, IInteractableStructure<A
 
 	}
 
-	public void AssignActor(out ActorBlueprintIO structure)
+	public void AssignActor(out BlueprintIO structure)
 	{
 		if (ActorsAssigned < MaxCapacity)
 		{
@@ -39,6 +44,16 @@ public class ActorBlueprintIO : InteractableObjectBase, IInteractableStructure<A
 		}
 
 		structure = this;
+	}
+
+	public void SetSettlementID(int settlementID)
+	{
+		SettlementID = settlementID;
+	}
+
+	private void CompleteBlueprint()
+	{
+		BlueprintCompleted?.Invoke(this);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => m_cachedBlueprintBT;
