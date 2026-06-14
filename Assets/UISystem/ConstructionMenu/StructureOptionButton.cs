@@ -2,7 +2,7 @@ using TMPro;
 using UISystems.RecyclingScrollRect;
 using UnityEngine;
 
-public class StructureOptionButton : MonoBehaviour, IRecyclableCell<StructureData>
+public class StructureOptionButton : MenuButton, IRecyclableCell<StructureData>
 {
 	[SerializeField] private GameObject m_prefab;
 	public GameObject Prefab => m_prefab;
@@ -15,6 +15,7 @@ public class StructureOptionButton : MonoBehaviour, IRecyclableCell<StructureDat
 
 	[SerializeField] private TextMeshProUGUI m_structureTitleText;
 	[SerializeField] private TextMeshProUGUI m_cellIDText;
+	private StructureData m_structureData;
 
 	public void ConfigureCell(int index, StructureData[] data)
 	{
@@ -23,5 +24,15 @@ public class StructureOptionButton : MonoBehaviour, IRecyclableCell<StructureDat
 
 		if (m_cellIDText)
 			m_cellIDText.text = index.ToString();
+
+		m_structureData = data[index];
+	}
+
+	protected override void ButtonClicked()
+	{
+		base.ButtonClicked();
+
+		MenuManager.CloseMenu(m_parentMenu);
+		ConstructionManager.Instance.HandleBlueprintButton(m_structureData);
 	}
 }

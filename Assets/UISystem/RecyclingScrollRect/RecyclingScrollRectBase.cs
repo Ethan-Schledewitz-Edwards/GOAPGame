@@ -25,6 +25,7 @@ namespace UISystems.RecyclingScrollRect
 		[SerializeField] private RectTransform m_viewport, m_content;
 
 		// System
+		private Menu m_parentMenu;
 		private List<RectTransform> m_cellRectPool = new List<RectTransform>();
 
 		private float m_cellWidth, m_cellHeight;
@@ -34,8 +35,9 @@ namespace UISystems.RecyclingScrollRect
 		private int m_bottomCellIndex;
 		private int m_poolSize;
 
-		protected virtual void Start()
+		protected virtual void Awake()
 		{
+			m_parentMenu = GetComponentInParent<Menu>();
 			InitializeSystem();
 		}
 
@@ -103,6 +105,8 @@ namespace UISystems.RecyclingScrollRect
 				RectTransform itemRect = spawnedObj.GetComponent<RectTransform>();
 				itemRect.SetParent(m_content, false);
 				m_cellRectPool.Add(itemRect);
+				if (m_parentMenu != null && spawnedObj.TryGetComponent(out MenuButton menuButton))
+					m_parentMenu.AddMenuButton(menuButton);
 
 				currentPoolSize++;
 				int currentRows = Mathf.CeilToInt((float)currentPoolSize / (m_isGrid ? m_columns : 1));

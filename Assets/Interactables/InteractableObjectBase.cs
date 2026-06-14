@@ -66,6 +66,12 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		return m_interactOffset ? m_interactOffset : transform;
 	}
 
+	public void SetInteractionOffsetTransform(Transform transform, Vector3 localPosition)
+	{
+		m_interactOffset = transform;
+		m_interactOffset.localPosition = localPosition;
+	}
+
 	/// <summary>
 	/// Returns a valid position for an actor to move to on the interactables formation radius
 	/// </summary>

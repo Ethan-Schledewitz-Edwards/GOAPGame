@@ -15,8 +15,8 @@ public class MenuButton : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 	private bool m_forceSounds;
 
 	// System
-	private Button m_pairedButton;
-	private Menu m_parentMenu;
+	protected Button m_pairedButton;
+	protected Menu m_parentMenu;
 
 	private void Awake()
 	{
@@ -27,6 +27,7 @@ public class MenuButton : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 	{
 		m_parentMenu = menu;
 		m_pairedButton = GetComponent<Button>();
+		m_pairedButton.onClick.AddListener(ButtonClicked);
 	}
 
 	public void OnPointerEnter(PointerEventData eventData)
@@ -46,4 +47,6 @@ public class MenuButton : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 			MenuManager.AudioSource.PlayOneShot(clip);
 		}
 	}
+
+	protected virtual void ButtonClicked(){}
 }

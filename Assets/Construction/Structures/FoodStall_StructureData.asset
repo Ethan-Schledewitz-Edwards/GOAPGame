@@ -15,6 +15,7 @@ MonoBehaviour:
   <ID>k__BackingField: 0
   <DisplayName>k__BackingField: Food Stall
   <Description>k__BackingField: 
+  <StructureBlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   <StructureFeatureData>k__BackingField: {fileID: 11400000, guid: ac7167d341147b84bbe725822aae35cf, type: 2}
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}

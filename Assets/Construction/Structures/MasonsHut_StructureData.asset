@@ -15,6 +15,7 @@ MonoBehaviour:
   <ID>k__BackingField: 1
   <DisplayName>k__BackingField: Masons Hut
   <Description>k__BackingField: 
+  <StructureBlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   <StructureFeatureData>k__BackingField: {fileID: 11400000, guid: 27183139e6ad8e94b9f2aa79db3294a5, type: 2}
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}

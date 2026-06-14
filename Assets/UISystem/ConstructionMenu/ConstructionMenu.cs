@@ -5,11 +5,9 @@ using UnityEngine.UI;
 
 public class ConstructionMenu : Menu
 {
-
 	[Header("Sounds")]
 	[SerializeField] AudioClip openSound;
 	[SerializeField] AudioClip closeSound;
-
 
 	#region Initialization Methods
 

@@ -1,12 +1,13 @@
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Menu : UIElement
 {
 	[field: Header("Menu Buttons")]
-	[SerializeField] private MenuButton[] m_menuButtons;
+	[SerializeField] private List<MenuButton> m_menuButtons = new List<MenuButton>();
 
 	// System
 	public virtual bool IsUnclosable => false;
@@ -14,7 +15,6 @@ public abstract class Menu : UIElement
 	public virtual bool IsSubPauseMenu => false; // For menus like "Settings" that can enable in the pause menu
 
 	protected bool m_isMenuActive;
-
 
 	protected virtual void Start()
 	{
@@ -49,5 +49,17 @@ public abstract class Menu : UIElement
 		m_canvasGroup.alpha = active ? 1 : 0;
 		m_canvasGroup.interactable = active ? true : false;
 		m_canvasGroup.blocksRaycasts = active ? true : false;
+	}
+
+	public void AddMenuButton(MenuButton menuButton)
+	{
+		if(menuButton != null && !m_menuButtons.Contains(menuButton))
+			m_menuButtons.Add(menuButton);
+	}
+
+	public void RemoveMenuButton(MenuButton menuButton)
+	{
+		if (menuButton != null && m_menuButtons.Contains(menuButton))
+			m_menuButtons.Remove(menuButton);
 	}
 }

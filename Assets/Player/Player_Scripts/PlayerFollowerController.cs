@@ -2,40 +2,17 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public class PlayerFollowerController : MonoBehaviour, IInputHandler
+public class PlayerFollowerController : PlayerWorldControllerBase, IInputHandler
 {
-	// Constants
-	private const float k_selectionRadius = 1.0f;
-
-	private Camera m_mainCamera;
-	private Vector2 m_mousePosition;
-
-	[SerializeField] private LayerMask m_cursorBlockingLayers;
-	[SerializeField] private LayerMask m_actorLayers;
-	[SerializeField] private Transform m_cursorVisualizer;
+	[SerializeField] protected LayerMask m_actorLayers;
 
 	private List<Actor> m_followers = new List<Actor>();
 
 	private bool m_isSummonHeld = false;
 
-	#region Initialization Methods
-
-	public void Start()
-	{
-		m_mainCamera = Camera.main;
-
-		((IInputHandler)this).SetControlsSubscription(true);
-	}
-
-	private void OnDestroy()
-	{
-		((IInputHandler)this).SetControlsSubscription(false);
-	}
-	#endregion
-
 	#region Input Methods
 
-	public void Subscribe()
+	public override void Subscribe()
 	{
 		InputManager.Controls.Player.Look.performed += OnMouseInput;
 
@@ -45,7 +22,7 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 		InputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
 	}
 
-	public void UnSubscribe()
+	public override void UnSubscribe()
 	{
 		InputManager.Controls.Player.Look.performed -= OnMouseInput;
 
@@ -62,7 +39,7 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
 	{
-		TryAssignActor(m_cursorVisualizer.position);
+		TryAssignActor(m_cursorVisualizer.transform.position);
 	}
 
 	private void OnSecondaryInput(InputAction.CallbackContext context)
@@ -73,27 +50,23 @@ public class PlayerFollowerController : MonoBehaviour, IInputHandler
 
 	#region Monobehaviour Methods
 
-	private void Update()
+	protected override void Update()
 	{
-		Ray ray = m_mainCamera.ScreenPointToRay(m_mousePosition);
-
-		if (Physics.Raycast(ray, out RaycastHit hitData, 100f, m_cursorBlockingLayers))
-		{
-			m_cursorVisualizer.position = hitData.point;
-		}
+		base.Update();
 
 		if (m_isSummonHeld)
 		{
-			Select(m_cursorVisualizer.position);
+			Select(m_cursorVisualizer.transform.position);
 		}
 	}
 	#endregion
 
 	#region Actions
+
 	private void Select(Vector3 position)
 	{
 		// Try to select actors
-		Collider[] hitColliders = Physics.OverlapSphere(position, k_selectionRadius, m_actorLayers);
+		Collider[] hitColliders = Physics.OverlapSphere(position, c_SelectionRadius, m_actorLayers);
 
 		if (hitColliders.Length != 0)
 		{

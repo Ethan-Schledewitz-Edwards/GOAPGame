@@ -10,9 +10,12 @@ public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<Structure
 	private StructureData[] m_cachedData;
 	protected override StructureData[] m_data => m_cachedData;
 
-	private void Awake()
+	protected override void Awake()
 	{
 		if (m_structureIndex != null && m_structureIndex.Structures != null)
 			m_cachedData = m_structureIndex.Structures.ToArray();
+
+		// Initialize pool after the data is cached
+		base.Awake();
 	}
 }

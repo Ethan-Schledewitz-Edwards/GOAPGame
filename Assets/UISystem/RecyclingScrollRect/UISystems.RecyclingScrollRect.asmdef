@@ -1,7 +1,9 @@
 {
     "name": "UISystems.RecyclingScrollRect",
     "rootNamespace": "UISystems.RecyclingScrollRect",
-    "references": [],
+    "references": [
+        "GUID:5e549e5c8d4b5b14cafd196c6dc8eb10"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
