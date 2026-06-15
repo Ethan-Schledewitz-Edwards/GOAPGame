@@ -14,9 +14,7 @@ public class BehaviourTreeExecutor : MonoBehaviour
 	private void Awake()
 	{
 		AIContext = new AIContext();
-		AIContext.SetData<Transform>("ExecutorTransform", transform);
-		AIContext.SetData<float>("InteractionDist", m_interactionDist);
-		AIContext.SetData<int>("InteractionLayer", 1 << LayerMask.NameToLayer("Interaction"));
+		ResetContext();
 	}
 
 	public void SetCurrentBehaviourTree(BehaviourTree behaviourTree)
@@ -30,5 +28,13 @@ public class BehaviourTreeExecutor : MonoBehaviour
 		{
 			CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
 		}
+	}
+
+	public void ResetContext()
+	{
+		AIContext.ClearAllData();
+		AIContext.SetData<Transform>("ExecutorTransform", transform);
+		AIContext.SetData<float>("InteractionDist", m_interactionDist);
+		AIContext.SetData<int>("InteractionLayer", 1 << LayerMask.NameToLayer("Interaction"));
 	}
 }

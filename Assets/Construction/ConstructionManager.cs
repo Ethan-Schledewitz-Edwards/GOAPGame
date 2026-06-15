@@ -6,10 +6,10 @@ public class ConstructionManager : MonoBehaviour
 {
 	public static ConstructionManager Instance;
 
-	[SerializeField] private StructureIndex m_structureIndex;
+	[SerializeField] private BlueprintIndex m_structureIndex;
 	[SerializeField] private Material m_blueprintMaterial;
 
-	public event Action<StructureData> NewDevelopmentAttempted;
+	public event Action<BlueprintData> NewDevelopmentAttempted;
 
 	private void Awake()
 	{
@@ -18,27 +18,27 @@ public class ConstructionManager : MonoBehaviour
 		else Destroy(this);
 	}
 
-	public void HandleBlueprintButton(StructureData structureData)
+	public void HandleBlueprintButton(BlueprintData blueprintData)
 	{
-		NewDevelopmentAttempted?.Invoke(structureData);
+		NewDevelopmentAttempted?.Invoke(blueprintData);
 	}
 
-	public void CreateStructureBlueprint(int settlementID, StructureData structureData, Vector3 position)
+	public void CreateStructureBlueprint(int settlementID, BlueprintData blueprintData, Vector3 position)
 	{
-		if (structureData == null || structureData.StructureFeatureData?.Prefab == null)
+		if (blueprintData == null || blueprintData.BlueprintFeatureData?.Prefab == null)
 		{
 			Debug.LogError("StructureData or Prefab is missing!");
 			return;
 		}
 
-		GameObject prefab = structureData.StructureFeatureData.Prefab;
+		GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
 		if (!prefab.TryGetComponent(out InteractableObjectBase interactableObject))
 		{
 			Debug.LogError($"Prefab {prefab.name} is missing InteractableObjectBase!", prefab);
 			return;
 		}
 
-		GameObject blueprintObject = new GameObject(structureData.DisplayName);
+		GameObject blueprintObject = new GameObject(blueprintData.DisplayName);
 		BlueprintIO blueprintIO = blueprintObject.AddComponent<BlueprintIO>();
 
 		// Setup the local interaction offset of the structure being blueprinted
@@ -50,7 +50,7 @@ public class ConstructionManager : MonoBehaviour
 		offsetChild.transform.localPosition = localPos;
 		blueprintIO.SetInteractionOffsetTransform(offsetChild.transform, localPos);
 
-		Mesh mesh = structureData.StructureBlueprintMesh;
+		Mesh mesh = blueprintData.BlueprintMesh;
 		if (mesh != null)
 		{
 			MeshFilter meshFilter = blueprintObject.AddComponent<MeshFilter>();
@@ -73,7 +73,9 @@ public class ConstructionManager : MonoBehaviour
 
 		// Add to settlement
 		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(blueprintIO);
-		blueprintIO.SetSettlementID(settlementID);
+
+		// Init
+		blueprintIO.InitializeBlueprint(blueprintData.BlueprintFeatureData.TileID, settlementID, blueprintData.RequiredItems);
 		blueprintIO.BlueprintCompleted += OnBlueprintCompleted;
 	}
 

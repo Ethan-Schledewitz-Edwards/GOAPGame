@@ -2,7 +2,7 @@ using TMPro;
 using UISystems.RecyclingScrollRect;
 using UnityEngine;
 
-public class StructureOptionButton : MenuButton, IRecyclableCell<StructureData>
+public class BlueprintOptionButton : MenuButton, IRecyclableCell<BlueprintData>
 {
 	[SerializeField] private GameObject m_prefab;
 	public GameObject Prefab => m_prefab;
@@ -13,19 +13,19 @@ public class StructureOptionButton : MenuButton, IRecyclableCell<StructureData>
 	[SerializeField] private RectTransform m_rectTransform;
 	public RectTransform RectTransform => m_rectTransform;
 
-	[SerializeField] private TextMeshProUGUI m_structureTitleText;
+	[SerializeField] private TextMeshProUGUI m_blueprintTitleText;
 	[SerializeField] private TextMeshProUGUI m_cellIDText;
-	private StructureData m_structureData;
+	private BlueprintData m_blueprintData;
 
-	public void ConfigureCell(int index, StructureData[] data)
+	public void ConfigureCell(int index, BlueprintData[] data)
 	{
-		if (m_structureTitleText)
-			m_structureTitleText.text = data[index].DisplayName;
+		if (m_blueprintTitleText)
+			m_blueprintTitleText.text = data[index].DisplayName;
 
 		if (m_cellIDText)
 			m_cellIDText.text = index.ToString();
 
-		m_structureData = data[index];
+		m_blueprintData = data[index];
 	}
 
 	protected override void ButtonClicked()
@@ -33,6 +33,6 @@ public class StructureOptionButton : MenuButton, IRecyclableCell<StructureData>
 		base.ButtonClicked();
 
 		MenuManager.CloseMenu(m_parentMenu);
-		ConstructionManager.Instance.HandleBlueprintButton(m_structureData);
+		ConstructionManager.Instance.HandleBlueprintButton(m_blueprintData);
 	}
 }

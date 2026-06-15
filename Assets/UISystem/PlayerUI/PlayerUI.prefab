@@ -254,7 +254,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7075624701152163225}
   m_HandleRect: {fileID: 6229413768364362296}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -707,7 +707,7 @@ MonoBehaviour:
   m_recyclingThreshold: 0.1
   m_viewport: {fileID: 6958433849288330153}
   m_content: {fileID: 552459396684689779}
-  m_structureIndex: {fileID: 11400000, guid: dc899a36181c4904f9a2bb9c232de696, type: 2}
+  m_blueprintIndex: {fileID: 11400000, guid: 3e7777cff23412549867c6c4ba01fb8b, type: 2}
 --- !u!114 &2050900508717466529
 MonoBehaviour:
   m_ObjectHideFlags: 0

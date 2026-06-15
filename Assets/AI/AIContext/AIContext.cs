@@ -18,4 +18,9 @@ public class AIContext
 		}
 		return defaultValue;
 	}
+
+	public void ClearAllData()
+	{
+		m_data.Clear();
+	}
 }

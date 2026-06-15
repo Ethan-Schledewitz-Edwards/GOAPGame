@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using InventorySystem.Items;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,9 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 	public event Action<BlueprintIO> BlueprintCompleted;
 
+	public int FeatureTileID { get; private set; }
 	public int SettlementID { get; private set; }
+	public ItemQuantity[] RequiredItems { get; private set; }
 
 	[SerializeField] private float m_maxCapacity = 4f;
 	[SerializeField] private float m_actorsAssigned = 0f;
@@ -51,9 +54,11 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		structure = this;
 	}
 
-	public void SetSettlementID(int settlementID)
+	public void InitializeBlueprint(int featureTileID, int settlementID, ItemQuantity[] requiredItems)
 	{
+		FeatureTileID = featureTileID;
 		SettlementID = settlementID;
+		RequiredItems = requiredItems;
 	}
 
 	private void CompleteBlueprint()

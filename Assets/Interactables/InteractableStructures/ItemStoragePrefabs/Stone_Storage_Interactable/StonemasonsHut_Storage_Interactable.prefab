@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7252548703486566623}
   - component: {fileID: 9186016780483068045}
   m_Layer: 7
-  m_Name: MasonsHut_Storage_Interactable
+  m_Name: StonemasonsHut_Storage_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

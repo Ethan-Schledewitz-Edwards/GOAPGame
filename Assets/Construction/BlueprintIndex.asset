@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89516fb1d6ce2e143a329ad741b4a8a0, type: 3}
-  m_Name: StructureIndex
-  m_EditorClassIdentifier: Construction::StructureIndex
+  m_Script: {fileID: 11500000, guid: 85b6790cec3c41443b9b79fd3031ad5e, type: 3}
+  m_Name: BlueprintIndex
+  m_EditorClassIdentifier: Construction::BlueprintIndex
   <Assets>k__BackingField:
   - {fileID: 11400000, guid: b4f8d4cffa91c5849886a1850b15d65a, type: 2}
   - {fileID: 11400000, guid: 538c29dbee99fdb46bfb294e59fd420a, type: 2}
+  - {fileID: 11400000, guid: 9c8741652eeb23e4eb13ff5cbd7b6206, type: 2}
   - {fileID: 11400000, guid: 99299f47b23012e4f961314729285c82, type: 2}
   - {fileID: 11400000, guid: 85d50c4e7ab436347b11aee6ba0b2233, type: 2}
+  - {fileID: 11400000, guid: ff2956b0303aed748bcf2465d3a82983, type: 2}

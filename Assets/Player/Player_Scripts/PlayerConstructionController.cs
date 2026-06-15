@@ -9,9 +9,9 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 	[SerializeField] private Material m_validMaterial;
 	[SerializeField] private Material m_invalidMaterial;
 
-	private StructureData m_blueprintStructureData;
+	private BlueprintData m_blueprintStructureData;
 
-	public event Action<StructureData, Vector3> PlacedStructure;
+	public event Action<BlueprintData, Vector3> PlacedStructure;
 
 	protected override void Start()
 	{
@@ -92,12 +92,12 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 	}
 	#endregion
 
-	private void SetBlueprint(StructureData structureData)
+	private void SetBlueprint(BlueprintData structureData)
 	{
 		enabled = true;
 
 		m_blueprintStructureData = structureData;
-		Mesh mesh = m_blueprintStructureData.StructureBlueprintMesh;
+		Mesh mesh = m_blueprintStructureData.BlueprintMesh;
 
 		Material[] materials = new Material[1];
 		materials[0] = m_validMaterial;
@@ -105,6 +105,6 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 		Bounds bounds = mesh.bounds;
 		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
 
-		m_cursorVisualizer.SetVisuals(structureData.StructureBlueprintMesh, materials, localOffset);
+		m_cursorVisualizer.SetVisuals(structureData.BlueprintMesh, materials, localOffset);
 	}
 }

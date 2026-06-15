@@ -63,6 +63,8 @@ public class DepositTask : BTNodeBase
 			return m_nodeState;
 		}
 
+		float prevTimeout = aiContext.GetData<float>("Timeout");
+		aiContext.SetData<float>("Timeout", prevTimeout + t);
 		m_nodeState = EBTNodeState.STATE_FAILURE;
 		return m_nodeState;
 	}

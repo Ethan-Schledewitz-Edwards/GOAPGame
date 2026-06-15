@@ -33,6 +33,8 @@ public class CheckForTargetRangeTask : BTNodeBase
 			}
 		}
 
+		float prevTimeout = aiContext.GetData<float>("Timeout");
+		aiContext.SetData<float>("Timeout", prevTimeout + t);
 		m_nodeState = EBTNodeState.STATE_FAILURE;
 		return m_nodeState;
 	}

@@ -135,10 +135,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b98a51782cf08f4f88040544236ebb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UISystems.ConstructionMenu::StructureOptionButton
+  m_hoverButton: {fileID: 0}
+  m_pressButton: {fileID: 0}
+  m_forceSounds: 0
   m_prefab: {fileID: 27210632845378984}
   m_gameObject: {fileID: 27210632845378984}
   m_rectTransform: {fileID: 5449466222311272019}
-  m_structureTitleText: {fileID: 2350917437329347507}
+  m_blueprintTitleText: {fileID: 2350917437329347507}
   m_cellIDText: {fileID: 8346234915607108181}
 --- !u!1 &7199852443955024783
 GameObject:

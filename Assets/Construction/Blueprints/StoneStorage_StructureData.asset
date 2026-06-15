@@ -9,14 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dac716d14b672945811f1e333f1cb40, type: 3}
-  m_Name: TwigHut_StructureData
+  m_Script: {fileID: 11500000, guid: 9852f30a1a92a4347b7b480b61aa7eec, type: 3}
+  m_Name: StoneStorage_StructureData
   m_EditorClassIdentifier: Construction::StructureData
   <ID>k__BackingField: 2
-  <DisplayName>k__BackingField: Twig Hut
+  <DisplayName>k__BackingField: Stone Storage
   <Description>k__BackingField: 
-  <StructureBlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  <StructureFeatureData>k__BackingField: {fileID: 11400000, guid: 98ba6773ab1510847b17fdc5c60201e9, type: 2}
+  <BlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 27183139e6ad8e94b9f2aa79db3294a5, type: 2}
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-    amount: 15
+    amount: 30
+  - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
+    amount: 30

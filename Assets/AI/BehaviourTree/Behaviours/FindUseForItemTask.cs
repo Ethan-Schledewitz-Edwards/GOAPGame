@@ -17,33 +17,31 @@ public class FindUseForItemTask : BTNodeBase
 		InteractableObjectBase closestBlueprint = null;
 		InteractableObjectBase closestStorage = null;
 
-		if (closestSettlement == null)
+		if (closestSettlement != null)
 		{
-			// Fail if there are no settlements to bring the item to
-			m_nodeState = EBTNodeState.STATE_FAILURE;
-			return m_nodeState;
+			closestBlueprint = closestSettlement.FindBlueprint(executorPos);
+			if (closestBlueprint != null)
+			{
+				aiContext.SetData<Transform>("TargetTransform", closestBlueprint.transform);
+				aiContext.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
+
+				m_nodeState = EBTNodeState.STATE_SUCSESS;
+				return m_nodeState;
+			}
+
+			closestStorage = closestSettlement.FindItemStorage(executorPos);
+			if (closestStorage != null)
+			{
+				aiContext.SetData<Transform>("TargetTransform", closestStorage.transform);
+				aiContext.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
+
+				m_nodeState = EBTNodeState.STATE_SUCSESS;
+				return m_nodeState;
+			}
 		}
 
-		closestBlueprint = closestSettlement.FindBlueprint(executorPos);
-		if (closestBlueprint != null)
-		{
-			aiContext.SetData<Transform>("TargetTransform", closestBlueprint.transform);
-			aiContext.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
-
-			m_nodeState = EBTNodeState.STATE_SUCSESS;
-			return m_nodeState;
-		}
-
-		closestStorage = closestSettlement.FindItemStorage(executorPos);
-		if (closestStorage != null)
-		{
-			aiContext.SetData<Transform>("TargetTransform", closestStorage.transform);
-			aiContext.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
-
-			m_nodeState = EBTNodeState.STATE_SUCSESS;
-			return m_nodeState;
-		}
-
+		float prevTimeout = aiContext.GetData<float>("Timeout");
+		aiContext.SetData<float>("Timeout", prevTimeout + t);
 		m_nodeState = EBTNodeState.STATE_FAILURE;
 		return m_nodeState;
 	}

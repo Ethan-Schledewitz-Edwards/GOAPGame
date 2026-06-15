@@ -46,6 +46,7 @@ public class Actor : Entity, IInteractor
 
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
+	private float m_timeIdleAtWork;
 
 	private Transform m_targetTransform; // Used while in the follow state
 
@@ -108,7 +109,12 @@ public class Actor : Entity, IInteractor
 
 			case EActorState.STATE_Working:
 				if (BehaviourTreeExecutor != null)
+				{
 					BehaviourTreeExecutor.TickBehaviour(t);
+
+					if (BehaviourTreeExecutor.AIContext.GetData<float>("Timeout") > c_waitingForJobLimit)
+						ClearLogicExecutorState();
+				}
 				break;
 		}
 
@@ -178,6 +184,7 @@ public class Actor : Entity, IInteractor
 
 		// Reset behaviour
 		BehaviourTreeExecutor?.SetCurrentBehaviourTree(null);
+		BehaviourTreeExecutor?.ResetContext();
 		m_timeFindingJob = 0;
 
 		// Try to drop item
@@ -266,8 +273,11 @@ public class Actor : Entity, IInteractor
 	// Checks if this actor should be searching for a task, then attempts to assign one if needed.
 	private void TryTaskSearch(float t)
 	{
-		bool isJobNeeded = m_logicExecutorState == EActorState.STATE_SearchingForWork &&
-			m_targetTransform == null;
+		bool isIdle = (m_logicExecutorState == EActorState.STATE_Working &&
+			BehaviourTreeExecutor.CurrentBehaviourTree == null);
+
+		bool isJobNeeded = (m_logicExecutorState == EActorState.STATE_SearchingForWork &&
+			m_targetTransform == null) || isIdle;
 
 		if (isJobNeeded && AIPathing.PathDistRemaining() < 1f)
 		{
