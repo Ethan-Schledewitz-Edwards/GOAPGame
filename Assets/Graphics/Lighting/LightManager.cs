@@ -20,7 +20,7 @@ public class LightManager : MonoBehaviour
 			float sunriseHr = (m_lightingProfile.SunriseHr / 24f);
 			float sunsetHr = (m_lightingProfile.SunsetHr / 24f);
 
-			float adjustedTime = NormalizeTime(m_gameManager.GetTimeOfDayFract(), sunriseHr, sunsetHr);
+			float adjustedTime = NormalizeTime(m_gameManager.GetTimeOfDayFraction(), sunriseHr, sunsetHr);
 			UpdateLighting(adjustedTime);
 		}
 	}

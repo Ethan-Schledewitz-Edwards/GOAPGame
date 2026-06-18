@@ -86,13 +86,13 @@ public class HarvestableHealthComponent : HealthComponent
 				{
 					// Track the dropped item
 					m_droppedItems.Add(item);
-					item.OnPickup += RemoveTrackedItem;
+					item.ItemPickedUp += OnItemPickedUp;
 				}
 			}
 		}
 	}
 
-	private void RemoveTrackedItem(Item item)
+	private void OnItemPickedUp(Item item)
 	{
 		if(m_droppedItems.Contains(item))
 			m_droppedItems.Remove(item);

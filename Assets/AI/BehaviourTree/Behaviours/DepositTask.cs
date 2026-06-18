@@ -5,74 +5,80 @@ using InventorySystem.Items;
 
 public class DepositTask : BTNodeBase
 {
-	private bool m_doneDepositing;
+	private float m_depositCooldown = 0.5f;
 
-	public override EBTNodeState Evaluate(AIContext aiContext, float t)
+	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		base.Evaluate(aiContext, t);
+		string doneKey = GetContextKey("DoneDepositing");
+		string cooldownKey = GetContextKey("CooldownTimer");
 
-		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = aiContext.GetData<Transform>("TargetTransform");
-
-		if (executorTransform.TryGetComponent(out InventoryComponent executorInvComp))
+		if (context.GetData<bool>(doneKey))
 		{
-			if (targetTransform != null && targetTransform.TryGetComponent(out InventoryComponent storageInvComp))
-			{
-				Inventory executorInventory = executorInvComp.Inventory;
+			return EBTNodeState.STATE_SUCSESS;
+		}
 
-				// Add the actors first held item
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+
+		if (targetTransform == null)
+		{
+			return EBTNodeState.STATE_FAILURE;
+		}
+
+		if (executorTransform.TryGetComponent(out InventoryComponent executorInvComp) &&
+			targetTransform.TryGetComponent(out InventoryComponent storageInvComp))
+		{
+			float currentCooldown = context.GetData<float>(cooldownKey) - t;
+
+			if (currentCooldown <= 0f)
+			{
+				context.SetData<float>(cooldownKey, m_depositCooldown);
+
+				Inventory executorInventory = executorInvComp.Inventory;
+				bool foundAnItemToDeposit = false;
+
 				for (int i = 0; i < executorInventory.Slots.Count; i++)
 				{
 					InventorySlot slot = executorInventory.Slots[i];
-
 					ItemData itemData = slot.SlotsItem;
 					int stackSize = slot.AmountInSlot;
 
-					Debug.Log($"Checking Slot {i}: Item={slot.SlotsItem}, Amount={slot.AmountInSlot}");
-
-					// Skip empty slots
 					if (itemData == null || stackSize <= 0)
 						continue;
 
-					// Attempt Deposit
+					foundAnItemToDeposit = true;
 					bool isItemAdded = storageInvComp.Inventory.TryAddItem(itemData, stackSize);
 
-					// Clear actors slot
 					if (isItemAdded)
 					{
-						Debug.Log("PUT ITEM IN deposit");
+						Debug.Log($"Deposited slot {i}.");
 						slot.ClearSlot();
 					}
+					else
+						return EBTNodeState.STATE_FAILURE;
+
+					break; // Only deposit one item per tick
 				}
 
-				m_doneDepositing = true;
+				if (!foundAnItemToDeposit)
+				{
+					context.SetData<bool>(doneKey, true);
+					return EBTNodeState.STATE_SUCSESS;
+				}
 			}
-			else if (targetTransform == null)
+			else
 			{
-				m_nodeState = EBTNodeState.STATE_FAILURE;
-				return m_nodeState;
+				context.SetData<float>(cooldownKey, currentCooldown);
 			}
 
-			if (m_doneDepositing)
-			{
-				m_nodeState = EBTNodeState.STATE_SUCSESS;
-				return m_nodeState;
-			}
-
-			m_nodeState = EBTNodeState.STATE_RUNNING;
-			return m_nodeState;
+			return EBTNodeState.STATE_RUNNING;
 		}
 
-		float prevTimeout = aiContext.GetData<float>("Timeout");
-		aiContext.SetData<float>("Timeout", prevTimeout + t);
-		m_nodeState = EBTNodeState.STATE_FAILURE;
-		return m_nodeState;
+		return EBTNodeState.STATE_FAILURE;
 	}
 
-	protected override void OnFirstEvaluate()
+	protected override void OnFirstEvaluate(AIContext context)
 	{
-		base.OnFirstEvaluate();
-
 		Debug.Log("Begin deposit");
 	}
 }

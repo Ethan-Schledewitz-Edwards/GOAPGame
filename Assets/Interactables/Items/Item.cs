@@ -18,7 +18,7 @@ public class Item : InteractableObjectBase
 	[field: SerializeField] public int StackSize { get; private set; } = 1;
 
 	// Events
-	public Action<Item> OnPickup;
+	public Action<Item> ItemPickedUp;
 
 	// System
 	public override bool UseFormationRadius { get => false; }
@@ -30,12 +30,17 @@ public class Item : InteractableObjectBase
 		if (m_ItemBT == null)
 		{
 			BehaviourTree tree = new BehaviourTree();
+
+			BTNodeBase findUseTask = new FindUseForItemTask();
+			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 10f, "Timeout");
+			BTNodeBase depositTask = new DepositTask();
+			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 5f, "Timeout");
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new FindUseForItemTask(),
+				timeoutSearch,
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
-				new DepositTask()
+				timeoutDeposit
 			});
 			tree.SetTree(root);
 			m_ItemBT = tree;
@@ -56,7 +61,6 @@ public class Item : InteractableObjectBase
 				return;
 
 			bool isItemAdded = inventoryComponent.Inventory.TryAddItem(ItemData, StackSize);
-
 			if (isItemAdded)
 			{
 				BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
@@ -65,8 +69,10 @@ public class Item : InteractableObjectBase
 					executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
 				}
 
-				OnPickup?.Invoke(this);
+				ItemPickedUp?.Invoke(this);
 			}
+
+			Destroy(gameObject);
 		}
 	}
 

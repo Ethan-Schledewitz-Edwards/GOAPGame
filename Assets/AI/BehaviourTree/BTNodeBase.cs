@@ -13,12 +13,10 @@ namespace BehaviourTrees
 
 	public abstract class BTNodeBase
 	{
-		protected EBTNodeState m_nodeState;
+		public readonly string NodeID = Guid.NewGuid().ToString();
 
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
-
-		private bool m_hasBeganEvaluation = false;
 
         #region Consturctors
 
@@ -37,29 +35,47 @@ namespace BehaviourTrees
 				AddChild(i);
 			}
 		}
-        #endregion
+		#endregion
 
-        public virtual EBTNodeState Evaluate(AIContext aIContext, float t)
+		protected string GetContextKey(string propertyName)
 		{
-			// Dirty flag to allow logic for a notes first evaluation
-			if (!m_hasBeganEvaluation)
+			return $"{NodeID}_{propertyName}";
+		}
+
+		public EBTNodeState Evaluate(AIContext context, float t)
+		{
+			string beganKey = GetContextKey("HasBegan");
+			if (!context.GetData<bool>(beganKey))
 			{
-				m_hasBeganEvaluation = true;
-				OnFirstEvaluate();
+				context.SetData<bool>(beganKey, true);
+				OnFirstEvaluate(context);
 			}
 
-			return EBTNodeState.STATE_FAILURE;
-		} 
+			return OnUpdate(context, t);
+		}
 
-		protected virtual void OnFirstEvaluate() {}
+		protected abstract EBTNodeState OnUpdate(AIContext context, float t);
 
-        private void AddChild(BTNodeBase node)
-        {
-            node.SetParentNode(this);
-            m_childNodes.Add(node);
-        }
+		public virtual void Reset(AIContext context)
+		{
+			string beganKey = GetContextKey("HasBegan");
+			context.SetData<bool>(beganKey, false);
 
-        public void SetParentNode(BTNodeBase node)
+			foreach (BTNodeBase child in m_childNodes)
+			{
+				child.Reset(context);
+			}
+		}
+
+		protected virtual void OnFirstEvaluate(AIContext context) { } // Only if children need it
+
+		private void AddChild(BTNodeBase node)
+		{
+			node.SetParentNode(this);
+			m_childNodes.Add(node);
+		}
+
+		public void SetParentNode(BTNodeBase node)
 		{
 			m_parentNode = node;
 		}
@@ -68,5 +84,5 @@ namespace BehaviourTrees
 		{
 			return m_parentNode;
 		}
-    }
+	}
 }

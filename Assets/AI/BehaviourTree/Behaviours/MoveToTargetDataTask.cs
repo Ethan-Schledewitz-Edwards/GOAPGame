@@ -6,46 +6,37 @@ public class MoveToTargetDataTask : BTNodeBase
 {
 	private const float c_targetingRangeSqrt = 0.3f * 0.3f;
 
-	public override EBTNodeState Evaluate(AIContext aiContext, float t)
+	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		base.Evaluate(aiContext, t);
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
 
-		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
-		Vector3 targetPos = aiContext.GetData<Vector3>("TargetPosition");
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		if (targetTransform == null)
+			return EBTNodeState.STATE_FAILURE;
 
-		if (executorTransform.TryGetComponent(out AIPathing pathing)) 
+		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
-			if (targetPos != Vector3.zero)
-			{
-				Vector3 offset = targetPos - executorTransform.position;
-				float sqrDist = offset.sqrMagnitude;
+			Vector3 offset = targetPos - executorTransform.position;
 
-				// Compare against the pre-calculated squared range
-				bool isInRange = (sqrDist <= c_targetingRangeSqrt);
+			if (offset.sqrMagnitude <= c_targetingRangeSqrt)
+				return EBTNodeState.STATE_SUCSESS;
 
-				// Set destination if not within range
-				if (!isInRange)
-				{
-					pathing.SetDestination(targetPos);
-				}
-				else
-				{
-					// Within range
-					m_nodeState = EBTNodeState.STATE_SUCSESS;
-					return m_nodeState;
-				}
-			}
-			else
-			{
-				m_nodeState = EBTNodeState.STATE_FAILURE;
-				return m_nodeState;
-			}
-
-			m_nodeState = EBTNodeState.STATE_RUNNING;
-			return m_nodeState;
+			// We are still walking.
+			return EBTNodeState.STATE_RUNNING;
 		}
 
-		m_nodeState = EBTNodeState.STATE_FAILURE;
-		return m_nodeState;
+		return EBTNodeState.STATE_FAILURE;
+	}
+
+	protected override void OnFirstEvaluate(AIContext context)
+	{
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
+
+		if (executorTransform.TryGetComponent(out AIPathing pathing))
+		{
+			pathing.SetDestination(targetPos);
+		}
 	}
 }

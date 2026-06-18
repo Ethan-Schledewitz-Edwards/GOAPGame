@@ -3,53 +3,38 @@ using UnityEngine;
 
 public class FindUseForItemTask : BTNodeBase
 {
-	private bool m_isStorageAvailable;
-
-	public override EBTNodeState Evaluate(AIContext aiContext, float t)
+	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		base.Evaluate(aiContext,t);
-
-		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
 		Vector3 executorPos = executorTransform.position;
-		int heldItemID = aiContext.GetData<int>("HeldItemID");
 
 		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
-		InteractableObjectBase closestBlueprint = null;
-		InteractableObjectBase closestStorage = null;
-
 		if (closestSettlement != null)
 		{
-			closestBlueprint = closestSettlement.FindBlueprint(executorPos);
+			InteractableObjectBase closestBlueprint = closestSettlement.FindBlueprint(executorPos);
 			if (closestBlueprint != null)
 			{
-				aiContext.SetData<Transform>("TargetTransform", closestBlueprint.transform);
-				aiContext.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
+				context.SetData<Transform>("TargetTransform", closestBlueprint.transform);
+				context.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
 
-				m_nodeState = EBTNodeState.STATE_SUCSESS;
-				return m_nodeState;
+				return EBTNodeState.STATE_SUCSESS;
 			}
 
-			closestStorage = closestSettlement.FindItemStorage(executorPos);
+			InteractableObjectBase closestStorage = closestSettlement.FindItemStorage(executorPos);
 			if (closestStorage != null)
 			{
-				aiContext.SetData<Transform>("TargetTransform", closestStorage.transform);
-				aiContext.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
+				context.SetData<Transform>("TargetTransform", closestStorage.transform);
+				context.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
 
-				m_nodeState = EBTNodeState.STATE_SUCSESS;
-				return m_nodeState;
+				return EBTNodeState.STATE_SUCSESS;
 			}
 		}
 
-		float prevTimeout = aiContext.GetData<float>("Timeout");
-		aiContext.SetData<float>("Timeout", prevTimeout + t);
-		m_nodeState = EBTNodeState.STATE_FAILURE;
-		return m_nodeState;
+		return EBTNodeState.STATE_RUNNING;
 	}
 
-	protected override void OnFirstEvaluate()
+	protected override void OnFirstEvaluate(AIContext context)
 	{
-		base.OnFirstEvaluate();
-
 		Debug.Log("Trying to find a resource deposit.");
 	}
 }

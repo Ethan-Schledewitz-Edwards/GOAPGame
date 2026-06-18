@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 
 	[field: SerializeField] public GameObject PlayerObject { get; private set; }
 
+	public event Action<int, int> ClockUpdated;
+
 	private void Awake()
 	{
 		if (Instance == null)
@@ -16,24 +18,22 @@ public class GameManager : MonoBehaviour
 		//SpawnPlayer();
 	}
 
-	/*
 	void Update()
 	{
-		Debug.Log("Time of Day (fraction): " + GetTimeOfDayFract());
+		(int currentHour, int currentMinute) = GetTimeOfDay();
+		ClockUpdated?.Invoke(currentHour, currentMinute);
 	}
-	*/
 
-	public float GetTimeOfDayFract()
+	public float GetTimeOfDayFraction()
 	{
 		DateTime currentTime = DateTime.Now;
 		float fractionOfDay = currentTime.Hour / 24f + currentTime.Minute / 1440f;
 		return fractionOfDay;
 	}
 
-	public float GetTimeOfDay()
+	public (int, int) GetTimeOfDay()
 	{
 		DateTime currentTime = DateTime.Now;
-		float fractionOfDay = currentTime.Hour / 24f + currentTime.Minute / 1440f;
-		return fractionOfDay;
+		return (currentTime.Hour, currentTime.Minute);
 	}
 }

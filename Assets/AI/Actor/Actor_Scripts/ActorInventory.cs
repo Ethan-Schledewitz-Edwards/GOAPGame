@@ -29,27 +29,18 @@ public class ActorInventory : InventoryComponent
 
 	private void OnEnable()
 	{
-		Inventory.OnSlotChanged += UpdateHeldItem;
+		Inventory.SlotChanged += OnInventorySlotChanged;
 	}
 
 	private void OnDisable()
 	{
-		Inventory.OnSlotChanged -= UpdateHeldItem;
+		Inventory.SlotChanged -= OnInventorySlotChanged;
 	}
 	#endregion
 
-	private void UpdateHeldItem(InventorySlot inventorySlot)
+	private void OnInventorySlotChanged(InventorySlot inventorySlot)
 	{
 		TryDropHeldItem();
-
-		// Destroy any present children
-		if (m_heldItemPosition.childCount > 0)
-		{
-			for (int i = m_heldItemPosition.childCount - 1; i >= 0; i--)
-			{
-				Destroy(m_heldItemPosition.GetChild(i).gameObject);
-			}
-		}
 
 		// Create visual if the held slot has an item
 		if (inventorySlot == m_heldItemSlot && m_heldItemSlot.SlotsItem != null) 
@@ -73,7 +64,6 @@ public class ActorInventory : InventoryComponent
 		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
 		foreach (Transform child in allChildren)
 		{
-			Debug.Log(child.name);
 			if (child != null && child.TryGetComponent(out Item item))
 			{
 				child.parent = null;
@@ -91,11 +81,8 @@ public class ActorInventory : InventoryComponent
 		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
 		foreach (Transform child in allChildren)
 		{
-			Debug.Log(child.name);
 			if (child != null)
-			{
 				Destroy(child.gameObject);
-			}
 		}
 	}
 }

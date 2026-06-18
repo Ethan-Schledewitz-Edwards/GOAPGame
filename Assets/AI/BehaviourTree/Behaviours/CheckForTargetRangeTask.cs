@@ -3,39 +3,35 @@ using UnityEngine;
 
 public class CheckForTargetRangeTask : BTNodeBase
 {
-	public override EBTNodeState Evaluate(AIContext aiContext, float t)
+	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		base.Evaluate(aiContext, t);
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		float interactionRange = context.GetData<float>("InteractionDist");
+		int interactionLayer = context.GetData<int>("InteractionLayer");
 
-		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = aiContext.GetData<Transform>("TargetTransform");
-		float interactionRange = aiContext.GetData<float>("InteractionDist");
-		int interactionLayer = aiContext.GetData<int>("InteractionLayer");
-
-		// Check surroundings
-		Collider[] hitColliders = Physics.OverlapSphere(executorTransform.position,
-				interactionRange,
-				interactionLayer,
-				QueryTriggerInteraction.Collide);
-
-		if (targetTransform != null)
+		if (targetTransform == null)
 		{
-			// Check if we are overlapping with the target
-			foreach (Collider i in hitColliders)
+			return EBTNodeState.STATE_FAILURE;
+		}
+
+		Collider[] hitColliders = Physics.OverlapSphere(
+			executorTransform.position,
+			interactionRange,
+			interactionLayer,
+			QueryTriggerInteraction.Collide);
+
+		foreach (Collider i in hitColliders)
+		{
+			if (i.transform == targetTransform)
 			{
-				if (i.transform != targetTransform)
-					continue;
-
 				Debug.Log("AT TARGET: " + executorTransform.name);
-
-				m_nodeState = EBTNodeState.STATE_SUCSESS;
-				return m_nodeState;
+				return EBTNodeState.STATE_SUCSESS;
 			}
 		}
 
-		float prevTimeout = aiContext.GetData<float>("Timeout");
-		aiContext.SetData<float>("Timeout", prevTimeout + t);
-		m_nodeState = EBTNodeState.STATE_FAILURE;
-		return m_nodeState;
+		return EBTNodeState.STATE_FAILURE;
 	}
+
+	protected override void OnFirstEvaluate(AIContext context) { }
 }

@@ -19,6 +19,11 @@ public class AIContext
 		return defaultValue;
 	}
 
+	public void ClearData(string key)
+	{
+		m_data.Remove(key);
+	}
+
 	public void ClearAllData()
 	{
 		m_data.Clear();

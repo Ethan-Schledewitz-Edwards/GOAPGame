@@ -4,40 +4,46 @@ using UnityEngine;
 
 public class AttackTask : BTNodeBase
 {
-	private const int c_timeBetweenAttacks = 2;
+	private float m_timeBetweenAttacks = 2f;
+	private int m_attackDamage = 2;
 
-	private float m_attackTimer;
-
-	public override EBTNodeState Evaluate(AIContext aiContext, float t)
+	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		base.Evaluate(aiContext,t);
+		string timerKey = GetContextKey("AttackTimer");
 
-		Transform executorTransform = aiContext.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = aiContext.GetData<Transform>("TargetTransform");
-		HealthComponent harvestable = null;
+		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
 
-		if(targetTransform != null && targetTransform.TryGetComponent(out HealthComponent health))
+		if (targetTransform == null)
 		{
-			harvestable = health;
-
-			m_attackTimer += t;
-			if (m_attackTimer >= c_timeBetweenAttacks)
-			{
-				m_attackTimer = 0;
-				Debug.Log("ATTACK");
-
-				if (harvestable != null)
-				{
-					Vector3 harvestablePos = harvestable.transform.position;
-					Vector3 attackDir = harvestable.transform.position - executorTransform.position;
-
-					// Reduce object hitpoints
-					harvestable.TryTakeDamage(2, harvestable.transform.position, attackDir);
-				}
-			}
+			return EBTNodeState.STATE_FAILURE;
 		}
 
-		m_nodeState = EBTNodeState.STATE_RUNNING;
-		return m_nodeState;
+		if (targetTransform.TryGetComponent(out HealthComponent health))
+		{
+
+			float currentTimer = context.GetData<float>(timerKey) + t;
+
+			if (currentTimer >= m_timeBetweenAttacks)
+			{
+				context.SetData<float>(timerKey, 0f);
+				Debug.Log("ATTACK");
+				Vector3 attackDir = targetTransform.position - executorTransform.position;
+				health.TryTakeDamage(m_attackDamage, targetTransform.position, attackDir);
+			}
+			else
+			{
+				context.SetData<float>(timerKey, currentTimer);
+			}
+
+			return EBTNodeState.STATE_RUNNING;
+		}
+
+		return EBTNodeState.STATE_FAILURE;
+	}
+
+	protected override void OnFirstEvaluate(AIContext context)
+	{
+		Debug.Log("Engaging Target!");
 	}
 }

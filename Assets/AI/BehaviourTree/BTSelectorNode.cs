@@ -2,39 +2,37 @@ using System.Collections.Generic;
 
 namespace BehaviourTrees
 {
+	/// <summary>
+	/// Evaluates children in order and returns the state of the first one that does not fail.
+	/// </summary>
 	public class BTSelectorNode : BTNodeBase
 	{
         #region Constructors
 
         public BTSelectorNode() : base() { }
 		public BTSelectorNode(List<BTNodeBase> children) : base(children) { }
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Evaluates children in order and returns if one has not failed.
-        /// </summary>
-        public override EBTNodeState Evaluate(AIContext aIContext, float t)
+		protected override EBTNodeState OnUpdate(AIContext context, float t)
 		{
 			foreach (BTNodeBase i in m_childNodes)
 			{
-				switch (i.Evaluate(aIContext, t))
+				switch (i.Evaluate(context, t))
 				{
 					case EBTNodeState.STATE_FAILURE:
 						continue;
 
 					case EBTNodeState.STATE_SUCSESS:
-						m_nodeState = EBTNodeState.STATE_SUCSESS; 
-						return m_nodeState;
+						return EBTNodeState.STATE_SUCSESS;
 
 					case EBTNodeState.STATE_RUNNING:
-						m_nodeState = EBTNodeState.STATE_RUNNING;
-						return m_nodeState;
-
+						return EBTNodeState.STATE_RUNNING;
 				}
 			}
 
-			m_nodeState = EBTNodeState.STATE_FAILURE;
-			return m_nodeState;
+			return EBTNodeState.STATE_FAILURE;
 		}
+
+		protected override void OnFirstEvaluate(AIContext context) { }
 	}
 }

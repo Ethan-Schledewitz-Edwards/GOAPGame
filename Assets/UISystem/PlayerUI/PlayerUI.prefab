@@ -1146,6 +1146,7 @@ GameObject:
   - component: {fileID: 3789769994288672308}
   - component: {fileID: 5051540831797299851}
   - component: {fileID: 4938697175853806401}
+  - component: {fileID: 4208777329879301389}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -1261,6 +1262,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UISystem::HUD
   m_menuButtons: []
+--- !u!114 &4208777329879301389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495989893448373781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ff5c04291cf164492c4e43b7f58e67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UISystems.HUD::ClockElement
+  m_clockText: {fileID: 4818414467030862433}
 --- !u!1 &5807559894734077182
 GameObject:
   m_ObjectHideFlags: 0

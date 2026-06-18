@@ -112,7 +112,7 @@ public class Actor : Entity, IInteractor
 				{
 					BehaviourTreeExecutor.TickBehaviour(t);
 
-					if (BehaviourTreeExecutor.AIContext.GetData<float>("Timeout") > c_waitingForJobLimit)
+					if (BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
 						ClearLogicExecutorState();
 				}
 				break;

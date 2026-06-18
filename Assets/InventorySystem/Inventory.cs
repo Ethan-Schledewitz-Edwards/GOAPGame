@@ -15,7 +15,7 @@ namespace InventorySystem
 		// The size of the inventory list
 		public int Size => Slots.Count;
 
-		public event Action<InventorySlot> OnSlotChanged;
+		public event Action<InventorySlot> SlotChanged;
 
 		/// <summary>
 		/// Creates an inventory with a number of slots
@@ -25,7 +25,7 @@ namespace InventorySystem
 			// Create a local method for a new inventory instance
 			void SlotChangedAction(InventorySlot slot)
 			{
-				OnSlotChanged?.Invoke(slot);
+				SlotChanged?.Invoke(slot);
 			}
 
 			// Make list
