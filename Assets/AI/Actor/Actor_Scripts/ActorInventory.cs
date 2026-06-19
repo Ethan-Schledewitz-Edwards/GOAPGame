@@ -1,7 +1,8 @@
+using InventorySystem;
+using InventorySystem.Items;
 using System;
 using System.Linq;
 using UnityEngine;
-using InventorySystem;
 
 public class ActorInventory : InventoryComponent
 {
@@ -20,10 +21,9 @@ public class ActorInventory : InventoryComponent
 
 	protected override void Awake()
 	{
-		base.Awake();
-
 		m_interactionLayerMask = LayerMask.NameToLayer("Interaction");
 
+		InitializeInventory(1);
 		m_heldItemSlot = Inventory.Slots[0];
 	}
 
@@ -38,25 +38,27 @@ public class ActorInventory : InventoryComponent
 	}
 	#endregion
 
-	private void OnInventorySlotChanged(InventorySlot inventorySlot)
+	public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
 	{
 		TryDropHeldItem();
 
-		// Create visual if the held slot has an item
-		if (inventorySlot == m_heldItemSlot && m_heldItemSlot.SlotsItem != null) 
-		{ 
-			GameObject itemObject = Instantiate(m_heldItemSlot.SlotsItem.ItemPrefab, 
-				m_heldItemPosition.position, 
-				Quaternion.identity, 
-				m_heldItemPosition
-			);
-
-			if (itemObject.TryGetComponent(out Item item))
+		if (itemTransform != null)
+		{
+			if(itemTransform.TryGetComponent(out Item item))
 			{
 				item.ConstrainPhysics(true);
-				OnPickedUpItem?.Invoke(item);
+				itemTransform.parent = m_heldItemPosition;
+				itemTransform.position = m_heldItemPosition.position;
 			}
 		}
+
+		return base.TryAddItem(addedItemData, amount, null);
+	}
+
+	private void OnInventorySlotChanged(InventorySlot inventorySlot)
+	{
+		if (inventorySlot.AmountInSlot == 0)
+			TryDropHeldItem();
 	}
 
 	public void TryDropHeldItem()

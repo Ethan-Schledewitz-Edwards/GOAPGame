@@ -60,7 +60,7 @@ public class Item : InteractableObjectBase
 			if (inventoryComponent.Inventory == null)
 				return;
 
-			bool isItemAdded = inventoryComponent.Inventory.TryAddItem(ItemData, StackSize);
+			bool isItemAdded = inventoryComponent.TryAddItem(ItemData, StackSize, transform);
 			if (isItemAdded)
 			{
 				BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
@@ -71,8 +71,6 @@ public class Item : InteractableObjectBase
 
 				ItemPickedUp?.Invoke(this);
 			}
-
-			Destroy(gameObject);
 		}
 	}
 

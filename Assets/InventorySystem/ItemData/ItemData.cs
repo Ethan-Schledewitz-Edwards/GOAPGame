@@ -8,7 +8,7 @@ namespace InventorySystem.Items
 	{
 		[field: SerializeField] public int ItemID { get; private set; }
 		[field: SerializeField] public string ItemName { get; private set; }
-		[field: SerializeField] public int MaxAmount { get; private set; } = 100;
+		[field: SerializeField] public int MaxStackSize { get; private set; } = 100;
 		[field: SerializeField] public GameObject ItemPrefab { get; private set; }
 
 		public void SetID(int newID)

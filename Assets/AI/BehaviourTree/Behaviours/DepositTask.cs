@@ -25,8 +25,8 @@ public class DepositTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		if (executorTransform.TryGetComponent(out InventoryComponent executorInvComp) &&
-			targetTransform.TryGetComponent(out InventoryComponent storageInvComp))
+		if (executorTransform.TryGetComponent(out InventoryComponent executorInventoryComponent) &&
+			targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent))
 		{
 			float currentCooldown = context.GetData<float>(cooldownKey) - t;
 
@@ -34,7 +34,7 @@ public class DepositTask : BTNodeBase
 			{
 				context.SetData<float>(cooldownKey, m_depositCooldown);
 
-				Inventory executorInventory = executorInvComp.Inventory;
+				Inventory executorInventory = executorInventoryComponent.Inventory;
 				bool foundAnItemToDeposit = false;
 
 				for (int i = 0; i < executorInventory.Slots.Count; i++)
@@ -47,7 +47,7 @@ public class DepositTask : BTNodeBase
 						continue;
 
 					foundAnItemToDeposit = true;
-					bool isItemAdded = storageInvComp.Inventory.TryAddItem(itemData, stackSize);
+					bool isItemAdded = targetInventoryComponent.TryAddItem(itemData, stackSize);
 
 					if (isItemAdded)
 					{

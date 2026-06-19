@@ -37,7 +37,7 @@ public class EatStrategy : IActionStrategy
 
 		if (foodItem != null)
 		{
-			m_actor.ActorInventory.Inventory.TryAddItem(foodItem, 1);
+			m_actor.ActorInventory.TryAddItem(foodItem, 1);
 		}
 		else
 		{

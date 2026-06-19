@@ -119,7 +119,7 @@ namespace InventorySystem
 
 		public bool IsRoomAvailable(int amount, out int roomRemaining)
 		{
-			roomRemaining = (SlotsItem == null) ? 0 : SlotsItem.MaxAmount - AmountInSlot;
+			roomRemaining = (SlotsItem == null) ? 0 : SlotsItem.MaxStackSize - AmountInSlot;
 			return SlotsItem == null || amount <= roomRemaining;
 		}
 		#endregion

@@ -1,10 +1,12 @@
 using BehaviourTrees;
+using InventorySystem;
 using InventorySystem.Items;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Graphs;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider))]
+[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent))]
 public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
 {
 	private static BehaviourTree s_cachedBlueprintBT;
@@ -13,6 +15,7 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 	public event Action<BlueprintIO> BlueprintCompleted;
 
+	public BluerprintInventoryComponent bluerprintInventory { get; private set; }
 	public int FeatureTileID { get; private set; }
 	public int SettlementID { get; private set; }
 	public ItemQuantity[] RequiredItems { get; private set; }
@@ -37,6 +40,7 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		}
 
 		gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
+		bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
 	}
 
 	public override void UpdateSpeed(int extra)
@@ -59,6 +63,7 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		FeatureTileID = featureTileID;
 		SettlementID = settlementID;
 		RequiredItems = requiredItems;
+		bluerprintInventory.InitializeBlueprintInventory(requiredItems);
 	}
 
 	private void CompleteBlueprint()

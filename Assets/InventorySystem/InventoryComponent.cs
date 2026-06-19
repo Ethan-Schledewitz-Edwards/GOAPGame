@@ -1,3 +1,7 @@
+using InventorySystem.Items;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace InventorySystem
@@ -8,9 +12,40 @@ namespace InventorySystem
 		public Inventory Inventory { get; private set; }
 		[SerializeField] private int m_inventorySize = 1;
 
+		public List<InventorySlot> Slots => Inventory.Slots;
+
 		protected virtual void Awake()
 		{
-			Inventory = new Inventory(m_inventorySize);
+			if (Inventory == null) 
+				InitializeInventory(m_inventorySize);
+		}
+
+		public void InitializeInventory(int inventorySize)
+		{
+			Inventory = new Inventory(inventorySize);
+		}
+
+		public virtual bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
+		{
+			if (addedItemData.MaxStackSize > 1 && Inventory.ContainsItem(addedItemData, out var slots))
+			{
+				foreach (var slot in slots.Where(s => s.IsRoomAvailable(amount, out _)))
+				{
+					slot.AddToStack(amount);
+					return true;
+				}
+			}
+
+			if (Inventory.TryGetEmptySlot(out InventorySlot emptySlot))
+			{
+				emptySlot.AddItem(addedItemData, amount);
+				return true;
+			}
+
+			if (itemTransform != null)
+				Destroy(itemTransform.gameObject);
+
+			return false;
 		}
 	}
 }
