@@ -103,6 +103,10 @@ namespace InventorySystem
 			SlotChanged();
 		}
 
+		/// <summary>
+		/// Removes the specified amount from the slot and clears the slot if the resulting amount is zero or less.
+		/// </summary>
+		/// <param name="amount">The amount to subtract from the slot.</param>
 		public void RemoveFromStack(int amount)
 		{
 			AmountInSlot -= amount;
@@ -116,7 +120,12 @@ namespace InventorySystem
 			SlotChanged();
 		}
 
-		public void DropFromStack(int amount, Vector3 WorldDropPos)
+		/// <summary>
+		/// Removes the specified number of items from the stack and drops them at the given world position.
+		/// </summary>
+		/// <param name="amount">The number of items to remove from the stack.</param>
+		/// <param name="WorldDropPos">The world position where the items are dropped.</param>
+		public void RemoveFromStack(int amount, Vector3 WorldDropPos)
 		{
 			AmountInSlot -= amount;
 			for (int i = 0; i < amount; i++)

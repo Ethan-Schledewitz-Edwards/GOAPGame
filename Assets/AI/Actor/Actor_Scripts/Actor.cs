@@ -17,6 +17,7 @@ public class Actor : Entity, IInteractor
 	private const float c_followSpeed = 5.2f;
 	private const float c_workingSpeed = 4.5f;
 	private const float c_offDutySpeed = 2f;
+	private const float c_searchForJobDist = 3.0f;
 	#endregion
 
 	// Components
@@ -26,7 +27,6 @@ public class Actor : Entity, IInteractor
 	public AIPathing AIPathing { get; private set; }
 
 	[Header("Parameters")]
-	public float InteractionDist { get; private set; } = 3.0f;
 	[SerializeField] private LayerMask m_interactionLayers;
 
 	// Executors
@@ -188,7 +188,7 @@ public class Actor : Entity, IInteractor
 		// Drop the actors held slot
 		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
 		if (amountToDrop > 0)
-			ActorInventory.Inventory.Slots[0].DropFromStack(amountToDrop, ActorInventory.DropItemTransform.position);
+			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, ActorInventory.DropItemTransform.position);
 
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		AIPathing.NavAgent.stoppingDistance = c_workingDist;
@@ -247,7 +247,7 @@ public class Actor : Entity, IInteractor
 
 		// Try to select actors
 		Vector3 pos = transform.position;
-		Collider[] hitColliders = Physics.OverlapSphere(pos, InteractionDist, m_interactionLayers, QueryTriggerInteraction.Collide);
+		Collider[] hitColliders = Physics.OverlapSphere(pos, c_searchForJobDist, m_interactionLayers, QueryTriggerInteraction.Collide);
 
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)

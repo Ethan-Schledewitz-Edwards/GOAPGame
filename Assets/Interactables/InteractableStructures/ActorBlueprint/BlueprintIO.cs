@@ -37,7 +37,11 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				
+				// search for itesm (storage than ground)
+				// Go to item
+				// Pickup item
+				// return
+				// Deposit
 			});
 			tree.SetTree(root);
 			s_cachedBlueprintBT = tree;
