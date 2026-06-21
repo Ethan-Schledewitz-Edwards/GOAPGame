@@ -23,7 +23,6 @@ public class Actor : Entity, IInteractor
 	public Transform Transform => gameObject.transform;
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
-	public InventoryComponent InventoryComponent => ActorInventory;
 	public AIPathing AIPathing { get; private set; }
 
 	[Header("Parameters")]
@@ -42,7 +41,6 @@ public class Actor : Entity, IInteractor
 	// System
 	public int SettlementID { get; private set; } = 0;
 	public int HouseID { get; private set; } = 0;
-
 
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
@@ -187,8 +185,10 @@ public class Actor : Entity, IInteractor
 		BehaviourTreeExecutor?.ResetContext();
 		m_timeFindingJob = 0;
 
-		// Try to drop item
-		ActorInventory.Inventory.Slots[0].ClearSlot();
+		// Drop the actors held slot
+		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
+		if (amountToDrop > 0)
+			ActorInventory.Inventory.Slots[0].DropFromStack(amountToDrop, ActorInventory.DropItemTransform.position);
 
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		AIPathing.NavAgent.stoppingDistance = c_workingDist;

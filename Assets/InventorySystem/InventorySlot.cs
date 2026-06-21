@@ -124,9 +124,10 @@ namespace InventorySystem
 				Transform itemTransform = PhysicalItemObjects.Pop();
 				if (itemTransform.TryGetComponent(out Rigidbody itemRB))
 				{
-					itemTransform.gameObject.SetActive(true);
 					itemRB.constraints = RigidbodyConstraints.None;
 					itemTransform.position = WorldDropPos;
+					itemTransform.parent = null;
+					itemTransform.gameObject.SetActive(true);
 				}
 
 				OnDroppedPhysicalItem?.Invoke(itemTransform);

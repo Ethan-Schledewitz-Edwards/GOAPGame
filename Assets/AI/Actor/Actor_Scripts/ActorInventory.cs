@@ -7,7 +7,7 @@ using UnityEngine;
 public class ActorInventory : InventoryComponent
 {
 	[SerializeField] private Transform m_heldItemPosition;
-	[SerializeField] private Transform m_dropItemPosition;
+	[field: SerializeField] public Transform DropItemTransform { get; private set; }
 
 	// Events
 	public event Action<Item> OnPickedUpItem;
@@ -15,7 +15,7 @@ public class ActorInventory : InventoryComponent
 
 	// System
 	private int m_interactionLayerMask;
-	private InventorySlot m_heldItemSlot;
+	public InventorySlot HeldItemSlot { get; private set; }
 
 	#region Monobehaviour Callbacks
 
@@ -24,23 +24,21 @@ public class ActorInventory : InventoryComponent
 		m_interactionLayerMask = LayerMask.NameToLayer("Interaction");
 
 		InitializeInventory(1);
-		m_heldItemSlot = Inventory.Slots[0];
+		HeldItemSlot = Inventory.Slots[0];
 	}
 
-	private void OnEnable()
-	{
-		Inventory.SlotChanged += OnInventorySlotChanged;
-	}
-
-	private void OnDisable()
-	{
-		Inventory.SlotChanged -= OnInventorySlotChanged;
-	}
 	#endregion
 
 	public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
 	{
-		TryDropHeldItem();
+		if(addedItemData == null)
+			return false;
+
+		// Ignore picking up items of a different type
+		int newItemID = addedItemData.ItemID;
+		int heldItemID = HeldItemSlot.SlotsItem != null? HeldItemSlot.SlotsItem.ItemID : -1;
+		if (heldItemID != -1 && newItemID != heldItemID)
+			return false;
 
 		// Try to add the item
 		bool wasItemAdded = base.TryAddItem(addedItemData, amount, itemTransform);
@@ -58,39 +56,6 @@ public class ActorInventory : InventoryComponent
 		}
 
 		return wasItemAdded;
-	}
-
-	private void OnInventorySlotChanged(InventorySlot inventorySlot)
-	{
-		if (inventorySlot.AmountInSlot == 0)
-			TryDropHeldItem();
-	}
-
-	public void TryDropHeldItem()
-	{
-		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
-		foreach (Transform child in allChildren)
-		{
-			if (child != null && child.TryGetComponent(out Item item))
-			{
-				child.parent = null;
-				child.position = m_dropItemPosition.position;
-
-				item.ConstrainPhysics(false);
-				child.gameObject.layer = m_interactionLayerMask;
-				OnDroppedItem?.Invoke(item);
-			}
-		}
-	}
-
-	public void TryDestroyHeldItem()
-	{
-		Transform[] allChildren = m_heldItemPosition.GetComponentsInChildren<Transform>().Skip(1).ToArray();
-		foreach (Transform child in allChildren)
-		{
-			if (child != null)
-				Destroy(child.gameObject);
-		}
 	}
 }
 
