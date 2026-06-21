@@ -1,11 +1,13 @@
 using InventorySystem;
 using InventorySystem.Items;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BluerprintInventoryComponent : InventoryComponent
 {
-	ItemQuantity[] requiredItemsToBuild;
+	private ItemQuantity[] m_requiredItemsToBuild;
+	private List<Transform> m_storedItems = new List<Transform>();
 
 	public event Action BlueprintItemsAchieved;
 
@@ -16,8 +18,8 @@ public class BluerprintInventoryComponent : InventoryComponent
 
 	public void InitializeBlueprintInventory(ItemQuantity[] itemsRequiredToBuild)
 	{
-		requiredItemsToBuild = itemsRequiredToBuild;
-		int slotsRequired = requiredItemsToBuild.Length;
+		m_requiredItemsToBuild = itemsRequiredToBuild;
+		int slotsRequired = m_requiredItemsToBuild.Length;
 
 		InitializeInventory(slotsRequired);
 		Inventory.SlotChanged += HandleInventorySlotUpdated;
@@ -26,7 +28,7 @@ public class BluerprintInventoryComponent : InventoryComponent
 	private void HandleInventorySlotUpdated(InventorySlot _)
 	{
 		bool inventoryMeetsRequiredItemQuantities = true;
-		foreach (ItemQuantity quantity in requiredItemsToBuild)
+		foreach (ItemQuantity quantity in m_requiredItemsToBuild)
 		{
 			ItemData itemData = quantity.itemType;
 			int amountNeeded = quantity.amount;
@@ -44,6 +46,41 @@ public class BluerprintInventoryComponent : InventoryComponent
 
 	public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
 	{
-		return base.TryAddItem(addedItemData, amount);
+		if(addedItemData == null) 
+		{
+			Debug.Log("Tried to add an item without data to a blueprint inventory.");
+			return false;
+		}
+
+		if (amount <= 0)
+		{
+			Debug.Log("Tried to add an item with a quantity of zero to a blueprint inventory.");
+			return false;
+		}
+
+		bool isItemNeeded = false;
+		foreach (ItemQuantity itemQuantity in m_requiredItemsToBuild)
+		{
+			isItemNeeded = itemQuantity.itemType.ItemID == addedItemData.ItemID;
+
+			if (isItemNeeded)
+				break;
+		}
+
+		if (isItemNeeded)
+		{
+			if(itemTransform != null)
+			{
+				m_storedItems.Add(itemTransform);
+				itemTransform.gameObject.SetActive(false);
+				itemTransform.position = transform.position;
+			}
+			else
+				Debug.Log("An Actor attempted to add item object without a transform to a blueprint inventory.");
+
+			return base.TryAddItem(addedItemData, amount);
+		}
+
+		return false;
 	}
 }

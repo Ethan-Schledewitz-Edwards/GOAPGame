@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9852f30a1a92a4347b7b480b61aa7eec, type: 3}
   m_Name: WoodStorage_StructureData
   m_EditorClassIdentifier: Construction::StructureData
-  <ID>k__BackingField: 5
+  <BlueprintID>k__BackingField: 5
   <DisplayName>k__BackingField: Wood Storage
   <Description>k__BackingField: 
   <BlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}

@@ -22,5 +22,8 @@ MonoBehaviour:
     SelectionWeight: 80
     SpawnThreshold: 0.98
   - <FeatureTileData>k__BackingField: {fileID: 11400000, guid: 3ea8d8a3a3df348429c23d53d3354ee6, type: 2}
-    SelectionWeight: 20
+    SelectionWeight: 10
     SpawnThreshold: 0.98
+  - <FeatureTileData>k__BackingField: {fileID: 11400000, guid: 6058f98dc32938e4389e400fe70cce9e, type: 2}
+    SelectionWeight: 10
+    SpawnThreshold: 0.97

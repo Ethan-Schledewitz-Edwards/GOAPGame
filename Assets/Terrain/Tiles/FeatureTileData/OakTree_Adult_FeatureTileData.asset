@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
-  m_Name: Tree_FeatureTileData
+  m_Name: OakTree_Adult_FeatureTileData
   m_EditorClassIdentifier: Assembly-CSharp::FeatureTileData
   <TileID>k__BackingField: 4
   <Prefab>k__BackingField: {fileID: 3778585277737840742, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}

@@ -47,8 +47,7 @@ public class DepositTask : BTNodeBase
 						continue;
 
 					foundAnItemToDeposit = true;
-					bool isItemAdded = targetInventoryComponent.TryAddItem(itemData, stackSize);
-
+					bool isItemAdded = targetInventoryComponent.TryAddItem(itemData, stackSize, slot.PhysicalItemObjects.Pop());
 					if (isItemAdded)
 					{
 						Debug.Log($"Deposited slot {i}.");

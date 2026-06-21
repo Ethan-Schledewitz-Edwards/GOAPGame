@@ -16,8 +16,10 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	public event Action<BlueprintIO> BlueprintCompleted;
 
 	public BluerprintInventoryComponent bluerprintInventory { get; private set; }
-	public int FeatureTileID { get; private set; }
+	public int BlueprintID { get; private set; }
 	public int SettlementID { get; private set; }
+	public Vector3 Position { get; private set; }
+	public Quaternion Rotation { get; private set; }
 	public ItemQuantity[] RequiredItems { get; private set; }
 
 	[SerializeField] private float m_maxCapacity = 4f;
@@ -28,6 +30,8 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 	private void Awake()
 	{
+		Position = transform.position;
+
 		if (s_cachedBlueprintBT == null)
 		{
 			BehaviourTree tree = new BehaviourTree();
@@ -40,7 +44,14 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		}
 
 		gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
+
 		bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
+		bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
+	}
+
+	private void OnDestroy()
+	{
+		bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
 	}
 
 	public override void UpdateSpeed(int extra)
@@ -58,16 +69,19 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		structure = this;
 	}
 
-	public void InitializeBlueprint(int featureTileID, int settlementID, ItemQuantity[] requiredItems)
+	public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)
 	{
-		FeatureTileID = featureTileID;
+		BlueprintID = blueprintID;
 		SettlementID = settlementID;
 		RequiredItems = requiredItems;
 		bluerprintInventory.InitializeBlueprintInventory(requiredItems);
+		Position = position;
+		Rotation = rotation;
 	}
 
 	private void CompleteBlueprint()
 	{
+		Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was completed in settlement:{SettlementID}.");
 		BlueprintCompleted?.Invoke(this);
 	}
 

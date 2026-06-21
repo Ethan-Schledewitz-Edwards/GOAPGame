@@ -42,6 +42,10 @@ public class ActorInventory : InventoryComponent
 	{
 		TryDropHeldItem();
 
+		// Try to add the item
+		bool wasItemAdded = base.TryAddItem(addedItemData, amount, itemTransform);
+
+		// Move the item to the held position
 		if (itemTransform != null)
 		{
 			if(itemTransform.TryGetComponent(out Item item))
@@ -49,10 +53,11 @@ public class ActorInventory : InventoryComponent
 				item.ConstrainPhysics(true);
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
+				item.gameObject.SetActive(true);
 			}
 		}
 
-		return base.TryAddItem(addedItemData, amount, null);
+		return wasItemAdded;
 	}
 
 	private void OnInventorySlotChanged(InventorySlot inventorySlot)

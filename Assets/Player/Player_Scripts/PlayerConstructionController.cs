@@ -57,7 +57,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
 	{
-		TryPlaceBlueprint(m_cursorVisualizer.transform.position);
+		TryPlaceBlueprint(m_cursorVisualizer.transform.position, m_cursorVisualizer.transform.rotation);
 	}
 
 	private void OnSecondaryInput(InputAction.CallbackContext context)
@@ -68,7 +68,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 
 	#region Actions
 
-	private void TryPlaceBlueprint(Vector3 position)
+	private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 	{
 		if (m_blueprintStructureData == null)
 			return;
@@ -79,7 +79,10 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 		if (nearestSettlementID == -1)
 			SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
-		ConstructionManager.Instance.CreateStructureBlueprint(nearestSettlementID, m_blueprintStructureData, position);
+		ConstructionManager.Instance.CreateStructureBlueprint(nearestSettlementID, 
+			m_blueprintStructureData, 
+			position,
+			rotation);
 
 		CancleBlueprintPlacement();
 	}

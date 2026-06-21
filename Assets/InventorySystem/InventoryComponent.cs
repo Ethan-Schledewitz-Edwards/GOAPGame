@@ -38,7 +38,7 @@ namespace InventorySystem
 
 			if (Inventory.TryGetEmptySlot(out InventorySlot emptySlot))
 			{
-				emptySlot.AddItem(addedItemData, amount);
+				emptySlot.SetSlotsItem(addedItemData, amount, itemTransform);
 				return true;
 			}
 

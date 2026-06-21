@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cca799cce3dc89b408708cab416bd281, type: 3}
-  m_Name: Stick_ItemData
-  m_EditorClassIdentifier: InventorySystem::InventorySystem.Items.ItemData
-  <ItemID>k__BackingField: 1
-  <ItemName>k__BackingField: Stick
-  <MaxAmount>k__BackingField: 100
-  <ItemPrefab>k__BackingField: {fileID: 0}
+  m_Name: Stone_ItemData
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  <ItemID>k__BackingField: 2
+  <ItemName>k__BackingField: Stone
+  <MaxStackSize>k__BackingField: 100
+  <ItemPrefab>k__BackingField: {fileID: 6673996059420899831, guid: 3ad4e379c4f97e34aa810cacaed6ee78, type: 3}

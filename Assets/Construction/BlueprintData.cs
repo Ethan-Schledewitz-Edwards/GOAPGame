@@ -5,7 +5,7 @@ using InventorySystem.Items;
 [CreateAssetMenu(fileName = "BlueprintData", menuName = "Structures/BlueprintData")]
 public class BlueprintData : ScriptableObject, IIndexedAsset
 {
-	[field: SerializeField] public int ID { get; private set; }
+	[field: SerializeField] public int BlueprintID { get; private set; }
 	[field: SerializeField] public string DisplayName { get; private set; }
 	[field: SerializeField, TextArea(5,5)] public string Description { get; private set; }
 	[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
@@ -16,6 +16,6 @@ public class BlueprintData : ScriptableObject, IIndexedAsset
 
 	public void SetID(int newID)
 	{
-		ID = newID;
+		BlueprintID = newID;
 	}
 }

@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1005846120864118715}
   - component: {fileID: 2952778721549717865}
   m_Layer: 7
-  m_Name: Tree_Interactable
+  m_Name: OakTree_Adult_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

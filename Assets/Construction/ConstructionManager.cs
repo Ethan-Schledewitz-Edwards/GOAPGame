@@ -6,7 +6,7 @@ public class ConstructionManager : MonoBehaviour
 {
 	public static ConstructionManager Instance;
 
-	[SerializeField] private BlueprintIndex m_structureIndex;
+	[SerializeField] private BlueprintIndex m_blueprintIndex;
 	[SerializeField] private Material m_blueprintMaterial;
 
 	public event Action<BlueprintData> NewDevelopmentAttempted;
@@ -23,7 +23,7 @@ public class ConstructionManager : MonoBehaviour
 		NewDevelopmentAttempted?.Invoke(blueprintData);
 	}
 
-	public void CreateStructureBlueprint(int settlementID, BlueprintData blueprintData, Vector3 position)
+	public void CreateStructureBlueprint(int settlementID, BlueprintData blueprintData, Vector3 position, Quaternion rotation)
 	{
 		if (blueprintData == null || blueprintData.BlueprintFeatureData?.Prefab == null)
 		{
@@ -67,24 +67,34 @@ public class ConstructionManager : MonoBehaviour
 			bpBoxCol.size = bounds.size;
 		}
 		else
-		{
 			blueprintObject.transform.position = position;
-		}
 
 		// Add to settlement
 		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(blueprintIO);
 
 		// Init
-		blueprintIO.InitializeBlueprint(blueprintData.BlueprintFeatureData.TileID, settlementID, blueprintData.RequiredItems);
+		blueprintIO.InitializeBlueprint(blueprintData.BlueprintID, 
+			settlementID, 
+			blueprintData.RequiredItems, 
+			position, 
+			rotation);
 		blueprintIO.BlueprintCompleted += OnBlueprintCompleted;
 	}
 
 	public void OnBlueprintCompleted(BlueprintIO blueprintIO)
 	{
+		if (blueprintIO == null)
+			return;
+
+		Vector3 blueprintIOPosition = blueprintIO.Position;
+		Quaternion blueprintIORotation = blueprintIO.Rotation;
 		blueprintIO.BlueprintCompleted -= OnBlueprintCompleted;
 
 		int settlementID = blueprintIO.SettlementID;
 		SettlementManager.s_WorldSettlements[settlementID].RemoveBlueprint(blueprintIO);
 		Destroy(blueprintIO.gameObject);
+
+		GameObject prefab = m_blueprintIndex.Blueprints[blueprintIO.BlueprintID].BlueprintFeatureData.Prefab;
+		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 	}
 }
