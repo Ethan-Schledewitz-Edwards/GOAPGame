@@ -2,72 +2,58 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-public class PlayerFollowerController : PlayerWorldControllerBase, IInputHandler
+public class PlayerFollowerController : PlayerWorldControllerBase
 {
-	[SerializeField] protected LayerMask m_actorLayers;
+	private const float c_selectionRadius = 2.0f;
+
+	public override string ControllerName => "Commander Mode";
+	public override Sprite ControllerIcon => m_controllerIcon;
+	[SerializeField] private Sprite m_controllerIcon;
 
 	private List<Actor> m_followers = new List<Actor>();
 
 	private bool m_isSummonHeld = false;
 
-	#region Input Methods
+	private LayerMask m_actorLayers;
 
-	public override void Subscribe()
+	protected override void Awake()
 	{
-		InputManager.Controls.Player.Look.performed += OnMouseInput;
-
-		InputManager.Controls.Player.Primary.performed += OnPrimaryInput;
-
-		InputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
-		InputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
+		base.Awake();
+		if (m_actorLayers == 0) m_actorLayers = LayerMask.GetMask("Actor");
 	}
 
-	public override void UnSubscribe()
-	{
-		InputManager.Controls.Player.Look.performed -= OnMouseInput;
-
-		InputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
-
-		InputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
-		InputManager.Controls.Player.Secondary.canceled -= OnSecondaryInput;
+	public override void OnControllerEnabled() 
+	{ 
+		enabled = true;
+		RefreshCursor();
 	}
 
-	private void OnMouseInput(InputAction.CallbackContext context)
+	public override void OnControllerDisabled() 
 	{
-		m_mousePosition = context.ReadValue<Vector2>();
+		enabled = false;
 	}
 
-	private void OnPrimaryInput(InputAction.CallbackContext context)
+	public override void PrimaryFire(InputAction.CallbackContext context)
 	{
-		TryAssignActor(m_cursorVisualizer.transform.position);
+		TryAssignActor(m_mouseWorldPosition);
 	}
 
-	private void OnSecondaryInput(InputAction.CallbackContext context)
+	public override void SecondaryFire(InputAction.CallbackContext context) 
 	{
 		m_isSummonHeld = context.ReadValueAsButton();
 	}
-	#endregion
 
-	#region Monobehaviour Methods
+	public override void Cycle(int scrollDir) { }
 
-	protected override void Update()
+	private void Update()
 	{
-		base.Update();
-
-		if (m_isSummonHeld)
-		{
-			Select(m_cursorVisualizer.transform.position);
-		}
+		RefreshCursor();
 	}
-	#endregion
-
-	#region Actions
 
 	private void Select(Vector3 position)
 	{
 		// Try to select actors
-		Collider[] hitColliders = Physics.OverlapSphere(position, c_SelectionRadius, m_actorLayers);
-
+		Collider[] hitColliders = Physics.OverlapSphere(position, c_selectionRadius, m_actorLayers);
 		if (hitColliders.Length != 0)
 		{
 			foreach (Collider i in hitColliders)
@@ -92,8 +78,6 @@ public class PlayerFollowerController : PlayerWorldControllerBase, IInputHandler
 		}
 	}
 
-	#endregion
-
 	private void AddFollower(Actor newFollower)
 	{
 		if (m_followers.Contains(newFollower))
@@ -112,7 +96,10 @@ public class PlayerFollowerController : PlayerWorldControllerBase, IInputHandler
 		}
 	}
 
-	// Finds the follower closest to the player
+	/// <summary>
+	/// Finds and returns the follower actor closest to the current actor's position.
+	/// </summary>
+	/// <returns>The closest follower actor, or null if no followers are present.</returns>
 	private Actor FindClosestFollower()
 	{
 		Actor closestFollower = null;
@@ -132,4 +119,12 @@ public class PlayerFollowerController : PlayerWorldControllerBase, IInputHandler
 
 		return closestFollower;
 	}
+
+	//protected override void RefreshCursor(out RaycastHit hitData)
+	//{
+	//	base.RefreshCursor(out hitData);
+
+	//	if (m_isSummonHeld)
+	//		Select(m_mouseWorldPosition);
+	//}
 }

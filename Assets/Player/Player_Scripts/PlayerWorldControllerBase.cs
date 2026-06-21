@@ -1,41 +1,47 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public abstract class PlayerWorldControllerBase : MonoBehaviour, IInputHandler
+public abstract class PlayerWorldControllerBase : MonoBehaviour
 {
-	protected const float c_SelectionRadius = 1.0f;
+	public abstract string ControllerName { get; }
+	public abstract Sprite ControllerIcon { get; }
 
-	protected Camera m_mainCamera;
-	protected Vector2 m_mousePosition;
+	protected PlayerWorldControllerManager m_controllerManager;
+	private Vector2 m_mouseScreenPosition;
+	protected Vector2 m_mouseWorldPosition;
 
-	[SerializeField] protected LayerMask m_cursorBlockingLayers;
-	[SerializeField] protected PlayerCursorVisualizer m_cursorVisualizer;
+	[SerializeField] private LayerMask m_groundLayer;
 
-	protected virtual void Start()
+	protected virtual void Awake()
 	{
-		m_mainCamera = Camera.main;
+		if (m_groundLayer == 0) 
+			m_groundLayer = LayerMask.GetMask("Default");
 	}
 
-	protected virtual void OnEnable()
+	public void InitializeController(PlayerWorldControllerManager playerWorldControllerManager)
 	{
-		((IInputHandler)this).SetControlsSubscription(true);
+		m_controllerManager = playerWorldControllerManager;
 	}
 
-	protected virtual void OnDisable()
+	public abstract void OnControllerEnabled();
+
+	public abstract void OnControllerDisabled();
+
+	public void SetMouseScreenPosition(Vector2 screenPos) => m_mouseScreenPosition = screenPos;
+
+	public abstract void PrimaryFire(InputAction.CallbackContext context);
+
+	public abstract void SecondaryFire(InputAction.CallbackContext context);
+
+	public abstract void Cycle(int cycleDir);
+
+	protected void RefreshCursor()
 	{
-		((IInputHandler)this).SetControlsSubscription(false);
-	}
-
-	public abstract void Subscribe();
-
-	public abstract void UnSubscribe();
-
-	protected virtual void Update()
-	{
-		Ray ray = m_mainCamera.ScreenPointToRay(m_mousePosition);
-
-		if (Physics.Raycast(ray, out RaycastHit hitData, 100f, m_cursorBlockingLayers))
+		Ray ray = m_controllerManager.MainCamera.ScreenPointToRay(m_mouseScreenPosition);
+		if (Physics.Raycast(ray, out RaycastHit hitData, 100f, m_groundLayer))
 		{
-			m_cursorVisualizer.SetPosition(hitData.point);
+			m_mouseWorldPosition = hitData.point;
+			m_controllerManager.CursorVisualizer.SetPosition(m_mouseWorldPosition);
 		}
 	}
 }

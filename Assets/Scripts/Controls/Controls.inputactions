@@ -61,92 +61,20 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "QuickDrop",
-                    "type": "Button",
-                    "id": "89ed9c81-61d2-46e1-a988-69ba0fe555e7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Slot1",
+                    "name": "CommandMode",
                     "type": "Value",
                     "id": "3cb25c71-61b5-4b83-9e81-e93f53f8e69e",
-                    "expectedControlType": "Integer",
+                    "expectedControlType": "",
                     "processors": "Scale",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Slot2",
+                    "name": "BuildMode",
                     "type": "Value",
                     "id": "f0201ce3-e5a3-4c8b-b032-f4831bf21fb0",
-                    "expectedControlType": "Integer",
+                    "expectedControlType": "",
                     "processors": "Scale(factor=2)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot3",
-                    "type": "Value",
-                    "id": "81835464-c89a-475d-a7ec-b1396fc94530",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=3)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot4",
-                    "type": "Value",
-                    "id": "a4c40f71-2191-4963-b158-b23a68241620",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=4)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot5",
-                    "type": "Value",
-                    "id": "56e96d3e-105f-414c-bd4b-88bf991c8aa5",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=5)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot6",
-                    "type": "Value",
-                    "id": "c40c2543-a423-4c89-9af8-91447ba444f5",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=6)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot7",
-                    "type": "Value",
-                    "id": "a046dacf-884f-4ba8-b05a-1111d5c33b1b",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=7)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot8",
-                    "type": "Value",
-                    "id": "3cf16b28-24cb-4f44-a633-086100697ca7",
-                    "expectedControlType": "Integer",
-                    "processors": "Scale(factor=8)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Slot9",
-                    "type": "Value",
-                    "id": "d83aff67-3d96-47cc-8bfe-acc1b1cd883a",
-                    "expectedControlType": "Button",
-                    "processors": "Scale(factor=9)",
                     "interactions": "",
                     "initialStateCheck": true
                 },
@@ -322,7 +250,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Slot1",
+                    "action": "CommandMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "042be32d-0283-4bef-b990-de9cea12df10",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CommandMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -333,84 +272,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Slot2",
+                    "action": "BuildMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "568168e5-bfa3-4b2b-a4eb-695dc46fde40",
-                    "path": "<Keyboard>/3",
+                    "id": "9cccc8b7-582b-4c02-977b-c0b59e65f4a8",
+                    "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Slot3",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9a56708f-48e9-48c4-8197-55c3fd26a723",
-                    "path": "<Keyboard>/4",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot4",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5109d9dd-2d0f-43e0-9e01-50d03ff5b08b",
-                    "path": "<Keyboard>/5",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot5",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "84e4b9ba-9e87-437e-9b3b-9ee0be1699a2",
-                    "path": "<Keyboard>/6",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot6",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "fb32dada-3b8e-4349-aa56-e6e0ead1ab0b",
-                    "path": "<Keyboard>/7",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot7",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "58bbe4d7-2a95-4c6b-849c-a1faa320b670",
-                    "path": "<Keyboard>/8",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot8",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9406c5fe-9dba-401d-ae7e-384fca67c54f",
-                    "path": "<Keyboard>/8",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Slot9",
+                    "action": "BuildMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -433,28 +306,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "69223ec0-c239-4635-84d3-331dfea24716",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QuickDrop",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "44dd906d-80eb-43fb-a537-5775dee5113a",
-                    "path": "<Gamepad>/dpad/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QuickDrop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

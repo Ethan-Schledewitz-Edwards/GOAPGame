@@ -4,18 +4,32 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-public class PlayerConstructionController : PlayerWorldControllerBase, IInputHandler
+public class PlayerConstructionController : PlayerWorldControllerBase
 {
+	public override string ControllerName => "Construction Mode";
+	public override Sprite ControllerIcon => m_controllerIcon;
+	[SerializeField] private Sprite m_controllerIcon;
+
 	[SerializeField] private Material m_validMaterial;
 	[SerializeField] private Material m_invalidMaterial;
 
-	private BlueprintData m_blueprintStructureData;
-
 	public event Action<BlueprintData, Vector3> PlacedStructure;
 
-	protected override void Start()
+	private bool m_isPlacementValid;
+	private BlueprintData m_blueprintStructureData;
+
+	private LayerMask m_blockingLayer;
+	private LayerMask m_interactionLayer;
+
+	protected override void Awake()
 	{
-		base.Start();
+		base.Awake();
+		if (m_blockingLayer == 0) m_blockingLayer = LayerMask.GetMask("Player", "Actor");
+		if (m_interactionLayer == 0) m_interactionLayer = LayerMask.GetMask("Interaction");
+	}
+
+	private void Start()
+	{
 		if (ConstructionManager.Instance != null)
 			ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprint;
 
@@ -28,45 +42,44 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 			ConstructionManager.Instance.NewDevelopmentAttempted -= SetBlueprint;
 	}
 
-	#region Input Methods
-
-	public override void Subscribe()
+	private void SetBlueprint(BlueprintData structureData)
 	{
-		InputManager.Controls.Player.Look.performed += OnMouseInput;
-
-		InputManager.Controls.Player.Primary.performed += OnPrimaryInput;
-
-		InputManager.Controls.Player.Secondary.performed += OnSecondaryInput;
-		InputManager.Controls.Player.Secondary.canceled += OnSecondaryInput;
+		m_blueprintStructureData = structureData;
+		UpdateVisuals(true);
 	}
 
-	public override void UnSubscribe()
+	public override void OnControllerEnabled() 
 	{
-		InputManager.Controls.Player.Look.performed -= OnMouseInput;
-
-		InputManager.Controls.Player.Primary.performed -= OnPrimaryInput;
-
-		InputManager.Controls.Player.Secondary.performed -= OnSecondaryInput;
-		InputManager.Controls.Player.Secondary.canceled -= OnSecondaryInput;
+		enabled = true;
+		RefreshCursor();
 	}
 
-	private void OnMouseInput(InputAction.CallbackContext context)
+	public override void OnControllerDisabled()
 	{
-		m_mousePosition = context.ReadValue<Vector2>();
-	}
-
-	private void OnPrimaryInput(InputAction.CallbackContext context)
-	{
-		TryPlaceBlueprint(m_cursorVisualizer.transform.position, m_cursorVisualizer.transform.rotation);
-	}
-
-	private void OnSecondaryInput(InputAction.CallbackContext context)
-	{
+		enabled = false;
 		CancleBlueprintPlacement();
 	}
-	#endregion
 
-	#region Actions
+	public override void PrimaryFire(InputAction.CallbackContext context)
+	{
+		if (m_isPlacementValid)
+		{
+			TryPlaceBlueprint(m_mouseWorldPosition, Quaternion.identity);
+		}
+		else
+		{
+			Debug.Log("Placement blocked by obstacle or interaction object.");
+		}
+	}
+
+	public override void SecondaryFire(InputAction.CallbackContext context) { }
+
+	public override void Cycle(int scrollDir) { }
+
+	private void Update()
+	{
+		RefreshCursor();
+	}
 
 	private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 	{
@@ -89,25 +102,43 @@ public class PlayerConstructionController : PlayerWorldControllerBase, IInputHan
 
 	private void CancleBlueprintPlacement()
 	{
-		enabled = false;
 		m_blueprintStructureData = null;
-		m_cursorVisualizer.ReturnToDefaultVisuals();
+		m_controllerManager.CursorVisualizer?.ReturnToDefaultVisuals();
 	}
-	#endregion
 
-	private void SetBlueprint(BlueprintData structureData)
+	//protected override void RefreshCursor(out RaycastHit hitData)
+	//{
+	//	base.RefreshCursor(out hitData);
+
+	//	if (hitData.collider != null)
+	//	{
+	//		// Use the point already calculated by the base class
+	//		Vector3 placementPosition = hitData.point;
+	//		LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
+	//		if (m_blueprintStructureData != null)
+	//		{
+	//			bool isBlocked = Physics.CheckSphere(
+	//				placementPosition,
+	//				m_blueprintStructureData.PlacementClearenceRadius,
+	//				combinedCheckMask
+	//			);
+
+	//			if (isBlocked != !m_isPlacementValid)
+	//			{
+	//				m_isPlacementValid = !isBlocked;
+	//				UpdateVisuals(m_isPlacementValid);
+	//			}
+	//		}
+	//	}
+	//}
+
+	private void UpdateVisuals(bool isValid)
 	{
-		enabled = true;
+		Material[] materials = { isValid ? m_validMaterial : m_invalidMaterial };
 
-		m_blueprintStructureData = structureData;
-		Mesh mesh = m_blueprintStructureData.BlueprintMesh;
-
-		Material[] materials = new Material[1];
-		materials[0] = m_validMaterial;
-
-		Bounds bounds = mesh.bounds;
+		Bounds bounds = m_blueprintStructureData.BlueprintMesh.bounds;
 		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
 
-		m_cursorVisualizer.SetVisuals(structureData.BlueprintMesh, materials, localOffset);
+		m_controllerManager.CursorVisualizer?.SetVisuals(m_blueprintStructureData.BlueprintMesh, materials, localOffset);
 	}
 }

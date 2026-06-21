@@ -33,9 +33,20 @@ public class ConstructionMenu : Menu
 
 	private void OnToggleInput(InputAction.CallbackContext ctx)
 	{
-		if(MenuManager.PauseMenu)
+		if (MenuManager.MenuCount == 1 || MenuManager.IsMenuOpen(this))
+		{
+			if (GameManager.Instance.PlayerObject.TryGetComponent(out PlayerConstructionController constructionController))
+			{
+				PlayerWorldControllerManager worldControllerManager =
+					GameManager.Instance.PlayerObject.GetComponent<PlayerWorldControllerManager>();
 
-		MenuManager.ToggleMenu(this);
+				// Only allow this menu to be toggled when in construction mode
+				if (worldControllerManager.IsModeActive(constructionController))
+					MenuManager.ToggleMenu(this);
+			}
+		}
+
+		Debug.Log("WTF");
 	}
 	#endregion
 

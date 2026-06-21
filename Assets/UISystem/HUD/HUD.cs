@@ -5,7 +5,6 @@ public class HUD : Menu
 	public override bool IsUnclosable => true;
 	public override bool IsHUD => true;
 
-
 	#region Initialization Methods
 
 	protected override void Awake()
@@ -49,10 +48,10 @@ public class HUD : Menu
 
 	internal void SetPlayer(Player player)
 	{
-		//HUDElement[] elements = GetComponentsInChildren<HUDElement>();
-		//foreach (var element in elements)
-		//{
-		//	element.SetPlayer(player);
-		//}
+		HUDElement[] elements = GetComponentsInChildren<HUDElement>();
+		foreach (var element in elements)
+		{
+			element.SetPlayer(player);
+		}
 	}
 }
