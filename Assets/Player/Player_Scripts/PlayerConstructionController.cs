@@ -51,7 +51,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	public override void OnControllerEnabled() 
 	{
 		enabled = true;
-		RefreshCursor();
+		RefreshCursor(out _);
 	}
 
 	public override void OnControllerDisabled()
@@ -75,11 +75,6 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	public override void SecondaryFire(InputAction.CallbackContext context) { }
 
 	public override void Cycle(int scrollDir) { }
-
-	private void Update()
-	{
-		RefreshCursor();
-	}
 
 	private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 	{
@@ -106,31 +101,31 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		m_controllerManager.CursorVisualizer?.ReturnToDefaultVisuals();
 	}
 
-	//protected override void RefreshCursor(out RaycastHit hitData)
-	//{
-	//	base.RefreshCursor(out hitData);
+	protected override void RefreshCursor(out RaycastHit hitData)
+	{
+		base.RefreshCursor(out hitData);
 
-	//	if (hitData.collider != null)
-	//	{
-	//		// Use the point already calculated by the base class
-	//		Vector3 placementPosition = hitData.point;
-	//		LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
-	//		if (m_blueprintStructureData != null)
-	//		{
-	//			bool isBlocked = Physics.CheckSphere(
-	//				placementPosition,
-	//				m_blueprintStructureData.PlacementClearenceRadius,
-	//				combinedCheckMask
-	//			);
+		if (hitData.collider != null)
+		{
+			// Use the point already calculated by the base class
+			Vector3 placementPosition = hitData.point;
+			LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
+			if (m_blueprintStructureData != null)
+			{
+				bool isBlocked = Physics.CheckSphere(
+					placementPosition,
+					m_blueprintStructureData.PlacementClearenceRadius,
+					combinedCheckMask
+				);
 
-	//			if (isBlocked != !m_isPlacementValid)
-	//			{
-	//				m_isPlacementValid = !isBlocked;
-	//				UpdateVisuals(m_isPlacementValid);
-	//			}
-	//		}
-	//	}
-	//}
+				if (isBlocked != !m_isPlacementValid)
+				{
+					m_isPlacementValid = !isBlocked;
+					UpdateVisuals(m_isPlacementValid);
+				}
+			}
+		}
+	}
 
 	private void UpdateVisuals(bool isValid)
 	{

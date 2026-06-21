@@ -70,9 +70,7 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 	}
 
 	private void OnMouseInput(InputAction.CallbackContext context)
-	{
-		m_currentWorldController?.SetMouseScreenPosition(context.ReadValue<Vector2>());
-	}
+		=> m_currentWorldController?.SetMouseScreenPosition(context.ReadValue<Vector2>());
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
 		=> m_currentWorldController?.PrimaryFire(context);

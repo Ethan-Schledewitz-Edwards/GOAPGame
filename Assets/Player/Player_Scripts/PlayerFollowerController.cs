@@ -25,7 +25,7 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 	public override void OnControllerEnabled() 
 	{ 
 		enabled = true;
-		RefreshCursor();
+		RefreshCursor(out _);
 	}
 
 	public override void OnControllerDisabled() 
@@ -44,11 +44,6 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 	}
 
 	public override void Cycle(int scrollDir) { }
-
-	private void Update()
-	{
-		RefreshCursor();
-	}
 
 	private void Select(Vector3 position)
 	{
@@ -120,11 +115,11 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 		return closestFollower;
 	}
 
-	//protected override void RefreshCursor(out RaycastHit hitData)
-	//{
-	//	base.RefreshCursor(out hitData);
+	protected override void RefreshCursor(out RaycastHit hitData)
+	{
+		base.RefreshCursor(out hitData);
 
-	//	if (m_isSummonHeld)
-	//		Select(m_mouseWorldPosition);
-	//}
+		if (m_isSummonHeld)
+			Select(m_mouseWorldPosition);
+	}
 }

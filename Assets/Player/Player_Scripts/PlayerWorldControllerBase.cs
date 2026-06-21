@@ -8,7 +8,7 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour
 
 	protected PlayerWorldControllerManager m_controllerManager;
 	private Vector2 m_mouseScreenPosition;
-	protected Vector2 m_mouseWorldPosition;
+	protected Vector3 m_mouseWorldPosition;
 
 	[SerializeField] private LayerMask m_groundLayer;
 
@@ -35,12 +35,18 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour
 
 	public abstract void Cycle(int cycleDir);
 
-	protected void RefreshCursor()
+	private void Update()
+	{
+		RefreshCursor(out _);
+	}
+
+	protected virtual void RefreshCursor(out RaycastHit hitData)
 	{
 		Ray ray = m_controllerManager.MainCamera.ScreenPointToRay(m_mouseScreenPosition);
-		if (Physics.Raycast(ray, out RaycastHit hitData, 100f, m_groundLayer))
+		if (Physics.Raycast(ray, out hitData, 100f, m_groundLayer))
 		{
 			m_mouseWorldPosition = hitData.point;
+			Debug.Log(m_mouseWorldPosition);
 			m_controllerManager.CursorVisualizer.SetPosition(m_mouseWorldPosition);
 		}
 	}
