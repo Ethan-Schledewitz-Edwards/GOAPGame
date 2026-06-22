@@ -33,7 +33,7 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour
 
 	public abstract void SecondaryFire(InputAction.CallbackContext context);
 
-	public abstract void Cycle(int cycleDir);
+	public abstract void Cycle(int cycleDirection);
 
 	private void Update()
 	{
@@ -46,7 +46,6 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour
 		if (Physics.Raycast(ray, out hitData, 100f, m_groundLayer))
 		{
 			m_mouseWorldPosition = hitData.point;
-			Debug.Log(m_mouseWorldPosition);
 			m_controllerManager.CursorVisualizer.SetPosition(m_mouseWorldPosition);
 		}
 	}

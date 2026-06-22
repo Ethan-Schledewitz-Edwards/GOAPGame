@@ -29,8 +29,6 @@ public class ConstructionMenu : Menu
 	}
 	#endregion
 
-	#region Input Methods
-
 	private void OnToggleInput(InputAction.CallbackContext ctx)
 	{
 		if (MenuManager.MenuCount == 1 || MenuManager.IsMenuOpen(this))
@@ -45,17 +43,10 @@ public class ConstructionMenu : Menu
 					MenuManager.ToggleMenu(this);
 			}
 		}
-
-		Debug.Log("WTF");
 	}
-	#endregion
-
-	#region UI State
 
 	public override void SetMenuActive(bool active)
 	{
 		base.SetMenuActive(active);
 	}
-
-	#endregion
 }

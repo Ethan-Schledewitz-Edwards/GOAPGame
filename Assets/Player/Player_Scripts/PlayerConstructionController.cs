@@ -16,7 +16,8 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	public event Action<BlueprintData, Vector3> PlacedStructure;
 
 	private bool m_isPlacementValid;
-	private BlueprintData m_blueprintStructureData;
+	private BlueprintData m_blueprintData;
+	private Quaternion m_placementRotation;
 
 	private LayerMask m_blockingLayer;
 	private LayerMask m_interactionLayer;
@@ -44,8 +45,9 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 	private void SetBlueprint(BlueprintData structureData)
 	{
-		m_blueprintStructureData = structureData;
-		UpdateVisuals(true);
+		m_blueprintData = structureData;
+		m_placementRotation = Quaternion.identity;
+		UpdateVisuals(false);
 	}
 
 	public override void OnControllerEnabled() 
@@ -57,14 +59,14 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	public override void OnControllerDisabled()
 	{
 		enabled = false;
-		CancleBlueprintPlacement();
+		ClearBlueprintData();
 	}
 
 	public override void PrimaryFire(InputAction.CallbackContext context)
 	{
 		if (m_isPlacementValid)
 		{
-			TryPlaceBlueprint(m_mouseWorldPosition, Quaternion.identity);
+			TryPlaceBlueprint(m_mouseWorldPosition, m_placementRotation);
 		}
 		else
 		{
@@ -72,13 +74,21 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		}
 	}
 
-	public override void SecondaryFire(InputAction.CallbackContext context) { }
+	public override void SecondaryFire(InputAction.CallbackContext context) 
+	{ 
+		// Cancle the building under the mouse
+	}
 
-	public override void Cycle(int scrollDir) { }
+	public override void Cycle(int cycleDirection) 
+	{
+		Quaternion rotationDelta = Quaternion.Euler(0, 90 * cycleDirection, 0);
+		m_placementRotation = m_placementRotation * rotationDelta;
+		UpdateVisuals(m_isPlacementValid);
+	}
 
 	private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 	{
-		if (m_blueprintStructureData == null)
+		if (m_blueprintData == null)
 			return;
 
 		int nearestSettlementID = SettlementManager.GetClosestSettlementID(transform.position, true, true);
@@ -88,16 +98,18 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 			SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
 		ConstructionManager.Instance.CreateStructureBlueprint(nearestSettlementID, 
-			m_blueprintStructureData, 
+			m_blueprintData, 
 			position,
 			rotation);
 
-		CancleBlueprintPlacement();
+		ClearBlueprintData();
 	}
 
-	private void CancleBlueprintPlacement()
+	private void ClearBlueprintData()
 	{
-		m_blueprintStructureData = null;
+		m_blueprintData = null;
+		m_isPlacementValid = false;
+		m_placementRotation = Quaternion.identity;
 		m_controllerManager.CursorVisualizer?.ReturnToDefaultVisuals();
 	}
 
@@ -110,11 +122,11 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 			// Use the point already calculated by the base class
 			Vector3 placementPosition = hitData.point;
 			LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
-			if (m_blueprintStructureData != null)
+			if (m_blueprintData != null)
 			{
 				bool isBlocked = Physics.CheckSphere(
 					placementPosition,
-					m_blueprintStructureData.PlacementClearenceRadius,
+					m_blueprintData.PlacementClearenceRadius,
 					combinedCheckMask
 				);
 
@@ -131,9 +143,15 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	{
 		Material[] materials = { isValid ? m_validMaterial : m_invalidMaterial };
 
-		Bounds bounds = m_blueprintStructureData.BlueprintMesh.bounds;
-		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
+		if (m_blueprintData == null)
+			return;
 
-		m_controllerManager.CursorVisualizer?.SetVisuals(m_blueprintStructureData.BlueprintMesh, materials, localOffset);
+		Bounds bounds = m_blueprintData.BlueprintMesh.bounds;
+		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
+		m_controllerManager.CursorVisualizer?.SetVisuals(m_blueprintData.BlueprintMesh, 
+			materials, 
+			localOffset, 
+			m_placementRotation
+			);
 	}
 }

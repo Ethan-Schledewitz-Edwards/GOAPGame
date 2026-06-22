@@ -38,6 +38,7 @@ public class ConstructionManager : MonoBehaviour
 			return;
 		}
 
+		// Create the blueprint object
 		GameObject blueprintObject = new GameObject(blueprintData.DisplayName);
 		BlueprintIO blueprintIO = blueprintObject.AddComponent<BlueprintIO>();
 
@@ -64,20 +65,24 @@ public class ConstructionManager : MonoBehaviour
 			blueprintObject.transform.position = position + new Vector3(0, bounds.extents.y, 0);
 
 			BoxCollider bpBoxCol = blueprintObject.AddComponent<BoxCollider>();
+			bpBoxCol.isTrigger = true;
 			bpBoxCol.size = bounds.size;
 		}
 		else
 			blueprintObject.transform.position = position;
 
+		blueprintObject.transform.rotation = rotation;
+
 		// Add to settlement
 		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(blueprintIO);
 
-		// Init
+		// Init the blueprint
 		blueprintIO.InitializeBlueprint(blueprintData.BlueprintID, 
 			settlementID, 
 			blueprintData.RequiredItems, 
 			position, 
 			rotation);
+
 		blueprintIO.BlueprintCompleted += OnBlueprintCompleted;
 	}
 

@@ -80,7 +80,8 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 
 	private void OnCycleInput(InputAction.CallbackContext context)
 	{
-
+		int direction = Math.Sign(context.ReadValue<float>());
+		m_currentWorldController?.Cycle(direction);
 	}
 
 	private void OnFollowerControllerInput(InputAction.CallbackContext context)
@@ -106,6 +107,6 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 
 	public bool IsModeActive(PlayerWorldControllerBase controllerBase)
 	{
-		return m_currentWorldController = controllerBase;
+		return m_currentWorldController == controllerBase;
 	}
 }

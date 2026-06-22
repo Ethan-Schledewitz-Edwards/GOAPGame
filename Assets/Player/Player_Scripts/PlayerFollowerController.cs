@@ -43,7 +43,7 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 		m_isSummonHeld = context.ReadValueAsButton();
 	}
 
-	public override void Cycle(int scrollDir) { }
+	public override void Cycle(int cycleDirection) { }
 
 	private void Select(Vector3 position)
 	{

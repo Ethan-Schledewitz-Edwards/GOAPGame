@@ -18,9 +18,10 @@ public class Settlement
 
 	public Settlement(int settlementID, bool isSettlementFriendly, bool isSettlementBuildable)
 	{
-		SettlementID = SettlementID;
+		SettlementID = settlementID;
 		IsSettlementFriendly = isSettlementFriendly;
 		IsSettlementBuildable = isSettlementBuildable;
+		Debug.Log($"New settlement of ID:{SettlementID} was created");
 	}
 
 	#region ManagementMethods
@@ -134,8 +135,6 @@ public class Settlement
 		return closest;
 	}
 
-	#region Utility
-
 	public Vector3 GetSettlementCenter()
 	{
 		List<InteractableObjectBase> allStructures = new List<InteractableObjectBase>();
@@ -160,5 +159,4 @@ public class Settlement
 
 		return validCount > 0 ? totalPosition / validCount : Vector3.zero;
 	}
-	#endregion
 }

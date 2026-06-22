@@ -30,8 +30,6 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 	private void Awake()
 	{
-		Position = transform.position;
-
 		if (s_cachedBlueprintBT == null)
 		{
 			BehaviourTree tree = new BehaviourTree();
