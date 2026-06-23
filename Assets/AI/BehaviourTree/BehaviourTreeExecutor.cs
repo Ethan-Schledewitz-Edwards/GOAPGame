@@ -5,7 +5,7 @@ using UnityEngine;
 public class BehaviourTreeExecutor : MonoBehaviour
 {
 	[Header("Parameters")]
-	private float m_interactionDist = 0.5f;
+	private float m_interactionDist = 3f;
 
 	// System
 	public AIContext AIContext { get; private set; }

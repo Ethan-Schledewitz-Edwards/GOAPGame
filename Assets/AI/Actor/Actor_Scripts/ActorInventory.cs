@@ -14,15 +14,12 @@ public class ActorInventory : InventoryComponent
 	public event Action<Item> OnDroppedItem;
 
 	// System
-	private int m_interactionLayerMask;
 	public InventorySlot HeldItemSlot { get; private set; }
 
 	#region Monobehaviour Callbacks
 
 	protected override void Awake()
 	{
-		m_interactionLayerMask = LayerMask.NameToLayer("Interaction");
-
 		InitializeInventory(1);
 		HeldItemSlot = Inventory.Slots[0];
 	}
