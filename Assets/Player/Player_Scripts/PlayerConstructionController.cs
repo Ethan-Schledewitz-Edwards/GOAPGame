@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 public class PlayerConstructionController : PlayerWorldControllerBase
 {
+	private const float c_cancleRadius = 2.0f;
+	private const float c_secondsToCancle = 2.0f;
+
 	public override string ControllerName => "Construction Mode";
 	public override Sprite ControllerIcon => m_controllerIcon;
 	[SerializeField] private Sprite m_controllerIcon;
@@ -13,7 +16,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	[SerializeField] private Material m_validMaterial;
 	[SerializeField] private Material m_invalidMaterial;
 
-	public event Action<BlueprintData, Vector3> PlacedStructure;
+	private bool m_isCancleHeld = false;
 
 	private bool m_isPlacementValid;
 	private BlueprintData m_blueprintData;
@@ -75,8 +78,8 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	}
 
 	public override void SecondaryFire(InputAction.CallbackContext context) 
-	{ 
-		// Cancle the building under the mouse
+	{
+		m_isCancleHeld = context.ReadValueAsButton();
 	}
 
 	public override void Cycle(int cycleDirection) 
@@ -134,6 +137,22 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 				{
 					m_isPlacementValid = !isBlocked;
 					UpdateVisuals(m_isPlacementValid);
+				}
+				return;
+			}
+
+			if (m_isCancleHeld)
+			{
+				Collider[] hitColliders = Physics.OverlapSphere(hitData.point, c_cancleRadius, m_interactionLayer);
+				if (hitColliders.Length != 0)
+				{
+					foreach (Collider i in hitColliders)
+					{
+						if(i.TryGetComponent(out BlueprintIO blueprint))
+						{
+							ConstructionManager.Instance?.CancleBlueprint(blueprint);
+						}
+					}
 				}
 			}
 		}

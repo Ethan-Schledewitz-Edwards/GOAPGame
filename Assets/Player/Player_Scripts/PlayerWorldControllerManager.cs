@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 {
+	public static PlayerWorldControllerBase CurrentWorldController;
+
 	[field: SerializeField] public PlayerCursorVisualizer CursorVisualizer { get; private set; }
 	[field: SerializeField] public Camera MainCamera { get; private set; }
 	[SerializeField] private PlayerFollowerController m_followerController;
@@ -12,7 +14,6 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 
 	public event Action<PlayerWorldControllerBase> ControlModeChanged;
 
-	private PlayerWorldControllerBase m_currentWorldController;
 
 	private void Awake()
 	{
@@ -70,18 +71,18 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 	}
 
 	private void OnMouseInput(InputAction.CallbackContext context)
-		=> m_currentWorldController?.SetMouseScreenPosition(context.ReadValue<Vector2>());
+		=> CurrentWorldController?.SetMouseScreenPosition(context.ReadValue<Vector2>());
 
 	private void OnPrimaryInput(InputAction.CallbackContext context)
-		=> m_currentWorldController?.PrimaryFire(context);
+		=> CurrentWorldController?.PrimaryFire(context);
 
 	private void OnSecondaryInput(InputAction.CallbackContext context)
-		=> m_currentWorldController?.SecondaryFire(context);
+		=> CurrentWorldController?.SecondaryFire(context);
 
 	private void OnCycleInput(InputAction.CallbackContext context)
 	{
 		int direction = Math.Sign(context.ReadValue<float>());
-		m_currentWorldController?.Cycle(direction);
+		CurrentWorldController?.Cycle(direction);
 	}
 
 	private void OnFollowerControllerInput(InputAction.CallbackContext context)
@@ -97,16 +98,16 @@ public class PlayerWorldControllerManager : MonoBehaviour, IInputHandler
 		if (interactionControllerBase == null)
 			return;
 
-		if(m_currentWorldController != null)
-			m_currentWorldController.OnControllerDisabled();
+		if(CurrentWorldController != null)
+			CurrentWorldController.OnControllerDisabled();
 
-		m_currentWorldController = interactionControllerBase;
-		m_currentWorldController.OnControllerEnabled();
-		ControlModeChanged?.Invoke(m_currentWorldController);
+		CurrentWorldController = interactionControllerBase;
+		CurrentWorldController.OnControllerEnabled();
+		ControlModeChanged?.Invoke(CurrentWorldController);
 	}
 
-	public bool IsModeActive(PlayerWorldControllerBase controllerBase)
+	public static bool IsModeActive(PlayerWorldControllerBase controllerBase)
 	{
-		return m_currentWorldController == controllerBase;
+		return CurrentWorldController == controllerBase;
 	}
 }

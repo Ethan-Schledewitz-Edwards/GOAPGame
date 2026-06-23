@@ -14,13 +14,15 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	private const string c_interactionLayer = "Interaction";
 
 	public event Action<BlueprintIO> BlueprintCompleted;
+	public event Action<BlueprintIO> BlueprintCanceled;
 
-	public BluerprintInventoryComponent bluerprintInventory { get; private set; }
 	public int BlueprintID { get; private set; }
 	public int SettlementID { get; private set; }
 	public Vector3 Position { get; private set; }
 	public Quaternion Rotation { get; private set; }
-	public ItemQuantity[] RequiredItems { get; private set; }
+
+	private BluerprintInventoryComponent m_bluerprintInventory;
+	private ItemQuantity[] m_requiredItems;
 
 	[SerializeField] private float m_maxCapacity = 4f;
 	[SerializeField] private float m_actorsAssigned = 0f;
@@ -47,13 +49,13 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 
 		gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 
-		bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
-		bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
+		m_bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
+		m_bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
 	}
 
 	private void OnDestroy()
 	{
-		bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
+		m_bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
 	}
 
 	public override void UpdateSpeed(int extra)
@@ -75,16 +77,29 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	{
 		BlueprintID = blueprintID;
 		SettlementID = settlementID;
-		RequiredItems = requiredItems;
-		bluerprintInventory.InitializeBlueprintInventory(requiredItems);
 		Position = position;
 		Rotation = rotation;
+		m_bluerprintInventory.InitializeBlueprintInventory(requiredItems);
+		m_requiredItems = requiredItems;
 	}
 
 	private void CompleteBlueprint()
 	{
 		Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was completed in settlement:{SettlementID}.");
 		BlueprintCompleted?.Invoke(this);
+	}
+
+	public void CancleBlueprint()
+	{
+		Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was canceld in settlement:{SettlementID}.");
+		BlueprintCanceled?.Invoke(this);
+
+		foreach (InventorySlot slot in m_bluerprintInventory.Slots)
+		{
+			slot.RemoveFromStack(slot.AmountInSlot, transform.position);
+		}
+
+		Destroy(gameObject);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

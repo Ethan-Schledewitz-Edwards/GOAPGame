@@ -102,4 +102,9 @@ public class ConstructionManager : MonoBehaviour
 		GameObject prefab = m_blueprintIndex.Blueprints[blueprintIO.BlueprintID].BlueprintFeatureData.Prefab;
 		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 	}
+
+	public void CancleBlueprint(BlueprintIO blueprintIO)
+	{
+		blueprintIO.CancleBlueprint();
+	}
 }

@@ -59,6 +59,20 @@ namespace InventorySystem
 
 		}
 
+		private void TryAddPhysicalItem(Transform itemTransform)
+		{
+			if (itemTransform == null || PhysicalItemObjects.Contains(itemTransform))
+				return;
+
+			if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+			{
+				itemTransform.gameObject.SetActive(false);
+				itemRB.constraints = RigidbodyConstraints.FreezeAll;
+			}
+
+			PhysicalItemObjects.Push(itemTransform);
+		}
+
 		public void SetSlotsItem(ItemData itemData, int Amount, Transform physicalItemObject = null)
 		{
 			SlotsItem = itemData;
@@ -157,20 +171,6 @@ namespace InventorySystem
 			return SlotsItem == null || amount <= roomRemaining;
 		}
 		#endregion
-
-		private void TryAddPhysicalItem(Transform itemTransform)
-		{
-			if(itemTransform == null || PhysicalItemObjects.Contains(itemTransform))
-				return;
-
-			if(itemTransform.TryGetComponent(out Rigidbody itemRB))
-			{
-				itemTransform.gameObject.SetActive(false);
-				itemRB.constraints = RigidbodyConstraints.FreezeAll;
-			}
-
-			PhysicalItemObjects.Push(itemTransform);
-		}
 
 		private void SlotChanged() => OnSlotChanged?.Invoke(this);
 	}
