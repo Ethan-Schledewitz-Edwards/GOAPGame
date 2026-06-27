@@ -141,16 +141,30 @@ namespace InventorySystem
 		/// <param name="WorldDropPos">The world position where the items are dropped.</param>
 		public void RemoveFromStack(int amount, Vector3 WorldDropPos)
 		{
+			ItemData itemData = SlotsItem;
 			AmountInSlot -= amount;
+
 			for (int i = 0; i < amount; i++)
 			{
-				Transform itemTransform = PhysicalItemObjects.Pop();
-				if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+				Transform itemTransform = null;
+				if (PhysicalItemObjects.Count > 0)
 				{
-					itemRB.constraints = RigidbodyConstraints.None;
-					itemTransform.position = WorldDropPos;
-					itemTransform.parent = null;
-					itemTransform.gameObject.SetActive(true);
+					itemTransform = PhysicalItemObjects.Pop();
+					if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+					{
+						itemRB.constraints = RigidbodyConstraints.None;
+						itemTransform.position = WorldDropPos;
+						itemTransform.parent = null;
+						itemTransform.gameObject.SetActive(true);
+					}
+				}
+				else
+				{
+					GameObject spawnedItem = GameObject.Instantiate(itemData.ItemPrefab, WorldDropPos, Quaternion.identity);
+					itemTransform = spawnedItem.transform;
+
+					if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+						itemRB.constraints = RigidbodyConstraints.None;
 				}
 
 				OnDroppedPhysicalItem?.Invoke(itemTransform);

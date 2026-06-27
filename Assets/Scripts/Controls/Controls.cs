@@ -916,6 +916,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""QuickSave"",
+                    ""type"": ""Button"",
+                    ""id"": ""e84a0a86-8c3c-4412-842c-23b6a8d25833"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""QuickLoad"",
+                    ""type"": ""Button"",
+                    ""id"": ""2765aa4a-307f-4753-bac1-7588b6eed2a5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -995,6 +1013,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Any"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f160cb66-c754-4bf9-bfe4-6f07497b425b"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa6db7c8-36c1-4310-85a6-503336903a12"",
+                    ""path"": ""<Keyboard>/f2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickLoad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1026,6 +1066,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Permanents_Pause = m_Permanents.FindAction("Pause", throwIfNotFound: true);
         m_Permanents_Inventory = m_Permanents.FindAction("Inventory", throwIfNotFound: true);
         m_Permanents_Any = m_Permanents.FindAction("Any", throwIfNotFound: true);
+        m_Permanents_QuickSave = m_Permanents.FindAction("QuickSave", throwIfNotFound: true);
+        m_Permanents_QuickLoad = m_Permanents.FindAction("QuickLoad", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -1457,6 +1499,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Permanents_Pause;
     private readonly InputAction m_Permanents_Inventory;
     private readonly InputAction m_Permanents_Any;
+    private readonly InputAction m_Permanents_QuickSave;
+    private readonly InputAction m_Permanents_QuickLoad;
     /// <summary>
     /// Provides access to input actions defined in input action map "Permanents".
     /// </summary>
@@ -1480,6 +1524,14 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Permanents/Any".
         /// </summary>
         public InputAction @Any => m_Wrapper.m_Permanents_Any;
+        /// <summary>
+        /// Provides access to the underlying input action "Permanents/QuickSave".
+        /// </summary>
+        public InputAction @QuickSave => m_Wrapper.m_Permanents_QuickSave;
+        /// <summary>
+        /// Provides access to the underlying input action "Permanents/QuickLoad".
+        /// </summary>
+        public InputAction @QuickLoad => m_Wrapper.m_Permanents_QuickLoad;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1515,6 +1567,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Any.started += instance.OnAny;
             @Any.performed += instance.OnAny;
             @Any.canceled += instance.OnAny;
+            @QuickSave.started += instance.OnQuickSave;
+            @QuickSave.performed += instance.OnQuickSave;
+            @QuickSave.canceled += instance.OnQuickSave;
+            @QuickLoad.started += instance.OnQuickLoad;
+            @QuickLoad.performed += instance.OnQuickLoad;
+            @QuickLoad.canceled += instance.OnQuickLoad;
         }
 
         /// <summary>
@@ -1535,6 +1593,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Any.started -= instance.OnAny;
             @Any.performed -= instance.OnAny;
             @Any.canceled -= instance.OnAny;
+            @QuickSave.started -= instance.OnQuickSave;
+            @QuickSave.performed -= instance.OnQuickSave;
+            @QuickSave.canceled -= instance.OnQuickSave;
+            @QuickLoad.started -= instance.OnQuickLoad;
+            @QuickLoad.performed -= instance.OnQuickLoad;
+            @QuickLoad.canceled -= instance.OnQuickLoad;
         }
 
         /// <summary>
@@ -1724,5 +1788,19 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAny(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickSave" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickSave(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickLoad" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickLoad(InputAction.CallbackContext context);
     }
 }

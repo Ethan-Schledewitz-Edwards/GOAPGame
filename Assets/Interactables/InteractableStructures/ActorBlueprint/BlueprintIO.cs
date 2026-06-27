@@ -37,7 +37,11 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				// search for itesm (storage than ground)
+				new FindItemTask(),
+				new MoveToTargetDataTask(),
+				new InteractWithTargetTask(),
+				new MoveToTargetDataTask(),
+				new DepositTask(),
 				// Go to item
 				// Pickup item
 				// return
@@ -100,6 +104,77 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		}
 
 		Destroy(gameObject);
+	}
+
+	public override void TryInteract(IInteractor interactor)
+	{
+		base.TryInteract(interactor);
+
+		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+		if (executor != null)
+		{
+			Transform requiredItem = FindRequiredItem();
+			if (requiredItem != null)
+				executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
+		}
+	}
+
+	private Transform FindRequiredItem()
+	{
+		Transform globalNearest = null;
+		float minDistanceSqr = float.MaxValue;
+		Vector3 currentPos = transform.position;
+
+		foreach (ItemQuantity requiredItem in m_requiredItems)
+		{
+			if (!m_bluerprintInventory.GetItemTypeSatisfied(requiredItem))
+			{
+				Transform candidate = SearchForItem(requiredItem.itemType);
+
+				if (candidate != null)
+				{
+					float distSqr = (candidate.position - currentPos).sqrMagnitude;
+					if (distSqr < minDistanceSqr)
+					{
+						minDistanceSqr = distSqr;
+						globalNearest = candidate;
+					}
+				}
+			}
+		}
+
+		return globalNearest;
+	}
+
+	private Transform SearchForItem(ItemData itemData)
+	{
+		/*
+		Vector2Int centerChunk = WorldToChunkCoord(transform.position);
+		int chunkRange = Mathf.CeilToInt(searchRadius / WorldBuilder.s_ChunkSize.x);
+
+		var chunksToSearch = GetChunksInRadius(transform.position, searchRadius);
+
+		Transform nearest = null;
+		float minDistanceSqr = float.MaxValue;
+
+		foreach (var chunk in chunksToSearch)
+		{
+			foreach (var item in chunk.Items)
+			{
+				if (item.Data == itemData)
+				{
+					float distSqr = (item.transform.position - transform.position).sqrMagnitude;
+					if (distSqr < minDistanceSqr)
+					{
+						minDistanceSqr = distSqr;
+						nearest = item.transform;
+					}
+				}
+			}
+		}
+		*/
+
+		return null;
 	}
 
 	public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

@@ -1,20 +1,19 @@
 {
-    "name": "SaveLoad",
-    "rootNamespace": "",
+    "name": "SaveLoad.Management",
+    "rootNamespace": "SaveLoad.Management",
     "references": [
-        "GUID:f7c476b7412a3f2448541c7f6867ba74",
-        "GUID:9ba38f2c76031274599e13fd9c690966",
-        "GUID:19a69fce138124240bfff07f6ef69a21",
         "GUID:75b67bd2594706742bb0d6e6b501d402",
         "GUID:ba03907fce1edd444a6619e3f2864f88",
         "GUID:b85b26eebd1b5c549a59e2da7531da88",
-        "GUID:fc7511d31bfe16d40b7b18bb9d5245c5",
-        "GUID:e7fe9e0e32808bc4ea311481ab2c91a2"
+        "GUID:e7fe9e0e32808bc4ea311481ab2c91a2",
+        "GUID:43be695e241eefc4d976df3ad33e60b2",
+        "GUID:73b12e1e80bff624a9b5c87c009bb089",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

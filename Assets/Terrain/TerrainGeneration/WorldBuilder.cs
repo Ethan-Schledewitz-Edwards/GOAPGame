@@ -251,6 +251,16 @@ public class WorldBuilder : MonoBehaviour
 		}
 	}
 
+	public static TerrainChunk GetChunkData(Vector2Int chunkXZ)
+	{
+		// Return an active chunk
+		if (s_ActiveChunks.TryGetValue(chunkXZ, out var active))
+			return active.chunkData;
+
+		// Request from disk
+		return OnRequestChunkData?.Invoke(chunkXZ);
+	}
+
 	private bool CheckNeighborhoodReady(Vector2Int centerXZ)
 	{
 		for (int x = -1; x <= 1; x++)

@@ -27,21 +27,25 @@ public class BluerprintInventoryComponent : InventoryComponent
 
 	private void HandleInventorySlotUpdated(InventorySlot _)
 	{
-		bool inventoryMeetsRequiredItemQuantities = true;
+		bool inventoryMeetsRequiredItemQuantities = false;
 		foreach (ItemQuantity quantity in m_requiredItemsToBuild)
 		{
-			ItemData itemData = quantity.itemType;
-			int amountNeeded = quantity.amount;
-
-			if (Inventory.GetTotalOfItem(itemData) != amountNeeded)
+			if (GetItemTypeSatisfied(quantity))
 			{
-				inventoryMeetsRequiredItemQuantities = false;
+				inventoryMeetsRequiredItemQuantities = true;
 				break;
 			}
 		}
 
 		if (inventoryMeetsRequiredItemQuantities)
 			BlueprintItemsAchieved?.Invoke();
+	}
+
+	public bool GetItemTypeSatisfied(ItemQuantity quantity)
+	{
+		ItemData itemData = quantity.itemType;
+		int amountNeeded = quantity.amount;
+		return Inventory.GetTotalOfItem(itemData) >= amountNeeded;
 	}
 
 	public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)

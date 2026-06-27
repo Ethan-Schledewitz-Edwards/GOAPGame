@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class TerrainChunk
 {
 	public Vector2Int ChunkXZ { get; private set; }
 	public int[,,] TileData { get; private set; }
 	public int[,] BiomeMap { get; private set; }
-	public HashSet<string> ResidentEntityIDs { get; private set; } = new HashSet<string>();
+	public HashSet<GameObject> ResidentEntities { get; private set; } = new HashSet<GameObject>();
 
 	public EChunkGenerationState ChunkGenerationState { get; private set; }
 	public enum EChunkGenerationState
@@ -57,13 +58,13 @@ public class TerrainChunk
 		}
 	}
 
-	public void RegisterEntity(string entityID)
+	public void RegisterEntity(GameObject entity)
 	{
-		ResidentEntityIDs.Add(entityID);
+		ResidentEntities.Add(entity);
 	}
 
-	public void UnregisterEntity(string entityID)
+	public void UnregisterEntity(GameObject entity)
 	{
-		ResidentEntityIDs.Remove(entityID);
+		ResidentEntities.Remove(entity);
 	}
 }
