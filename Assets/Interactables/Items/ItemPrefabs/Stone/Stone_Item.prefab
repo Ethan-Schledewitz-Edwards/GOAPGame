@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 6968735864331836856}
   - component: {fileID: 6681474683463933285}
   - component: {fileID: 6069415673470048647}
-  - component: {fileID: 5557249503198524681}
   - component: {fileID: 5030504748117166773}
+  - component: {fileID: 5557249503198524681}
+  - component: {fileID: 3453584726676022345}
   m_Layer: 7
   m_Name: Stone_Item
   m_TagString: Untagged
@@ -114,22 +115,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5557249503198524681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6673996059420899831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d813dab4037325d44a4a5d66cace7afd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  m_actorsNeeded: 1
-  m_formationRadius: 1
-  <ItemData>k__BackingField: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-  <StackSize>k__BackingField: 1
 --- !u!54 &5030504748117166773
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -157,3 +142,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5557249503198524681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d813dab4037325d44a4a5d66cace7afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  m_actorsNeeded: 1
+  m_interactOffset: {fileID: 0}
+  m_formationRadius: 1
+  <ItemData>k__BackingField: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
+  <StackSize>k__BackingField: 1
+--- !u!114 &3453584726676022345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
+  m_savablePrefabData: {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}

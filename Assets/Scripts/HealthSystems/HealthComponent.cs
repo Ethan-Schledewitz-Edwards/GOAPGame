@@ -24,8 +24,8 @@ public class HealthComponent : MonoBehaviour
 
 	// System vars
 	protected bool m_isSpawning;
-	private int m_health;
-	private bool m_isDead;
+	protected int m_health;
+	protected bool m_isDead;
 	protected LayerMask m_collisionLayerMask;
 
 	#region Initialization Methods

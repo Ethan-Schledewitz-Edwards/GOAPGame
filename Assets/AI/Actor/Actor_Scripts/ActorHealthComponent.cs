@@ -1,11 +1,16 @@
+using SaveLoad.Data;
+using System.Collections;
 using UnityEngine;
 
-public class ActorHealthComponent : HealthComponent
+public class ActorHealthComponent : HealthComponent, ISaveable
 {
 	// Constants
 	private const float c_hungerDegredation = 0.2f;
 	private const float c_tirednessDegredation = 0.2f;
 	private const float c_baseHealthDegredation = 2f;
+
+	private Actor m_actor;
+	private SaveableEntity m_saveableEntity;
 
 	private float m_healthInterval;
 
@@ -20,6 +25,12 @@ public class ActorHealthComponent : HealthComponent
 	[field: SerializeField] public int MaxHapiness { get; private set; } = 100;
 	[field: SerializeField] public int Hapiness { get; private set; } = 100;
 
+	protected override void Awake()
+	{
+		base.Awake();
+		m_actor = GetComponent<Actor>();
+		m_saveableEntity = GetComponent<SaveableEntity>();
+	}
 
 	private void SetHunger(int newHungerValue)
 	{
@@ -84,5 +95,50 @@ public class ActorHealthComponent : HealthComponent
 				m_healthInterval -= 1f;
 			}
 		}
+	}
+
+	protected override IEnumerator TrySpawn()
+	{
+		ActorManager.Instance.AddActor(m_actor);
+		return base.TrySpawn();
+	}
+
+	protected override void OnDie()
+	{
+		ActorManager.Instance.RemoveActor(m_actor);
+		base.OnDie();
+	}
+
+	public string GetComponentId() => "ActorHealth";
+
+	public object GenerateComponentData()
+	{
+		return new ActorHealthData
+		{
+			Hunger = this.Hunger,
+			Rest = this.Rest,
+			Happiness = this.Hapiness,
+			CurrentHealth = this.m_health
+		};
+	}
+
+	public void RestoreComponentData(object data)
+	{
+		if (data is ActorHealthData healthData)
+		{
+			this.Hunger = healthData.Hunger;
+			this.Rest = healthData.Rest;
+			this.Hapiness = healthData.Happiness;
+			this.m_health = healthData.CurrentHealth;
+		}
+	}
+
+	[System.Serializable]
+	public class ActorHealthData
+	{
+		public int Hunger;
+		public int Rest;
+		public int Happiness;
+		public int CurrentHealth;
 	}
 }

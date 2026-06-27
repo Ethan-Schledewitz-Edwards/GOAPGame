@@ -16,14 +16,12 @@ public class ActorManager : MonoBehaviour
 
 	private const int k_actorOnlineRange = 15;
 	private const int k_actorOnlineRangeSqrt = k_actorOnlineRange * k_actorOnlineRange;
-
-	private const int k_initialActors = 1;// For debug
 	#endregion
 
 	[SerializeField] private Transform m_spawnoffset;
 	[SerializeField] private Actor m_actorPrefab;
 
-	private List<Actor> m_actors = new List<Actor>(k_initialActors);
+	private HashSet<Actor> m_actors = new HashSet<Actor>();
 
 	double m_accumulatedTime = 0f;
 	private Vector3 m_playerPosition;
@@ -35,27 +33,6 @@ public class ActorManager : MonoBehaviour
 		else Destroy(Instance);
 	}
 
-	private void Start()
-	{
-		int sqrt = Mathf.CeilToInt(Mathf.Sqrt(k_initialActors));
-
-		int nextActorIndex = 0;
-		for (int x = 0; x < sqrt; x++)
-		{
-			for (int z = 0; z < sqrt; z++)
-			{
-				if (m_actors.Count >= k_initialActors) 
-					return;
-
-				Actor actor = Instantiate(m_actorPrefab, null);
-				actor.name = $"{m_actorPrefab.name}: {nextActorIndex}";
-				actor.transform.position = new Vector3(m_spawnoffset.transform.position.x + x, 5, m_spawnoffset.transform.position.z + z);
-				AddActor(actor);
-
-				nextActorIndex++;
-			}
-		}
-	}
 
 	private void OnEnable()
 	{

@@ -22,6 +22,11 @@ namespace SaveLoad.Data
 			}
 		}
 
+		private void OnDestroy()
+		{
+			UnregisterFromClosestChunk();
+		}
+
 		public void InitializeSavableEntity()
 		{
 			RegisterToClosestChunk();
@@ -102,7 +107,29 @@ namespace SaveLoad.Data
 			}
 		}
 
-		public int GetPrefabID()
+		public void UnregisterFromClosestChunk()
+		{
+			Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+			Vector2Int currentChunkXZ = new Vector2Int
+				(
+					Mathf.FloorToInt(transform.position.x / chunkSize.x),
+					Mathf.FloorToInt(transform.position.z / chunkSize.z)
+				);
+
+			if (currentChunkXZ != m_chunkXZ)
+			{
+				// Unregister this entity from its previous chunk
+				TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
+				previousTerrainChunk?.UnregisterEntity(gameObject);
+
+				// Register this entity to its new chunk
+				m_chunkXZ = currentChunkXZ;
+				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
+				terrainChunk?.UnregisterEntity(gameObject);
+			}
+		}
+
+		private int GetPrefabID()
 		{
 			if(m_savablePrefabData == null)
 			{

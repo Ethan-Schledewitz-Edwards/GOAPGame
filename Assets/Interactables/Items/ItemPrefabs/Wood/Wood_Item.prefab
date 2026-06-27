@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 1214428380774560143}
   - component: {fileID: 7925924852631452228}
   - component: {fileID: 4158707244131682436}
-  - component: {fileID: 8278289620774005518}
   - component: {fileID: 4050243795390475422}
+  - component: {fileID: 8278289620774005518}
+  - component: {fileID: 7127764349435618702}
   m_Layer: 7
   m_Name: Wood_Item
   m_TagString: Untagged
@@ -114,22 +115,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8278289620774005518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1874837442947906605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d813dab4037325d44a4a5d66cace7afd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  m_actorsNeeded: 1
-  m_formationRadius: 1
-  <ItemData>k__BackingField: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-  <StackSize>k__BackingField: 1
 --- !u!54 &4050243795390475422
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -157,3 +142,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8278289620774005518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1874837442947906605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d813dab4037325d44a4a5d66cace7afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  m_actorsNeeded: 1
+  m_interactOffset: {fileID: 0}
+  m_formationRadius: 1
+  <ItemData>k__BackingField: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
+  <StackSize>k__BackingField: 1
+--- !u!114 &7127764349435618702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1874837442947906605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
+  m_savablePrefabData: {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}
