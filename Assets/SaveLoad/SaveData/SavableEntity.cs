@@ -7,23 +7,39 @@ namespace SaveLoad.Data
 	public class SaveableEntity : MonoBehaviour
 	{
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
-		private string m_guid = System.Guid.NewGuid().ToString();
 
+		private string m_guid = "";
 		public string GetGuid() => m_guid;
-		public int GetPrefabId() => m_savablePrefabData.PrefabID;
 		public void SetGuid(string guid) => m_guid = guid;
 
 		private Vector2Int m_chunkXZ;
+
+		private void Awake()
+		{
+			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
+			{
+				m_guid = System.Guid.NewGuid().ToString();
+			}
+		}
+
+		public void InitializeSavableEntity()
+		{
+			RegisterToClosestChunk();
+		}
 
 		/// <summary>
 		/// Gathers data from all ISaveableComponent scripts on this GameObject
 		/// </summary>
 		public EntitySaveData GenerateSaveData()
 		{
+			int prefabID = GetPrefabID();
+			if(prefabID == -1)
+				return null;
+
 			EntitySaveData data = new EntitySaveData
 			{
 				Guid = this.m_guid,
-				PrefabId = GetPrefabId(),
+				PrefabId = prefabID,
 				PosX = transform.position.x,
 				PosY = transform.position.y,
 				PosZ = transform.position.z,
@@ -61,6 +77,11 @@ namespace SaveLoad.Data
 
 		private void Update()
 		{
+			RegisterToClosestChunk();
+		}
+
+		private void RegisterToClosestChunk()
+		{
 			Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
 			Vector2Int currentChunkXZ = new Vector2Int
 				(
@@ -79,6 +100,17 @@ namespace SaveLoad.Data
 				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
 				terrainChunk?.RegisterEntity(gameObject);
 			}
+		}
+
+		public int GetPrefabID()
+		{
+			if(m_savablePrefabData == null)
+			{
+				Debug.LogWarning($"No {typeof(SavableEntityPrefabData)} was found on {gameObject.name}. Savable entities must have data assigned to be saved");
+				return -1;
+			}
+
+			return m_savablePrefabData.PrefabID;
 		}
 	}
 }

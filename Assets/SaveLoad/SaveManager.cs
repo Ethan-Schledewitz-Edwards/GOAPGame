@@ -181,7 +181,8 @@ namespace SaveLoad.Management
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Failed to save chunk {chunk.ChunkXZ}: {e.Message}");
+				Debug.LogError($"Failed to save chunk {chunk.ChunkXZ}");
+				Debug.LogError(e);
 			}
 		}
 

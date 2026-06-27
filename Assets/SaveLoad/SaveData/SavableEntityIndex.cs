@@ -8,5 +8,4 @@ namespace SaveLoad.Data
 	{
 		public SavableEntityPrefabData[] SavableEntityPrefabData => Assets;
 	}
-
 }

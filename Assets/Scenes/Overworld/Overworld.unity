@@ -423,6 +423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 557260858}
   - component: {fileID: 557260857}
+  - component: {fileID: 557260860}
   - component: {fileID: 557260859}
   m_Layer: 0
   m_Name: SaveManager
@@ -471,6 +472,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Management::SaveLoad.Management.SavableEntitySpawner
   m_entityIndex: {fileID: 11400000, guid: 1224f2c7593f07e4cac60f7f5e723642, type: 2}
+--- !u!114 &557260860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557260856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aee2fb556568bae468dd8cfc597b32c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Management::SaveLoad.Management.QuickSaveController
 --- !u!1 &746061955
 GameObject:
   m_ObjectHideFlags: 0

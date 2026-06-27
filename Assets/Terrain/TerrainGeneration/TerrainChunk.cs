@@ -61,6 +61,11 @@ public class TerrainChunk
 	public void RegisterEntity(GameObject entity)
 	{
 		ResidentEntities.Add(entity);
+
+		foreach (var item in ResidentEntities)
+		{
+			Debug.Log(item.name + " Entered chunk");
+		}
 	}
 
 	public void UnregisterEntity(GameObject entity)

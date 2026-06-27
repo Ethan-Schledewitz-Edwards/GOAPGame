@@ -27,6 +27,9 @@ namespace SaveLoad.Management
 				if (entityObj != null && entityObj.TryGetComponent(out SaveableEntity saveableEntity))
 				{
 					EntitySaveData data = saveableEntity.GenerateSaveData();
+					if (data == null)
+						continue;
+
 					SavedEntities.Add(data);
 				}
 			}
