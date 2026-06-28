@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4050243795390475422}
   - component: {fileID: 8278289620774005518}
   - component: {fileID: 7127764349435618702}
+  - component: {fileID: 616264086070131962}
   m_Layer: 7
   m_Name: Wood_Item
   m_TagString: Untagged
@@ -113,7 +114,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
+  m_isPersistentGameObject: 0
   m_savablePrefabData: {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}
+  m_guid: 
+--- !u!114 &616264086070131962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1874837442947906605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entity::Entity
 --- !u!1 &8544084039396719212
 GameObject:
   m_ObjectHideFlags: 0

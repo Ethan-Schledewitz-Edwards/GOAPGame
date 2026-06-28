@@ -14,6 +14,8 @@ public class PlayerHealthComponent : HealthComponent
 
 	protected override IEnumerator TrySpawn()
 	{
+		yield return null;
+
 		m_isSpawning = true;
 
 		float startHeight = 2f;

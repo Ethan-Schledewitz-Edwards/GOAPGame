@@ -23,24 +23,9 @@ namespace SaveLoad.Management
 		{
 			foreach (EntitySaveData entityData in savedEntities)
 			{
-				GameObject prefabToSpawn = GetPrefabById(entityData.PrefabId);
-
-				if (prefabToSpawn == null)
-				{
-					Debug.LogWarning($"Could not find prefab with ID {entityData.PrefabId} in index!");
-					continue;
-				}
-
-				Vector3 spawnPos = new Vector3(entityData.PosX, entityData.PosY, entityData.PosZ);
-				Quaternion spawnRot = Quaternion.Euler(entityData.RotX, entityData.RotY, entityData.RotZ);
-				GameObject spawnedEntity = Instantiate(prefabToSpawn, spawnPos, spawnRot);
-
-				// Restore the savable entitiy component
-				if (spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
-				{
-					saveableEntity.RestoreFromSaveData(entityData);
-					chunk.RegisterEntity(spawnedEntity);
-				}
+				if (entityData.IsPersistent)
+					TrySpawnPersistentSavableEntity(chunk, entityData);
+				else TrySpawnSavableEntity(chunk, entityData);				
 			}
 		}
 
@@ -54,6 +39,45 @@ namespace SaveLoad.Management
 				}
 			}
 			return null;
+		}
+
+		private void TrySpawnSavableEntity(TerrainChunk chunk, EntitySaveData entityData)
+		{
+			GameObject prefabToSpawn = GetPrefabById(entityData.PrefabId);
+
+			if (prefabToSpawn == null)
+			{
+				Debug.LogWarning($"Could not find prefab with ID {entityData.PrefabId} in index!");
+				return;
+			}
+
+			GameObject spawnedEntity = Instantiate(prefabToSpawn);
+
+			// Restore the savable entitiy component
+			if (spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
+			{
+				saveableEntity.RestoreFromSaveData(entityData);
+				chunk.RegisterEntity(spawnedEntity);
+			}
+		}
+
+		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, EntitySaveData entityData)
+		{
+			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(sortMode: FindObjectsSortMode.InstanceID);
+
+			foreach (SaveableEntity entity in allEntities)
+			{
+				// Look for the entity that matches the saved GUID
+				if (entity.GetGUID() == entityData.GUID)
+				{
+					// Restore data
+					entity.RestoreFromSaveData(entityData);
+					chunk.RegisterEntity(entity.gameObject);
+					return;
+				}
+			}
+
+			Debug.LogWarning($"Could not find persistent entity with GUID {entityData.GUID} in the scene. Was it destroyed?");
 		}
 	}
 }

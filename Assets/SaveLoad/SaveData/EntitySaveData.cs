@@ -5,7 +5,8 @@ namespace SaveLoad.Data
 	[System.Serializable]
 	public class EntitySaveData
 	{
-		public string Guid;
+		public string GUID;
+		public bool IsPersistent;
 		public int PrefabId;
 		public float PosX, PosY, PosZ;
 		public float RotX, RotY, RotZ;

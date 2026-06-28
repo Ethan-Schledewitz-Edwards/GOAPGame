@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 5030504748117166773}
   - component: {fileID: 5557249503198524681}
   - component: {fileID: 3453584726676022345}
+  - component: {fileID: 6964265578082175806}
   m_Layer: 7
   m_Name: Stone_Item
   m_TagString: Untagged
@@ -203,4 +204,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
+  m_isPersistentGameObject: 0
   m_savablePrefabData: {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}
+  m_guid: 
+--- !u!114 &6964265578082175806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entity::Entity

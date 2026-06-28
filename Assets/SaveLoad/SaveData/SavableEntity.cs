@@ -1,22 +1,35 @@
 using GenericIndex;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace SaveLoad.Data
 {
+	[RequireComponent(typeof(Entity))]
 	public class SaveableEntity : MonoBehaviour
 	{
+		[SerializeField] private bool m_isPersistentGameObject = false; // Stuff like the player is exempt from using the prefab based saving
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
 
-		private string m_guid = "";
-		public string GetGuid() => m_guid;
-		public void SetGuid(string guid) => m_guid = guid;
+		[SerializeField] private string m_guid = "";
+		public string GetGUID() => m_guid;
+
+		// Events
+		public event Action DataRestored;
+		public event Action<Vector3, Quaternion> TransformRestored;
+
+		// System
+		private Entity m_entity;
 
 		private bool m_isMoveable = false;
 		private Vector2Int m_chunkXZ;
 
 		private void Awake()
 		{
+			m_entity = GetComponent<Entity>();
+			m_entity.EntityPositionChanged += OnEntityMoved;
+
 			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
 				m_guid = System.Guid.NewGuid().ToString();
@@ -25,6 +38,9 @@ namespace SaveLoad.Data
 
 		private void OnDestroy()
 		{
+			if (m_entity != null)
+				m_entity.EntityPositionChanged -= OnEntityMoved;
+
 			UnregisterFromClosestChunk();
 		}
 
@@ -33,15 +49,9 @@ namespace SaveLoad.Data
 			RegisterToClosestChunk();
 		}
 
-		private void Update()
+		private void OnEntityMoved()
 		{
 			RegisterToClosestChunk();
-		}
-
-		public void SetMovable(bool movable)
-		{
-			m_isMoveable = movable;
-			enabled = m_isMoveable;
 		}
 
 		private void RegisterToClosestChunk()
@@ -93,21 +103,42 @@ namespace SaveLoad.Data
 		/// </summary>
 		public EntitySaveData GenerateSaveData()
 		{
-			int prefabID = GetPrefabID();
-			if (prefabID == -1)
-				return null;
-
-			EntitySaveData data = new EntitySaveData
+			EntitySaveData data = null;
+			if (m_isPersistentGameObject)
 			{
-				Guid = this.m_guid,
-				PrefabId = prefabID,
-				PosX = transform.position.x,
-				PosY = transform.position.y,
-				PosZ = transform.position.z,
-				RotX = transform.rotation.x,
-				RotY = transform.rotation.y,
-				RotZ = transform.rotation.z
-			};
+				data = new EntitySaveData
+				{
+					GUID = this.m_guid,
+					PrefabId = -1,
+					IsPersistent = m_isPersistentGameObject,
+					PosX = transform.position.x,
+					PosY = transform.position.y,
+					PosZ = transform.position.z,
+					RotX = transform.rotation.x,
+					RotY = transform.rotation.y,
+					RotZ = transform.rotation.z
+				};
+			}
+			else
+			{
+				// Get prefab id from index
+				int prefabID = GetPrefabID();
+				if (prefabID == -1)
+					return null;
+
+				data = new EntitySaveData
+				{
+					GUID = this.m_guid,
+					PrefabId = prefabID,
+					IsPersistent = m_isPersistentGameObject,
+					PosX = transform.position.x,
+					PosY = transform.position.y,
+					PosZ = transform.position.z,
+					RotX = transform.rotation.x,
+					RotY = transform.rotation.y,
+					RotZ = transform.rotation.z
+				};
+			}
 
 			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
 			foreach (var component in saveableComponents)
@@ -123,10 +154,18 @@ namespace SaveLoad.Data
 		/// </summary>
 		public void RestoreFromSaveData(EntitySaveData data)
 		{
-			this.m_guid = data.Guid;
+			this.m_guid = data.GUID;
 
 			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
 
+			// Restore the entities transform
+			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
+			transform.position = position;
+			Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
+			transform.rotation = rotation;
+			TransformRestored?.Invoke(position, rotation);
+
+			// Restore component data
 			foreach (var component in saveableComponents)
 			{
 				string compId = component.GetComponentId();
@@ -134,6 +173,7 @@ namespace SaveLoad.Data
 				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
 					component.RestoreComponentData(savedComponentData);
 			}
+			DataRestored?.Invoke();
 		}
 
 		private int GetPrefabID()

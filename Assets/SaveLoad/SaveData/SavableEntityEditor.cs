@@ -12,26 +12,50 @@ namespace SaveLoad.Editor
 		private const string c_IndexAssetPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabDataIndex.asset";
 		private const string c_PrefabDataSaveFolderPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabData/";
 
+		private SerializedProperty m_isPersistentGameObject;
 		private SerializedProperty m_savablePrefabDataProp;
+		private SerializedProperty m_guidProp;
 
 		private void OnEnable()
 		{
+			m_isPersistentGameObject = serializedObject.FindProperty("m_isPersistentGameObject");
 			m_savablePrefabDataProp = serializedObject.FindProperty("m_savablePrefabData");
+			m_guidProp = serializedObject.FindProperty("m_guid");
 		}
 
 		public override void OnInspectorGUI()
 		{
 			serializedObject.Update();
-			DrawDefaultInspector();
 
-			if (m_savablePrefabDataProp.objectReferenceValue == null)
+			// Draw the Persistent checkbox first
+			EditorGUILayout.PropertyField(m_isPersistentGameObject);
+
+			if (m_isPersistentGameObject.boolValue)
 			{
-				EditorGUILayout.Space();
-				EditorGUILayout.HelpBox("This entity is missing its Prefab Data. Savable entities must have data assigned to be saved.", MessageType.Warning);
+				EditorGUILayout.PropertyField(m_guidProp);
 
-				if (GUILayout.Button("Create & Assign Prefab Data", GUILayout.Height(30)))
+				if (string.IsNullOrEmpty(m_guidProp.stringValue))
 				{
-					CreateAndAssignPrefabData();
+					EditorGUILayout.HelpBox("Persistent objects need a static GUID. Generate one now.", MessageType.Info);
+					if (GUILayout.Button("Generate Persistent GUID", GUILayout.Height(30)))
+					{
+						m_guidProp.stringValue = System.Guid.NewGuid().ToString();
+					}
+				}
+			}
+			else
+			{
+				EditorGUILayout.PropertyField(m_savablePrefabDataProp);
+
+				if (m_savablePrefabDataProp.objectReferenceValue == null)
+				{
+					EditorGUILayout.Space();
+					EditorGUILayout.HelpBox("This entity is missing its Prefab Data. Savable entities must have data assigned to be saved.", MessageType.Warning);
+
+					if (GUILayout.Button("Create & Assign Prefab Data", GUILayout.Height(30)))
+					{
+						CreateAndAssignPrefabData();
+					}
 				}
 			}
 
@@ -61,7 +85,7 @@ namespace SaveLoad.Editor
 				return;
 			}
 
-			// 2. Ensure the target directory exists
+			// Ensure the target directory exists
 			if (!Directory.Exists(c_PrefabDataSaveFolderPath))
 			{
 				Directory.CreateDirectory(c_PrefabDataSaveFolderPath);
