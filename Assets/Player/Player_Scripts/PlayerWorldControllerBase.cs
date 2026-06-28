@@ -10,7 +10,7 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour, IInputHandler
 	[SerializeField] private Camera m_mainCamera;
 	[SerializeField] protected PlayerCursorVisualizer m_cursorVisualizer;
 
-	[SerializeField] private LayerMask m_groundLayer;
+	private LayerMask m_groundLayer;
 
 	private Vector2 m_rawLookInput;
 	private bool m_isUsingMouse;

@@ -29,6 +29,8 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	{
 		if (ConstructionManager.Instance != null)
 			ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprint;
+
+		UpdateVisuals();
 	}
 
 	private void OnDestroy()
@@ -63,7 +65,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 	protected override void OnCycleInput(InputAction.CallbackContext context) 
 	{
-		int cycleDirection = context.ReadValue<int>();
+		int cycleDirection = Math.Sign(context.ReadValue<float>());
 
 		Quaternion rotationDelta = Quaternion.Euler(0, 90 * cycleDirection, 0);
 		m_placementRotation = m_placementRotation * rotationDelta;
@@ -94,7 +96,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		m_blueprintData = null;
 		m_isPlacementValid = false;
 		m_placementRotation = Quaternion.identity;
-		m_cursorVisualizer?.ResetBlueprintVisuals();
+		UpdateVisuals();
 	}
 
 	protected override void RefreshCursor()
@@ -138,12 +140,16 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		}
 	}
 
-	private void UpdateVisuals(bool isValid)
+	private void UpdateVisuals(bool isValid = false)
 	{
-		Material[] materials = { isValid ? m_validMaterial : m_invalidMaterial };
-
 		if (m_blueprintData == null)
+		{
+			m_cursorVisualizer?.DisableBlueprint();
+			m_cursorVisualizer?.EnableCursor();
 			return;
+		}
+
+		Material[] materials = { isValid ? m_validMaterial : m_invalidMaterial };
 
 		Bounds bounds = m_blueprintData.BlueprintMesh.bounds;
 		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);

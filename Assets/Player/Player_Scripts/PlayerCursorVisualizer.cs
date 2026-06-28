@@ -29,8 +29,8 @@ public class PlayerCursorVisualizer : MonoBehaviour
 
 	private void Awake()
 	{
-		ResetBlueprintVisuals();
-		ResetCursorVisuals();
+		m_cursorObject.transform.localScale = m_cursorMinTargetScale;
+		DisableBlueprint();
 	}
 
 	private void OnDisable()
@@ -54,19 +54,6 @@ public class PlayerCursorVisualizer : MonoBehaviour
 	public void DisableCursor()
 	{
 		m_cursorObject.SetActive(false);
-	}
-
-	public void ResetCursorVisuals()
-	{
-		m_cursorObject.transform.localScale = m_cursorMinTargetScale;
-	}
-
-	public void ResetBlueprintVisuals()
-	{
-		m_meshFilter.mesh = m_defaultMesh;
-		m_meshRenderer.sharedMaterials = m_blueprintMaterial;
-		m_meshRenderer.transform.localPosition = Vector3.zero;
-		m_meshRenderer.transform.localRotation = Quaternion.identity;
 	}
 
 	public void GrowCursor()
@@ -147,9 +134,18 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		m_blueprintVisualsObject.SetActive(true);
 	}
 
-	private void DisableBlueprint()
+	private void ResetBlueprintVisuals()
+	{
+		m_meshFilter.mesh = m_defaultMesh;
+		m_meshRenderer.sharedMaterials = m_blueprintMaterial;
+		m_meshRenderer.transform.localPosition = Vector3.zero;
+		m_meshRenderer.transform.localRotation = Quaternion.identity;
+	}
+
+	public void DisableBlueprint()
 	{
 		m_blueprintVisualsObject.SetActive(false);
+		ResetBlueprintVisuals();
 	}
 	#endregion
 }
