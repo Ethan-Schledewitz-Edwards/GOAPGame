@@ -12,6 +12,7 @@ namespace SaveLoad.Data
 		public string GetGuid() => m_guid;
 		public void SetGuid(string guid) => m_guid = guid;
 
+		private bool m_isMoveable = false;
 		private Vector2Int m_chunkXZ;
 
 		private void Awake()
@@ -32,57 +33,15 @@ namespace SaveLoad.Data
 			RegisterToClosestChunk();
 		}
 
-		/// <summary>
-		/// Gathers data from all ISaveableComponent scripts on this GameObject
-		/// </summary>
-		public EntitySaveData GenerateSaveData()
-		{
-			int prefabID = GetPrefabID();
-			if(prefabID == -1)
-				return null;
-
-			EntitySaveData data = new EntitySaveData
-			{
-				Guid = this.m_guid,
-				PrefabId = prefabID,
-				PosX = transform.position.x,
-				PosY = transform.position.y,
-				PosZ = transform.position.z,
-				RotX = transform.rotation.x,
-				RotY = transform.rotation.y,
-				RotZ = transform.rotation.z
-			};
-
-			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
-			foreach (var component in saveableComponents)
-			{
-				data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
-			}
-
-			return data;
-		}
-
-		/// <summary>
-		/// Pushes the loaded data back into the individual components
-		/// </summary>
-		public void RestoreFromSaveData(EntitySaveData data)
-		{
-			this.m_guid = data.Guid;
-
-			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
-
-			foreach (var component in saveableComponents)
-			{
-				string compId = component.GetComponentId();
-
-				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
-					component.RestoreComponentData(savedComponentData);
-			}
-		}
-
 		private void Update()
 		{
 			RegisterToClosestChunk();
+		}
+
+		public void SetMovable(bool movable)
+		{
+			m_isMoveable = movable;
+			enabled = m_isMoveable;
 		}
 
 		private void RegisterToClosestChunk()
@@ -126,6 +85,54 @@ namespace SaveLoad.Data
 				m_chunkXZ = currentChunkXZ;
 				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
 				terrainChunk?.UnregisterEntity(gameObject);
+			}
+		}
+
+		/// <summary>
+		/// Gathers data from all ISaveableComponent scripts on this GameObject
+		/// </summary>
+		public EntitySaveData GenerateSaveData()
+		{
+			int prefabID = GetPrefabID();
+			if (prefabID == -1)
+				return null;
+
+			EntitySaveData data = new EntitySaveData
+			{
+				Guid = this.m_guid,
+				PrefabId = prefabID,
+				PosX = transform.position.x,
+				PosY = transform.position.y,
+				PosZ = transform.position.z,
+				RotX = transform.rotation.x,
+				RotY = transform.rotation.y,
+				RotZ = transform.rotation.z
+			};
+
+			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+			foreach (var component in saveableComponents)
+			{
+				data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
+			}
+
+			return data;
+		}
+
+		/// <summary>
+		/// Pushes the loaded data back into the individual components
+		/// </summary>
+		public void RestoreFromSaveData(EntitySaveData data)
+		{
+			this.m_guid = data.Guid;
+
+			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+
+			foreach (var component in saveableComponents)
+			{
+				string compId = component.GetComponentId();
+
+				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
+					component.RestoreComponentData(savedComponentData);
 			}
 		}
 

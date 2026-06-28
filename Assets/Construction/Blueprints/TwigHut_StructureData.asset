@@ -15,8 +15,9 @@ MonoBehaviour:
   <BlueprintID>k__BackingField: 3
   <DisplayName>k__BackingField: Twig Hut
   <Description>k__BackingField: 
-  <BlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 98ba6773ab1510847b17fdc5c60201e9, type: 2}
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
     amount: 10
+  <BlueprintMesh>k__BackingField: {fileID: -2989305052099074096, guid: fbb14d6c9cb5e88478cfe966804a837d, type: 3}
+  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 98ba6773ab1510847b17fdc5c60201e9, type: 2}
+  <PlacementClearenceRadius>k__BackingField: 2
