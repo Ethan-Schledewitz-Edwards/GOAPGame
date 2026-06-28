@@ -147,24 +147,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CommandMode"",
-                    ""type"": ""Value"",
-                    ""id"": ""3cb25c71-61b5-4b83-9e81-e93f53f8e69e"",
-                    ""expectedControlType"": """",
-                    ""processors"": ""Scale"",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""BuildMode"",
-                    ""type"": ""Value"",
-                    ""id"": ""f0201ce3-e5a3-4c8b-b032-f4831bf21fb0"",
-                    ""expectedControlType"": """",
-                    ""processors"": ""Scale(factor=2)"",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Cycle"",
                     ""type"": ""Value"",
                     ""id"": ""df4618e1-7057-48e5-a4b3-107e692b70f9"",
@@ -331,50 +313,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""51a22391-216f-4c88-9799-db08676d19d7"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""CommandMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""042be32d-0283-4bef-b990-de9cea12df10"",
-                    ""path"": ""<Gamepad>/dpad/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""CommandMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7fd51a6d-939f-4ce9-821f-eea0430670d2"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""BuildMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9cccc8b7-582b-4c02-977b-c0b59e65f4a8"",
-                    ""path"": ""<Gamepad>/dpad/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""BuildMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ee53216d-ade9-44f5-81ee-148a4cc2a730"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
@@ -483,7 +421,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""Fire1"",
                     ""type"": ""Button"",
                     ""id"": ""c2cf47f7-3c79-4f9d-a1a7-bf2dd5bc2a57"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1049,8 +987,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_Primary = m_Player.FindAction("Primary", throwIfNotFound: true);
         m_Player_Secondary = m_Player.FindAction("Secondary", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
-        m_Player_CommandMode = m_Player.FindAction("CommandMode", throwIfNotFound: true);
-        m_Player_BuildMode = m_Player.FindAction("BuildMode", throwIfNotFound: true);
         m_Player_Cycle = m_Player.FindAction("Cycle", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
@@ -1156,8 +1092,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Primary;
     private readonly InputAction m_Player_Secondary;
     private readonly InputAction m_Player_Interact;
-    private readonly InputAction m_Player_CommandMode;
-    private readonly InputAction m_Player_BuildMode;
     private readonly InputAction m_Player_Cycle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
@@ -1194,14 +1128,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Interact".
         /// </summary>
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/CommandMode".
-        /// </summary>
-        public InputAction @CommandMode => m_Wrapper.m_Player_CommandMode;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/BuildMode".
-        /// </summary>
-        public InputAction @BuildMode => m_Wrapper.m_Player_BuildMode;
         /// <summary>
         /// Provides access to the underlying input action "Player/Cycle".
         /// </summary>
@@ -1250,12 +1176,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
-            @CommandMode.started += instance.OnCommandMode;
-            @CommandMode.performed += instance.OnCommandMode;
-            @CommandMode.canceled += instance.OnCommandMode;
-            @BuildMode.started += instance.OnBuildMode;
-            @BuildMode.performed += instance.OnBuildMode;
-            @BuildMode.canceled += instance.OnBuildMode;
             @Cycle.started += instance.OnCycle;
             @Cycle.performed += instance.OnCycle;
             @Cycle.canceled += instance.OnCycle;
@@ -1288,12 +1208,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
-            @CommandMode.started -= instance.OnCommandMode;
-            @CommandMode.performed -= instance.OnCommandMode;
-            @CommandMode.canceled -= instance.OnCommandMode;
-            @BuildMode.started -= instance.OnBuildMode;
-            @BuildMode.performed -= instance.OnBuildMode;
-            @BuildMode.canceled -= instance.OnBuildMode;
             @Cycle.started -= instance.OnCycle;
             @Cycle.performed -= instance.OnCycle;
             @Cycle.canceled -= instance.OnCycle;
@@ -1681,20 +1595,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteract(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "CommandMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCommandMode(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "BuildMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnBuildMode(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Cycle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

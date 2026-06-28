@@ -61,24 +61,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CommandMode",
-                    "type": "Value",
-                    "id": "3cb25c71-61b5-4b83-9e81-e93f53f8e69e",
-                    "expectedControlType": "",
-                    "processors": "Scale",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "BuildMode",
-                    "type": "Value",
-                    "id": "f0201ce3-e5a3-4c8b-b032-f4831bf21fb0",
-                    "expectedControlType": "",
-                    "processors": "Scale(factor=2)",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Cycle",
                     "type": "Value",
                     "id": "df4618e1-7057-48e5-a4b3-107e692b70f9",
@@ -245,50 +227,6 @@
                 },
                 {
                     "name": "",
-                    "id": "51a22391-216f-4c88-9799-db08676d19d7",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CommandMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "042be32d-0283-4bef-b990-de9cea12df10",
-                    "path": "<Gamepad>/dpad/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CommandMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7fd51a6d-939f-4ce9-821f-eea0430670d2",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "BuildMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9cccc8b7-582b-4c02-977b-c0b59e65f4a8",
-                    "path": "<Gamepad>/dpad/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "BuildMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ee53216d-ade9-44f5-81ee-148a4cc2a730",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -397,7 +335,7 @@
                     "name": "Fire1",
                     "type": "Button",
                     "id": "c2cf47f7-3c79-4f9d-a1a7-bf2dd5bc2a57",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

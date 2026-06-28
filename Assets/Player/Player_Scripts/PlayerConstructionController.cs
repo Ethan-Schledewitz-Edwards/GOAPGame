@@ -6,13 +6,6 @@ using UnityEngine.UIElements;
 
 public class PlayerConstructionController : PlayerWorldControllerBase
 {
-	private const float c_cancleRadius = 2.0f;
-	private const float c_secondsToCancle = 2.0f;
-
-	public override string ControllerName => "Construction Mode";
-	public override Sprite ControllerIcon => m_controllerIcon;
-	[SerializeField] private Sprite m_controllerIcon;
-
 	[SerializeField] private Material m_validMaterial;
 	[SerializeField] private Material m_invalidMaterial;
 
@@ -36,8 +29,6 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	{
 		if (ConstructionManager.Instance != null)
 			ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprint;
-
-		enabled = false;
 	}
 
 	private void OnDestroy()
@@ -53,23 +44,11 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		UpdateVisuals(false);
 	}
 
-	public override void OnControllerEnabled() 
-	{
-		enabled = true;
-		RefreshCursor(out _);
-	}
-
-	public override void OnControllerDisabled()
-	{
-		enabled = false;
-		ClearBlueprintData();
-	}
-
-	public override void PrimaryFire(InputAction.CallbackContext context)
+	protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
 	{
 		if (m_isPlacementValid)
 		{
-			TryPlaceBlueprint(m_mouseWorldPosition, m_placementRotation);
+			TryPlaceBlueprint(m_cursorWorldPosition, m_placementRotation);
 		}
 		else
 		{
@@ -77,13 +56,15 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		}
 	}
 
-	public override void SecondaryFire(InputAction.CallbackContext context) 
+	protected override void OnSecondaryFireInput(InputAction.CallbackContext context) 
 	{
 		m_isCancleHeld = context.ReadValueAsButton();
 	}
 
-	public override void Cycle(int cycleDirection) 
+	protected override void OnCycleInput(InputAction.CallbackContext context) 
 	{
+		int cycleDirection = context.ReadValue<int>();
+
 		Quaternion rotationDelta = Quaternion.Euler(0, 90 * cycleDirection, 0);
 		m_placementRotation = m_placementRotation * rotationDelta;
 		UpdateVisuals(m_isPlacementValid);
@@ -113,45 +94,44 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		m_blueprintData = null;
 		m_isPlacementValid = false;
 		m_placementRotation = Quaternion.identity;
-		m_controllerManager.CursorVisualizer?.ReturnToDefaultVisuals();
+		m_cursorVisualizer?.ResetBlueprintVisuals();
 	}
 
-	protected override void RefreshCursor(out RaycastHit hitData)
+	protected override void RefreshCursor()
 	{
-		base.RefreshCursor(out hitData);
+		base.RefreshCursor();
 
-		if (hitData.collider != null)
+		// Use the point already calculated by the base class
+		Vector3 placementPosition = m_cursorWorldPosition;
+		LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
+		if (m_blueprintData != null)
 		{
-			// Use the point already calculated by the base class
-			Vector3 placementPosition = hitData.point;
-			LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
-			if (m_blueprintData != null)
-			{
-				bool isBlocked = Physics.CheckSphere(
-					placementPosition,
-					m_blueprintData.PlacementClearenceRadius,
-					combinedCheckMask
-				);
+			bool isBlocked = Physics.CheckSphere(
+				placementPosition,
+				m_blueprintData.PlacementClearenceRadius,
+				combinedCheckMask
+			);
 
-				if (isBlocked != !m_isPlacementValid)
-				{
-					m_isPlacementValid = !isBlocked;
-					UpdateVisuals(m_isPlacementValid);
-				}
-				return;
+			if (isBlocked != !m_isPlacementValid)
+			{
+				m_isPlacementValid = !isBlocked;
+				UpdateVisuals(m_isPlacementValid);
 			}
+			return;
+		}
 
-			if (m_isCancleHeld)
+		if (m_isCancleHeld)
+		{
+			float selectionRadius = m_cursorVisualizer.SelectionRadius;
+
+			Collider[] hitColliders = Physics.OverlapSphere(m_cursorWorldPosition, selectionRadius, m_interactionLayer);
+			if (hitColliders.Length != 0)
 			{
-				Collider[] hitColliders = Physics.OverlapSphere(hitData.point, c_cancleRadius, m_interactionLayer);
-				if (hitColliders.Length != 0)
+				foreach (Collider i in hitColliders)
 				{
-					foreach (Collider i in hitColliders)
+					if (i.TryGetComponent(out BlueprintIO blueprint))
 					{
-						if(i.TryGetComponent(out BlueprintIO blueprint))
-						{
-							ConstructionManager.Instance?.CancleBlueprint(blueprint);
-						}
+						ConstructionManager.Instance?.CancleBlueprint(blueprint);
 					}
 				}
 			}
@@ -167,7 +147,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 		Bounds bounds = m_blueprintData.BlueprintMesh.bounds;
 		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
-		m_controllerManager.CursorVisualizer?.SetVisuals(m_blueprintData.BlueprintMesh, 
+		m_cursorVisualizer?.SetBlueprint(m_blueprintData.BlueprintMesh, 
 			materials, 
 			localOffset, 
 			m_placementRotation

@@ -232,6 +232,96 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &3433225659664458421
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8343967203644937493}
+  - component: {fileID: 2576239742543622498}
+  - component: {fileID: 6387355845990983920}
+  m_Layer: 1
+  m_Name: Cursor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8343967203644937493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3433225659664458421}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5285950440306949183}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2576239742543622498
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3433225659664458421}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &6387355845990983920
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3433225659664458421}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a644a05806177fc43827942ad7876b05, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4551394778818187514
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,7 +334,7 @@ GameObject:
   - component: {fileID: 3637038894790095929}
   - component: {fileID: 6642912772905455022}
   m_Layer: 1
-  m_Name: CursorMesh
+  m_Name: BlueprintMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -532,6 +622,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8343967203644937493}
   - {fileID: 8068838386237966986}
   m_Father: {fileID: 3025054037896614222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -547,11 +638,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b7b7c454493d5e4594a64b96b7992af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Player::PlayerCursorVisualizer
+  m_cursorObject: {fileID: 3433225659664458421}
+  m_blueprintVisualsObject: {fileID: 4551394778818187514}
   m_meshRenderer: {fileID: 6642912772905455022}
   m_meshFilter: {fileID: 3637038894790095929}
   m_defaultMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   m_defaultMaterial:
   - {fileID: 2100000, guid: a644a05806177fc43827942ad7876b05, type: 2}
+  m_blueprintMaterial:
+  - {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
 --- !u!1 &7674105291137834835
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,7 +658,6 @@ GameObject:
   - component: {fileID: 3025054037896614222}
   - component: {fileID: 3369361332770066614}
   - component: {fileID: 2988294567450087518}
-  - component: {fileID: 8909151377373718811}
   - component: {fileID: 8055755646343992628}
   - component: {fileID: 7488782142776458643}
   - component: {fileID: 2388740294352789583}
@@ -625,22 +719,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementMode: 0
---- !u!114 &8909151377373718811
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7674105291137834835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a2c8a61ec562af4991611925f0aae14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Player::PlayerWorldControllerManager
-  <CursorVisualizer>k__BackingField: {fileID: 6828390110988528725}
-  <MainCamera>k__BackingField: {fileID: 6661631668660036274}
-  m_followerController: {fileID: 8055755646343992628}
-  m_constructionController: {fileID: 7488782142776458643}
 --- !u!114 &8055755646343992628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -653,10 +731,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813c82e9450fed04ab582635f57263c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  m_mainCamera: {fileID: 6661631668660036274}
+  m_cursorVisualizer: {fileID: 6828390110988528725}
   m_groundLayer:
     serializedVersion: 2
     m_Bits: 0
-  m_controllerIcon: {fileID: 21300000, guid: 3ce93a3b36b619c48a41fa1bb84bcbd7, type: 3}
 --- !u!114 &7488782142776458643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -669,10 +748,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b628fe65ed7fadf46863cc4f5e768990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Player::PlayerConstructionController
+  m_mainCamera: {fileID: 6661631668660036274}
+  m_cursorVisualizer: {fileID: 6828390110988528725}
   m_groundLayer:
     serializedVersion: 2
     m_Bits: 0
-  m_controllerIcon: {fileID: 21300000, guid: 5b24a2e9853e59f4184d44f901eeee22, type: 3}
   m_validMaterial: {fileID: 2100000, guid: ccaa27d7dbce4804a83a9e6de0936711, type: 2}
   m_invalidMaterial: {fileID: 2100000, guid: beefd3942915ba5438d48cdbeac43797, type: 2}
 --- !u!54 &2388740294352789583

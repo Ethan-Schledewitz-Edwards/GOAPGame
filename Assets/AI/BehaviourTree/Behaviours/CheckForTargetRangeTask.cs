@@ -25,7 +25,6 @@ public class CheckForTargetRangeTask : BTNodeBase
 		{
 			if (i.transform == targetTransform)
 			{
-				Debug.Log("AT TARGET: " + executorTransform.name);
 				return EBTNodeState.STATE_SUCSESS;
 			}
 		}
