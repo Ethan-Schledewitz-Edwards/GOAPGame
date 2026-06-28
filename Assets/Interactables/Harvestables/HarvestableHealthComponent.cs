@@ -29,6 +29,8 @@ public class HarvestableHealthComponent : HealthComponent
 		base.Awake();
 
 		m_meshRenderer = GetComponent<MeshRenderer>();
+		if(m_meshRenderer == null )
+			m_meshRenderer = GetComponentInChildren<MeshRenderer>();
 
 		m_actorLayerMask = 1 << LayerMask.NameToLayer("Actor");
 

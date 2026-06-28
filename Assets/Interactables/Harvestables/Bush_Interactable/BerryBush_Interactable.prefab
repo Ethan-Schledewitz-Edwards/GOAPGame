@@ -73,7 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bush_AIO
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 0}
-  m_formationRadius: 2
+  m_formationRadius: 0.9
 --- !u!114 &1140347278528282130
 MonoBehaviour:
   m_ObjectHideFlags: 0
