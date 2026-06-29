@@ -643,8 +643,6 @@ MonoBehaviour:
   m_meshRenderer: {fileID: 6642912772905455022}
   m_meshFilter: {fileID: 3637038894790095929}
   m_defaultMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  m_defaultMaterial:
-  - {fileID: 2100000, guid: a644a05806177fc43827942ad7876b05, type: 2}
   m_blueprintMaterial:
   - {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
 --- !u!1 &7674105291137834835
@@ -656,6 +654,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3025054037896614222}
+  - component: {fileID: 9114751940600103196}
   - component: {fileID: 3369361332770066614}
   - component: {fileID: 2988294567450087518}
   - component: {fileID: 8055755646343992628}
@@ -665,8 +664,6 @@ GameObject:
   - component: {fileID: 1371981767915270995}
   - component: {fileID: 3745754388446896272}
   - component: {fileID: 7964203524693472170}
-  - component: {fileID: 3983404437808488982}
-  - component: {fileID: 8599566660553168522}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -692,6 +689,18 @@ Transform:
   - {fileID: 5285950440306949183}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9114751940600103196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674105291137834835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc397a821694cc469033865383640b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!114 &3369361332770066614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,9 +742,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
   m_mainCamera: {fileID: 6661631668660036274}
   m_cursorVisualizer: {fileID: 6828390110988528725}
-  m_groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &7488782142776458643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,9 +756,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Player::PlayerConstructionController
   m_mainCamera: {fileID: 6661631668660036274}
   m_cursorVisualizer: {fileID: 6828390110988528725}
-  m_groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
   m_validMaterial: {fileID: 2100000, guid: ccaa27d7dbce4804a83a9e6de0936711, type: 2}
   m_invalidMaterial: {fileID: 2100000, guid: beefd3942915ba5438d48cdbeac43797, type: 2}
 --- !u!54 &2388740294352789583
@@ -936,33 +939,6 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
---- !u!114 &3983404437808488982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7674105291137834835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
-  m_isPersistentGameObject: 1
-  m_savablePrefabData: {fileID: 0}
-  m_guid: HellooooooYOUTUBEEEEE
---- !u!114 &8599566660553168522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7674105291137834835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c62b12f7d0afd6449d32f42670daa7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Player::PlayerPositionRestore
 --- !u!1 &8269556507321535162
 GameObject:
   m_ObjectHideFlags: 0

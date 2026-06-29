@@ -9,7 +9,6 @@ namespace SaveLoad.Data
 	[RequireComponent(typeof(Entity))]
 	public class SaveableEntity : MonoBehaviour
 	{
-		[SerializeField] private bool m_isPersistentGameObject = false; // Stuff like the player is exempt from using the prefab based saving
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
 
 		[SerializeField] private string m_guid = "";
@@ -104,41 +103,23 @@ namespace SaveLoad.Data
 		public EntitySaveData GenerateSaveData()
 		{
 			EntitySaveData data = null;
-			if (m_isPersistentGameObject)
-			{
-				data = new EntitySaveData
-				{
-					GUID = this.m_guid,
-					PrefabId = -1,
-					IsPersistent = m_isPersistentGameObject,
-					PosX = transform.position.x,
-					PosY = transform.position.y,
-					PosZ = transform.position.z,
-					RotX = transform.rotation.x,
-					RotY = transform.rotation.y,
-					RotZ = transform.rotation.z
-				};
-			}
-			else
-			{
-				// Get prefab id from index
-				int prefabID = GetPrefabID();
-				if (prefabID == -1)
-					return null;
 
-				data = new EntitySaveData
-				{
-					GUID = this.m_guid,
-					PrefabId = prefabID,
-					IsPersistent = m_isPersistentGameObject,
-					PosX = transform.position.x,
-					PosY = transform.position.y,
-					PosZ = transform.position.z,
-					RotX = transform.rotation.x,
-					RotY = transform.rotation.y,
-					RotZ = transform.rotation.z
-				};
-			}
+			// Get prefab id from index
+			int prefabID = GetPrefabID();
+			if (prefabID == -1)
+				return null;
+
+			data = new EntitySaveData
+			{
+				GUID = this.m_guid,
+				PrefabId = prefabID,
+				PosX = transform.position.x,
+				PosY = transform.position.y,
+				PosZ = transform.position.z,
+				RotX = transform.rotation.x,
+				RotY = transform.rotation.y,
+				RotZ = transform.rotation.z
+			};
 
 			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
 			foreach (var component in saveableComponents)
@@ -156,8 +137,6 @@ namespace SaveLoad.Data
 		{
 			this.m_guid = data.GUID;
 
-			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
-
 			// Restore the entities transform
 			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 			transform.position = position;
@@ -166,6 +145,7 @@ namespace SaveLoad.Data
 			TransformRestored?.Invoke(position, rotation);
 
 			// Restore component data
+			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
 			foreach (var component in saveableComponents)
 			{
 				string compId = component.GetComponentId();

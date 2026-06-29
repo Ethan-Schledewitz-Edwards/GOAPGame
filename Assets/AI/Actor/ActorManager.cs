@@ -36,12 +36,12 @@ public class ActorManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.Instance.OnGameLoaded += OnGameLoaded;
+		SaveManager.GameLoaded += OnGameLoaded;
 	}
 
-	private void OnDisable()
+	private void OnDestroy()
 	{
-		SaveManager.Instance.OnGameLoaded -= OnGameLoaded;
+		SaveManager.GameLoaded -= OnGameLoaded;
 	}
 
 	private void Update()

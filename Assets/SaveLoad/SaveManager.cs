@@ -14,8 +14,9 @@ namespace SaveLoad.Management
 		private string m_fileName = "save.dat";
 		private string m_playerName = "Ethan";
 
-		public Action<SaveData> OnGameLoaded;
-		public static Action<TerrainChunk, List<EntitySaveData>> OnChunkEntitiesLoaded;
+		public static Action<SaveData> GameLoaded;
+		public static Action<TerrainChunk, List<EntitySaveData>> ChunkEntitiesLoaded;
+		public static Func<EntitySaveData> RequestPlayerData;
 
 		private void Awake()
 		{
@@ -28,6 +29,8 @@ namespace SaveLoad.Management
 		{
 			WorldBuilder.OnRequestChunkData += FetchChunkData;
 			WorldBuilder.OnReleaseChunkData += SaveAndUnloadChunkData;
+
+			LoadGame();
 		}
 
 		private void OnDisable()
@@ -72,13 +75,14 @@ namespace SaveLoad.Management
 		{
 			string finalPath = GetSavePath();
 
+			EntitySaveData playerData = RequestPlayerData?.Invoke();
 			SaveLoadedChunks();
 
 			// Create a file stream
 			FileStream stream = new FileStream(finalPath, FileMode.Create);
 
 			DateTime curDateTime = DateTime.Now;
-			SaveData saveData = new SaveData(curDateTime);
+			SaveData saveData = new SaveData(curDateTime, playerData);
 
 			BinaryFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(stream, saveData);
@@ -112,11 +116,12 @@ namespace SaveLoad.Management
 			if (data != null)
 			{
 				Debug.Log($"Loaded save time: {data.SaveTime} from: {GetSavePath()}");
-				OnGameLoaded?.Invoke(data);
+				GameLoaded?.Invoke(data);
 			}
 			else
 			{
 				Debug.LogWarning("No save file found.");
+				GameLoaded?.Invoke(null);
 			}
 		}
 
@@ -148,7 +153,7 @@ namespace SaveLoad.Management
 
 							if (serializableData.SavedEntities != null && serializableData.SavedEntities.Count > 0)
 							{
-								OnChunkEntitiesLoaded?.Invoke(chunk, serializableData.SavedEntities);
+								ChunkEntitiesLoaded?.Invoke(chunk, serializableData.SavedEntities);
 							}
 
 							return chunk;
@@ -210,10 +215,12 @@ namespace SaveLoad.Management
 		public class SaveData
 		{
 			public DateTime SaveTime;
+			public EntitySaveData PlayerData;
 
-			public SaveData(DateTime saveTime)
+			public SaveData(DateTime saveTime, EntitySaveData playerData)
 			{
 				SaveTime = saveTime;
+				PlayerData = playerData;
 			}
 		}
 	}

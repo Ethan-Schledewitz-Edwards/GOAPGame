@@ -103,8 +103,25 @@ public class ConstructionManager : MonoBehaviour
 		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 	}
 
-	public void CancleBlueprint(BlueprintIO blueprintIO)
+	public void StartBlueprintCancelation(BlueprintIO blueprintIO)
 	{
-		blueprintIO.CancleBlueprint();
+		if(blueprintIO == null)
+		{
+			Debug.LogWarning("Tried to cancel a null blueprint referece");
+			return;
+		}
+
+		blueprintIO.BeginCancelation();
+	}
+
+	public void StopBlueprintCancelation(BlueprintIO blueprintIO)
+	{
+		if (blueprintIO == null)
+		{
+			Debug.LogWarning("Tried to stop the cancelation of a null blueprint referece");
+			return;
+		}
+
+		blueprintIO.StopCancelation();
 	}
 }

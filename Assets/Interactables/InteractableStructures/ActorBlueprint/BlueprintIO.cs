@@ -2,6 +2,7 @@ using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Graphs;
 using UnityEngine;
@@ -12,6 +13,9 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	private static BehaviourTree s_cachedBlueprintBT;
 
 	private const string c_interactionLayer = "Interaction";
+	private const float c_cancelationDuration = 3.0f;
+	private const float c_maxShakeMagnitude = 0.1f;
+	private const float c_maxShakeFrequency = 15.0f;
 
 	public event Action<BlueprintIO> BlueprintCompleted;
 	public event Action<BlueprintIO> BlueprintCanceled;
@@ -29,6 +33,10 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	public float MaxCapacity => m_maxCapacity;
 	public float ActorsAssigned => m_actorsAssigned;
 	public override bool UseFormationRadius { get => false; }
+
+	public bool IsBeingCanceled { get; private set; }
+	private Coroutine m_cancelationCoroutine;
+	private float m_shakeStrength;
 
 	private void Awake()
 	{
@@ -77,6 +85,19 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		structure = this;
 	}
 
+	public override void TryInteract(IInteractor interactor)
+	{
+		base.TryInteract(interactor);
+
+		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+		if (executor != null)
+		{
+			Transform requiredItem = FindRequiredItem();
+			if (requiredItem != null)
+				executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
+		}
+	}
+
 	public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)
 	{
 		BlueprintID = blueprintID;
@@ -106,18 +127,27 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		Destroy(gameObject);
 	}
 
-	public override void TryInteract(IInteractor interactor)
+	public void BeginCancelation()
 	{
-		base.TryInteract(interactor);
+		IsBeingCanceled = true;
 
-		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
-		if (executor != null)
-		{
-			Transform requiredItem = FindRequiredItem();
-			if (requiredItem != null)
-				executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
-		}
+		if (m_cancelationCoroutine != null)
+			StopCoroutine(m_cancelationCoroutine);
+
+		m_cancelationCoroutine = StartCoroutine(ShakeCoroutine(c_cancelationDuration, 
+			c_maxShakeMagnitude, 
+			c_maxShakeFrequency));
 	}
+
+	public void StopCancelation()
+	{
+		IsBeingCanceled = false;
+
+		if (m_cancelationCoroutine != null)
+			StopCoroutine(m_cancelationCoroutine);
+	}
+
+	#region Utility
 
 	private Transform FindRequiredItem()
 	{
@@ -177,5 +207,42 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 		return null;
 	}
 
+	private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)
+	{
+		Vector3 originalPosition = transform.position;
+		float elapsedTime = 0f;
+
+		// Generate a random starting point in the Perlin noise map so shakes feel unique
+		float randomSeedX = UnityEngine.Random.Range(0f, 100f);
+		float randomSeedY = UnityEngine.Random.Range(0f, 100f);
+
+		while (elapsedTime < duration)
+		{
+			elapsedTime += Time.deltaTime;
+
+			float progress = Mathf.Clamp01(elapsedTime / duration);
+			float currentMagnitude = magnitude * progress;
+
+			float noiseX = Mathf.PerlinNoise(randomSeedX + elapsedTime * frequency, 0f) * 2f - 1f;
+			float noiseY = Mathf.PerlinNoise(0f, randomSeedY + elapsedTime * frequency) * 2f - 1f;
+
+			transform.localPosition = new Vector3(
+				originalPosition.x + (noiseX * currentMagnitude),
+				originalPosition.y,
+				originalPosition.z
+			);
+
+			yield return null;
+		}
+
+		// Always force reset back to the exact initial position
+		transform.localPosition = originalPosition;
+		m_cancelationCoroutine = null;
+
+		CancleBlueprint();
+	}
+
 	public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
+
+	#endregion
 }

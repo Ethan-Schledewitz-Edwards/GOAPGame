@@ -11,21 +11,19 @@ namespace SaveLoad.Management
 
 		private void OnEnable()
 		{
-			SaveManager.OnChunkEntitiesLoaded += SpawnEntitiesForChunk;
+			SaveManager.ChunkEntitiesLoaded += SpawnEntitiesForChunk;
 		}
 
 		private void OnDisable()
 		{
-			SaveManager.OnChunkEntitiesLoaded -= SpawnEntitiesForChunk;
+			SaveManager.ChunkEntitiesLoaded -= SpawnEntitiesForChunk;
 		}
 
 		private void SpawnEntitiesForChunk(TerrainChunk chunk, List<EntitySaveData> savedEntities)
 		{
 			foreach (EntitySaveData entityData in savedEntities)
 			{
-				if (entityData.IsPersistent)
-					TrySpawnPersistentSavableEntity(chunk, entityData);
-				else TrySpawnSavableEntity(chunk, entityData);				
+				TrySpawnSavableEntity(chunk, entityData);
 			}
 		}
 

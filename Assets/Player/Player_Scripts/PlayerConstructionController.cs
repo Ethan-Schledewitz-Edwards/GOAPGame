@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -18,11 +19,14 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	private LayerMask m_blockingLayer;
 	private LayerMask m_interactionLayer;
 
+	HashSet<Collider> collidersBeingCanceled;
+
 	protected override void Awake()
 	{
 		base.Awake();
 		if (m_blockingLayer == 0) m_blockingLayer = LayerMask.GetMask("Player", "Actor");
 		if (m_interactionLayer == 0) m_interactionLayer = LayerMask.GetMask("Interaction");
+		collidersBeingCanceled = new HashSet<Collider>();
 	}
 
 	private void Start()
@@ -126,17 +130,39 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		{
 			float selectionRadius = m_cursorVisualizer.SelectionRadius;
 
-			Collider[] hitColliders = Physics.OverlapSphere(m_cursorWorldPosition, selectionRadius, m_interactionLayer);
-			if (hitColliders.Length != 0)
+			HashSet<Collider> hitColliders = Physics.OverlapSphere(m_cursorWorldPosition, selectionRadius, m_interactionLayer).ToHashSet();
+			if (hitColliders.Count > 0)
 			{
+				// Check new colliders
 				foreach (Collider i in hitColliders)
 				{
-					if (i.TryGetComponent(out BlueprintIO blueprint))
+					if (i != null && 
+						collidersBeingCanceled.Contains(i) &&
+						i.TryGetComponent(out BlueprintIO blueprint) &&
+						!blueprint.IsBeingCanceled)
 					{
-						ConstructionManager.Instance?.CancleBlueprint(blueprint);
+						ConstructionManager.Instance.StartBlueprintCancelation(blueprint);
 					}
 				}
 			}
+
+
+			// Compare old colliders
+			if(collidersBeingCanceled.Count > 0)
+			{
+				foreach (Collider i in collidersBeingCanceled)
+				{
+					if (i != null && 
+						!hitColliders.Contains(i) &&
+						i.TryGetComponent(out BlueprintIO blueprint) &&
+						blueprint.IsBeingCanceled)
+					{
+						ConstructionManager.Instance.StopBlueprintCancelation(blueprint);
+					}
+				}
+			}
+
+			collidersBeingCanceled = hitColliders;
 		}
 	}
 
