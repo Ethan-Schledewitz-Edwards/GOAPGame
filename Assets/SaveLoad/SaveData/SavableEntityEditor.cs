@@ -6,19 +6,18 @@ using System.IO;
 
 namespace SaveLoad.Editor
 {
+#if UNITY_EDITOR
 	[CustomEditor(typeof(SaveableEntity))]
 	public class SaveableEntityEditor : UnityEditor.Editor
 	{
 		private const string c_IndexAssetPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabDataIndex.asset";
 		private const string c_PrefabDataSaveFolderPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabData/";
 
-		private SerializedProperty m_isPersistentGameObject;
 		private SerializedProperty m_savablePrefabDataProp;
 		private SerializedProperty m_guidProp;
 
 		private void OnEnable()
 		{
-			m_isPersistentGameObject = serializedObject.FindProperty("m_isPersistentGameObject");
 			m_savablePrefabDataProp = serializedObject.FindProperty("m_savablePrefabData");
 			m_guidProp = serializedObject.FindProperty("m_guid");
 		}
@@ -27,35 +26,16 @@ namespace SaveLoad.Editor
 		{
 			serializedObject.Update();
 
-			// Draw the Persistent checkbox first
-			EditorGUILayout.PropertyField(m_isPersistentGameObject);
+			EditorGUILayout.PropertyField(m_savablePrefabDataProp);
 
-			if (m_isPersistentGameObject.boolValue)
+			if (m_savablePrefabDataProp.objectReferenceValue == null)
 			{
-				EditorGUILayout.PropertyField(m_guidProp);
+				EditorGUILayout.Space();
+				EditorGUILayout.HelpBox("This entity is missing its Prefab Data. Savable entities must have data assigned to be saved.", MessageType.Warning);
 
-				if (string.IsNullOrEmpty(m_guidProp.stringValue))
+				if (GUILayout.Button("Create & Assign Prefab Data", GUILayout.Height(30)))
 				{
-					EditorGUILayout.HelpBox("Persistent objects need a static GUID. Generate one now.", MessageType.Info);
-					if (GUILayout.Button("Generate Persistent GUID", GUILayout.Height(30)))
-					{
-						m_guidProp.stringValue = System.Guid.NewGuid().ToString();
-					}
-				}
-			}
-			else
-			{
-				EditorGUILayout.PropertyField(m_savablePrefabDataProp);
-
-				if (m_savablePrefabDataProp.objectReferenceValue == null)
-				{
-					EditorGUILayout.Space();
-					EditorGUILayout.HelpBox("This entity is missing its Prefab Data. Savable entities must have data assigned to be saved.", MessageType.Warning);
-
-					if (GUILayout.Button("Create & Assign Prefab Data", GUILayout.Height(30)))
-					{
-						CreateAndAssignPrefabData();
-					}
+					CreateAndAssignPrefabData();
 				}
 			}
 
@@ -133,4 +113,5 @@ namespace SaveLoad.Editor
 			indexAsset.PopulateUniqueAssets();
 		}
 	}
+#endif
 }

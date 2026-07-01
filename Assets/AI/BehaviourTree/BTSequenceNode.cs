@@ -7,32 +7,43 @@ namespace BehaviourTrees
 	/// </summary>
 	public class BTSequenceNode : BTNodeBase
 	{
+		private int m_currentChildIndex = 0;
+
 		public BTSequenceNode() : base() { }
 		public BTSequenceNode(List<BTNodeBase> children) : base(children) { }
 
 		protected override EBTNodeState OnUpdate(AIContext context, float t)
 		{
-			bool isAnyChildRunning = false;
+			if (m_childNodes == null || m_childNodes.Count == 0)
+				return EBTNodeState.STATE_SUCSESS;
 
-			foreach (BTNodeBase i in m_childNodes)
+			while (m_currentChildIndex < m_childNodes.Count)
 			{
-				switch (i.Evaluate(context, t))
+				BTNodeBase currentChild = m_childNodes[m_currentChildIndex];
+				EBTNodeState childState = currentChild.Evaluate(context, t);
+
+				switch (childState)
 				{
 					case EBTNodeState.STATE_FAILURE:
+						m_currentChildIndex = 0; // Reset for next execution cycle
 						return EBTNodeState.STATE_FAILURE;
 
 					case EBTNodeState.STATE_SUCSESS:
-						continue;
+						m_currentChildIndex++; // Advance to the next task
+						break;
 
 					case EBTNodeState.STATE_RUNNING:
-						isAnyChildRunning = true;
-						continue;
+						return EBTNodeState.STATE_RUNNING; // Resume next frame
 				}
 			}
 
-			return isAnyChildRunning ? EBTNodeState.STATE_RUNNING : EBTNodeState.STATE_SUCSESS;
+			m_currentChildIndex = 0;
+			return EBTNodeState.STATE_SUCSESS;
 		}
 
-		protected override void OnFirstEvaluate(AIContext context) { }
+		protected override void OnFirstEvaluate(AIContext context) 
+		{
+			m_currentChildIndex = 0;
+		}
 	}
 }

@@ -136,8 +136,8 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 				// Check new colliders
 				foreach (Collider i in hitColliders)
 				{
-					if (i != null && 
-						collidersBeingCanceled.Contains(i) &&
+					if (i != null &&
+						!collidersBeingCanceled.Contains(i) &&
 						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 						!blueprintCancelation.IsBeingCanceled)
 					{
@@ -146,13 +146,12 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 				}
 			}
 
-
-			// Compare old colliders
-			if(collidersBeingCanceled.Count > 0)
+			// Compare old colliders & cancel those that were previously tracked but werent in the latest overlap check
+			if (collidersBeingCanceled.Count > 0)
 			{
 				foreach (Collider i in collidersBeingCanceled)
 				{
-					if (i != null && 
+					if (i != null &&
 						!hitColliders.Contains(i) &&
 						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 						blueprintCancelation.IsBeingCanceled)
@@ -163,6 +162,23 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 			}
 
 			collidersBeingCanceled = hitColliders;
+		}
+		else
+		{
+			// Stop cancellation on everything currently tracked
+			if (collidersBeingCanceled.Count > 0)
+			{
+				foreach (Collider i in collidersBeingCanceled)
+				{
+					if (i != null &&
+						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+						blueprintCancelation.IsBeingCanceled)
+					{
+						ConstructionManager.Instance.StopBlueprintCancelation(blueprintCancelation);
+					}
+				}
+				collidersBeingCanceled.Clear();
+			}
 		}
 	}
 

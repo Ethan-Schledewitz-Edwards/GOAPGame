@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class BehaviourTreeExecutor : MonoBehaviour
 {
-	[Header("Parameters")]
-	private float m_interactionDist = 3f;
+	private const float c_baseInteractionDistance = 0.8f;
 
 	// System
 	public AIContext AIContext { get; private set; }
@@ -34,7 +33,7 @@ public class BehaviourTreeExecutor : MonoBehaviour
 	{
 		AIContext.ClearAllData();
 		AIContext.SetData<Transform>("ExecutorTransform", transform);
-		AIContext.SetData<float>("InteractionDist", m_interactionDist);
+		AIContext.SetData<float>("InteractionDist", c_baseInteractionDistance);
 		AIContext.SetData<int>("InteractionLayer", 1 << LayerMask.NameToLayer("Interaction"));
 	}
 }

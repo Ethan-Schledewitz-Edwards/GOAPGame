@@ -26,7 +26,7 @@ namespace BehaviourTrees
 			if (!context.GetData<bool>(beganKey))
 			{
 				context.SetData<bool>(beganKey, true);
-				context.SetData<float>(timeKey, 0f); // Initialize the timer in memory
+				context.SetData<float>(timeKey, 0f);
 			}
 
 			float timeElapsed = context.GetData<float>(timeKey) + t;

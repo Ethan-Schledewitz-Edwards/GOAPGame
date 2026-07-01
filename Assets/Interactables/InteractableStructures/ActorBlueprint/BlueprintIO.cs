@@ -38,19 +38,22 @@ namespace Interaction.Blueprint
 		{
 			if (s_cachedBlueprintBT == null)
 			{
+				BTNodeBase findUseTask = new FindItemTask();
+				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 1f, "Timeout");
+
 				BehaviourTree tree = new BehaviourTree();
 				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-			{
-				new FindItemTask(),
-				new MoveToTargetDataTask(),
-				new InteractWithTargetTask(),
-				new MoveToTargetDataTask(),
-				new DepositTask(),
-				// Go to item
-				// Pickup item
-				// return
-				// Deposit
-			});
+				{
+					timeoutFind,
+					new MoveToTargetDataTask(),
+					new InteractWithTargetTask(),
+					new MoveToTargetDataTask(),
+					new DepositTask(),
+					// Go to item
+					// Pickup item
+					// return
+					// Deposit
+				});
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;
 			}

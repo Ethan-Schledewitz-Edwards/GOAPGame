@@ -4,7 +4,6 @@ using UnityEngine.AI;
 
 public class MoveToTargetDataTask : BTNodeBase
 {
-	private const float c_targetingRangeSqrt = 0.3f * 0.3f;
 
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
@@ -17,9 +16,10 @@ public class MoveToTargetDataTask : BTNodeBase
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
-			Vector3 offset = targetPos - executorTransform.position;
+			bool hasArrived = pathing.NavAgent.remainingDistance <= pathing.NavAgent.stoppingDistance;
+			bool isNotMoving = pathing.NavAgent.velocity.sqrMagnitude < 0.01f;
 
-			if (offset.sqrMagnitude <= c_targetingRangeSqrt)
+			if (hasArrived && isNotMoving)
 				return EBTNodeState.STATE_SUCSESS;
 
 			// We are still walking.
