@@ -7,32 +7,18 @@ using Terrain.Generation;
 public class FindItemTask : BTNodeBase
 {
 	private const int c_searchRadius = 2;
+	private const string c_itemSearchContextKey = "ItemIDToFind";
 
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
-		Vector3 executorPos = executorTransform.position;
+		Transform targetItemTransform = FindItemOfID(context);
 
-		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
-		if (closestSettlement != null)
+		if (targetItemTransform != null)
 		{
-			InteractableObjectBase closestBlueprint = closestSettlement.FindBlueprint(executorPos);
-			if (closestBlueprint != null)
-			{
-				context.SetData<Transform>("TargetTransform", closestBlueprint.transform);
-				context.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
+			context.SetData<Transform>("TargetTransform", targetItemTransform);
+			context.SetData<Vector3>("TargetPosition", targetItemTransform.position);
 
-				return EBTNodeState.STATE_SUCSESS;
-			}
-
-			InteractableObjectBase closestStorage = closestSettlement.FindItemStorage(executorPos);
-			if (closestStorage != null)
-			{
-				context.SetData<Transform>("TargetTransform", closestStorage.transform);
-				context.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
-
-				return EBTNodeState.STATE_SUCSESS;
-			}
+			return EBTNodeState.STATE_SUCSESS;
 		}
 
 		return EBTNodeState.STATE_RUNNING;
@@ -40,36 +26,33 @@ public class FindItemTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		Debug.Log("Trying to find a resource deposit.");
+		Debug.Log($"Trying to find an item of ID {context.GetData<int>(c_itemSearchContextKey)}.");
 	}
 
-	private Transform FindTargetItem(AIContext context)
+	private Transform FindItemOfID(AIContext context)
 	{
 		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
 		Vector3 executorPosition = executorTransform.position;
-		ItemQuantity[] requiredItems = context.GetData<ItemQuantity[]>("m_targetItems");
+		int idOfItemToFind = context.GetData<int>(c_itemSearchContextKey);
 
 		Transform globalNearest = null;
 		float minDistanceSqr = float.MaxValue;
 
-		foreach (ItemQuantity requiredItem in requiredItems)
+		Transform candidate = SearchForItem(idOfItemToFind, executorPosition);
+		if (candidate != null)
 		{
-			Transform candidate = SearchForItem(requiredItem.itemType, executorPosition);
-			if (candidate != null)
+			float distSqr = (candidate.position - executorPosition).sqrMagnitude;
+			if (distSqr < minDistanceSqr)
 			{
-				float distSqr = (candidate.position - executorPosition).sqrMagnitude;
-				if (distSqr < minDistanceSqr)
-				{
-					minDistanceSqr = distSqr;
-					globalNearest = candidate;
-				}
+				minDistanceSqr = distSqr;
+				globalNearest = candidate;
 			}
 		}
 
 		return globalNearest;
 	}
 
-	private Transform SearchForItem(ItemData itemData, Vector3 executorPosition)
+	private Transform SearchForItem(int itemID, Vector3 executorPosition)
 	{
 		Vector2Int[] neighbourChunkCoordinates
 			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
@@ -81,7 +64,8 @@ public class FindItemTask : BTNodeBase
 			TerrainChunk terrainChunk = WorldBuilder.GetChunkData(chunkXZ);
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
-				if (entity.TryGetComponent(out IItemObject itemObject))
+				if (entity.TryGetComponent(out IItemObject itemObject) && 
+					itemObject.ItemData.ItemID == itemID)
 				{
 					float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
 					if (distSqr < minDistanceSqr)

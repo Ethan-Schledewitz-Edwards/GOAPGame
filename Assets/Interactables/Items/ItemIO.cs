@@ -6,7 +6,7 @@ using InventorySystem.Items;
 using InventorySystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Item : InteractableObjectBase, IItemObject
+public class ItemIO : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree m_ItemBT;
 

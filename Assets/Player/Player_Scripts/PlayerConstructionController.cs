@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
+using Interaction.Blueprint;
 
 public class PlayerConstructionController : PlayerWorldControllerBase
 {
@@ -138,10 +138,10 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 				{
 					if (i != null && 
 						collidersBeingCanceled.Contains(i) &&
-						i.TryGetComponent(out BlueprintIO blueprint) &&
-						!blueprint.IsBeingCanceled)
+						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+						!blueprintCancelation.IsBeingCanceled)
 					{
-						ConstructionManager.Instance.StartBlueprintCancelation(blueprint);
+						ConstructionManager.Instance.StartBlueprintCancelation(blueprintCancelation);
 					}
 				}
 			}
@@ -154,10 +154,10 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 				{
 					if (i != null && 
 						!hitColliders.Contains(i) &&
-						i.TryGetComponent(out BlueprintIO blueprint) &&
-						blueprint.IsBeingCanceled)
+						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+						blueprintCancelation.IsBeingCanceled)
 					{
-						ConstructionManager.Instance.StopBlueprintCancelation(blueprint);
+						ConstructionManager.Instance.StopBlueprintCancelation(blueprintCancelation);
 					}
 				}
 			}

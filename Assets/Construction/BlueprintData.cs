@@ -13,8 +13,10 @@ public class BlueprintData : ScriptableObject, IIndexedAsset
 	[field: SerializeField] public FeatureTileData BlueprintFeatureData { get; private set; }
 	[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 2.0f;
 
+#if UNITY_EDITOR
 	public void SetID(int newID)
 	{
 		BlueprintID = newID;
 	}
+#endif
 }

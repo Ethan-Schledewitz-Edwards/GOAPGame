@@ -11,9 +11,11 @@ namespace InventorySystem.Items
 		[field: SerializeField] public int MaxStackSize { get; private set; } = 100;
 		[field: SerializeField] public GameObject ItemPrefab { get; private set; }
 
+#if UNITY_EDITOR
 		public void SetID(int newID)
 		{
 			ItemID = newID;
 		}
+#endif
 	}
 }

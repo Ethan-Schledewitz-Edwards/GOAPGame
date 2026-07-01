@@ -1,49 +1,45 @@
-using BehaviourTrees;
-using InventorySystem;
-using InventorySystem.Items;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Graphs;
+using BehaviourTrees;
+using InventorySystem;
+using InventorySystem.Items;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent))]
-public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
+
+namespace Interaction.Blueprint
 {
-	private static BehaviourTree s_cachedBlueprintBT;
-
-	private const string c_interactionLayer = "Interaction";
-	private const float c_cancelationDuration = 3.0f;
-	private const float c_maxShakeMagnitude = 0.1f;
-	private const float c_maxShakeFrequency = 15.0f;
-
-	public event Action<BlueprintIO> BlueprintCompleted;
-	public event Action<BlueprintIO> BlueprintCanceled;
-
-	public int BlueprintID { get; private set; }
-	public int SettlementID { get; private set; }
-	public Vector3 Position { get; private set; }
-	public Quaternion Rotation { get; private set; }
-
-	private BluerprintInventoryComponent m_bluerprintInventory;
-	private ItemQuantity[] m_requiredItems;
-
-	[SerializeField] private float m_maxCapacity = 4f;
-	[SerializeField] private float m_actorsAssigned = 0f;
-	public float MaxCapacity => m_maxCapacity;
-	public float ActorsAssigned => m_actorsAssigned;
-	public override bool UseFormationRadius { get => false; }
-
-	public bool IsBeingCanceled { get; private set; }
-	private Coroutine m_cancelationCoroutine;
-	private float m_shakeStrength;
-
-	private void Awake()
+	[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent), (typeof(BlueprintCancelation)))]
+	public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
 	{
-		if (s_cachedBlueprintBT == null)
+		private static BehaviourTree s_cachedBlueprintBT;
+
+		private const string c_interactionLayer = "Interaction";
+
+		public event Action<BlueprintIO> BlueprintCompleted;
+		public event Action<BlueprintIO> BlueprintCanceled;
+
+		public int BlueprintID { get; private set; }
+		public int SettlementID { get; private set; }
+		public Vector3 Position { get; private set; }
+		public Quaternion Rotation { get; private set; }
+
+		private BluerprintInventoryComponent m_bluerprintInventory;
+		private BlueprintCancelation m_cancelBlueprint;
+		private ItemQuantity[] m_requiredItems;
+
+		[SerializeField] private float m_maxCapacity = 4f;
+		[SerializeField] private float m_actorsAssigned = 0f;
+		public float MaxCapacity => m_maxCapacity;
+		public float ActorsAssigned => m_actorsAssigned;
+		public override bool UseFormationRadius { get => false; }
+
+		private void Awake()
 		{
-			BehaviourTree tree = new BehaviourTree();
-			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+			if (s_cachedBlueprintBT == null)
+			{
+				BehaviourTree tree = new BehaviourTree();
+				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				new FindItemTask(),
 				new MoveToTargetDataTask(),
@@ -55,139 +51,87 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 				// return
 				// Deposit
 			});
-			tree.SetTree(root);
-			s_cachedBlueprintBT = tree;
+				tree.SetTree(root);
+				s_cachedBlueprintBT = tree;
+			}
+
+			gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
+
+			m_bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
+			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
+
+			m_bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
+			m_cancelBlueprint.CanceledBlueprint += CancleBlueprint;
+
 		}
 
-		gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
-
-		m_bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
-		m_bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
-	}
-
-	private void OnDestroy()
-	{
-		m_bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
-	}
-
-	public override void UpdateSpeed(int extra)
-	{
-
-	}
-
-	public void AssignActor(out BlueprintIO structure)
-	{
-		if (ActorsAssigned < MaxCapacity)
+		private void OnDestroy()
 		{
-			m_actorsAssigned++;
+			m_bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
 		}
 
-		structure = this;
-	}
-
-	public override void TryInteract(IInteractor interactor)
-	{
-		base.TryInteract(interactor);
-
-
-		// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
-
-		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
-		if (executor != null)
+		public override void UpdateSpeed(int extra)
 		{
-			//Transform requiredItem = FindRequiredItem();
-			//if (requiredItem != null)
-			//	executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
+
 		}
-	}
 
-	public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)
-	{
-		BlueprintID = blueprintID;
-		SettlementID = settlementID;
-		Position = position;
-		Rotation = rotation;
-		m_bluerprintInventory.InitializeBlueprintInventory(requiredItems);
-		m_requiredItems = requiredItems;
-	}
-
-	private void CompleteBlueprint()
-	{
-		Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was completed in settlement:{SettlementID}.");
-		BlueprintCompleted?.Invoke(this);
-	}
-
-	public void CancleBlueprint()
-	{
-		Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was canceld in settlement:{SettlementID}.");
-		BlueprintCanceled?.Invoke(this);
-
-		foreach (InventorySlot slot in m_bluerprintInventory.Slots)
+		public void AssignActor(out BlueprintIO structure)
 		{
-			slot.RemoveFromStack(slot.AmountInSlot, transform.position);
+			if (ActorsAssigned < MaxCapacity)
+			{
+				m_actorsAssigned++;
+			}
+
+			structure = this;
 		}
 
-		Destroy(gameObject);
-	}
-
-	public void BeginCancelation()
-	{
-		IsBeingCanceled = true;
-
-		if (m_cancelationCoroutine != null)
-			StopCoroutine(m_cancelationCoroutine);
-
-		m_cancelationCoroutine = StartCoroutine(ShakeCoroutine(c_cancelationDuration, 
-			c_maxShakeMagnitude, 
-			c_maxShakeFrequency));
-	}
-
-	public void StopCancelation()
-	{
-		IsBeingCanceled = false;
-
-		if (m_cancelationCoroutine != null)
-			StopCoroutine(m_cancelationCoroutine);
-	}
-
-	#region Utility
-
-	private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)
-	{
-		Vector3 originalPosition = transform.position;
-		float elapsedTime = 0f;
-
-		// Generate a random starting point in the Perlin noise map so shakes feel unique
-		float randomSeedX = UnityEngine.Random.Range(0f, 100f);
-		float randomSeedY = UnityEngine.Random.Range(0f, 100f);
-
-		while (elapsedTime < duration)
+		public override void TryInteract(IInteractor interactor)
 		{
-			elapsedTime += Time.deltaTime;
-
-			float progress = Mathf.Clamp01(elapsedTime / duration);
-			float currentMagnitude = magnitude * progress;
-
-			float noiseX = Mathf.PerlinNoise(randomSeedX + elapsedTime * frequency, 0f) * 2f - 1f;
-			float noiseY = Mathf.PerlinNoise(0f, randomSeedY + elapsedTime * frequency) * 2f - 1f;
-
-			transform.localPosition = new Vector3(
-				originalPosition.x + (noiseX * currentMagnitude),
-				originalPosition.y,
-				originalPosition.z
-			);
-
-			yield return null;
+			base.TryInteract(interactor);
+			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
+			BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+			if (executor != null)
+			{
+				foreach (ItemQuantity item in m_requiredItems)
+				{
+					if (item.itemType != null)
+					{
+						executor?.AIContext.SetData<int>("ItemIDToFind", item.itemType.ItemID);
+						break;
+					}
+				}
+			}
 		}
 
-		// Always force reset back to the exact initial position
-		transform.localPosition = originalPosition;
-		m_cancelationCoroutine = null;
+		public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)
+		{
+			BlueprintID = blueprintID;
+			SettlementID = settlementID;
+			Position = position;
+			Rotation = rotation;
+			m_bluerprintInventory.InitializeBlueprintInventory(requiredItems);
+			m_requiredItems = requiredItems;
+		}
 
-		CancleBlueprint();
+		private void CompleteBlueprint()
+		{
+			Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was completed in settlement:{SettlementID}.");
+			BlueprintCompleted?.Invoke(this);
+		}
+
+		public void CancleBlueprint()
+		{
+			Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was canceld in settlement:{SettlementID}.");
+			BlueprintCanceled?.Invoke(this);
+
+			foreach (InventorySlot slot in m_bluerprintInventory.Slots)
+			{
+				slot.RemoveFromStack(slot.AmountInSlot, transform.position);
+			}
+
+			Destroy(gameObject);
+		}
+
+		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
 	}
-
-	public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
-
-	#endregion
 }

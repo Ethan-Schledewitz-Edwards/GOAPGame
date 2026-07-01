@@ -67,14 +67,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5367155534341536093}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d813dab4037325d44a4a5d66cace7afd, type: 3}
+  m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 0}
-  m_formationRadius: 1
-  <ItemData>k__BackingField: {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
-  <StackSize>k__BackingField: 1
+  m_formationRadius: 2
+  m_itemData: {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
+  <m_stackSize>k__BackingField: 1
 --- !u!114 &5214229006767308727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +87,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
-  m_isPersistentGameObject: 0
   m_savablePrefabData: {fileID: 11400000, guid: 2d9dc667733c7d24b9ed64cc77ef59bb, type: 2}
   m_guid: 
 --- !u!114 &8515664754511149306

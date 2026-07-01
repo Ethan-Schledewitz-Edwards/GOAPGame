@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Interaction.Blueprint;
 
 public class ConstructionManager : MonoBehaviour
 {
@@ -103,25 +104,25 @@ public class ConstructionManager : MonoBehaviour
 		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 	}
 
-	public void StartBlueprintCancelation(BlueprintIO blueprintIO)
+	public void StartBlueprintCancelation(BlueprintCancelation blueprintCancelation)
 	{
-		if(blueprintIO == null)
+		if(blueprintCancelation == null)
 		{
 			Debug.LogWarning("Tried to cancel a null blueprint referece");
 			return;
 		}
 
-		blueprintIO.BeginCancelation();
+		blueprintCancelation.BeginCancelation();
 	}
 
-	public void StopBlueprintCancelation(BlueprintIO blueprintIO)
+	public void StopBlueprintCancelation(BlueprintCancelation blueprintCancelation)
 	{
-		if (blueprintIO == null)
+		if (blueprintCancelation == null)
 		{
 			Debug.LogWarning("Tried to stop the cancelation of a null blueprint referece");
 			return;
 		}
 
-		blueprintIO.StopCancelation();
+		blueprintCancelation.StopCancelation();
 	}
 }
