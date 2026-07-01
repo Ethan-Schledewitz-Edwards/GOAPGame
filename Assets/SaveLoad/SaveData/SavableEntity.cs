@@ -2,6 +2,7 @@ using GenericIndex;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Terrain.Generation;
 using Terrain.WorldProperties;
 
 namespace SaveLoad.Data
@@ -55,7 +56,7 @@ namespace SaveLoad.Data
 
 		private void RegisterToClosestChunk()
 		{
-			Vector3Int chunkSize = WorldProperties.s_ChunkSize;
+			Vector3Int chunkSize = WorldPropertyUtility.s_ChunkSize;
 			Vector2Int currentChunkXZ = new Vector2Int
 				(
 					Mathf.FloorToInt(transform.position.x / chunkSize.x),
@@ -77,7 +78,7 @@ namespace SaveLoad.Data
 
 		public void UnregisterFromClosestChunk()
 		{
-			Vector3Int chunkSize = WorldProperties.s_ChunkSize;
+			Vector3Int chunkSize = WorldPropertyUtility.s_ChunkSize;
 			Vector2Int currentChunkXZ = new Vector2Int
 				(
 					Mathf.FloorToInt(transform.position.x / chunkSize.x),

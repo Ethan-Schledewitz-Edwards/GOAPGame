@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using SaveLoad.Data;
 using UnityEngine;
+using Terrain.Generation;
 
 namespace SaveLoad.Management
 {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Terrain.WorldProperties;
+using Terrain.Generation;
 
 /// <summary>
 /// Loads chunks based on the player's current position.
@@ -42,8 +43,8 @@ public class TerrainLoader : MonoBehaviour
 		if (m_isProcessing) 
 			return;
 
-		int playerX = (int)(m_player.position.x / WorldProperties.s_ChunkSize.x);
-		int playerZ = (int)(m_player.position.z / WorldProperties.s_ChunkSize.z);
+		int playerX = (int)(m_player.position.x / WorldPropertyUtility.s_ChunkSize.x);
+		int playerZ = (int)(m_player.position.z / WorldPropertyUtility.s_ChunkSize.z);
 
 		m_chunksToUnload.Clear();
 		foreach (KeyValuePair<Vector2Int, (TerrainChunk, GameObject)> activeChunk in WorldBuilder.s_ActiveChunks)
@@ -53,7 +54,7 @@ public class TerrainLoader : MonoBehaviour
 
 		m_chunksToLoad.Clear();
 		Vector2Int[] nearbyChunks =
-			TerrainGenerationUtilities.GetChunkCoordinatesInRadius(m_player.position, m_renderDist);
+			ChunkUtility.GetChunkCoordinatesInRadius(m_player.position, m_renderDist);
 
 		int newChunksLoaded = 0;
 		for (int i = 0; i < nearbyChunks.Length; ++i)

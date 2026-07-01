@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Terrain.WorldProperties
 {
-	public static class WorldProperties
+	public static class WorldPropertyUtility
 	{
 		public static readonly Vector3Int s_ChunkSize = new Vector3Int(16, 32, 16);
 

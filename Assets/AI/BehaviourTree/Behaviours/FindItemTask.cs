@@ -2,6 +2,7 @@ using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
 using UnityEngine;
+using Terrain.Generation;
 
 public class FindItemTask : BTNodeBase
 {
@@ -71,7 +72,7 @@ public class FindItemTask : BTNodeBase
 	private Transform SearchForItem(ItemData itemData, Vector3 executorPosition)
 	{
 		Vector2Int[] neighbourChunkCoordinates
-			= TerrainGenerationUtilities.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
+			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
 
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;
