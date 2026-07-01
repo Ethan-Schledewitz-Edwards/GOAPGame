@@ -102,7 +102,7 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 		if (isPlacementValid)
 		{
-			Vector3Int worldPos = TerrainChunkUtilities.TileToWorldspace(localPos, terrainChunk.ChunkXZ);
+			Vector3Int worldPos = TerrainChunkUtilities.TileToWorldspace(terrainChunk.ChunkXZ, localPos);
 			float spawnRoll = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
 
 			float totalWeight = 0f;

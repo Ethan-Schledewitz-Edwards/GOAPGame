@@ -6,7 +6,7 @@ using InventorySystem.Items;
 using InventorySystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Item : InteractableObjectBase
+public class Item : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree m_ItemBT;
 
@@ -14,11 +14,16 @@ public class Item : InteractableObjectBase
 	private Rigidbody m_rb;
 
 	[Header("Item Data")]
-	[field: SerializeField] public ItemData ItemData { get; private set; }
-	[field: SerializeField] public int StackSize { get; private set; } = 1;
+	public ItemData ItemData => m_itemData;
+	[SerializeField] private ItemData m_itemData;
+
+	public int StackSize => m_stackSize;
+	[field: SerializeField] public int m_stackSize { get; private set; } = 1;
+
+	public Transform Transform => transform;
 
 	// Events
-	public Action<Item> ItemPickedUp;
+	public event Action<Transform> ItemPickedUp;
 
 	// System
 	public override bool UseFormationRadius { get => false; }
@@ -51,7 +56,7 @@ public class Item : InteractableObjectBase
 	{
 		base.TryInteract(interactor);
 
-		if (ItemData == null)
+		if (m_itemData == null)
 			return;
 
 		// Add to actor inventory
@@ -60,16 +65,16 @@ public class Item : InteractableObjectBase
 			if (inventoryComponent.Inventory == null)
 				return;
 
-			bool isItemAdded = inventoryComponent.TryAddItem(ItemData, StackSize, transform);
+			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, transform);
 			if (isItemAdded)
 			{
 				BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
 				if (executor != null)
 				{
-					executor?.AIContext.SetData<int>("HeldItemID", ItemData.ItemID);
+					executor?.AIContext.SetData<int>("HeldItemID", m_itemData.ItemID);
 				}
 
-				ItemPickedUp?.Invoke(this);
+				ItemPickedUp?.Invoke(transform);
 			}
 		}
 	}
@@ -83,9 +88,9 @@ public class Item : InteractableObjectBase
 
 	public void SetAmount(int amount)
 	{
-		StackSize = amount;
+		m_stackSize = amount;
 
-		if(StackSize <= 0)
+		if(m_stackSize <= 0)
 			Destroy(gameObject);
 	}
 

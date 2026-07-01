@@ -132,7 +132,7 @@ public class WorldBuilder : MonoBehaviour
 		// Tell neighbouring chunks about a the new active chunk
 		for (int i = 0; i < 4; i++)
 		{
-			Vector2Int neighbourToUpdate = chunkXZ + TerrainChunkUtilities.GetCardinalDirections2D[i];
+			Vector2Int neighbourToUpdate = chunkXZ + TerrainChunkUtilities.GetCardinalDirections[i];
 			if (s_ActiveChunks.ContainsKey(neighbourToUpdate))
 			{
 				s_ActiveChunks[neighbourToUpdate].chunkData.UpdateChunk();

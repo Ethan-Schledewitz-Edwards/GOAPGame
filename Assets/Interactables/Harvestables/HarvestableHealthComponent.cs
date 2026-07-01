@@ -1,7 +1,9 @@
 using BehaviourTrees;
-using System.Collections.Generic;
-using UnityEngine;
+using InventorySystem;
 using InventorySystem.Items;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class HarvestableHealthComponent : HealthComponent
 {
@@ -20,7 +22,7 @@ public class HarvestableHealthComponent : HealthComponent
 	private MeshRenderer m_meshRenderer;
 
 	private int m_consecutiveHits;
-	private List<Item> m_droppedItems = new List<Item>();
+	private List<IItemObject> m_droppedItems = new List<IItemObject>();
 
 	private int m_actorLayerMask;
 
@@ -84,7 +86,7 @@ public class HarvestableHealthComponent : HealthComponent
 				GameObject spawnedItem = Instantiate(lootToDrop, null);
 				spawnedItem.transform.position = pos;
 
-				if(spawnedItem.TryGetComponent(out Item item))
+				if(spawnedItem.TryGetComponent(out IItemObject item))
 				{
 					// Track the dropped item
 					m_droppedItems.Add(item);
@@ -94,10 +96,13 @@ public class HarvestableHealthComponent : HealthComponent
 		}
 	}
 
-	private void OnItemPickedUp(Item item)
+	private void OnItemPickedUp(Transform itemTransform)
 	{
-		if(m_droppedItems.Contains(item))
-			m_droppedItems.Remove(item);
+		if(itemTransform != null && itemTransform.TryGetComponent(out IItemObject itemObject))
+		{
+			if (m_droppedItems.Contains(itemObject))
+				m_droppedItems.Remove(itemObject);
+		}
 	}
 
 	private void AssignDroppedItems()
@@ -109,32 +114,32 @@ public class HarvestableHealthComponent : HealthComponent
 				QueryTriggerInteraction.Collide);
 
 		HashSet<IInteractor> interactors = new HashSet<IInteractor>();
-		for (int i = 0;i < m_droppedItems.Count; i++)
+		for (int i = 0; i < m_droppedItems.Count; i++)
 		{
-			Item item = m_droppedItems[i];
+			IItemObject item = m_droppedItems[i];
 
 			// Skip null items
-			if(item == null) 
-				continue;
-
-			foreach (Collider hitCollider in hitColliders)
+			if (item != null && item.Transform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
 			{
-				if (hitCollider.TryGetComponent(out IInteractor actor))
+				foreach (Collider hitCollider in hitColliders)
 				{
-					if (interactors.Contains(actor))
-						continue;
-
-					if(actor.Transform.TryGetComponent(out BehaviourTreeExecutor btExecutor))
+					if (hitCollider.TryGetComponent(out IInteractor actor))
 					{
-						AIContext aiContext = btExecutor.AIContext;
-						Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
+						if (interactors.Contains(actor))
+							continue;
 
-						// Ensure the actor was responsible for destroying this harvestable
-						if (transform == agentsTarget)
+						if (actor.Transform.TryGetComponent(out BehaviourTreeExecutor btExecutor))
 						{
-							item.TryInteract(actor);
-							interactors.Add(actor);
-							break;
+							AIContext aiContext = btExecutor.AIContext;
+							Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
+
+							// Ensure the actor was responsible for destroying this harvestable
+							if (transform == agentsTarget)
+							{
+								interactableObjectBase.TryInteract(actor);
+								interactors.Add(actor);
+								break;
+							}
 						}
 					}
 				}

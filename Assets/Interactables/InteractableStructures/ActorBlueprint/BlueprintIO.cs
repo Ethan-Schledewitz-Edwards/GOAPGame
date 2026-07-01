@@ -89,12 +89,15 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	{
 		base.TryInteract(interactor);
 
+
+		// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
+
 		BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
 		if (executor != null)
 		{
-			Transform requiredItem = FindRequiredItem();
-			if (requiredItem != null)
-				executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
+			//Transform requiredItem = FindRequiredItem();
+			//if (requiredItem != null)
+			//	executor?.AIContext.SetData<Transform>("TargetTransform", requiredItem);
 		}
 	}
 
@@ -148,64 +151,6 @@ public class BlueprintIO : InteractableObjectBase, IInteractableStructure<Bluepr
 	}
 
 	#region Utility
-
-	private Transform FindRequiredItem()
-	{
-		Transform globalNearest = null;
-		float minDistanceSqr = float.MaxValue;
-		Vector3 currentPos = transform.position;
-
-		foreach (ItemQuantity requiredItem in m_requiredItems)
-		{
-			if (!m_bluerprintInventory.GetItemTypeSatisfied(requiredItem))
-			{
-				Transform candidate = SearchForItem(requiredItem.itemType);
-
-				if (candidate != null)
-				{
-					float distSqr = (candidate.position - currentPos).sqrMagnitude;
-					if (distSqr < minDistanceSqr)
-					{
-						minDistanceSqr = distSqr;
-						globalNearest = candidate;
-					}
-				}
-			}
-		}
-
-		return globalNearest;
-	}
-
-	private Transform SearchForItem(ItemData itemData)
-	{
-		/*
-		Vector2Int centerChunk = WorldToChunkCoord(transform.position);
-		int chunkRange = Mathf.CeilToInt(searchRadius / WorldBuilder.s_ChunkSize.x);
-
-		var chunksToSearch = GetChunksInRadius(transform.position, searchRadius);
-
-		Transform nearest = null;
-		float minDistanceSqr = float.MaxValue;
-
-		foreach (var chunk in chunksToSearch)
-		{
-			foreach (var item in chunk.Items)
-			{
-				if (item.Data == itemData)
-				{
-					float distSqr = (item.transform.position - transform.position).sqrMagnitude;
-					if (distSqr < minDistanceSqr)
-					{
-						minDistanceSqr = distSqr;
-						nearest = item.transform;
-					}
-				}
-			}
-		}
-		*/
-
-		return null;
-	}
 
 	private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)
 	{
