@@ -1,53 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Terrain.WorldProperties;
 
-public static class TerrainChunkUtilities
+public static class TerrainGenerationUtilities
 {
-	#region Directions
-
-	public static Vector2Int[] GetCardinalDirections = new[]
-	{
-		Vector2Int.up,// North
-		Vector2Int.right,// East
-		Vector2Int.down,// South
-		Vector2Int.left,// West
-	};
-
-	public static Vector3Int[] GetCardinalIntercardinalDirections = new Vector3Int[]
-	{
-		// Cardinal directions
-		Vector3Int.forward,// North
-		Vector3Int.right,// East
-		Vector3Int.back,// South
-		Vector3Int.left,// West
-
-		// Corner directions
-		new Vector3Int(1, 0, 1),// North-East
-		new Vector3Int(1, 0, -1),// South-East
-		new Vector3Int(-1, 0, -1),// South-West
-		new Vector3Int(-1, 0, 1),// North-West
-	};
-
-	public static Vector3Int[] GetAllDirections = new Vector3Int[]
-	{
-		// Cardinal directions
-		Vector3Int.forward,// North
-		Vector3Int.right,// East
-		Vector3Int.back,// South
-		Vector3Int.left,// West
-
-		// Corner directions
-		new Vector3Int(1, 0, 1),// North-East
-		new Vector3Int(1, 0, -1),// South-East
-		new Vector3Int(-1, 0, -1),// South-West
-		new Vector3Int(-1, 0, 1),// North-West
-
-		Vector3Int.up,// South-West
-		Vector3Int.down,// North-West
-	};
-	#endregion
-
 	#region Positioning
 
 	/// <summary>
@@ -55,7 +12,7 @@ public static class TerrainChunkUtilities
 	/// </summary>
 	public static Vector2Int WorldToChunkXZ(Vector3Int worldPosition)
 	{
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		return new Vector2Int
 		(
@@ -69,7 +26,7 @@ public static class TerrainChunkUtilities
 	/// </summary>
 	public static Vector2Int WorldToChunkXZ(Vector3 worldPosition)
 	{
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		return new Vector2Int
 		(
@@ -83,7 +40,7 @@ public static class TerrainChunkUtilities
 	/// </summary>
 	public static Vector3Int TileToWorldspace(Vector2Int chunkXZ, Vector3Int localPosition)
 	{
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		return new Vector3Int
 		(
@@ -98,7 +55,7 @@ public static class TerrainChunkUtilities
 	/// </summary>
 	public static Vector3Int WorldToTile(Vector2Int chunkXZ, Vector3Int worldPosition)
 	{
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		return new Vector3Int
 		(
@@ -145,7 +102,7 @@ public static class TerrainChunkUtilities
 			Vector3Int localNeighbourPosition = WorldToTile(neighbourChunkXZ, neighborWorldPosition);
 			int[,,] neighborTileData = value.chunk.TileData;
 
-			if(IsLocalPositionInChunk(neighborTileData, localNeighbourPosition))
+			if (IsLocalPositionInChunk(neighborTileData, localNeighbourPosition))
 			{
 				neighbourXZ = neighbourChunkXZ;
 				return false;
@@ -164,14 +121,14 @@ public static class TerrainChunkUtilities
 		neighboursTileID = -1;
 
 		// Ignore positions out of chunk y bounds
-		if (localOffset.y >= WorldBuilder.s_ChunkSize.y ||
+		if (localOffset.y >= WorldProperties.s_ChunkSize.y ||
 			localOffset.y < 0)
 			return false;
 
 		// Get the nighbours ID
 		if (IsLocalPositionInChunk(chunkTiles, localOffset))
 		{
-			neighboursTileID = chunkTiles[localOffset.x, localOffset.y, localOffset.z];	
+			neighboursTileID = chunkTiles[localOffset.x, localOffset.y, localOffset.z];
 		}
 		else
 		{
@@ -209,10 +166,10 @@ public static class TerrainChunkUtilities
 
 	public static Vector2Int[] GetChunkCoordinatesInRadius(Vector3 worldPosition, int checkRadius)
 	{
-		int playerX = (int)(worldPosition.x / WorldBuilder.s_ChunkSize.x);
-		int playerZ = (int)(worldPosition.z / WorldBuilder.s_ChunkSize.z);
+		int playerX = (int)(worldPosition.x / WorldProperties.s_ChunkSize.x);
+		int playerZ = (int)(worldPosition.z / WorldProperties.s_ChunkSize.z);
 
-		HashSet<Vector2Int> surroundingChunks = new HashSet<Vector2Int>();
+		List<Vector2Int> surroundingChunks = new List<Vector2Int>();
 
 		// Fetch chunks in a spiral
 		int i = 0, j = 0;

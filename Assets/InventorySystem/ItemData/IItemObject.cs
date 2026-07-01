@@ -1,8 +1,7 @@
-using InventorySystem.Items;
 using System;
 using UnityEngine;
 
-namespace InventorySystem
+namespace InventorySystem.Items
 {
     public interface IItemObject 
     {

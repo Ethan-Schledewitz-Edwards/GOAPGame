@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Terrain.WorldProperties;
 
 /// <summary>
 /// Interprets the block data stored in a given chunk coordinate position.
@@ -59,7 +59,6 @@ public class ChunkMeshBuilder
 
 	private void ProcessTile(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos, List<Vector3> vertices, List<int> triangles, List<Color32> colors)
 	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
 		int configBitmask = 0;
 		int tileID = chunkTiles[localPos.x, localPos.y, localPos.z];
 
@@ -67,7 +66,7 @@ public class ChunkMeshBuilder
 		for (int i = 0; i < 8; i++)
 		{
 			Vector3Int cornerPos = localPos + MarchingTable.Corners[i];
-			if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighboursTileID))
+			if (TerrainGenerationUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighboursTileID))
 			{
 				if(neighboursTileID >= 0 && 
 					neighboursTileID < m_tileIndex.Tiles.Length)
@@ -96,7 +95,7 @@ public class ChunkMeshBuilder
 			// Air tiles with gemetry moving through them sample the first valid neighbours colour
 			for (int i = 0; i < 8; i++)
 			{
-				if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighborID))
+				if (TerrainGenerationUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighborID))
 				{
 					if (neighborID >= 0 && neighborID < m_tileIndex.Tiles.Length && m_tileColorDict.ContainsKey(neighborID))
 					{
@@ -145,7 +144,7 @@ public class ChunkMeshBuilder
 
 	private float GetFakedDensity(Vector2Int chunkXZ, int[,,] chunkTiles, Vector3Int localPos)
 	{
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 		int solidCount = 0;
 		int totalChecked = 0;
 
@@ -165,7 +164,7 @@ public class ChunkMeshBuilder
 					}
 
 					// Using your existing neighbor check
-					if (TerrainChunkUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, offset, out int tileId))
+					if (TerrainGenerationUtilities.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, offset, out int tileId))
 					{
 						if (tileId >= 0 && 
 							tileId < m_tileIndex.Tiles.Length && 
@@ -213,7 +212,7 @@ public class ChunkMeshBuilder
 		Task waitTask = m_meshingSemaphore.WaitAsync();
 		yield return new WaitUntil(() => waitTask.IsCompleted);
 
-		Vector3Int chunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		// Worker thread
 		Task<(List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles, List<Color32> colors)> t =

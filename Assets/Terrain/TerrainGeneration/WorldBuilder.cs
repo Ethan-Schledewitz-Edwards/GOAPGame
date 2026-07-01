@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Terrain.WorldProperties;
 
 public class WorldBuilder : MonoBehaviour
 {
 	public static WorldBuilder Instance { get; private set; }
-
-	public static readonly Vector3Int s_ChunkSize = new Vector3Int(16, 32, 16);
 
 	[Header("Data")]
 	public static BiomeIndex BiomeIndex => Instance.m_biomeIndex;
@@ -112,7 +111,7 @@ public class WorldBuilder : MonoBehaviour
 			typeof(MeshCollider),
 		});
 
-		chunkObject.transform.position = new Vector3(chunkXZ.x * s_ChunkSize.x, 0f, chunkXZ.y * s_ChunkSize.z);
+		chunkObject.transform.position = new Vector3(chunkXZ.x * WorldProperties.s_ChunkSize.x, 0f, chunkXZ.y * WorldProperties.s_ChunkSize.z);
 		chunkObject.isStatic = true;
 
 		// Replace the empty object with the new mesh
@@ -132,7 +131,7 @@ public class WorldBuilder : MonoBehaviour
 		// Tell neighbouring chunks about a the new active chunk
 		for (int i = 0; i < 4; i++)
 		{
-			Vector2Int neighbourToUpdate = chunkXZ + TerrainChunkUtilities.GetCardinalDirections[i];
+			Vector2Int neighbourToUpdate = chunkXZ + WorldProperties.CardinalDirections2D[i];
 			if (s_ActiveChunks.ContainsKey(neighbourToUpdate))
 			{
 				s_ActiveChunks[neighbourToUpdate].chunkData.UpdateChunk();
@@ -165,13 +164,14 @@ public class WorldBuilder : MonoBehaviour
 
 			MeshCollider meshCollider = chunkObject.GetComponent<MeshCollider>();
 			meshCollider.sharedMesh = meshFilter.mesh;
-			
+
 			// Spawn all feature tiles
-			for (int x = 0; x < s_ChunkSize.x; x++)
+			Vector3Int chunkSize = WorldProperties.s_ChunkSize;
+			for (int x = 0; x < chunkSize.x; x++)
 			{
-				for (int z = 0; z < s_ChunkSize.z; z++)
+				for (int z = 0; z < chunkSize.z; z++)
 				{
-					for (int y = 0; y < s_ChunkSize.y; y++)
+					for (int y = 0; y < chunkSize.y; y++)
 					{
 						int tileID = targetChunk.TileData[x, y, z];
 
@@ -198,7 +198,7 @@ public class WorldBuilder : MonoBehaviour
 			s_requestedChunks.Remove(chunkXZ);
 	}
 
-	public IEnumerator CreateActiveChunksBatch(List<Vector2Int> chunkCoords)
+	public IEnumerator CreateActiveChunksBatch(Vector2Int[] chunkCoords)
 	{
 		foreach (Vector2Int coord in chunkCoords)
 		{

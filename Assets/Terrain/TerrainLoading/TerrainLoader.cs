@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Terrain.WorldProperties;
 
 /// <summary>
 /// Loads chunks based on the player's current position.
@@ -12,6 +13,7 @@ public class TerrainLoader : MonoBehaviour
 	[SerializeField] private int m_renderDist = 4;
 
 	private WorldBuilder m_worldBuilder;
+	private List<Vector2Int> m_chunksToLoad = new List<Vector2Int>();
 	private List<Vector2Int> m_chunksToUnload = new List<Vector2Int>();
 
 	private bool m_isDirty = false;
@@ -40,8 +42,8 @@ public class TerrainLoader : MonoBehaviour
 		if (m_isProcessing) 
 			return;
 
-		int playerX = (int)(m_player.position.x / WorldBuilder.s_ChunkSize.x);
-		int playerZ = (int)(m_player.position.z / WorldBuilder.s_ChunkSize.z);
+		int playerX = (int)(m_player.position.x / WorldProperties.s_ChunkSize.x);
+		int playerZ = (int)(m_player.position.z / WorldProperties.s_ChunkSize.z);
 
 		m_chunksToUnload.Clear();
 		foreach (KeyValuePair<Vector2Int, (TerrainChunk, GameObject)> activeChunk in WorldBuilder.s_ActiveChunks)
@@ -49,38 +51,29 @@ public class TerrainLoader : MonoBehaviour
 			m_chunksToUnload.Add(activeChunk.Key);
 		}
 
-		List<Vector2Int> chunksToLoad = new List<Vector2Int>();
+		m_chunksToLoad.Clear();
+		Vector2Int[] nearbyChunks =
+			TerrainGenerationUtilities.GetChunkCoordinatesInRadius(m_player.position, m_renderDist);
 
-		// Fetch chunks in a spiral
-		int i = 0, j = 0;
-		int di = 1, dj = 0;
-		int segmentLength = 1;
-		int segmentPassed = 0;
-		int maxChunks = (2 * m_renderDist + 1) * (2 * m_renderDist + 1);
-
-		for (int k = 0; k < maxChunks; ++k)
+		int newChunksLoaded = 0;
+		for (int i = 0; i < nearbyChunks.Length; ++i)
 		{
-			Vector2Int chunkCoord = new Vector2Int(playerX + i, playerZ + j);
+			Vector2Int chunkCoord = nearbyChunks[i];
+
 			bool isChunkLoaded = WorldBuilder.s_ActiveChunks.ContainsKey(chunkCoord);
-
 			if (!isChunkLoaded)
-				chunksToLoad.Add(chunkCoord);
-			else
-				m_chunksToUnload.Remove(chunkCoord);
-
-			i += di; j += dj; segmentPassed++;
-			if (segmentPassed == segmentLength)
 			{
-				segmentPassed = 0;
-				int temp = di; di = -dj; dj = temp;
-				if (dj == 0) segmentLength++;
+				newChunksLoaded++;
+				m_chunksToLoad.Add(chunkCoord);
 			}
+			else if (m_chunksToUnload.Contains(chunkCoord))
+				m_chunksToUnload.Remove(chunkCoord);
 		}
 
-		if (chunksToLoad.Count > 0)
+		if (newChunksLoaded > 0)
 		{
 			m_isDirty = true;
-			StartCoroutine(LoadProcess(chunksToLoad));
+			StartCoroutine(LoadProcess(nearbyChunks));
 		}
 		else if (m_isDirty)
 		{
@@ -96,7 +89,7 @@ public class TerrainLoader : MonoBehaviour
 		}
 	}
 
-	private IEnumerator LoadProcess(List<Vector2Int> chunks)
+	private IEnumerator LoadProcess(Vector2Int[] chunks)
 	{
 		m_isProcessing = true;
 

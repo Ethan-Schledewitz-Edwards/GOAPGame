@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
+using Terrain.WorldProperties;
 
 public class TerrainChunk
 {
@@ -44,11 +44,11 @@ public class TerrainChunk
 		UpdateChunk();
 
 		// Update neighbour chunks if the updated tile was on a boarder
-		Vector3Int[] intercadinalDirs = TerrainChunkUtilities.GetCardinalIntercardinalDirections;
+		Vector3Int[] intercadinalDirs = WorldProperties.CardinalIntercardinalDirections3D;
 
 		for (int i = 0; i < intercadinalDirs.Length; i++)
 		{
-			if (!TerrainChunkUtilities.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, intercadinalDirs[i], out Vector2Int neighbourXZ))
+			if (!TerrainGenerationUtilities.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, intercadinalDirs[i], out Vector2Int neighbourXZ))
 			{
 				if (WorldBuilder.s_ActiveChunks.TryGetValue(neighbourXZ, out var neighbour))
 				{

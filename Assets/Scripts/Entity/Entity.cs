@@ -28,7 +28,7 @@ public class Entity : MonoBehaviour
 			EntityPositionChanged?.Invoke();
 
 			// Check if the entity entered a new chunk
-			Vector2Int chunkXZ = TerrainChunkUtilities.WorldToChunkXZ(m_position);
+			Vector2Int chunkXZ = TerrainGenerationUtilities.WorldToChunkXZ(m_position);
 			if(chunkXZ != m_currentChunkXZ)
 			{
 				m_currentChunkXZ = chunkXZ;

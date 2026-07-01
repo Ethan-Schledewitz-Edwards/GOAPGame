@@ -1,9 +1,8 @@
 {
-    "name": "Terrain.Tiles",
-    "rootNamespace": "Terrain.Tiles",
+    "name": "InventorySystem.Items",
+    "rootNamespace": "InventorySystem.Items",
     "references": [
-        "GUID:0eec0e3185c110644ab23d853bdbea41",
-        "GUID:5b37360d0d6fc4c49bc1c9c19473365a"
+        "GUID:0eec0e3185c110644ab23d853bdbea41"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Terrain.WorldProperties;
 
 /// <summary>
 /// Interprets the block data stored in a given chunk coordinate position.
@@ -47,7 +48,7 @@ public class ChunkDataBuilder
 	/// </summary>
 	public void GenerateChunkTerrainData(int worldSeed, Vector2Int chunkXZ, int[,,] tileData, int[,] biomeMap)
 	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 
 		int mapWidth = biomeMap.GetLength(0);
 		int mapDepth = biomeMap.GetLength(1);
@@ -57,22 +58,22 @@ public class ChunkDataBuilder
 		{
 			for (int z = 0; z < mapDepth; z++)
 			{
-				int worldX = (x - k_biomeBlendRad) + (chunkXZ.x * ChunkSize.x);
-				int worldZ = (z - k_biomeBlendRad) + (chunkXZ.y * ChunkSize.z);
+				int worldX = (x - k_biomeBlendRad) + (chunkXZ.x * chunkSize.x);
+				int worldZ = (z - k_biomeBlendRad) + (chunkXZ.y * chunkSize.z);
 				biomeMap[x, z] = GetBiome(worldSeed, worldX, worldZ);
 			}
 		}
 
 		// Generate terrain
-		for (int x = 0; x < ChunkSize.x; x++)
+		for (int x = 0; x < chunkSize.x; x++)
 		{
-			for (int z = 0; z < ChunkSize.z; z++)
+			for (int z = 0; z < chunkSize.z; z++)
 			{
 				int height = GetTileHeight(worldSeed, chunkXZ, biomeMap, x, z);
 				int biomeIndex = biomeMap[x + k_biomeBlendRad, z + k_biomeBlendRad];
 
 				// Set tile data
-				for (int y = 0; y < ChunkSize.y; y++)
+				for (int y = 0; y < chunkSize.y; y++)
 				{
 					int tileID = m_biomeIndex.Biomes[biomeIndex].TerrainBiome.GenerateTileData(worldSeed, height, y);
 					tileData[x, y, z] = tileID;
@@ -91,18 +92,18 @@ public class ChunkDataBuilder
 			return;
 
 		int worldSeed = WorldBuilder.s_Seed;
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 		Vector2Int chunkXZ = centerChunk.ChunkXZ;
 
-		for (int x = 0; x < ChunkSize.x; x++)
+		for (int x = 0; x < chunkSize.x; x++)
 		{
-			for (int z = 0; z < ChunkSize.z; z++)
+			for (int z = 0; z < chunkSize.z; z++)
 			{
 				int height = GetTileHeight(worldSeed, chunkXZ, centerChunk.BiomeMap, x, z);
 				int biomeID = centerChunk.BiomeMap[x + k_biomeBlendRad, z + k_biomeBlendRad];
 
 				// Set tile data
-				for (int y = height + 1; y < ChunkSize.y; y++)
+				for (int y = height + 1; y < chunkSize.y; y++)
 				{
 					int tileID = m_biomeIndex.Biomes[biomeID].TerrainBiome.TryGenerateFeatureTileData(worldSeed, centerChunk, height, x, y, z);
 					centerChunk.TileData[x, y, z] = tileID;
@@ -117,13 +118,13 @@ public class ChunkDataBuilder
 	/// </summary>
 	private IEnumerator GenerateChunkBaseData(Vector2Int chunkXZ, System.Action<int[,,], int[,]> callback)
 	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
 		int worldSeed = WorldBuilder.s_Seed;
 
-		int[,,] tileData = new int[ChunkSize.x, ChunkSize.y, ChunkSize.z];
+		int[,,] tileData = new int[chunkSize.x, chunkSize.y, chunkSize.z];
 
-		int mapWidth = ChunkSize.x + (k_biomeBlendRad * 2);
-		int mapDepth = ChunkSize.z + (k_biomeBlendRad * 2);
+		int mapWidth = chunkSize.x + (k_biomeBlendRad * 2);
+		int mapDepth = chunkSize.z + (k_biomeBlendRad * 2);
 		int[,] biomeMap = new int[mapWidth, mapDepth];
 
 		Task t = Task.Run(() =>
@@ -193,9 +194,9 @@ public class ChunkDataBuilder
 
 	private int GetTileHeight(int worldSeed, Vector2Int chunkXZ, int[,] biomeMap, int localX, int localZ)
 	{
-		Vector3Int ChunkSize = WorldBuilder.s_ChunkSize;
-		int worldX = localX + (chunkXZ.x * ChunkSize.x);
-		int worldZ = localZ + (chunkXZ.y * ChunkSize.z);
+		Vector3Int chunkSize = WorldProperties.s_ChunkSize;
+		int worldX = localX + (chunkXZ.x * chunkSize.x);
+		int worldZ = localZ + (chunkXZ.y * chunkSize.z);
 
 		float totalHeight = 0f;
 		float totalWeight = 0f;
@@ -244,7 +245,7 @@ public class ChunkDataBuilder
 
 			float finalHeight = totalHeight / totalWeight;
 
-			return Mathf.Clamp(Mathf.RoundToInt(finalHeight * mask), 0, ChunkSize.y - 1);
+			return Mathf.Clamp(Mathf.RoundToInt(finalHeight * mask), 0, chunkSize.y - 1);
 		}
 		else
 			return Mathf.RoundToInt(m_biomeIndex.Biomes[centerBiomeID].TerrainBiome.GetTerrainHeight(worldSeed, worldX, worldZ) * mask);

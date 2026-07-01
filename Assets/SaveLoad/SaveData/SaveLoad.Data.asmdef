@@ -3,6 +3,7 @@
     "rootNamespace": "SaveLoad.Data",
     "references": [
         "GUID:ba03907fce1edd444a6619e3f2864f88",
+        "GUID:5b37360d0d6fc4c49bc1c9c19473365a",
         "GUID:0eec0e3185c110644ab23d853bdbea41",
         "GUID:9ba38f2c76031274599e13fd9c690966"
     ],

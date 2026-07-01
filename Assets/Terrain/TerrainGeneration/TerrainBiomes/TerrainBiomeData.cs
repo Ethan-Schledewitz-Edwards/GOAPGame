@@ -74,7 +74,7 @@ public abstract class TerrainBiomeData : ScriptableObject
 						continue;
 
 					Vector3Int offset = new Vector3Int(x, y, z);
-					bool isSolid = TerrainChunkUtilities.IsNeighborTileSolid(terrainChunk.ChunkXZ, terrainChunk.TileData, localPos, offset, out _);
+					bool isSolid = TerrainGenerationUtilities.IsNeighborTileSolid(terrainChunk.ChunkXZ, terrainChunk.TileData, localPos, offset, out _);
 
 					if (y == -1) // The 9 tiles underneath the potential feature
 					{
@@ -102,7 +102,7 @@ public abstract class TerrainBiomeData : ScriptableObject
 
 		if (isPlacementValid)
 		{
-			Vector3Int worldPos = TerrainChunkUtilities.TileToWorldspace(terrainChunk.ChunkXZ, localPos);
+			Vector3Int worldPos = TerrainGenerationUtilities.TileToWorldspace(terrainChunk.ChunkXZ, localPos);
 			float spawnRoll = PerCoordinateRandom(seed, worldPos.x, worldPos.y, worldPos.z);
 
 			float totalWeight = 0f;

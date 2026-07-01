@@ -71,7 +71,7 @@ public class FindItemTask : BTNodeBase
 	private Transform SearchForItem(ItemData itemData, Vector3 executorPosition)
 	{
 		Vector2Int[] neighbourChunkCoordinates
-			= TerrainChunkUtilities.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
+			= TerrainGenerationUtilities.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
 
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;
