@@ -43,6 +43,11 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		transform.position = position;
 	}
 
+	public void SetVisualsRotation(Quaternion rotation)
+	{
+		transform.rotation = rotation;
+	}
+
 	#region Cursor
 
 	public void EnableCursor()
