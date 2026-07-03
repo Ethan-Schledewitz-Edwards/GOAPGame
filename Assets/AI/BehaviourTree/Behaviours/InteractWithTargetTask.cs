@@ -6,35 +6,21 @@ public class InteractWithTargetTask : BTNodeBase
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		Vector3 executorPos = executorTransform.position;
 
-		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
-		if (closestSettlement != null)
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Vector3 targetPosition = context.GetData<Vector3>("TargetPosition");
+		if (targetTransform != null &&
+			targetTransform.TryGetComponent(out InteractableObjectBase iob))
 		{
-			InteractableObjectBase closestBlueprint = closestSettlement.FindBlueprint(executorPos);
-			if (closestBlueprint != null)
-			{
-				context.SetData<Transform>("TargetTransform", closestBlueprint.transform);
-				context.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
-
+			if (iob.TryInteract(interactor))
 				return EBTNodeState.STATE_SUCSESS;
-			}
-
-			InteractableObjectBase closestStorage = closestSettlement.FindItemStorage(executorPos);
-			if (closestStorage != null)
-			{
-				context.SetData<Transform>("TargetTransform", closestStorage.transform);
-				context.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
-
-				return EBTNodeState.STATE_SUCSESS;
-			}
+			else return EBTNodeState.STATE_FAILURE;
 		}
 
 		return EBTNodeState.STATE_RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
-	{
-		Debug.Log("Trying to find a resource deposit.");
-	}
+	protected override void OnFirstEvaluate(AIContext context){}
 }

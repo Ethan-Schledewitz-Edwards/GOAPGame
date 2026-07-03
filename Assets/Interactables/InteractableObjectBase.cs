@@ -12,7 +12,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	// System
 	private int m_actorsPresent = 0; // How many actors are currently using the interactable
 
-    public virtual void TryInteract(IInteractor interactor)
+    public virtual bool TryInteract(IInteractor interactor)
     {
         AssignActor();
 		interactor.InteractorInteracted(this);
@@ -21,7 +21,10 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		{
 			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
 			behaviourTreeExecutor.AIContext.SetData<Vector3>("TargetPosition", GetInteractionPositon());
+			return true;
 		}
+
+		return false;
 	}
 
     public virtual void StopInteract()

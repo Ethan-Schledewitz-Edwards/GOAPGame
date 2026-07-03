@@ -35,21 +35,8 @@ public class FindItemTask : BTNodeBase
 		Vector3 executorPosition = executorTransform.position;
 		int idOfItemToFind = context.GetData<int>(c_itemSearchContextKey);
 
-		Transform globalNearest = null;
-		float minDistanceSqr = float.MaxValue;
-
 		Transform candidate = SearchForItem(idOfItemToFind, executorPosition);
-		if (candidate != null)
-		{
-			float distSqr = (candidate.position - executorPosition).sqrMagnitude;
-			if (distSqr < minDistanceSqr)
-			{
-				minDistanceSqr = distSqr;
-				globalNearest = candidate;
-			}
-		}
-
-		return globalNearest;
+		return candidate;
 	}
 
 	private Transform SearchForItem(int itemID, Vector3 executorPosition)
@@ -77,7 +64,7 @@ public class FindItemTask : BTNodeBase
 			}
 		}
 
-		return null;
+		return nearest;
 	}
 }
 

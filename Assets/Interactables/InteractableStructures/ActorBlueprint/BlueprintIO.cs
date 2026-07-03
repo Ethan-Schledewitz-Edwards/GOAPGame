@@ -46,13 +46,11 @@ namespace Interaction.Blueprint
 				{
 					timeoutFind,
 					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
 					new InteractWithTargetTask(),
 					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
 					new DepositTask(),
-					// Go to item
-					// Pickup item
-					// return
-					// Deposit
 				});
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;
@@ -88,9 +86,10 @@ namespace Interaction.Blueprint
 			structure = this;
 		}
 
-		public override void TryInteract(IInteractor interactor)
+		public override bool TryInteract(IInteractor interactor)
 		{
 			base.TryInteract(interactor);
+
 			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
 			BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
 			if (executor != null)
@@ -100,10 +99,12 @@ namespace Interaction.Blueprint
 					if (item.itemType != null)
 					{
 						executor?.AIContext.SetData<int>("ItemIDToFind", item.itemType.ItemID);
-						break;
+						return true;
 					}
 				}
 			}
+
+			return false;
 		}
 
 		public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)

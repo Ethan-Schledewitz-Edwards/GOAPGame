@@ -52,18 +52,18 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		}
 	}
 
-	public override void TryInteract(IInteractor interactor)
+	public override bool TryInteract(IInteractor interactor)
 	{
 		base.TryInteract(interactor);
 
 		if (m_itemData == null)
-			return;
+			return false;
 
 		// Add to actor inventory
 		if(interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
 		{
 			if (inventoryComponent.Inventory == null)
-				return;
+				return false;
 
 			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, transform);
 			if (isItemAdded)
@@ -75,8 +75,11 @@ public class ItemIO : InteractableObjectBase, IItemObject
 				}
 
 				ItemPickedUp?.Invoke(transform);
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	public override void StopInteract()
