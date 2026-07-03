@@ -68,12 +68,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, transform);
 			if (isItemAdded)
 			{
-				BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
-				if (executor != null)
-				{
-					executor?.AIContext.SetData<int>("HeldItemID", m_itemData.ItemID);
-				}
-
 				ItemPickedUp?.Invoke(transform);
 				return true;
 			}

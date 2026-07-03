@@ -48,6 +48,7 @@ namespace Interaction.Blueprint
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
 					new InteractWithTargetTask(),
+					new ReturnToBlueprintTask(),
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
 					new DepositTask(),

@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class ActorInventory : InventoryComponent
 {
+	[SerializeField] private BehaviourTreeExecutor m_behaviourTreeExecutor;
 	[SerializeField] private Transform m_heldItemPosition;
 	[field: SerializeField] public Transform DropItemTransform { get; private set; }
 
@@ -22,6 +23,7 @@ public class ActorInventory : InventoryComponent
 	{
 		InitializeInventory(1);
 		HeldItemSlot = Inventory.Slots[0];
+		HeldItemSlot.SlotUpdated += OnSlotChanged;
 	}
 
 	#endregion
@@ -49,10 +51,18 @@ public class ActorInventory : InventoryComponent
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
 				item.gameObject.SetActive(true);
+				return true;
 			}
 		}
 
-		return wasItemAdded;
+		return false;
+	}
+
+	private void OnSlotChanged(InventorySlot slot)
+	{
+		if(slot.AmountInSlot > 0)
+			m_behaviourTreeExecutor.AIContext.SetData<int>("HeldItemID", slot.SlotsItem.ItemID);
+		else m_behaviourTreeExecutor.AIContext.ClearData("HeldItemID");
 	}
 }
 

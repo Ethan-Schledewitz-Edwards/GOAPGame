@@ -76,8 +76,5 @@ public class DepositTask : BTNodeBase
 		return EBTNodeState.STATE_FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
-	{
-		Debug.Log("Begin deposit");
-	}
+	protected override void OnFirstEvaluate(AIContext context){}
 }

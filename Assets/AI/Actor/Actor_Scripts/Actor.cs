@@ -1,11 +1,12 @@
 using BehaviourTrees;
+using InventorySystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using InventorySystem;
+using UnityEngine.XR;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor
@@ -108,10 +109,14 @@ public class Actor : Entity, IInteractor
 			case EActorState.STATE_Working:
 				if (BehaviourTreeExecutor != null)
 				{
-					BehaviourTreeExecutor.TickBehaviour(t);
+					EBTNodeState treeState = BehaviourTreeExecutor.TickBehaviour(t);
 
-					if (BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
+					if (treeState == EBTNodeState.STATE_SUCSESS || 
+						treeState == EBTNodeState.STATE_FAILURE ||
+						BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
+					{
 						ClearLogicExecutorState();
+					}
 				}
 				break;
 		}

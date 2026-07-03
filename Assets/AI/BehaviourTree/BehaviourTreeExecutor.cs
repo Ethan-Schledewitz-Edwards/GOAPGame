@@ -21,12 +21,14 @@ public class BehaviourTreeExecutor : MonoBehaviour
 		CurrentBehaviourTree = behaviourTree;
 	}
 
-	public void TickBehaviour(float t)
+	public EBTNodeState TickBehaviour(float t)
 	{
 		if (CurrentBehaviourTree != null && AIContext != null)
 		{
-			CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
+			return CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
 		}
+
+		return EBTNodeState.STATE_FAILURE;
 	}
 
 	public void ResetContext()

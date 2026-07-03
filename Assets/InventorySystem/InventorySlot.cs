@@ -18,8 +18,8 @@ namespace InventorySystem
 		[Header("Slot Characteristics")]
 		public bool HoldsStacks { get; private set; }
 
-		private Action<InventorySlot> OnSlotChanged;
-		private Action<Transform> OnDroppedPhysicalItem;
+		public Action<InventorySlot> SlotUpdated;
+		public Action<Transform> DroppedPhysicalItem;
 
 		#region Constructors
 		/// <summary>
@@ -27,7 +27,7 @@ namespace InventorySystem
 		/// </summary>
 		public InventorySlot(Action<InventorySlot> invSlotChanged)
 		{
-			OnSlotChanged = invSlotChanged;
+			SlotUpdated = invSlotChanged;
 			SlotsItem = null;
 			AmountInSlot = 0;
 		}
@@ -167,7 +167,7 @@ namespace InventorySystem
 						itemRB.constraints = RigidbodyConstraints.None;
 				}
 
-				OnDroppedPhysicalItem?.Invoke(itemTransform);
+				DroppedPhysicalItem?.Invoke(itemTransform);
 			}
 
 			if (AmountInSlot <= 0)
@@ -186,6 +186,6 @@ namespace InventorySystem
 		}
 		#endregion
 
-		private void SlotChanged() => OnSlotChanged?.Invoke(this);
+		private void SlotChanged() => SlotUpdated?.Invoke(this);
 	}
 }

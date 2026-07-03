@@ -12,12 +12,11 @@ public class FindItemTask : BTNodeBase
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
 		Transform targetItemTransform = FindItemOfID(context);
-
 		if (targetItemTransform != null)
 		{
 			context.SetData<Transform>("TargetTransform", targetItemTransform);
 			context.SetData<Vector3>("TargetPosition", targetItemTransform.position);
-
+			context.ClearData(c_itemSearchContextKey);
 			return EBTNodeState.STATE_SUCSESS;
 		}
 

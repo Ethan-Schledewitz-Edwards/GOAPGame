@@ -7,15 +7,16 @@ namespace BehaviourTrees
 	{
 		private BTNodeBase m_rootNode;
 
-		public void TickBehaviourTree(AIContext aiContext, float t)
+		public EBTNodeState TickBehaviourTree(AIContext aiContext, float t)
 		{
 			if (m_rootNode != null)
 			{
-				m_rootNode.Evaluate(aiContext, t);
+				return m_rootNode.Evaluate(aiContext, t);
 			}
 			else
 			{
 				Debug.LogWarning("A behaviour tree is attempting to execute without a root node");
+				return EBTNodeState.STATE_FAILURE;
 			}
 		}
 
