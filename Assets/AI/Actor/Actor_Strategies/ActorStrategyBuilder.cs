@@ -45,8 +45,8 @@ public class ActorStrategyBuilder : MonoBehaviour
 		BeliefFactory beliefFactory = new BeliefFactory(m_goapAgent, beliefs);
 
 		beliefFactory.AddBelief("None", () => false);
-		beliefFactory.AddBelief("ActorIdle", () => !m_aiPathing.NavAgent.hasPath);
-		beliefFactory.AddBelief("ActorMoving", () => m_aiPathing.NavAgent.hasPath);
+		beliefFactory.AddBelief("ActorIdle", () => !m_aiPathing.HasPath);
+		beliefFactory.AddBelief("ActorMoving", () => m_aiPathing.HasPath);
 
 		beliefFactory.AddBelief("HungerLow", () => m_actor.ActorHealth.Hunger < 45.0f);
 		beliefFactory.AddBelief("HungerHealthy", () => m_actor.ActorHealth.Hunger > 60.0f);

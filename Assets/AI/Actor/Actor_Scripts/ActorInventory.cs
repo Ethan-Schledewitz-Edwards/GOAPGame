@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ActorInventory : InventoryComponent
 {
-	[SerializeField] private BehaviourTreeExecutor m_behaviourTreeExecutor;
+	[SerializeField] private BehaviourTreeExecutorBase m_behaviourTreeExecutor;
 	[SerializeField] private Transform m_heldItemPosition;
 	[field: SerializeField] public Transform DropItemTransform { get; private set; }
 

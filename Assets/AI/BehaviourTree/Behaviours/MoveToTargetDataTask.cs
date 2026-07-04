@@ -7,19 +7,18 @@ public class MoveToTargetDataTask : BTNodeBase
 
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
 
-		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
-			bool hasArrived = pathing.NavAgent.remainingDistance <= pathing.NavAgent.stoppingDistance;
-			bool isNotMoving = pathing.NavAgent.velocity.sqrMagnitude < 0.01f;
+			bool hasArrived = pathing.PathDistRemaining() < pathing.StoppingDistance;
 
-			if (hasArrived && isNotMoving)
+			if (hasArrived && !pathing.IsMoving)
 				return EBTNodeState.STATE_SUCSESS;
 
 			// We are still walking.
@@ -31,7 +30,7 @@ public class MoveToTargetDataTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))

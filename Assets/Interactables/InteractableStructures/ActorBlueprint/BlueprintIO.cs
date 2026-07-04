@@ -51,7 +51,7 @@ namespace Interaction.Blueprint
 					new ReturnToBlueprintTask(),
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
-					new DepositTask(),
+					new DepositItemTask(),
 				});
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;
@@ -92,7 +92,7 @@ namespace Interaction.Blueprint
 			base.TryInteract(interactor);
 
 			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
-			BehaviourTreeExecutor executor = interactor.Transform.GetComponent<BehaviourTreeExecutor>();
+			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
 			if (executor != null)
 			{
 				foreach (ItemQuantity item in m_requiredItems)

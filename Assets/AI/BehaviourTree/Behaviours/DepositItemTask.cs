@@ -3,7 +3,7 @@ using UnityEngine;
 using InventorySystem;
 using InventorySystem.Items;
 
-public class DepositTask : BTNodeBase
+public class DepositItemTask : BTNodeBase
 {
 	private float m_depositCooldown = 0.5f;
 
@@ -17,8 +17,8 @@ public class DepositTask : BTNodeBase
 			return EBTNodeState.STATE_SUCSESS;
 		}
 
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
 		if (targetTransform == null)
 		{
@@ -76,5 +76,8 @@ public class DepositTask : BTNodeBase
 		return EBTNodeState.STATE_FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context){}
+	protected override void OnFirstEvaluate(AIContext context)
+	{
+		Debug.Log("Begin item deposit attempt");
+	}
 }

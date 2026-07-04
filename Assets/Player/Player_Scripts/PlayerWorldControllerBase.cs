@@ -5,7 +5,8 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour, IInputHandler
 {
 	private const float c_cursorSmoothingController = 20.0f;
 	private const float c_cursorSmoothingMouse = 30.0f;
-	private const float c_maxCursorDistance = 5.0f;
+	private const float c_maxCursorDistanceController = 6.0f;
+	private const float c_maxCursorDistanceMouse = 12.0f;
 
 	[SerializeField] private Camera m_mainCamera;
 	[SerializeField] protected PlayerCursorVisualizer m_cursorVisualizer;
@@ -93,14 +94,14 @@ public abstract class PlayerWorldControllerBase : MonoBehaviour, IInputHandler
 				playerToMouse.y = 0; // Flatten the direction vector
 
 				// Clamp the direction vector to max radius, then add it back to player position
-				Vector3 clampedOffset = Vector3.ClampMagnitude(playerToMouse, c_maxCursorDistance);
+				Vector3 clampedOffset = Vector3.ClampMagnitude(playerToMouse, c_maxCursorDistanceMouse);
 				targetWorldPositionFlattened = transform.position + clampedOffset;
 			}
 		}
 		else
 		{
 			Vector3 stickInput = new Vector3(m_rawLookInput.x, 0, m_rawLookInput.y);
-			targetWorldPositionFlattened = transform.position + (stickInput * c_maxCursorDistance);
+			targetWorldPositionFlattened = transform.position + (stickInput * c_maxCursorDistanceController);
 		}
 
 		// Raycast down from cursor offset

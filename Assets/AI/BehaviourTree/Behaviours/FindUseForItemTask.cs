@@ -5,7 +5,7 @@ public class FindUseForItemTask : BTNodeBase
 {
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 executorPos = executorTransform.position;
 
 		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
@@ -14,7 +14,7 @@ public class FindUseForItemTask : BTNodeBase
 			InteractableObjectBase closestBlueprint = closestSettlement.FindBlueprint(executorPos);
 			if (closestBlueprint != null)
 			{
-				context.SetData<Transform>("TargetTransform", closestBlueprint.transform);
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestBlueprint.transform);
 				context.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;
@@ -23,7 +23,7 @@ public class FindUseForItemTask : BTNodeBase
 			InteractableObjectBase closestStorage = closestSettlement.FindItemStorage(executorPos);
 			if (closestStorage != null)
 			{
-				context.SetData<Transform>("TargetTransform", closestStorage.transform);
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStorage.transform);
 				context.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;

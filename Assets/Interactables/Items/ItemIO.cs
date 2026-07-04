@@ -38,8 +38,10 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 			BTNodeBase findUseTask = new FindUseForItemTask();
 			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 10f, "Timeout");
-			BTNodeBase depositTask = new DepositTask();
+
+			BTNodeBase depositTask = new DepositItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 5f, "Timeout");
+
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				timeoutSearch,

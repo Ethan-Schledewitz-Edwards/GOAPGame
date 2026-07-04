@@ -15,7 +15,7 @@ public class AIPathing : MonoBehaviour
 	#endregion
 
 	// Components
-	public NavMeshAgent NavAgent { get; private set; }
+	private NavMeshAgent m_navAgent;
 	[field: SerializeField] public GameObject Mesh { get; private set; }
 
 	[Header("Simulation & Navigation")]
@@ -26,9 +26,14 @@ public class AIPathing : MonoBehaviour
 	public NavMeshPath CurrentPath { get; private set; }
 	private Coroutine m_destinationCoroutine;
 
+	// System
+	public float StoppingDistance => m_navAgent.stoppingDistance;
+	public bool HasPath { get; private set; }
+	public bool IsMoving{ get; private set; }
+
 	private void Awake()
 	{
-		NavAgent = GetComponent<NavMeshAgent>();
+		m_navAgent = GetComponent<NavMeshAgent>();
 	}
 
 	#region Simulation Fidelity
@@ -41,7 +46,7 @@ public class AIPathing : MonoBehaviour
 		m_simFidelity = fidelity;
 
 		Mesh.SetActive(m_simFidelity == EPathingSimFidelity.Realtime);
-		NavAgent.enabled = (m_simFidelity == EPathingSimFidelity.Realtime);
+		m_navAgent.enabled = (m_simFidelity == EPathingSimFidelity.Realtime);
 
 		// Swap preexisting path to the method used for the new simulation fidelity
 		if (m_destination != Vector3.zero)
@@ -69,8 +74,8 @@ public class AIPathing : MonoBehaviour
 
 	public void ClearDestination()
 	{
-		if (NavAgent.isActiveAndEnabled)
-			NavAgent.ResetPath();
+		if (m_navAgent.isActiveAndEnabled)
+			m_navAgent.ResetPath();
 
 		m_destination = Vector3.zero;
 		m_pathCorners = new Vector3[0];
@@ -97,14 +102,28 @@ public class AIPathing : MonoBehaviour
 		ApplyPathingByFidelity();
 	}
 
+	public void TickAIPathing()
+	{
+		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.isActiveAndEnabled)
+		{
+			HasPath = m_navAgent.hasPath;
+			IsMoving = m_navAgent.velocity.sqrMagnitude > 0.01f;
+		}
+		else
+		{
+			HasPath = (m_destination != Vector3.zero && m_pathCorners.Length > 0);
+			IsMoving = (m_destination != Vector3.zero && m_destinationCoroutine != null);
+		}
+	}
+
 	/// <summary>
 	/// Solves a path then then moves the Actor along it
 	/// </summary>
 	private void ApplyPathingByFidelity()
 	{
 		// Reset pathing (high-fidelity)
-		if (NavAgent.isActiveAndEnabled)
-			NavAgent.ResetPath();
+		if (m_navAgent.isActiveAndEnabled)
+			m_navAgent.ResetPath();
 
 		// Reset pathing (low-fidelity)
 		if (m_destinationCoroutine != null)
@@ -118,9 +137,9 @@ public class AIPathing : MonoBehaviour
 		switch (m_simFidelity)
 		{
 			case EPathingSimFidelity.Realtime:
-				if (NavAgent.SetDestination(m_destination))
+				if (m_navAgent.SetDestination(m_destination))
 				{
-					CurrentPath = NavAgent.path;
+					CurrentPath = m_navAgent.path;
 					m_pathCorners = CurrentPath.corners;
 				}
 				break;
@@ -131,7 +150,7 @@ public class AIPathing : MonoBehaviour
 				{
 					CurrentPath = nearPath;
 					m_pathCorners = CurrentPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, NavAgent.speed, true));
+					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, m_navAgent.speed, true));
 				}
 				break;
 
@@ -141,7 +160,7 @@ public class AIPathing : MonoBehaviour
 				{
 					CurrentPath = distantPath;
 					m_pathCorners = CurrentPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, NavAgent.speed, false));
+					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, m_navAgent.speed, false));
 				}
 				break;
 		}
@@ -225,8 +244,8 @@ public class AIPathing : MonoBehaviour
 			return 0.0f;
 
 		// Wait for high-fidelty path to calculate
-		if (m_simFidelity == EPathingSimFidelity.Realtime && NavAgent.enabled)
-			return NavAgent.pathPending ? float.MaxValue : NavAgent.remainingDistance;
+		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.enabled)
+			return m_navAgent.pathPending ? float.MaxValue : m_navAgent.remainingDistance;
 
 		// Wait for path corners to calculate
 		if (m_destination != Vector3.zero && (m_pathCorners == null || m_pathCorners.Length == 0))
@@ -234,7 +253,7 @@ public class AIPathing : MonoBehaviour
 
 		// Use high-fidelty path distance for real time Actors
 		if (m_simFidelity == EPathingSimFidelity.Realtime)
-			return NavAgent.remainingDistance;
+			return m_navAgent.remainingDistance;
 
 		float distanceRemaining = 0.0f;
 		Vector3 actorPos = transform.position;
@@ -263,9 +282,9 @@ public class AIPathing : MonoBehaviour
 	public bool IsCalculatingPath()
 	{
 		if (m_simFidelity == EPathingSimFidelity.Realtime
-			&& NavAgent.enabled
-			&& NavAgent.hasPath
-			&& NavAgent.pathPending
+			&& m_navAgent.enabled
+			&& m_navAgent.hasPath
+			&& m_navAgent.pathPending
 			)
 		{
 			return true;
@@ -278,4 +297,14 @@ public class AIPathing : MonoBehaviour
 		return false;
 	}
 	#endregion
+
+	public void SetStoppingDistance(float stoppingDistance)
+	{
+		m_navAgent.stoppingDistance = stoppingDistance;
+	}
+
+	public void SetSpeed(float speed)
+	{
+		m_navAgent.speed = speed;
+	}
 }

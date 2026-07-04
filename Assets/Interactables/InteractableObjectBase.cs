@@ -17,7 +17,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
         AssignActor();
 		interactor.InteractorInteracted(this);
 
-		if (interactor.Transform.TryGetComponent(out BehaviourTreeExecutor behaviourTreeExecutor))
+		if (interactor.Transform.TryGetComponent(out BehaviourTreeExecutorBase behaviourTreeExecutor))
 		{
 			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
 			behaviourTreeExecutor.AIContext.SetData<Vector3>("TargetPosition", GetInteractionPositon());

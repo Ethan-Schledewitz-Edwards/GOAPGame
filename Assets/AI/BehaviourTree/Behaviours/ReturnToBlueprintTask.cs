@@ -8,7 +8,7 @@ public class ReturnToBlueprintTask : BTNodeBase
 		Transform blueprint = context.GetData<Transform>("BlueprintTransform");
 		if (blueprint != null)
 		{
-			context.SetData<Transform>("TargetTransform", blueprint);
+			context.SetData<Transform>(AIContextKeys.c_TargetTransform, blueprint);
 			return EBTNodeState.STATE_SUCSESS;
 		}
 		return EBTNodeState.STATE_FAILURE;

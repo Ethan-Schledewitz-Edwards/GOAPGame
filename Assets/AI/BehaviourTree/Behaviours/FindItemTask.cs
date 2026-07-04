@@ -14,7 +14,7 @@ public class FindItemTask : BTNodeBase
 		Transform targetItemTransform = FindItemOfID(context);
 		if (targetItemTransform != null)
 		{
-			context.SetData<Transform>("TargetTransform", targetItemTransform);
+			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
 			context.SetData<Vector3>("TargetPosition", targetItemTransform.position);
 			context.ClearData(c_itemSearchContextKey);
 			return EBTNodeState.STATE_SUCSESS;
@@ -30,7 +30,7 @@ public class FindItemTask : BTNodeBase
 
 	private Transform FindItemOfID(AIContext context)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 executorPosition = executorTransform.position;
 		int idOfItemToFind = context.GetData<int>(c_itemSearchContextKey);
 

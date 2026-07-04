@@ -5,11 +5,11 @@ public class CheckForTargetRangeTask : BTNodeBase
 {
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = context.GetData<Transform>("TargetTransform");
-		float interactionRange = context.GetData<float>("InteractionDist");
-		int interactionLayer = context.GetData<int>("InteractionLayer");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		float interactionRange = context.GetData<float>(AIContextKeys.c_InteractionDistance);
+		int interactionLayer = context.GetData<int>(AIContextKeys.c_InteractionLayer);
 
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
 		if (targetTransform == null)
 		{
 			return EBTNodeState.STATE_FAILURE;
@@ -29,8 +29,12 @@ public class CheckForTargetRangeTask : BTNodeBase
 			}
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.STATE_RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(AIContext context) 
+	{
+		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Debug.Log($"Checking if the target: {targetTransform} is in range.");
+	}
 }

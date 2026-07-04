@@ -5,11 +5,11 @@ public class InteractWithTargetTask : BTNodeBase
 {
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		Vector3 executorPosition = executorTransform.position;
 
-		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		Vector3 targetPosition = context.GetData<Vector3>("TargetPosition");
 
 		// Try to interact with the target

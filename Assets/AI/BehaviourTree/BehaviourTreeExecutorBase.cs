@@ -2,13 +2,11 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BehaviourTreeExecutor : MonoBehaviour
+public class BehaviourTreeExecutorBase : MonoBehaviour
 {
-	private const float c_baseInteractionDistance = 0.8f;
-
-	// System
 	public AIContext AIContext { get; private set; }
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
+
 
 	private void Awake()
 	{
@@ -31,11 +29,8 @@ public class BehaviourTreeExecutor : MonoBehaviour
 		return EBTNodeState.STATE_FAILURE;
 	}
 
-	public void ResetContext()
+	public virtual void ResetContext()
 	{
 		AIContext.ClearAllData();
-		AIContext.SetData<Transform>("ExecutorTransform", transform);
-		AIContext.SetData<float>("InteractionDist", c_baseInteractionDistance);
-		AIContext.SetData<int>("InteractionLayer", 1 << LayerMask.NameToLayer("Interaction"));
 	}
 }

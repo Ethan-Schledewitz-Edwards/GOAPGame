@@ -11,8 +11,8 @@ public class AttackTask : BTNodeBase
 	{
 		string timerKey = GetContextKey("AttackTimer");
 
-		Transform executorTransform = context.GetData<Transform>("ExecutorTransform");
-		Transform targetTransform = context.GetData<Transform>("TargetTransform");
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
 		if (targetTransform == null)
 		{

@@ -104,7 +104,7 @@ public class ActorManager : MonoBehaviour
 				if (actor != null)
 				{
 					float distToPlayerSqrt = (m_playerPosition - actor.transform.position).sqrMagnitude;
-					actor.AIPathing.UpdateActorSimFidelity(distToPlayerSqrt);
+					actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
 
 					actor.TickBehaviour(k_tpsThreshold);
 				}

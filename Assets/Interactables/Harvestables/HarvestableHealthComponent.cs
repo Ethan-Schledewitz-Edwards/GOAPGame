@@ -128,7 +128,7 @@ public class HarvestableHealthComponent : HealthComponent
 						if (interactors.Contains(actor))
 							continue;
 
-						if (actor.Transform.TryGetComponent(out BehaviourTreeExecutor btExecutor))
+						if (actor.Transform.TryGetComponent(out BehaviourTreeExecutorBase btExecutor))
 						{
 							AIContext aiContext = btExecutor.AIContext;
 							Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
