@@ -43,8 +43,8 @@ public class Actor : Entity, IInteractor
 	public event Action<float> InteractionDistanceChanged;
 
 	// System
-	float IInteractor.InteractionDistance => m_interactionDistance;
-	public float m_interactionDistance;
+	public float InteractionDistance => m_interactionDistance;
+	private float m_interactionDistance;
 
 	public int SettlementID { get; private set; } = 0;
 	public int HouseID { get; private set; } = 0;
@@ -70,8 +70,8 @@ public class Actor : Entity, IInteractor
 
 	private void Start()
 	{
-		SetInteractionDistance(c_baseInteractionDistance);
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
+		SetInteractionDistance(c_baseInteractionDistance);
 	}
 
 	private void OnEnable()

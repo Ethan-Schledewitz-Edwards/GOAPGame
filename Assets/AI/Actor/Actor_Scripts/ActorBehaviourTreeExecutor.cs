@@ -9,10 +9,12 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 	// System
 	private float m_interactionDistance;
 
-	private void Awake()
+	protected override void Awake()
 	{
 		m_actor = GetComponent<Actor>();
 		m_actor.InteractionDistanceChanged += SetInteractionDistance;
+
+		base.Awake();
 	}
 
 	private void OnDestroy()
@@ -24,7 +26,8 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 	private void SetInteractionDistance(float interactionDistance)
 	{
 		m_interactionDistance = interactionDistance;
-		AIContext.SetData<float>(AIContextKeys.c_InteractionDistance, m_interactionDistance);
+		AIContext.SetData<float>(AIContextKeys.c_InteractionDistance, interactionDistance);
+		Debug.Log("WHAT THE TOWN");
 	}
 
 	public override void ResetContext()
@@ -32,5 +35,6 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 		base.ResetContext();
 		AIContext.SetData<Transform>(AIContextKeys.c_ExecutorTransform, transform);
 		AIContext.SetData<int>(AIContextKeys.c_InteractionLayer, 1 << LayerMask.NameToLayer("Interaction"));
+		SetInteractionDistance(m_actor.InteractionDistance);
 	}
 }

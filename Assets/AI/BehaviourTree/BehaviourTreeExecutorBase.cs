@@ -7,8 +7,7 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 	public AIContext AIContext { get; private set; }
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
-
-	private void Awake()
+	protected virtual void Awake()
 	{
 		AIContext = new AIContext();
 		ResetContext();

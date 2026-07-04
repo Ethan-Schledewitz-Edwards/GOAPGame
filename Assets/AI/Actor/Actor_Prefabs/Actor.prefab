@@ -508,6 +508,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   <GOAPAgentComp>k__BackingField: {fileID: 3683834564411842312}
+  m_interactionDistance: 0
 --- !u!114 &3333077740091554456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,7 +571,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6662613928143633748}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4473a4d7bc24304cb3114f8785ff7cb, type: 3}
+  m_Script: {fileID: 11500000, guid: f17e6a5a8c34dba469568b8dde42bd9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AI.BehaviourTrees::BehaviourTreeExecutor
 --- !u!114 &3683834564411842312
