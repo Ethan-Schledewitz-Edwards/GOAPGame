@@ -36,4 +36,5 @@ public static class AIContextKeys
 	public const string c_InteractionDistance = "InteractionDistance";
 	public const string c_InteractionLayer = "InteractionLayer";
 	public const string c_TargetTransform = "TargetTransform";
+	public const string c_HeldItemID = "HeldItemID";
 }

@@ -41,7 +41,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			BTNodeBase findUseTask = new FindUseForItemTask();
 			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 10f, "Timeout");
 
-			BTNodeBase depositTask = new DepositItemTask();
+			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 5f, "Timeout");
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
@@ -69,7 +69,11 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			if (inventoryComponent.Inventory == null)
 				return false;
 
-			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, transform);
+			Transform[] itemTransform =
+			{
+				transform
+			};
+			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, itemTransform);
 			if (isItemAdded)
 			{
 				ItemPickedUp?.Invoke(transform);
@@ -97,16 +101,24 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public void HandleItemStored(Transform parent)
 	{
-		if(parent != null)
-			transform.parent = parent;
+		Debug.Log("Item Stored");
 
 		m_isItemStored = true;
 		ConstrainPhysics(true);
-		gameObject.SetActive(true);
+
+		if (parent != null)
+		{
+			transform.parent = parent;
+			transform.position = parent.position;
+		}
+
+		gameObject.SetActive(false);
 	}
 
 	public void HandleItemDropped(Vector3 dropPosition)
 	{
+		Debug.Log("Item Dropped");
+
 		m_isItemStored = false;
 		ConstrainPhysics(false);
 
@@ -114,7 +126,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		if (dropPosition != Vector3.zero)
 			transform.position = dropPosition;
 
-		gameObject.SetActive(false);
+		gameObject.SetActive(true);
 	}
 
 	private void ConstrainPhysics(bool isConstrained)

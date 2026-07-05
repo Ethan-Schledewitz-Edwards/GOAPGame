@@ -229,7 +229,7 @@ public class Actor : Entity, IInteractor
 		// Drop the actors held slot
 		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
 		if (amountToDrop > 0)
-			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, ActorInventory.DropItemTransform.position);
+			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		Pathing.SetStoppingDistance(c_workingDist);

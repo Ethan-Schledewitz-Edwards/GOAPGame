@@ -51,7 +51,7 @@ namespace Interaction.Blueprint
 					new ReturnToBlueprintTask(),
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
-					new DepositItemTask(),
+					new DepositHeldItemTask(),
 				});
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;
@@ -131,7 +131,7 @@ namespace Interaction.Blueprint
 
 			foreach (InventorySlot slot in m_bluerprintInventory.Slots)
 			{
-				slot.RemoveFromStack(slot.AmountInSlot, transform.position);
+				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
 			}
 
 			Destroy(gameObject);

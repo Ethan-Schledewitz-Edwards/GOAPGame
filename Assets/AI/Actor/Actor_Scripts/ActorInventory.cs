@@ -28,7 +28,7 @@ public class ActorInventory : InventoryComponent
 
 	#endregion
 
-	public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
+	public override bool TryAddItem(ItemData addedItemData, int amount, Transform[] itemTransforms = null)
 	{
 		if(addedItemData == null)
 			return false;
@@ -40,9 +40,10 @@ public class ActorInventory : InventoryComponent
 			return false;
 
 		// Try to add the item
-		bool wasItemAdded = base.TryAddItem(addedItemData, amount, itemTransform);
+		bool wasItemAdded = base.TryAddItem(addedItemData, amount, itemTransforms);
 
 		// Move the item to the held position
+		Transform itemTransform = itemTransforms[0];
 		if (itemTransform != null)
 		{
 			if(itemTransform.TryGetComponent(out ItemIO item))
@@ -60,8 +61,8 @@ public class ActorInventory : InventoryComponent
 	private void OnSlotChanged(InventorySlot slot)
 	{
 		if(slot.AmountInSlot > 0)
-			m_behaviourTreeExecutor.AIContext.SetData<int>("HeldItemID", slot.SlotsItem.ItemID);
-		else m_behaviourTreeExecutor.AIContext.ClearData("HeldItemID");
+			m_behaviourTreeExecutor.AIContext.SetData<int>(AIContextKeys.c_HeldItemID, slot.SlotsItem.ItemID);
+		else m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_HeldItemID);
 	}
 }
 

@@ -25,25 +25,22 @@ namespace InventorySystem
 			Inventory = new Inventory(inventorySize);
 		}
 
-		public virtual bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
+		public virtual bool TryAddItem(ItemData addedItemData, int amount, Transform[] itemTransforms = null)
 		{
-			if (addedItemData.MaxStackSize > 1 && Inventory.ContainsItem(addedItemData, out var slots))
+			if (addedItemData.MaxStackSize > 1 && Inventory.ContainsItem(addedItemData.ItemID, out var slots))
 			{
 				foreach (var slot in slots.Where(s => s.IsRoomAvailable(amount, out _)))
 				{
-					slot.AddToStack(amount, transform, itemTransform);
+					slot.AddToStack(amount, transform, itemTransforms);
 					return true;
 				}
 			}
 
 			if (Inventory.TryGetEmptySlot(out InventorySlot emptySlot))
 			{
-				emptySlot.SetSlotsItem(addedItemData, amount, transform, itemTransform);
+				emptySlot.SetSlotsItem(addedItemData, amount, transform, itemTransforms);
 				return true;
 			}
-
-			if (itemTransform != null)
-				Destroy(itemTransform.gameObject);
 
 			return false;
 		}

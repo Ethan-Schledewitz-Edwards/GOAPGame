@@ -9,7 +9,6 @@ namespace Interaction.Blueprint
 	public class BluerprintInventoryComponent : InventoryComponent
 	{
 		private ItemQuantity[] m_requiredItemsToBuild;
-		private List<Transform> m_storedItems = new List<Transform>();
 
 		public event Action BlueprintItemsAchieved;
 
@@ -47,10 +46,10 @@ namespace Interaction.Blueprint
 		{
 			ItemData itemData = quantity.itemType;
 			int amountNeeded = quantity.amount;
-			return Inventory.GetTotalOfItem(itemData) >= amountNeeded;
+			return Inventory.GetTotalOfItem(itemData.ItemID) >= amountNeeded;
 		}
 
-		public override bool TryAddItem(ItemData addedItemData, int amount, Transform itemTransform = null)
+		public override bool TryAddItem(ItemData addedItemData, int amount, Transform[] itemTransforms = null)
 		{
 			if (addedItemData == null)
 			{
@@ -74,18 +73,7 @@ namespace Interaction.Blueprint
 			}
 
 			if (isItemNeeded)
-			{
-				if (itemTransform != null)
-				{
-					m_storedItems.Add(itemTransform);
-					itemTransform.gameObject.SetActive(false);
-					itemTransform.position = transform.position;
-				}
-				else
-					Debug.Log("An Actor attempted to add item object without a transform to a blueprint inventory.");
-
-				return base.TryAddItem(addedItemData, amount);
-			}
+				return base.TryAddItem(addedItemData, amount, itemTransforms);
 
 			return false;
 		}

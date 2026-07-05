@@ -16,7 +16,7 @@ namespace InventorySystem
 		public event Action<InventorySlot> SlotChanged;
 
 		/// <summary>
-		/// Creates an inventory with a number of slots
+		/// Creates an inventory with a number of slots.
 		/// </summary>
 		public Inventory(int size)
 		{
@@ -33,21 +33,25 @@ namespace InventorySystem
 			}
 		}
 
-		public bool ContainsItem(ItemData itemData, out List<InventorySlot> slots)
+		/// <summary>
+		/// Determines whether the inventory contains any slots with the specified item ID and retrieves the corresponding
+		/// slots.
+		/// </summary>
+		public bool ContainsItem(int itemID, out List<InventorySlot> slots)
 		{
-			slots = Slots.Where(i => i.SlotsItem == itemData).ToList();
+			slots = Slots.Where(i => i.SlotsItem != null && i.SlotsItem.ItemID == itemID).ToList();
 			return slots.Count > 0;
 		}
 
 		/// <summary>
-		/// Returns the total count of an item in this Inventory
+		/// Returns the total count of an item type in this Inventory
 		/// </summary>
-		public int GetTotalOfItem(ItemData itemData)
+		public int GetTotalOfItem(int itemID)
 		{
 			int count = 0;
 			foreach (InventorySlot i in Slots)
 			{
-				if (i.SlotsItem != itemData)
+				if (i.SlotsItem.ItemID != itemID)
 					continue;
 				count += i.AmountInSlot;
 			}
@@ -55,9 +59,44 @@ namespace InventorySystem
 			return count;
 		}
 
+		/// <summary>
+		/// Attempts to locate an inventory slot that contains the specified item and has sufficient available room.
+		/// </summary>
+		public bool TryFindRoomForItem(ItemData item, int roomNeeded, out InventorySlot targetSlot, out int roomAvailable)
+		{
+			targetSlot = null;
+			roomAvailable = 0;
+
+			// Try to find a partially filled stack of the same item
+			if (ContainsItem(item.ItemID, out var validSlots))
+			{
+				foreach (InventorySlot slot in validSlots)
+				{
+					roomAvailable = slot.SlotsItem.MaxStackSize - slot.AmountInSlot;
+					if (roomNeeded <= roomAvailable)
+					{
+						targetSlot = slot;
+						return true;
+					}
+				}
+			}
+
+			// If no partial stacks have room, try to find an empty slot
+			if (TryGetEmptySlot(out targetSlot))
+			{
+				roomAvailable = item.MaxStackSize;
+				return roomNeeded <= roomAvailable;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Returns the first empty slot in the inventory.
+		/// </summary>
 		public bool TryGetEmptySlot(out InventorySlot emptySlot)
 		{
-			emptySlot = Slots.FirstOrDefault(i => !i.SlotsItem);
+			emptySlot = Slots.FirstOrDefault(i => i.SlotsItem == null);
 			return emptySlot == null ? false : true;
 		}
 	}

@@ -27,12 +27,14 @@ public class EatStrategy : IActionStrategy
 		m_timer = 0;
 		IsStrategyComplete = false;
 
+		// TO DO THIS CLASS IS NOT WORKING WITH THE INVENTORY REWORK LOL SORRY FUTURE BRO
+
 		// Transfer item to actor
 		ItemData foodItem = null;
 		if (m_storage.InventoryComponent.Inventory.Slots[0].SlotsItem != null)
 		{
 			foodItem = m_storage.InventoryComponent.Inventory.Slots[0].SlotsItem;
-			m_storage.InventoryComponent.Inventory.Slots[0].RemoveFromStack(1);
+			m_storage.InventoryComponent.Inventory.Slots[0].RemoveFromStack(1, out var _, false, default);
 		}
 
 		if (foodItem != null)
@@ -60,7 +62,7 @@ public class EatStrategy : IActionStrategy
 
 	private void CompleteEating()
 	{
-		m_actor.ActorInventory.Inventory.Slots[0].RemoveFromStack(1);
+		m_actor.ActorInventory.Inventory.Slots[0].RemoveFromStack(1, out var _, false, default);
 
 		m_actor.ActorHealth.AddHunger(30);
 

@@ -27,7 +27,6 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 	{
 		m_interactionDistance = interactionDistance;
 		AIContext.SetData<float>(AIContextKeys.c_InteractionDistance, interactionDistance);
-		Debug.Log("WHAT THE TOWN");
 	}
 
 	public override void ResetContext()
