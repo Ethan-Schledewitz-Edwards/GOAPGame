@@ -48,11 +48,14 @@ namespace InventorySystem
 		/// </summary>
 		public int GetTotalOfItem(int itemID)
 		{
+
 			int count = 0;
 			foreach (InventorySlot i in Slots)
 			{
-				if (i.SlotsItem.ItemID != itemID)
+				// Skip empty slots or items of a different type
+				if (i.SlotsItem == null || i.SlotsItem.ItemID != itemID)
 					continue;
+
 				count += i.AmountInSlot;
 			}
 
