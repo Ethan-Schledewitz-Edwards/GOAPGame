@@ -149,16 +149,14 @@ namespace InventorySystem
 				if (PhysicalItemObjects.Count > 0)
 				{
 					itemTransform = PhysicalItemObjects.Pop();
-					if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+					if (itemTransform.TryGetComponent(out IItemObject itemObject))
 					{
-						itemRB.constraints = RigidbodyConstraints.None;
-						itemTransform.position = WorldDropPos;
-						itemTransform.parent = null;
-						itemTransform.gameObject.SetActive(true);
+						itemObject.HandleItemDropped(WorldDropPos);
 					}
 				}
 				else
 				{
+					// Create a new prefab if the physical item stack is empty but there is more items in the slot
 					GameObject spawnedItem = GameObject.Instantiate(itemData.ItemPrefab, WorldDropPos, Quaternion.identity);
 					itemTransform = spawnedItem.transform;
 

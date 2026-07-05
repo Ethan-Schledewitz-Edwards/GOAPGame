@@ -109,10 +109,12 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	{
 		m_isItemStored = false;
 		ConstrainPhysics(false);
-		gameObject.SetActive(false);
 
+		transform.parent = null;
 		if (dropPosition != Vector3.zero)
 			transform.position = dropPosition;
+
+		gameObject.SetActive(false);
 	}
 
 	private void ConstrainPhysics(bool isConstrained)
