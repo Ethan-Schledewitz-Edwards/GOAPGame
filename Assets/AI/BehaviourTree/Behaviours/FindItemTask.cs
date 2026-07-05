@@ -50,7 +50,8 @@ public class FindItemTask : BTNodeBase
 			TerrainChunk terrainChunk = WorldBuilder.GetChunkData(chunkXZ);
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
-				if (entity.TryGetComponent(out IItemObject itemObject) && 
+				if (entity.TryGetComponent(out IItemObject itemObject) &&
+					!itemObject.IsItemStored && 
 					itemObject.ItemData.ItemID == itemID)
 				{
 					float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;

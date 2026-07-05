@@ -26,6 +26,8 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	public event Action<Transform> ItemPickedUp;
 
 	// System
+	public bool IsItemStored => m_isItemStored;
+	private bool m_isItemStored;
 	public override bool UseFormationRadius { get => false; }
 
 	public void Awake()
@@ -93,7 +95,27 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			Destroy(gameObject);
 	}
 
-	public void ConstrainPhysics(bool isConstrained)
+	public void HandleItemStored(Transform parent)
+	{
+		if(parent != null)
+			transform.parent = parent;
+
+		m_isItemStored = true;
+		ConstrainPhysics(true);
+		gameObject.SetActive(true);
+	}
+
+	public void HandleItemDropped(Vector3 dropPosition)
+	{
+		m_isItemStored = false;
+		ConstrainPhysics(false);
+		gameObject.SetActive(false);
+
+		if (dropPosition != Vector3.zero)
+			transform.position = dropPosition;
+	}
+
+	private void ConstrainPhysics(bool isConstrained)
 	{
 		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}

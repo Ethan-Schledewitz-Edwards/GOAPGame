@@ -31,14 +31,14 @@ namespace InventorySystem
 			{
 				foreach (var slot in slots.Where(s => s.IsRoomAvailable(amount, out _)))
 				{
-					slot.AddToStack(amount);
+					slot.AddToStack(amount, transform, itemTransform);
 					return true;
 				}
 			}
 
 			if (Inventory.TryGetEmptySlot(out InventorySlot emptySlot))
 			{
-				emptySlot.SetSlotsItem(addedItemData, amount, itemTransform);
+				emptySlot.SetSlotsItem(addedItemData, amount, transform, itemTransform);
 				return true;
 			}
 

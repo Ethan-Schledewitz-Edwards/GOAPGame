@@ -47,7 +47,6 @@ public class ActorInventory : InventoryComponent
 		{
 			if(itemTransform.TryGetComponent(out ItemIO item))
 			{
-				item.ConstrainPhysics(true);
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
 				item.gameObject.SetActive(true);

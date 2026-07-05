@@ -59,33 +59,32 @@ namespace InventorySystem
 
 		}
 
-		private void TryAddPhysicalItem(Transform itemTransform)
+		private void TryAddPhysicalItem(Transform parent, Transform itemTransform)
 		{
 			if (itemTransform == null || PhysicalItemObjects.Contains(itemTransform))
 				return;
 
-			if (itemTransform.TryGetComponent(out Rigidbody itemRB))
+			if (itemTransform.TryGetComponent(out IItemObject itemObject))
 			{
-				itemTransform.gameObject.SetActive(false);
-				itemRB.constraints = RigidbodyConstraints.FreezeAll;
+				itemObject.HandleItemStored(parent);
 			}
 
 			PhysicalItemObjects.Push(itemTransform);
 		}
 
-		public void SetSlotsItem(ItemData itemData, int Amount, Transform physicalItemObject = null)
+		public void SetSlotsItem(ItemData itemData, int Amount, Transform parent = null, Transform physicalItemObject = null)
 		{
 			SlotsItem = itemData;
 			AmountInSlot = Amount;
-			TryAddPhysicalItem(physicalItemObject);
+			TryAddPhysicalItem(parent, physicalItemObject);
 
 			SlotChanged();
 		}
 
-		public void AddToStack(int amount, Transform physicalItemObject = null)
+		public void AddToStack(int amount, Transform parent = null, Transform physicalItemObject = null)
 		{
 			AmountInSlot += amount;
-			TryAddPhysicalItem(physicalItemObject);
+			TryAddPhysicalItem(parent, physicalItemObject);
 
 			SlotChanged();
 		}
