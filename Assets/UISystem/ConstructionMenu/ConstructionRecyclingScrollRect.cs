@@ -2,18 +2,18 @@ using UnityEngine;
 using UISystems.RecyclingScrollRect;
 using System.Linq;
 
-public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<BlueprintData>
+public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<StructureBlueprintData>
 {
 	[Header("Data")]
-	[field: SerializeField] private BlueprintIndex m_blueprintIndex;
+	[field: SerializeField] private BlueprintDataIndex m_blueprintIndex;
 
-	private BlueprintData[] m_cachedData;
-	protected override BlueprintData[] m_data => m_cachedData;
+	private StructureBlueprintData[] m_cachedData;
+	protected override StructureBlueprintData[] m_data => m_cachedData;
 
 	protected override void Awake()
 	{
-		if (m_blueprintIndex != null && m_blueprintIndex.Blueprints != null)
-			m_cachedData = m_blueprintIndex.Blueprints.ToArray();
+		if (m_blueprintIndex != null && m_blueprintIndex.StructureBlueprintData != null)
+			m_cachedData = m_blueprintIndex.StructureBlueprintData.ToArray();
 
 		// Initialize pool after the data is cached
 		base.Awake();

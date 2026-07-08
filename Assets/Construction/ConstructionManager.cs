@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Interaction.Blueprint;
 
 public class ConstructionManager : MonoBehaviour
 {
 	public static ConstructionManager Instance;
 
-	[SerializeField] private BlueprintIndex m_blueprintIndex;
+	[SerializeField] private BlueprintDataIndex m_blueprintIndex;
 	[SerializeField] private Material m_blueprintMaterial;
 
-	public event Action<BlueprintData> NewDevelopmentAttempted;
+	[SerializeField] private GameObject m_blueprintPrefab;
+
+	// Events
+	public event Action<StructureBlueprintData> NewDevelopmentAttempted;
 
 	private void Awake()
 	{
@@ -19,110 +21,56 @@ public class ConstructionManager : MonoBehaviour
 		else Destroy(this);
 	}
 
-	public void HandleBlueprintButton(BlueprintData blueprintData)
+	public void HandleBlueprintButton(StructureBlueprintData blueprintData)
 	{
 		NewDevelopmentAttempted?.Invoke(blueprintData);
 	}
 
-	public void CreateStructureBlueprint(int settlementID, BlueprintData blueprintData, Vector3 position, Quaternion rotation)
+	public void CreateStructureBlueprint(int settlementID, int structureBlueprintID, Vector3 position, Quaternion rotation)
 	{
-		if (blueprintData == null || blueprintData.BlueprintFeatureData?.Prefab == null)
+		if (m_blueprintPrefab == null)
 		{
 			Debug.LogError("StructureData or Prefab is missing!");
 			return;
 		}
 
-		GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
-		if (!prefab.TryGetComponent(out InteractableObjectBase interactableObject))
-		{
-			Debug.LogError($"Prefab {prefab.name} is missing InteractableObjectBase!", prefab);
-			return;
-		}
+		StructureBlueprintData blueprintData = m_blueprintIndex.Assets[structureBlueprintID];
 
-		// Create the blueprint object
-		GameObject blueprintObject = new GameObject(blueprintData.DisplayName);
-		BlueprintIO blueprintIO = blueprintObject.AddComponent<BlueprintIO>();
-
-		// Setup the local interaction offset of the structure being blueprinted
-		Transform interactionTransform = interactableObject.GetInteractionOffsetTransform();
-		Vector3 localPos = interactionTransform != null ? interactionTransform.localPosition : Vector3.zero;
-
-		GameObject offsetChild = new GameObject("InteractionOffset");
-		offsetChild.transform.SetParent(blueprintObject.transform);
-		offsetChild.transform.localPosition = localPos;
-		blueprintIO.SetInteractionOffsetTransform(offsetChild.transform, localPos);
-
-		Mesh mesh = blueprintData.BlueprintMesh;
-		if (mesh != null)
-		{
-			MeshFilter meshFilter = blueprintObject.AddComponent<MeshFilter>();
-			meshFilter.mesh = mesh;
-
-			MeshRenderer meshRenderer = blueprintObject.AddComponent<MeshRenderer>();
-			meshRenderer.material = m_blueprintMaterial;
-
-			// Move the mesh out of the ground based on bounds
-			Bounds bounds = mesh.bounds;
-			blueprintObject.transform.position = position + new Vector3(0, bounds.extents.y, 0);
-
-			BoxCollider bpBoxCol = blueprintObject.AddComponent<BoxCollider>();
-			bpBoxCol.isTrigger = true;
-			bpBoxCol.size = bounds.size;
-		}
-		else
-			blueprintObject.transform.position = position;
-
-		blueprintObject.transform.rotation = rotation;
+		GameObject prefab = Instantiate(m_blueprintPrefab);
+		IBlueprintObject blueprintObject = prefab.GetComponent<IBlueprintObject>();
 
 		// Add to settlement
-		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(blueprintIO);
+		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(prefab, out int settlementBlueprintID);
 
 		// Init the blueprint
-		blueprintIO.InitializeBlueprint(blueprintData.BlueprintID, 
-			settlementID, 
-			blueprintData.RequiredItems, 
-			position, 
-			rotation);
+		blueprintObject.HandleBlueprintStarted
+			(
+				settlementID, 
+				settlementBlueprintID, 
+				blueprintData,
+				position,
+				rotation
+			);
 
-		blueprintIO.BlueprintCompleted += OnBlueprintCompleted;
+		blueprintObject.BlueprintCompleted += OnBlueprintCompleted;
 	}
 
-	public void OnBlueprintCompleted(BlueprintIO blueprintIO)
+	public void OnBlueprintCompleted(IBlueprintObject blueprintIO)
 	{
 		if (blueprintIO == null)
 			return;
 
-		Vector3 blueprintIOPosition = blueprintIO.Position;
-		Quaternion blueprintIORotation = blueprintIO.Rotation;
+		GameObject blueprintObject = SettlementManager.s_WorldSettlements[blueprintIO.SettlementID].Blueprints[blueprintIO.SettlementBlueprintID];
+
+		Vector3 blueprintIOPosition = blueprintObject.transform.position;
+		Quaternion blueprintIORotation = blueprintObject.transform.rotation;
 		blueprintIO.BlueprintCompleted -= OnBlueprintCompleted;
 
 		int settlementID = blueprintIO.SettlementID;
-		SettlementManager.s_WorldSettlements[settlementID].RemoveBlueprint(blueprintIO);
-		Destroy(blueprintIO.gameObject);
+		SettlementManager.s_WorldSettlements[settlementID].RemoveBlueprint(blueprintObject);
+		Destroy(blueprintObject);
 
-		GameObject prefab = m_blueprintIndex.Blueprints[blueprintIO.BlueprintID].BlueprintFeatureData.Prefab;
+		GameObject prefab = m_blueprintIndex.StructureBlueprintData[blueprintIO.StructureBlueprintID].BlueprintFeatureData.Prefab;
 		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
-	}
-
-	public void StartBlueprintCancelation(BlueprintCancelation blueprintCancelation)
-	{
-		if(blueprintCancelation == null)
-		{
-			Debug.LogWarning("Tried to cancel a null blueprint referece");
-			return;
-		}
-
-		blueprintCancelation.BeginCancelation();
-	}
-
-	public void StopBlueprintCancelation(BlueprintCancelation blueprintCancelation)
-	{
-		if (blueprintCancelation == null)
-		{
-			Debug.LogWarning("Tried to stop the cancelation of a null blueprint referece");
-			return;
-		}
-
-		blueprintCancelation.StopCancelation();
 	}
 }

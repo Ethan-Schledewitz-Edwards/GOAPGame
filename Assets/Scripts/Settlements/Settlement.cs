@@ -13,7 +13,7 @@ public class Settlement
 	public bool IsSettlementBuildable { get; private set; }
 
 	public List<InteractableObjectBase> ActorHouses { get; private set; } = new List<InteractableObjectBase>();
-	public List<InteractableObjectBase> Blueprints { get; private set; } = new List<InteractableObjectBase>();
+	public List<GameObject> Blueprints { get; private set; } = new List<GameObject>();
 	public List<InteractableObjectBase> ItemStorageBuildings { get; private set; } = new List<InteractableObjectBase>();
 
 	public Settlement(int settlementID, bool isSettlementFriendly, bool isSettlementBuildable)
@@ -44,16 +44,18 @@ public class Settlement
 		}
 	}
 
-	public void AddBlueprint(InteractableObjectBase blueprint)
+	public void AddBlueprint(GameObject blueprint, out int settlementBlueprintID)
 	{
 		if (blueprint != null && !Blueprints.Contains(blueprint))
 		{
 			Blueprints.Add(blueprint);
 			OnSettlementBoundsUpdated?.Invoke(GetSettlementCenter());
 		}
+
+		settlementBlueprintID = 0; // GET THIS SOMEHOW
 	}
 
-	public void RemoveBlueprint(InteractableObjectBase blueprint)
+	public void RemoveBlueprint(GameObject blueprint)
 	{
 		if (blueprint != null && Blueprints.Contains(blueprint))
 		{
@@ -99,9 +101,9 @@ public class Settlement
 		return closest;
 	}
 
-	public InteractableObjectBase FindBlueprint(Vector3 position)
+	public GameObject FindBlueprint(Vector3 position)
 	{
-		InteractableObjectBase closest = null;
+		GameObject closest = null;
 		float minDistance = float.MaxValue;
 		foreach (var blueprint in Blueprints)
 		{
@@ -137,10 +139,10 @@ public class Settlement
 
 	public Vector3 GetSettlementCenter()
 	{
-		List<InteractableObjectBase> allStructures = new List<InteractableObjectBase>();
-		allStructures.AddRange(ActorHouses);
-		allStructures.AddRange(Blueprints);
-		allStructures.AddRange(ItemStorageBuildings);
+		List<Transform> allStructures = new List<Transform>();
+		//allStructures.AddRange(ActorHouses);
+		//allStructures.AddRange(Blueprints);
+		//allStructures.AddRange(ItemStorageBuildings);
 
 		if (allStructures.Count == 0)
 			return Vector3.zero;

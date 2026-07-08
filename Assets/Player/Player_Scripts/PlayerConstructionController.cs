@@ -13,7 +13,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	private bool m_isCancleHeld = false;
 
 	private bool m_isPlacementValid;
-	private BlueprintData m_blueprintData;
+	private StructureBlueprintData m_blueprintData;
 	private Quaternion m_placementRotation;
 
 	private LayerMask m_blockingLayer;
@@ -43,7 +43,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 			ConstructionManager.Instance.NewDevelopmentAttempted -= SetBlueprint;
 	}
 
-	private void SetBlueprint(BlueprintData structureData)
+	private void SetBlueprint(StructureBlueprintData structureData)
 	{
 		m_blueprintData = structureData;
 		m_placementRotation = Quaternion.identity;
@@ -87,10 +87,13 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		if (nearestSettlementID == -1)
 			SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
-		ConstructionManager.Instance.CreateStructureBlueprint(nearestSettlementID, 
-			m_blueprintData, 
+		ConstructionManager.Instance.CreateStructureBlueprint
+		(
+			nearestSettlementID, 
+			m_blueprintData.StructureBlueprintID, 
 			position,
-			rotation);
+			rotation
+		);
 
 		ClearBlueprintData();
 	}
@@ -141,7 +144,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 						!blueprintCancelation.IsBeingCanceled)
 					{
-						ConstructionManager.Instance.StartBlueprintCancelation(blueprintCancelation);
+						blueprintCancelation.BeginCancelation();
 					}
 				}
 			}
@@ -156,7 +159,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 						blueprintCancelation.IsBeingCanceled)
 					{
-						ConstructionManager.Instance.StopBlueprintCancelation(blueprintCancelation);
+						blueprintCancelation.StopCancelation();
 					}
 				}
 			}
@@ -174,7 +177,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 						i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 						blueprintCancelation.IsBeingCanceled)
 					{
-						ConstructionManager.Instance.StopBlueprintCancelation(blueprintCancelation);
+						blueprintCancelation.StopCancelation();
 					}
 				}
 				collidersBeingCanceled.Clear();

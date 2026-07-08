@@ -37,4 +37,5 @@ public static class AIContextKeys
 	public const string c_InteractionLayer = "InteractionLayer";
 	public const string c_TargetTransform = "TargetTransform";
 	public const string c_HeldItemID = "HeldItemID";
+	public const string c_BlueprintID = "BlueprintID";
 }

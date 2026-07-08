@@ -1,32 +1,41 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UIElements;
 
 namespace Interaction.Blueprint
 {
 	[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent), (typeof(BlueprintCancelation)))]
-	public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>
+	public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>, IBlueprintObject
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
 		private const string c_interactionLayer = "Interaction";
 
-		public event Action<BlueprintIO> BlueprintCompleted;
-		public event Action<BlueprintIO> BlueprintCanceled;
+		[SerializeField] private Material m_blueprintMaterial;
 
-		public int BlueprintID { get; private set; }
-		public int SettlementID { get; private set; }
-		public Vector3 Position { get; private set; }
-		public Quaternion Rotation { get; private set; }
+		// Components
+		[SerializeField] private MeshFilter m_meshFilter;
+		[SerializeField] private MeshRenderer m_meshRenderer;
 
 		private BluerprintInventoryComponent m_bluerprintInventory;
 		private BlueprintCancelation m_cancelBlueprint;
 		private ItemQuantity[] m_requiredItems;
+		private BoxCollider m_boxCollider;
+
+		// Events
+		public event Action<IBlueprintObject> BlueprintStarted;
+		public event Action<IBlueprintObject> BlueprintCompleted;
+		public event Action<IBlueprintObject> BlueprintCanceled;
+
+		// System
+		public int SettlementID { get; private set; }
+		public int SettlementBlueprintID { get; private set; }
+		public int StructureBlueprintID { get; private set; }
 
 		[SerializeField] private float m_maxCapacity = 4f;
 		[SerializeField] private float m_actorsAssigned = 0f;
@@ -60,16 +69,16 @@ namespace Interaction.Blueprint
 			gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 
 			m_bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
-			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
+			m_bluerprintInventory.BlueprintItemsAchieved += HandleBlueprintCompleted;
 
-			m_bluerprintInventory.BlueprintItemsAchieved += CompleteBlueprint;
-			m_cancelBlueprint.CanceledBlueprint += CancleBlueprint;
+			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
+			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 
 		}
 
 		private void OnDestroy()
 		{
-			m_bluerprintInventory.BlueprintItemsAchieved -= CompleteBlueprint;
+			m_bluerprintInventory.BlueprintItemsAchieved -= HandleBlueprintCompleted;
 		}
 
 		public override void UpdateSpeed(int extra)
@@ -92,7 +101,11 @@ namespace Interaction.Blueprint
 			base.TryInteract(interactor);
 
 			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
+
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
+
+			//executor?.AIContext.SetData<int>(AIContextKeys.c_BlueprintID, Sett);
+
 			if (executor != null)
 			{
 				foreach (ItemQuantity item in m_requiredItems)
@@ -108,25 +121,32 @@ namespace Interaction.Blueprint
 			return false;
 		}
 
-		public void InitializeBlueprint(int blueprintID, int settlementID, ItemQuantity[] requiredItems, Vector3 position, Quaternion rotation)
+		public void HandleBlueprintStarted
+			(
+				int settlementID,
+				int settlementBlueprintID,
+				StructureBlueprintData structureBlueprintData,
+				Vector3 position,
+				Quaternion rotation
+			)
 		{
-			BlueprintID = blueprintID;
 			SettlementID = settlementID;
-			Position = position;
-			Rotation = rotation;
-			m_bluerprintInventory.InitializeBlueprintInventory(requiredItems);
-			m_requiredItems = requiredItems;
+			SettlementBlueprintID = settlementBlueprintID;
+			StructureBlueprintID = structureBlueprintData.StructureBlueprintID;
+
+			m_bluerprintInventory.InitializeBlueprintInventory(structureBlueprintData.RequiredItems);
+			m_requiredItems = structureBlueprintData.RequiredItems;
 		}
 
-		private void CompleteBlueprint()
+		public void HandleBlueprintCompleted()
 		{
-			Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was completed in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of Blueprint ID:{SettlementBlueprintID} was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}
 
-		public void CancleBlueprint()
+		public void HandleBlueprintCanceled()
 		{
-			Debug.Log($"A blueprint of Blueprint ID:{BlueprintID} was canceld in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{SettlementBlueprintID} was canceld in settlement:{SettlementID}.");
 			BlueprintCanceled?.Invoke(this);
 
 			foreach (InventorySlot slot in m_bluerprintInventory.Slots)
@@ -135,6 +155,20 @@ namespace Interaction.Blueprint
 			}
 
 			Destroy(gameObject);
+		}
+
+		private void SetBlueprintMesh(Mesh blueprintMesh)
+		{
+			m_meshFilter.mesh = blueprintMesh;
+			m_meshRenderer.material = m_blueprintMaterial;
+
+			Bounds bounds = blueprintMesh.bounds;
+			//m_boxCollider.size = bounds;
+		}
+
+		private void SetInteractionOffset(Vector3 localPosition)
+		{
+			throw new NotImplementedException();
 		}
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

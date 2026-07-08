@@ -2,7 +2,7 @@ using TMPro;
 using UISystems.RecyclingScrollRect;
 using UnityEngine;
 
-public class BlueprintOptionButton : MenuButton, IRecyclableCell<BlueprintData>
+public class BlueprintOptionButton : MenuButton, IRecyclableCell<StructureBlueprintData>
 {
 	[SerializeField] private GameObject m_prefab;
 	public GameObject Prefab => m_prefab;
@@ -15,9 +15,9 @@ public class BlueprintOptionButton : MenuButton, IRecyclableCell<BlueprintData>
 
 	[SerializeField] private TextMeshProUGUI m_blueprintTitleText;
 	[SerializeField] private TextMeshProUGUI m_cellIDText;
-	private BlueprintData m_blueprintData;
+	private StructureBlueprintData m_blueprintData;
 
-	public void ConfigureCell(int index, BlueprintData[] data)
+	public void ConfigureCell(int index, StructureBlueprintData[] data)
 	{
 		if (m_blueprintTitleText)
 			m_blueprintTitleText.text = data[index].DisplayName;

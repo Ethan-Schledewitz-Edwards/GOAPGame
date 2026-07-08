@@ -11,11 +11,12 @@ public class FindUseForItemTask : BTNodeBase
 		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
 		if (closestSettlement != null)
 		{
-			InteractableObjectBase closestBlueprint = closestSettlement.FindBlueprint(executorPos);
-			if (closestBlueprint != null)
+			GameObject closestBlueprint = closestSettlement.FindBlueprint(executorPos);
+			if (closestBlueprint != null &&
+				closestBlueprint.TryGetComponent(out InteractableObjectBase interactable))
 			{
 				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestBlueprint.transform);
-				context.SetData<Vector3>("TargetPosition", closestBlueprint.GetInteractionPositon());
+				context.SetData<Vector3>("TargetPosition", interactable.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;
 			}
