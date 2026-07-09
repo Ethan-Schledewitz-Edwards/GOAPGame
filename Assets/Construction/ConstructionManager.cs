@@ -26,7 +26,7 @@ public class ConstructionManager : MonoBehaviour
 		NewDevelopmentAttempted?.Invoke(blueprintData);
 	}
 
-	public void CreateStructureBlueprint(int settlementID, int structureBlueprintID, Vector3 position, Quaternion rotation)
+	public void CreateStructureBlueprint(int settlementID, int structureBlueprintID, Vector3 worldPosition, Quaternion rotation)
 	{
 		if (m_blueprintPrefab == null)
 		{
@@ -42,13 +42,17 @@ public class ConstructionManager : MonoBehaviour
 		// Add to settlement
 		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(prefab, out int settlementBlueprintID);
 
+		// Offset the blueprint out of the ground
+		Bounds bounds = blueprintData.BlueprintMesh.bounds;
+		Vector3 offsetPosition = worldPosition + new Vector3(0, bounds.extents.y, 0);
+
 		// Init the blueprint
 		blueprintObject.HandleBlueprintStarted
 			(
 				settlementID, 
 				settlementBlueprintID, 
 				blueprintData,
-				position,
+				offsetPosition,
 				rotation
 			);
 

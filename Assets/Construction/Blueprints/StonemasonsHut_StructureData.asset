@@ -9,16 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9852f30a1a92a4347b7b480b61aa7eec, type: 3}
+  m_Script: {fileID: 11500000, guid: 786778a487d56414ab4ec85e47575082, type: 3}
   m_Name: StonemasonsHut_StructureData
-  m_EditorClassIdentifier: Construction::StructureData
-  <BlueprintID>k__BackingField: 1
-  <DisplayName>k__BackingField: Stonemasons Hut
+  m_EditorClassIdentifier: Construction::StructureBlueprintData
+  <StructureBlueprintID>k__BackingField: 1
+  <DisplayName>k__BackingField: Stonemasons
   <Description>k__BackingField: 
-  <BlueprintMesh>k__BackingField: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 27183139e6ad8e94b9f2aa79db3294a5, type: 2}
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-    amount: 30
+    amount: 5
   - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-    amount: 40
+    amount: 5
+  <BlueprintFeatureData>k__BackingField: {fileID: 0}
+  <BlueprintMesh>k__BackingField: {fileID: -2989305052099074096, guid: fbb14d6c9cb5e88478cfe966804a837d, type: 3}
+  <PlacementClearenceRadius>k__BackingField: 2

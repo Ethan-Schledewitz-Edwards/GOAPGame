@@ -136,6 +136,12 @@ namespace Interaction.Blueprint
 
 			m_bluerprintInventory.InitializeBlueprintInventory(structureBlueprintData.RequiredItems);
 			m_requiredItems = structureBlueprintData.RequiredItems;
+
+			SetBlueprintMesh(structureBlueprintData.BlueprintMesh);
+			SetInteractionOffsetTransform(m_interactOffset, structureBlueprintData.InteractionLocalOffset);
+
+			transform.position = position;
+			transform.rotation = rotation;
 		}
 
 		public void HandleBlueprintCompleted()
@@ -162,13 +168,6 @@ namespace Interaction.Blueprint
 			m_meshFilter.mesh = blueprintMesh;
 			m_meshRenderer.material = m_blueprintMaterial;
 
-			Bounds bounds = blueprintMesh.bounds;
-			//m_boxCollider.size = bounds;
-		}
-
-		private void SetInteractionOffset(Vector3 localPosition)
-		{
-			throw new NotImplementedException();
 		}
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

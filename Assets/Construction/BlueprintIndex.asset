@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Construction::BlueprintIndex
   <Assets>k__BackingField:
   - {fileID: 11400000, guid: b4f8d4cffa91c5849886a1850b15d65a, type: 2}
-  - {fileID: 11400000, guid: 538c29dbee99fdb46bfb294e59fd420a, type: 2}
+  - {fileID: 11400000, guid: 9facc05493df1cc4a85b86bba56b8caf, type: 2}
   - {fileID: 11400000, guid: 9c8741652eeb23e4eb13ff5cbd7b6206, type: 2}
   - {fileID: 11400000, guid: 99299f47b23012e4f961314729285c82, type: 2}
   - {fileID: 11400000, guid: 85d50c4e7ab436347b11aee6ba0b2233, type: 2}

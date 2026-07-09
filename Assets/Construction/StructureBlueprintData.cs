@@ -2,7 +2,7 @@ using UnityEngine;
 using GenericIndex;
 using InventorySystem.Items;
 
-[CreateAssetMenu(fileName = "StructureBlueprint", menuName = "Structures/StructureBlueprint")]
+[CreateAssetMenu(fileName = "StructureBlueprint", menuName = "Blueprints/StructureBlueprint")]
 public class StructureBlueprintData : ScriptableObject, IIndexedAsset
 {
 	[field: SerializeField] public int StructureBlueprintID { get; private set; }
@@ -12,6 +12,7 @@ public class StructureBlueprintData : ScriptableObject, IIndexedAsset
 	[field: SerializeField] public FeatureTileData BlueprintFeatureData { get; private set; }
 	[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
 	[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 2.0f;
+	[field: SerializeField] public Vector3 InteractionLocalOffset { get; private set; }
 
 #if UNITY_EDITOR
 	public void SetID(int newID)

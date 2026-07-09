@@ -772,6 +772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Construction::ConstructionManager
   m_blueprintIndex: {fileID: 11400000, guid: 3e7777cff23412549867c6c4ba01fb8b, type: 2}
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
+  m_blueprintPrefab: {fileID: 262572155233583462, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
 --- !u!1 &1347652341
 GameObject:
   m_ObjectHideFlags: 0
