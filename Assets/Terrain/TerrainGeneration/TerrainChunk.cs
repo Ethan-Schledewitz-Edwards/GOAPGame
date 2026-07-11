@@ -62,6 +62,9 @@ namespace Terrain.Generation
 
 		public void RegisterEntity(GameObject entity)
 		{
+			if (entity == null)
+				return;
+
 			ResidentEntities.Add(entity);
 
 			foreach (var item in ResidentEntities)
@@ -72,6 +75,9 @@ namespace Terrain.Generation
 
 		public void UnregisterEntity(GameObject entity)
 		{
+			if(entity == null) 
+				return;
+
 			ResidentEntities.Remove(entity);
 		}
 	}

@@ -5,7 +5,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 {
 	[Header("Variables")]
 	[SerializeField] private int m_actorsNeeded = 1;
-	[SerializeField] private Transform m_interactOffset;
+	[SerializeField] protected Transform m_interactOffset;
 	public abstract bool UseFormationRadius { get; }
 	[SerializeField] private float m_formationRadius = 2;
 
@@ -62,8 +62,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
 
-	#region Utility
-
 	public Transform GetInteractionOffsetTransform()
 	{
 		return m_interactOffset ? m_interactOffset : transform;
@@ -94,5 +92,4 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 		return interactOffset;
     }
-    #endregion
 }

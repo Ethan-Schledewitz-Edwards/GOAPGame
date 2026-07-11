@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using Settlements;
 using UnityEngine;
 
 public class FindUseForItemTask : BTNodeBase
@@ -11,7 +12,7 @@ public class FindUseForItemTask : BTNodeBase
 		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
 		if (closestSettlement != null)
 		{
-			GameObject closestBlueprint = closestSettlement.FindBlueprint(executorPos);
+			GameObject closestBlueprint = closestSettlement.FindNearestStructureOfType(executorPos, "Blueprint").StructureObject;
 			if (closestBlueprint != null &&
 				closestBlueprint.TryGetComponent(out InteractableObjectBase interactable))
 			{
@@ -21,11 +22,12 @@ public class FindUseForItemTask : BTNodeBase
 				return EBTNodeState.STATE_SUCSESS;
 			}
 
-			InteractableObjectBase closestStorage = closestSettlement.FindItemStorage(executorPos);
-			if (closestStorage != null)
+			GameObject closestStorage = closestSettlement.FindNearestStructureOfType(executorPos, "Storage").StructureObject;
+			if (closestStorage != null &&
+				closestStorage.TryGetComponent(out InteractableObjectBase interactableObject))
 			{
 				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStorage.transform);
-				context.SetData<Vector3>("TargetPosition", closestStorage.GetInteractionPositon());
+				context.SetData<Vector3>("TargetPosition", interactableObject.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;
 			}

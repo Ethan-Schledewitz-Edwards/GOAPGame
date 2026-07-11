@@ -1,16 +1,17 @@
 using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
+using Settlements;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Interaction.Blueprint
+namespace Interaction.InteractableStructures.Blueprints
 {
 	[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent), (typeof(BlueprintCancelation)))]
-	public class BlueprintIO : InteractableObjectBase, IInteractableStructure<BlueprintIO>, IBlueprintObject
+	public class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IBlueprintObject
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
@@ -28,19 +29,27 @@ namespace Interaction.Blueprint
 		private BoxCollider m_boxCollider;
 
 		// Events
-		public event Action<IBlueprintObject> BlueprintStarted;
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
 
 		// System
+		public string StructureTypeKey => "Blueprint";
+		public int StructureID { get => m_structureID; set => m_structureID = value; }
+		private int m_structureID;
+
+		public GameObject StructureObject => gameObject;
+
+		public int MaxCapacity => m_maxCapacity;
+		[SerializeField] private int m_maxCapacity = 4;
+
+		public int ActorsAssigned => m_actorsAssigned;
+		[SerializeField] private int m_actorsAssigned = 0;
+
 		public int SettlementID { get; private set; }
 		public int SettlementBlueprintID { get; private set; }
 		public int StructureBlueprintID { get; private set; }
+		public GameObject BlueprintObject => gameObject;
 
-		[SerializeField] private float m_maxCapacity = 4f;
-		[SerializeField] private float m_actorsAssigned = 0f;
-		public float MaxCapacity => m_maxCapacity;
-		public float ActorsAssigned => m_actorsAssigned;
 		public override bool UseFormationRadius { get => false; }
 
 		private void Awake()
@@ -167,7 +176,6 @@ namespace Interaction.Blueprint
 		{
 			m_meshFilter.mesh = blueprintMesh;
 			m_meshRenderer.material = m_blueprintMaterial;
-
 		}
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

@@ -1,0 +1,18 @@
+using UnityEngine;
+
+namespace Settlements
+{
+	public interface IStructure
+	{
+		public string StructureTypeKey { get; }
+		public int StructureID { get; set; }
+		public GameObject StructureObject { get; }
+		public int MaxCapacity { get; }
+		public int ActorsAssigned { get; }
+	}
+
+	public interface IStructure<T> : IStructure where T : IStructure<T>
+	{
+		void AssignActor(out T structure);
+	}
+}

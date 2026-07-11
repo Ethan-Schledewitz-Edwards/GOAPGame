@@ -1,3 +1,4 @@
+using Settlements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,10 +38,11 @@ public class ConstructionManager : MonoBehaviour
 		StructureBlueprintData blueprintData = m_blueprintIndex.Assets[structureBlueprintID];
 
 		GameObject prefab = Instantiate(m_blueprintPrefab);
+		IStructure structure = prefab.GetComponent<IStructure>();
 		IBlueprintObject blueprintObject = prefab.GetComponent<IBlueprintObject>();
 
 		// Add to settlement
-		SettlementManager.s_WorldSettlements[settlementID].AddBlueprint(prefab, out int settlementBlueprintID);
+		SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure, out int structureID);
 
 		// Offset the blueprint out of the ground
 		Bounds bounds = blueprintData.BlueprintMesh.bounds;
@@ -49,32 +51,55 @@ public class ConstructionManager : MonoBehaviour
 		// Init the blueprint
 		blueprintObject.HandleBlueprintStarted
 			(
-				settlementID, 
-				settlementBlueprintID, 
+				settlementID,
+				structureID, 
 				blueprintData,
 				offsetPosition,
 				rotation
 			);
 
 		blueprintObject.BlueprintCompleted += OnBlueprintCompleted;
+		blueprintObject.BlueprintCanceled += OnBlueprintCanceled;
 	}
 
-	public void OnBlueprintCompleted(IBlueprintObject blueprintIO)
+	public void OnBlueprintCompleted(IBlueprintObject blueprintObject)
+	{
+		if (blueprintObject == null)
+			return;
+
+		IStructure blueprintStructure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.StructureID];
+		int settlementID = blueprintObject.SettlementID;
+		Vector3 blueprintIOPosition = blueprintObject.BlueprintObject.transform.position;
+		Quaternion blueprintIORotation = blueprintObject.BlueprintObject.transform.rotation;
+
+		CleanupBlueprint(blueprintObject);
+
+		// Create the final structure
+		GameObject prefab = m_blueprintIndex.StructureBlueprintData[blueprintObject.StructureBlueprintID].BlueprintFeatureData.Prefab;
+		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
+
+		// Add the structure to the settlement
+		IStructure builtStructure = prefab.GetComponent<IStructure>();
+		SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
+		builtStructure.StructureID = structureID;
+	}
+
+	public void OnBlueprintCanceled(IBlueprintObject blueprintIO)
 	{
 		if (blueprintIO == null)
 			return;
 
-		GameObject blueprintObject = SettlementManager.s_WorldSettlements[blueprintIO.SettlementID].Blueprints[blueprintIO.SettlementBlueprintID];
+		CleanupBlueprint(blueprintIO);
+	}
 
-		Vector3 blueprintIOPosition = blueprintObject.transform.position;
-		Quaternion blueprintIORotation = blueprintObject.transform.rotation;
-		blueprintIO.BlueprintCompleted -= OnBlueprintCompleted;
+	private void CleanupBlueprint(IBlueprintObject blueprintObject)
+	{
+		IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.StructureID];
+		SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure);
 
-		int settlementID = blueprintIO.SettlementID;
-		SettlementManager.s_WorldSettlements[settlementID].RemoveBlueprint(blueprintObject);
-		Destroy(blueprintObject);
+		blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
+		blueprintObject.BlueprintCompleted -= OnBlueprintCanceled;
 
-		GameObject prefab = m_blueprintIndex.StructureBlueprintData[blueprintIO.StructureBlueprintID].BlueprintFeatureData.Prefab;
-		Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
+		Destroy(blueprintObject.BlueprintObject);
 	}
 }

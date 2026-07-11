@@ -1,5 +1,6 @@
 using UnityEngine;
 using InventorySystem.Items;
+using Interaction.InteractableStructures;
 
 public class EatStrategy : IActionStrategy
 {

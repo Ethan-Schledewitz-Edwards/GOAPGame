@@ -1,6 +1,6 @@
 {
-    "name": "Interaction.Blueprint",
-    "rootNamespace": "Interaction.Blueprint",
+    "name": "Interaction.InteractableStructures.Blueprints",
+    "rootNamespace": "Interaction.InteractableStructures.Blueprints",
     "references": [
         "GUID:034986700f8ed6c499c3c658f56a9386",
         "GUID:2835da38d3c9f3b4aa1f68509ddbe70e",
@@ -11,7 +11,8 @@
         "GUID:553751e538aa0874d9351ac2f1e0dc17",
         "GUID:19a69fce138124240bfff07f6ef69a21",
         "GUID:f5a277d94bd7dc44f8d8d59e8969a2b5",
-        "GUID:ba03907fce1edd444a6619e3f2864f88"
+        "GUID:ba03907fce1edd444a6619e3f2864f88",
+        "GUID:75b67bd2594706742bb0d6e6b501d402"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

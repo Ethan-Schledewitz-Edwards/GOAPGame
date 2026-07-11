@@ -1,3 +1,4 @@
+using Settlements;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -108,10 +109,10 @@ public class ActorStrategyBuilder : MonoBehaviour
 		// Have this one make a behaviour to return to settlement or something
 	}
 
-	public void UpdateHouse(int houseID)
+	public void UpdateHouse(int structureID)
 	{
 		int settlementID = m_actor.SettlementID;
-		Vector3 housePos = SettlementManager.s_WorldSettlements[settlementID].ActorHouses[houseID].GetInteractionPositon();
+		Vector3 housePos = SettlementManager.s_WorldSettlements[settlementID].SettlementStructures[structureID].StructureObject.transform.position;
 
 		HashSet<AgentAction> actions = new HashSet<AgentAction>();
 		actions.Add(new AgentAction.ActionBuilder("MoveToHouse")

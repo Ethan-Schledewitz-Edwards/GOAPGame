@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Interaction.Blueprint
+namespace Interaction.InteractableStructures.Blueprints
 {
 	public class BluerprintInventoryComponent : InventoryComponent
 	{
