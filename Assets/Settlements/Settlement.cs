@@ -12,7 +12,8 @@ namespace Settlements
 		public int SettlementID { get; private set; }
 		public bool IsSettlementFriendly { get; private set; }
 		public bool IsSettlementBuildable { get; private set; }
-		public List<IStructure> SettlementStructures { get; private set; } = new List<IStructure>();
+		public Dictionary<int, IStructure> SettlementStructures { get; private set; } = new Dictionary<int, IStructure>();
+		private int m_nextAvailableID = 1;
 
 		public Settlement(int settlementID, bool isSettlementFriendly, bool isSettlementBuildable)
 		{
@@ -27,22 +28,21 @@ namespace Settlements
 			structureID = -1;
 
 			if (structure == null)
-				Debug.LogError($"Attempted to add a null structure to settlment of ID:{SettlementID}.");
+			{
+				Debug.LogError("Attempted to add a null structure.");
+				return;
+			}
 
-			structure.StructureID = SettlementStructures.Count + 1;
-			structureID = structure.StructureID;
+			structureID = m_nextAvailableID++;
+			structure.StructureID = structureID;
 
-			if (!SettlementStructures.Contains(structure))
-				SettlementStructures.Add(structure);
+			SettlementStructures[structureID] = structure;
 		}
 
-		public void RemoveStructure(IStructure structure)
+		public void RemoveStructure(int structureID)
 		{
-			if (structure == null)
-				Debug.LogError($"Attempted to remove a null structure from settlment of ID:{SettlementID}.");
-
-			if (SettlementStructures.Contains(structure))
-				SettlementStructures.Remove(structure);
+			if (SettlementStructures.ContainsKey(structureID))
+				SettlementStructures.Remove(structureID);
 		}
 
 		public IStructure FindNearestStructureOfType(Vector3 position, string structureType)
@@ -50,15 +50,11 @@ namespace Settlements
 			IStructure closest = null;
 			float minDistance = float.MaxValue;
 
-			foreach (IStructure structure in SettlementStructures)
+			foreach (var structure in SettlementStructures.Values)
 			{
-				if (structure == null)
-					continue;
-
 				if (structure.StructureTypeKey == structureType)
 				{
-					Vector3 structurePosition = structure.StructureObject.transform.position;
-					float dist = Vector3.Distance(structurePosition, position);
+					float dist = Vector3.Distance(structure.StructureObject.transform.position, position);
 					if (dist < minDistance)
 					{
 						minDistance = dist;
@@ -77,14 +73,11 @@ namespace Settlements
 			Vector3 totalPosition = Vector3.zero;
 			int validCount = 0;
 
-			foreach (IStructure structure in SettlementStructures)
+			foreach (var structure in SettlementStructures)
 			{
-				if (structure != null)
-				{
-					Vector3 structurePosition = structure.StructureObject.transform.position;
-					totalPosition += structurePosition;
-					validCount++;
-				}
+				Vector3 structurePosition = structure.Value.StructureObject.transform.position;
+				totalPosition += structurePosition;
+				validCount++;
 			}
 
 			return validCount > 0 ? totalPosition / validCount : Vector3.zero;

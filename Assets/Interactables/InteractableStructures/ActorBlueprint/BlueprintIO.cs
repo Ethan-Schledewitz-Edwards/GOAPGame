@@ -45,9 +45,11 @@ namespace Interaction.InteractableStructures.Blueprints
 		public int ActorsAssigned => m_actorsAssigned;
 		[SerializeField] private int m_actorsAssigned = 0;
 
-		public int SettlementID { get; private set; }
-		public int SettlementBlueprintID { get; private set; }
-		public int StructureBlueprintID { get; private set; }
+		public int SettlementID => m_settlementID;
+		private int m_settlementID;
+		public int SettlementBlueprintID => m_structureID;
+		public int StructureBlueprintID => m_structureBlueprintID;
+		private int m_structureBlueprintID;
 		public GameObject BlueprintObject => gameObject;
 
 		public override bool UseFormationRadius { get => false; }
@@ -139,9 +141,8 @@ namespace Interaction.InteractableStructures.Blueprints
 				Quaternion rotation
 			)
 		{
-			SettlementID = settlementID;
-			SettlementBlueprintID = settlementBlueprintID;
-			StructureBlueprintID = structureBlueprintData.StructureBlueprintID;
+			m_settlementID = settlementID;
+			m_structureBlueprintID = structureBlueprintData.StructureBlueprintID;
 
 			m_bluerprintInventory.InitializeBlueprintInventory(structureBlueprintData.RequiredItems);
 			m_requiredItems = structureBlueprintData.RequiredItems;

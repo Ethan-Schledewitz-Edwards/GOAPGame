@@ -43,6 +43,7 @@ public class ConstructionManager : MonoBehaviour
 
 		// Add to settlement
 		SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure, out int structureID);
+		structure.StructureID = structureID;
 
 		// Offset the blueprint out of the ground
 		Bounds bounds = blueprintData.BlueprintMesh.bounds;
@@ -82,6 +83,8 @@ public class ConstructionManager : MonoBehaviour
 		IStructure builtStructure = prefab.GetComponent<IStructure>();
 		SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
 		builtStructure.StructureID = structureID;
+
+		Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{settlementID}");
 	}
 
 	public void OnBlueprintCanceled(IBlueprintObject blueprintIO)
@@ -95,10 +98,12 @@ public class ConstructionManager : MonoBehaviour
 	private void CleanupBlueprint(IBlueprintObject blueprintObject)
 	{
 		IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.StructureID];
-		SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure);
+		SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure.StructureID);
+
+		Debug.Log($"Removed blueprint of StructureID:{blueprintObject.StructureID} from Settlement of SettlementID:{blueprintObject.SettlementID}");
 
 		blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
-		blueprintObject.BlueprintCompleted -= OnBlueprintCanceled;
+		blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;
 
 		Destroy(blueprintObject.BlueprintObject);
 	}

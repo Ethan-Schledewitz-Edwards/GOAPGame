@@ -14,6 +14,11 @@ public class Entity : MonoBehaviour
 	protected Vector3 m_position { get; private set; }
 	private Vector2Int m_currentChunkXZ;
 
+	private void OnDestroy()
+	{
+		EntityPositionChanged = null;
+	}
+
 	private void FixedUpdate()
 	{
 		UpdatePosition();
