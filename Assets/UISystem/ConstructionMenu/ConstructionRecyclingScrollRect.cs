@@ -1,6 +1,7 @@
 using UnityEngine;
 using UISystems.RecyclingScrollRect;
 using System.Linq;
+using Construction;
 
 public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<StructureBlueprintData>
 {
