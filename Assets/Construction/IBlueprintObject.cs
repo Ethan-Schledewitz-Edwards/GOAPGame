@@ -1,26 +1,29 @@
 using System;
 using UnityEngine;
 
-public interface IBlueprintObject
+namespace Construction
 {
-	public event Action<IBlueprintObject> BlueprintCompleted;
+	public interface IBlueprintObject
+	{
+		public event Action<IBlueprintObject> BlueprintCompleted;
 
-	public event Action<IBlueprintObject> BlueprintCanceled;
+		public event Action<IBlueprintObject> BlueprintCanceled;
 
-	public int SettlementID { get; } // The settlement this blueprint belongs to
-	public int StructureID { get; } // What blueprint this is within the settlement
-	public int StructureBlueprintID { get; } // The asset this blueprint represents
-	public GameObject BlueprintObject { get; }
+		public int SettlementID { get; } // The settlement this blueprint belongs to
+		public int StructureID { get; } // What blueprint this is within the settlement
+		public int StructureBlueprintID { get; } // The asset this blueprint represents
+		public GameObject BlueprintObject { get; }
 
-	public void HandleBlueprintStarted
-		(
-			int settlementID, 
-			int structureID, 
-			StructureBlueprintData structureBlueprintData,
-			Vector3 position,
-			Quaternion rotation
-		);
+		public void HandleBlueprintStarted
+			(
+				int settlementID,
+				int structureID,
+				StructureBlueprintData structureBlueprintData,
+				Vector3 position,
+				Quaternion rotation
+			);
 
-	public void HandleBlueprintCompleted();
-	public void HandleBlueprintCanceled();
+		public void HandleBlueprintCompleted();
+		public void HandleBlueprintCanceled();
+	}
 }

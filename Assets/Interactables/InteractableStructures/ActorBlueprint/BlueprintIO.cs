@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using Construction;
 using InventorySystem;
 using InventorySystem.Items;
 using Settlements;
@@ -6,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
@@ -156,7 +156,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public void HandleBlueprintCompleted()
 		{
-			Debug.Log($"A blueprint of Blueprint ID:{SettlementBlueprintID} was completed in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{SettlementBlueprintID} was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}
 

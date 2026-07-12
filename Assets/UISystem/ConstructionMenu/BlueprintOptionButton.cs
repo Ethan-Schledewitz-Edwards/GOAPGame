@@ -1,6 +1,7 @@
 using TMPro;
 using UISystems.RecyclingScrollRect;
 using UnityEngine;
+using Construction;
 
 public class BlueprintOptionButton : MenuButton, IRecyclableCell<StructureBlueprintData>
 {

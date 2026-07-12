@@ -1,6 +1,6 @@
 {
     "name": "Construction",
-    "rootNamespace": "",
+    "rootNamespace": "Construction",
     "references": [
         "GUID:0eec0e3185c110644ab23d853bdbea41",
         "GUID:b85b26eebd1b5c549a59e2da7531da88",

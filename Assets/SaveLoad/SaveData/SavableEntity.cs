@@ -41,7 +41,7 @@ namespace SaveLoad.Data
 			if (m_entity != null)
 				m_entity.EntityPositionChanged -= OnEntityMoved;
 
-			UnregisterFromClosestChunk();
+			UnregisterFromCurrentChunk();
 		}
 
 		public void InitializeSavableEntity()
@@ -67,35 +67,27 @@ namespace SaveLoad.Data
 			{
 				// Unregister this entity from its previous chunk
 				TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
-				previousTerrainChunk?.UnregisterEntity(gameObject);
+				if (previousTerrainChunk != null)
+					previousTerrainChunk.UnregisterEntity(gameObject);
 
-				// Register this entity to its new chunk
+				// Register this entity to the chunk it overlaps with
 				m_chunkXZ = currentChunkXZ;
 				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
-				terrainChunk?.RegisterEntity(gameObject);
+
+				if (terrainChunk != null)
+					terrainChunk.RegisterEntity(gameObject);
 			}
 		}
 
-		public void UnregisterFromClosestChunk()
+		public void UnregisterFromCurrentChunk()
 		{
-			Vector3Int chunkSize = WorldPropertyUtility.s_ChunkSize;
-			Vector2Int currentChunkXZ = new Vector2Int
-				(
-					Mathf.FloorToInt(transform.position.x / chunkSize.x),
-					Mathf.FloorToInt(transform.position.z / chunkSize.z)
-				);
+			// Unregister this entity from its previous chunk
+			TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
 
-			if (currentChunkXZ != m_chunkXZ)
-			{
-				// Unregister this entity from its previous chunk
-				TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
-				previousTerrainChunk?.UnregisterEntity(gameObject);
+			if (previousTerrainChunk != null)
+				previousTerrainChunk.UnregisterEntity(gameObject);
 
-				// Register this entity to its new chunk
-				m_chunkXZ = currentChunkXZ;
-				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
-				terrainChunk?.UnregisterEntity(gameObject);
-			}
+			m_chunkXZ = default;
 		}
 
 		/// <summary>
