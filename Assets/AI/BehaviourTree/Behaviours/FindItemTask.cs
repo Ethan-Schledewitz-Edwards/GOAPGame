@@ -1,13 +1,12 @@
 using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
-using UnityEngine;
 using Terrain.Generation;
+using UnityEngine;
 
 public class FindItemTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;
-	private const string c_itemSearchContextKey = "ItemIDToFind";
 
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
@@ -16,7 +15,7 @@ public class FindItemTask : BTNodeBase
 		{
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
 			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetItemTransform.position);
-			context.ClearData(c_itemSearchContextKey);
+			context.ClearData(AIContextKeys.c_ItemToFindID);
 
 			return EBTNodeState.STATE_SUCSESS;
 		}
@@ -26,14 +25,15 @@ public class FindItemTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		Debug.Log($"Trying to find an item of ID {context.GetData<int>(c_itemSearchContextKey)}.");
+		Debug.Log($"Trying to find an item of ID {context.GetData<int>(AIContextKeys.c_ItemToFindID)}.");
 	}
 
 	private Transform FindItemOfID(AIContext context)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 executorPosition = executorTransform.position;
-		int idOfItemToFind = context.GetData<int>(c_itemSearchContextKey);
+
+		int idOfItemToFind = context.GetData<int>(AIContextKeys.c_ItemToFindID);
 
 		Transform candidate = SearchForItem(idOfItemToFind, executorPosition);
 		return candidate;

@@ -145,7 +145,7 @@ public class Actor : Entity, IInteractor
 						{
 							if (treeState == EBTNodeState.STATE_SUCSESS ||
 								treeState == EBTNodeState.STATE_FAILURE ||
-								BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
+								BehaviourTreeExecutor.AIContext.GetData<bool>(AIContextKeys.c_Timeout))
 							{
 								ClearLogicExecutorState();
 							}
@@ -268,6 +268,13 @@ public class Actor : Entity, IInteractor
 
 	#region BT Tasks
 
+	/// <summary>
+	/// Attempts to assign a new objective to the actor if the objective is valid and takes precedence over the current
+	/// job.
+	/// </summary>
+	/// <remarks>
+	/// The Actor is returned to the default state before any new data is assigned.
+	/// </remarks>
 	public void TrySetActorJob(InteractableObjectBase newObjective, bool newJobTakesPrecedence)
 	{
 		if (newObjective == null)
@@ -276,8 +283,6 @@ public class Actor : Entity, IInteractor
 		// Ignore an incoming job if it does not take precedence
 		if (BehaviourTreeExecutor.CurrentBehaviourTree != null && !newJobTakesPrecedence)
 			return;
-
-		ClearLogicExecutorState();
 
 		// Set targeting
 		m_targetTransform = newObjective.transform;

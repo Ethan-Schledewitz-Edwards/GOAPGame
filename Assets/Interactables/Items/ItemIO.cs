@@ -39,10 +39,10 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			BehaviourTree tree = new BehaviourTree();
 
 			BTNodeBase findUseTask = new FindUseForItemTask();
-			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 10f, "Timeout");
+			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 2f, AIContextKeys.c_Timeout);
 
 			BTNodeBase depositTask = new DepositHeldItemTask();
-			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 5f, "Timeout");
+			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f, AIContextKeys.c_Timeout);
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{

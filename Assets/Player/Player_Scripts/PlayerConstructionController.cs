@@ -54,6 +54,9 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 	protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
 	{
+		if (m_blueprintData == null)
+			return;
+
 		if (m_isPlacementValid)
 		{
 			TryPlaceBlueprint(m_cursorWorldPosition, m_placementRotation);
@@ -66,6 +69,13 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 	protected override void OnSecondaryFireInput(InputAction.CallbackContext context) 
 	{
+		if (m_blueprintData != null)
+		{
+			ClearBlueprintData();
+			m_isCancleHeld = false;
+			return;
+		}
+
 		m_isCancleHeld = context.ReadValueAsButton();
 	}
 

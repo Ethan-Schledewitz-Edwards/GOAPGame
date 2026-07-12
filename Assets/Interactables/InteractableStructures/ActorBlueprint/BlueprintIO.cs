@@ -59,7 +59,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (s_cachedBlueprintBT == null)
 			{
 				BTNodeBase findUseTask = new FindItemTask();
-				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 1f, "Timeout");
+				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f, AIContextKeys.c_Timeout);
 
 				BehaviourTree tree = new BehaviourTree();
 				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
@@ -121,8 +121,8 @@ namespace Interaction.InteractableStructures.Blueprints
 				{
 					if (item.itemType != null)
 					{
-						executor.AIContext.SetData<int>("ItemIDToFind", item.itemType.ItemID);
 						interactor.OnInteractWithObject(this, interactionTakesPriority);
+						executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, item.itemType.ItemID);
 						return true;
 					}
 				}
