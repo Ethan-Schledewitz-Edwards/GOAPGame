@@ -12,20 +12,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	// System
 	private int m_actorsPresent = 0; // How many actors are currently using the interactable
 
-    public virtual bool TryInteract(IInteractor interactor)
-    {
-        AssignActor();
-		interactor.InteractorInteracted(this);
-
-		if (interactor.Transform.TryGetComponent(out BehaviourTreeExecutorBase behaviourTreeExecutor))
-		{
-			behaviourTreeExecutor.AIContext.SetData<Transform>("TargetTransform", transform);
-			behaviourTreeExecutor.AIContext.SetData<Vector3>("TargetPosition", GetInteractionPositon());
-			return true;
-		}
-
-		return false;
-	}
+	public abstract bool TryInteract(IInteractor interactor, bool interactionTakesPriority);
 
     public virtual void StopInteract()
     {
@@ -36,7 +23,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 	#region Actor Handling
 
-	private void AssignActor()
+	protected void AssignActor()
 	{
 		m_actorsPresent++;
 

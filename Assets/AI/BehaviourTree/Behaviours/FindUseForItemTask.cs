@@ -17,7 +17,7 @@ public class FindUseForItemTask : BTNodeBase
 				closestBlueprint.TryGetComponent(out InteractableObjectBase interactable))
 			{
 				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestBlueprint.transform);
-				context.SetData<Vector3>("TargetPosition", interactable.GetInteractionPositon());
+				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;
 			}
@@ -27,7 +27,7 @@ public class FindUseForItemTask : BTNodeBase
 				closestStorage.TryGetComponent(out InteractableObjectBase interactableObject))
 			{
 				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStorage.transform);
-				context.SetData<Vector3>("TargetPosition", interactableObject.GetInteractionPositon());
+				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactableObject.GetInteractionPositon());
 
 				return EBTNodeState.STATE_SUCSESS;
 			}

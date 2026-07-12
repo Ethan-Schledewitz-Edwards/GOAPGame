@@ -14,7 +14,6 @@ public class DepositHeldItemTask : BTNodeBase
 	private const string c_stackSizeKey = "SizeOfItemStackToTransfer";
 	private const string c_containerRoomKey = "ContainerRoom";
 
-
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
 		if (context.GetData<bool>(c_doneKey))
@@ -27,6 +26,33 @@ public class DepositHeldItemTask : BTNodeBase
 
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
+
+		EBTNodeState depositResult = TryDepositItem(context, t);
+
+		switch (depositResult)
+		{
+			case EBTNodeState.STATE_RUNNING:
+				return EBTNodeState.STATE_RUNNING;
+
+			case EBTNodeState.STATE_SUCSESS:
+
+				// Try to interact with the target
+				if(targetTransform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
+					interactableObjectBase.TryInteract(executorTransform.GetComponent<IInteractor>(), true);
+				return EBTNodeState.STATE_SUCSESS;
+
+			case EBTNodeState.STATE_FAILURE:
+				return EBTNodeState.STATE_FAILURE;
+
+			default:
+				return EBTNodeState.STATE_RUNNING;
+		}
+	}
+
+	private EBTNodeState TryDepositItem(AIContext context, float t)
+	{
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
 		if (executorTransform.TryGetComponent(out InventoryComponent executorInventoryComponent) &&
 			targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent))

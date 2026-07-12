@@ -9,9 +9,10 @@ namespace Construction
 	{
 		public static ConstructionManager Instance;
 
+		public BlueprintDataIndex BlueprintIndex => m_blueprintIndex;
 		[SerializeField] private BlueprintDataIndex m_blueprintIndex;
-		[SerializeField] private Material m_blueprintMaterial;
 
+		[SerializeField] private Material m_blueprintMaterial;
 		[SerializeField] private GameObject m_blueprintPrefab;
 
 		// Events
@@ -45,7 +46,7 @@ namespace Construction
 
 			// Add to settlement
 			SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure, out int structureID);
-			structure.StructureID = structureID;
+			structure.SettlementStructureID = structureID;
 
 			// Offset the blueprint out of the ground
 			Bounds bounds = blueprintData.BlueprintMesh.bounds;
@@ -70,7 +71,7 @@ namespace Construction
 			if (blueprintObject == null)
 				return;
 
-			IStructure blueprintStructure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.StructureID];
+			IStructure blueprintStructure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.SettlementStructureID];
 			int settlementID = blueprintObject.SettlementID;
 			Vector3 blueprintIOPosition = blueprintObject.BlueprintObject.transform.position;
 			Quaternion blueprintIORotation = blueprintObject.BlueprintObject.transform.rotation;
@@ -84,7 +85,7 @@ namespace Construction
 			// Add the structure to the settlement
 			IStructure builtStructure = prefab.GetComponent<IStructure>();
 			SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
-			builtStructure.StructureID = structureID;
+			builtStructure.SettlementStructureID = structureID;
 
 			Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{settlementID}");
 		}
@@ -99,10 +100,10 @@ namespace Construction
 
 		private void CleanupBlueprint(IBlueprintObject blueprintObject)
 		{
-			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.StructureID];
-			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure.StructureID);
+			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.SettlementStructureID];
+			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure.SettlementStructureID);
 
-			Debug.Log($"Removed blueprint of StructureID:{blueprintObject.StructureID} from Settlement of SettlementID:{blueprintObject.SettlementID}");
+			Debug.Log($"Removed blueprint of StructureID:{blueprintObject.SettlementStructureID} from Settlement of SettlementID:{blueprintObject.SettlementID}");
 
 			blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
 			blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;

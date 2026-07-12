@@ -11,7 +11,7 @@ namespace Interaction.InteractableStructures
 
 		// System
 		public string StructureTypeKey => "House";
-		public int StructureID { get => m_structureID; set => m_structureID = value; }
+		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
 		private int m_structureID;
 
 		public GameObject StructureObject => gameObject;
@@ -54,5 +54,13 @@ namespace Interaction.InteractableStructures
 		}
 
 		public override BehaviourTree GetBehaviourTree() => m_cachedHousingBT;
+
+		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
+		{
+			AssignActor();
+			interactor.OnInteractWithObject(this, interactionTakesPriority);
+
+			return true;
+		}
 	}
 }

@@ -6,7 +6,7 @@ using Terrain.Generation;
 
 public class FindItemTask : BTNodeBase
 {
-	private const int c_searchRadius = 2;
+	private const int c_chunkSearchRadius = 2;
 	private const string c_itemSearchContextKey = "ItemIDToFind";
 
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
@@ -15,8 +15,9 @@ public class FindItemTask : BTNodeBase
 		if (targetItemTransform != null)
 		{
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
-			context.SetData<Vector3>("TargetPosition", targetItemTransform.position);
+			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetItemTransform.position);
 			context.ClearData(c_itemSearchContextKey);
+
 			return EBTNodeState.STATE_SUCSESS;
 		}
 
@@ -41,7 +42,7 @@ public class FindItemTask : BTNodeBase
 	private Transform SearchForItem(int itemID, Vector3 executorPosition)
 	{
 		Vector2Int[] neighbourChunkCoordinates
-			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_searchRadius);
+			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;

@@ -49,12 +49,11 @@ public class Actor : Entity, IInteractor
 	public int SettlementID { get; private set; } = 0;
 	public int HouseID { get; private set; } = 0;
 
-
-
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
 	private float m_timeIdleAtWork;
 
+	private bool m_isInteracting;
 	private Transform m_targetTransform; // Used while in the follow state
 
 	#region Initialization
@@ -118,8 +117,7 @@ public class Actor : Entity, IInteractor
 			if (distanceRemaining <= interactionDistance &&
 				m_targetTransform.TryGetComponent(out InteractableObjectBase interactableObject))
 			{
-				if (interactableObject.TryInteract(this))
-					return;
+				interactableObject.TryInteract(this, true);
 			}
 		}
 		else
@@ -135,15 +133,22 @@ public class Actor : Entity, IInteractor
 					break;
 
 				case EActorState.STATE_Working:
-					if (BehaviourTreeExecutor != null)
+					if (BehaviourTreeExecutor != null &&
+						BehaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
+						BehaviourTree activeTreeBeforeTick = BehaviourTreeExecutor.CurrentBehaviourTree;
+
 						EBTNodeState treeState = BehaviourTreeExecutor.TickBehaviour(t);
 
-						if (treeState == EBTNodeState.STATE_SUCSESS ||
-							treeState == EBTNodeState.STATE_FAILURE ||
-							BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
+						// Reset the actor if it's BehaviourTree never changed and it either finished or timed out
+						if(BehaviourTreeExecutor.CurrentBehaviourTree == activeTreeBeforeTick)
 						{
-							ClearLogicExecutorState();
+							if (treeState == EBTNodeState.STATE_SUCSESS ||
+								treeState == EBTNodeState.STATE_FAILURE ||
+								BehaviourTreeExecutor.AIContext.GetData<bool>("Timeout"))
+							{
+								ClearLogicExecutorState();
+							}
 						}
 					}
 					break;
@@ -215,15 +220,19 @@ public class Actor : Entity, IInteractor
 		// Reset task
 		if (m_targetTransform != null)
 		{
-			if(m_targetTransform.TryGetComponent(out InteractableObjectBase actorInteractableObjectBase))
-				actorInteractableObjectBase.StopInteract();
+			if(m_isInteracting &&
+				m_targetTransform.TryGetComponent(out InteractableObjectBase interactableObject))
+				interactableObject.StopInteract();
 
 			m_targetTransform = null;
 		}
 
 		// Reset behaviour
-		BehaviourTreeExecutor?.SetCurrentBehaviourTree(null);
-		BehaviourTreeExecutor?.ResetContext();
+		if(BehaviourTreeExecutor != null)
+		{
+			BehaviourTreeExecutor.SetCurrentBehaviourTree(null);
+			BehaviourTreeExecutor.ResetContext();
+		}
 		m_timeFindingJob = 0;
 
 		// Drop the actors held slot
@@ -233,18 +242,11 @@ public class Actor : Entity, IInteractor
 
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		Pathing.SetStoppingDistance(c_workingDist);
-
-		SetTargetTransform(null);
 		Pathing.ClearDestination();
 	}
 	#endregion
 
 	#region Player Commands
-
-	public void SetTargetTransform(Transform newTarget)
-	{
-		m_targetTransform = newTarget;
-	}
 
 	public void FollowPlayer(Transform Player)
 	{
@@ -266,16 +268,29 @@ public class Actor : Entity, IInteractor
 
 	#region BT Tasks
 
-	public void SetNewJob(InteractableObjectBase newObjective)
+	public void TrySetActorJob(InteractableObjectBase newObjective, bool newJobTakesPrecedence)
 	{
-		m_targetTransform = newObjective.transform;
-
-		// Ignore null references
 		if (newObjective == null)
 			return;
 
+		// Ignore an incoming job if it does not take precedence
+		if (BehaviourTreeExecutor.CurrentBehaviourTree != null && !newJobTakesPrecedence)
+			return;
+
+		ClearLogicExecutorState();
+
+		// Set targeting
+		m_targetTransform = newObjective.transform;
+		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
+		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, newObjective.GetInteractionPositon());
+
 		BehaviourTreeExecutor.SetCurrentBehaviourTree(newObjective.GetBehaviourTree());
 		SetLogicExecutorState(EActorState.STATE_Working);
+	}
+
+	public void OnInteractWithObject(InteractableObjectBase actorInteractableObjectBase, bool takesPriority)
+	{
+		TrySetActorJob(actorInteractableObjectBase, takesPriority);
 	}
 
 	/// <summary>
@@ -289,7 +304,6 @@ public class Actor : Entity, IInteractor
 		return m_logicExecutorState == EActorState.STATE_SearchingForWork || 
 			isJobFinished;
 	}
-
 
 	/// <summary>
 	/// Searches for an actor interactable object within a radius
@@ -366,11 +380,6 @@ public class Actor : Entity, IInteractor
 		}
 
 		return null;
-	}
-
-	public void InteractorInteracted(InteractableObjectBase actorInteractableObjectBase)
-	{
-		SetNewJob(actorInteractableObjectBase);
 	}
 	#endregion
 }

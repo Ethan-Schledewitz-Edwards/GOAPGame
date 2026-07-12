@@ -10,7 +10,7 @@ namespace Construction
 		public event Action<IBlueprintObject> BlueprintCanceled;
 
 		public int SettlementID { get; } // The settlement this blueprint belongs to
-		public int StructureID { get; } // What blueprint this is within the settlement
+		public int SettlementStructureID { get; } // What blueprint this is within the settlement
 		public int StructureBlueprintID { get; } // The asset this blueprint represents
 		public GameObject BlueprintObject { get; }
 

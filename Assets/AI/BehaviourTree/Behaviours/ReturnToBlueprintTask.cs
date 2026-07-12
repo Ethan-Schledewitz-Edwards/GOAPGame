@@ -1,21 +1,30 @@
 using BehaviourTrees;
+using Settlements;
 using UnityEngine;
 
 public class ReturnToBlueprintTask : BTNodeBase
 {
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
-		int blueprintID = context.GetData<int>(AIContextKeys.c_BlueprintID);
+		int settlementID = context.GetData<int>(AIContextKeys.c_SettlementID);
+		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
 
-		/*
+		Settlement settlement = SettlementManager.s_WorldSettlements[settlementID];
+		IStructure blueprintStructure = settlement.SettlementStructures[structureID];
 
-		if (blueprint != null)
+		if (blueprintStructure != null && 
+			blueprintStructure.StructureObject != null)
 		{
-			context.SetData<Transform>(AIContextKeys.c_TargetTransform, blueprint);
-			return EBTNodeState.STATE_SUCSESS;
+			GameObject structureObject = blueprintStructure.StructureObject;
+			if (structureObject.TryGetComponent(out InteractableObjectBase interactableObject))
+			{
+				Debug.Log($"An Actor set their target to StructureID:{structureID} in SettlementID:{settlementID}.");
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
+				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactableObject.GetInteractionPositon());
+
+				return EBTNodeState.STATE_SUCSESS;
+			}
 		}
-		return EBTNodeState.STATE_FAILURE;
-		*/
 
 		return EBTNodeState.STATE_FAILURE;
 	}

@@ -56,9 +56,10 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		}
 	}
 
-	public override bool TryInteract(IInteractor interactor)
+	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 	{
-		base.TryInteract(interactor);
+		AssignActor();
+		interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 		if (m_itemData == null)
 			return false;

@@ -34,7 +34,7 @@ namespace Settlements
 			}
 
 			structureID = m_nextAvailableID++;
-			structure.StructureID = structureID;
+			structure.SettlementStructureID = structureID;
 
 			SettlementStructures[structureID] = structure;
 		}

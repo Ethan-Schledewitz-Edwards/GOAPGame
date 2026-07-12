@@ -10,7 +10,6 @@ public class CheckForTargetRangeTask : BTNodeBase
 		int interactionLayer = context.GetData<int>(AIContextKeys.c_InteractionLayer);
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		Debug.Log(targetTransform);
 		if (targetTransform == null)
 		{
 			return EBTNodeState.STATE_FAILURE;

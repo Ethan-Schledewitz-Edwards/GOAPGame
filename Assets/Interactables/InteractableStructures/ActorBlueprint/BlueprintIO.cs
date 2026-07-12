@@ -34,8 +34,8 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		// System
 		public string StructureTypeKey => "Blueprint";
-		public int StructureID { get => m_structureID; set => m_structureID = value; }
-		private int m_structureID;
+		public int SettlementStructureID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
+		private int m_settlementStructureID;
 
 		public GameObject StructureObject => gameObject;
 
@@ -47,7 +47,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public int SettlementID => m_settlementID;
 		private int m_settlementID;
-		public int SettlementBlueprintID => m_structureID;
+		public int SettlementBlueprintID => m_settlementStructureID;
 		public int StructureBlueprintID => m_structureBlueprintID;
 		private int m_structureBlueprintID;
 		public GameObject BlueprintObject => gameObject;
@@ -107,27 +107,29 @@ namespace Interaction.InteractableStructures.Blueprints
 			structure = this;
 		}
 
-		public override bool TryInteract(IInteractor interactor)
+		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
-			base.TryInteract(interactor);
-
 			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-
-			//executor?.AIContext.SetData<int>(AIContextKeys.c_BlueprintID, Sett);
-
-			if (executor != null)
+			if (executor != null && executor.AIContext != null)
 			{
+				executor.AIContext.SetData<int>(AIContextKeys.c_SettlementID, m_settlementID);
+				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+
 				foreach (ItemQuantity item in m_requiredItems)
 				{
 					if (item.itemType != null)
 					{
-						executor?.AIContext.SetData<int>("ItemIDToFind", item.itemType.ItemID);
+						executor.AIContext.SetData<int>("ItemIDToFind", item.itemType.ItemID);
+						interactor.OnInteractWithObject(this, interactionTakesPriority);
 						return true;
 					}
 				}
 			}
+
+			// Construction workers
+			AssignActor();
 
 			return false;
 		}

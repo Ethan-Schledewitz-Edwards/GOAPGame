@@ -28,4 +28,12 @@ public class HarvestableIO : InteractableObjectBase
 	public override void UpdateSpeed(int extra) { }
 
 	public override BehaviourTree GetBehaviourTree() => m_HarvestBT;
+
+	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
+	{
+		AssignActor();
+		interactor.OnInteractWithObject(this, interactionTakesPriority);
+
+		return true;
+	}
 }

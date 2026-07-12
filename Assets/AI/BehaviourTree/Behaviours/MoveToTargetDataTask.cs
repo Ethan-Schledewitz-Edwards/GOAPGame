@@ -4,15 +4,11 @@ using UnityEngine.AI;
 
 public class MoveToTargetDataTask : BTNodeBase
 {
-
 	protected override EBTNodeState OnUpdate(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
+		Vector3 targetPos = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		if (targetTransform == null)
-			return EBTNodeState.STATE_FAILURE;
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
@@ -31,11 +27,11 @@ public class MoveToTargetDataTask : BTNodeBase
 	protected override void OnFirstEvaluate(AIContext context)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Vector3 targetPos = context.GetData<Vector3>("TargetPosition");
+		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
-			pathing.SetDestination(targetPos);
+			pathing.SetDestination(targetDestination);
 		}
 	}
 }

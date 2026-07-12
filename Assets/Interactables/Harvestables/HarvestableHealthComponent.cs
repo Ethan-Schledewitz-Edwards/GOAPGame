@@ -136,7 +136,7 @@ public class HarvestableHealthComponent : HealthComponent
 							// Ensure the actor was responsible for destroying this harvestable
 							if (transform == agentsTarget)
 							{
-								interactableObjectBase.TryInteract(actor);
+								interactableObjectBase.TryInteract(actor, true);
 								interactors.Add(actor);
 								break;
 							}
