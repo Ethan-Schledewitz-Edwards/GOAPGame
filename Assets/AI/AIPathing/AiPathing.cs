@@ -174,8 +174,11 @@ public class AIPathing : MonoBehaviour
 			dirToTarget.y = 0;
 
 			// Smoothly look at target
-			Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
-			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * Time.deltaTime);
+			if (dirToTarget.sqrMagnitude > 0.001f)
+			{
+				Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
+				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * Time.deltaTime);
+			}
 		}
 	}
 
