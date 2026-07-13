@@ -61,6 +61,9 @@ namespace Interaction.InteractableStructures.Blueprints
 				BTNodeBase findUseTask = new FindItemTask();
 				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f, AIContextKeys.c_Timeout);
 
+				BTNodeBase jobTask = new AquireJobFromTargetTask();
+				BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f, AIContextKeys.c_Timeout);
+
 				BehaviourTree tree = new BehaviourTree();
 				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 				{
@@ -72,6 +75,7 @@ namespace Interaction.InteractableStructures.Blueprints
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
 					new DepositHeldItemTask(),
+					timeoutJobSearch // Try to loop item search
 				});
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;

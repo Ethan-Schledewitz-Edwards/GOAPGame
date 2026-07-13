@@ -69,6 +69,8 @@ namespace BehaviourTrees
 
 		protected virtual void OnFirstEvaluate(AIContext context) { } // Only if children need it
 
+		public virtual void OnExit(AIContext context) { } // Only if children need it
+
 		private void AddChild(BTNodeBase node)
 		{
 			node.SetParentNode(this);

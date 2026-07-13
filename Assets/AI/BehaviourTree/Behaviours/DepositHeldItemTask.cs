@@ -6,7 +6,7 @@ using UnityEngine;
 public class DepositHeldItemTask : BTNodeBase
 {
 	private const string c_doneKey = "DoneDepositing";
-	private const string c_depositCooldownKey = "CooldownTimer";
+	private const string c_depositCooldownKey = "DepositCooldownTimer";
 	private const float c_depositCooldown = 0.5f;
 
 	private const string c_stackSizeKey = "SizeOfItemStackToTransfer";
@@ -25,26 +25,7 @@ public class DepositHeldItemTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
-		EBTNodeState depositResult = TryDepositItem(context, t);
-
-		switch (depositResult)
-		{
-			case EBTNodeState.STATE_RUNNING:
-				return EBTNodeState.STATE_RUNNING;
-
-			case EBTNodeState.STATE_SUCSESS:
-
-				// Try to interact with the target
-				if(targetTransform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
-					interactableObjectBase.TryInteract(executorTransform.GetComponent<IInteractor>(), true);
-				return EBTNodeState.STATE_SUCSESS;
-
-			case EBTNodeState.STATE_FAILURE:
-				return EBTNodeState.STATE_FAILURE;
-
-			default:
-				return EBTNodeState.STATE_RUNNING;
-		}
+		return TryDepositItem(context, t);
 	}
 
 	private EBTNodeState TryDepositItem(AIContext context, float t)
@@ -123,5 +104,12 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		Debug.Log("Begin item deposit attempt");
 		context.SetData<bool>(c_doneKey, false);
+		context.SetData<float>(c_depositCooldownKey, c_depositCooldown); // Reset timer
+	}
+
+	public override void OnExit(AIContext context)
+	{
+		context.ClearData(c_doneKey);
+		context.ClearData(c_depositCooldownKey);
 	}
 }

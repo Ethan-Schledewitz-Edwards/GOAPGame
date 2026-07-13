@@ -44,12 +44,16 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f, AIContextKeys.c_Timeout);
 
+			BTNodeBase jobTask = new AquireJobFromTargetTask();
+			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f, AIContextKeys.c_Timeout);
+
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				timeoutSearch,
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
-				timeoutDeposit
+				timeoutDeposit,
+				timeoutJobSearch
 			});
 			tree.SetTree(root);
 			m_ItemBT = tree;

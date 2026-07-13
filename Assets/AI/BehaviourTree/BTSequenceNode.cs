@@ -30,6 +30,7 @@ namespace BehaviourTrees
 						return EBTNodeState.STATE_FAILURE;
 
 					case EBTNodeState.STATE_SUCSESS:
+						currentChild.OnExit(context);
 						currentChildIndex++;
 						context.SetData<int>(sequenceKey, currentChildIndex); // Advance to the next task
 						break;
