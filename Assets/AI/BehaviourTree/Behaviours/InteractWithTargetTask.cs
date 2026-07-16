@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InteractWithTargetTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
@@ -22,5 +22,9 @@ public class InteractWithTargetTask : BTNodeBase
 		return EBTNodeState.STATE_RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context){}
+	protected override void OnFirstEvaluate(AIContext context) {}
+
+	protected override void OnNodeExited(AIContext context) {}
+
+	protected override void OnNodeReset(AIContext context) {}
 }

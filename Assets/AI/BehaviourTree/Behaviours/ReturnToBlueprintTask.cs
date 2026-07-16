@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ReturnToBlueprintTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		int settlementID = context.GetData<int>(AIContextKeys.c_SettlementID);
 		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
@@ -28,4 +28,10 @@ public class ReturnToBlueprintTask : BTNodeBase
 
 		return EBTNodeState.STATE_FAILURE;
 	}
+
+	protected override void OnFirstEvaluate(AIContext context) { }
+
+	protected override void OnNodeExited(AIContext context) { }
+
+	protected override void OnNodeReset(AIContext context) { }
 }

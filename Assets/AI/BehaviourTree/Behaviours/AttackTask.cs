@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class AttackTask : BTNodeBase
 {
-	private float m_timeBetweenAttacks = 2f;
-	private int m_attackDamage = 2;
+	private const string c_attackTimerKey = "AttackTimer";
 
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	private const float c_timeBetweenAttacks = 2f;
+	private const int c_attackDamage = 2;
+
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		string timerKey = GetContextKey("AttackTimer");
+		string attackTimerKey = GetContextKey(c_attackTimerKey);
 
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
@@ -22,18 +24,18 @@ public class AttackTask : BTNodeBase
 		if (targetTransform.TryGetComponent(out HealthComponent health))
 		{
 
-			float currentTimer = context.GetData<float>(timerKey) + t;
+			float currentTimer = context.GetData<float>(attackTimerKey) + t;
 
-			if (currentTimer >= m_timeBetweenAttacks)
+			if (currentTimer >= c_timeBetweenAttacks)
 			{
-				context.SetData<float>(timerKey, 0f);
+				context.SetData<float>(attackTimerKey, 0f);
 				Debug.Log("ATTACK");
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
-				health.TryTakeDamage(m_attackDamage, targetTransform.position, attackDir);
+				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
 			}
 			else
 			{
-				context.SetData<float>(timerKey, currentTimer);
+				context.SetData<float>(attackTimerKey, currentTimer);
 			}
 
 			return EBTNodeState.STATE_RUNNING;
@@ -45,5 +47,15 @@ public class AttackTask : BTNodeBase
 	protected override void OnFirstEvaluate(AIContext context)
 	{
 		Debug.Log("Engaging Target!");
+	}
+
+	protected override void OnNodeExited(AIContext context) 
+	{
+		context.ClearData(GetContextKey(c_attackTimerKey));
+	}
+
+	protected override void OnNodeReset(AIContext context)
+	{
+		context.ClearData(GetContextKey(c_attackTimerKey));
 	}
 }

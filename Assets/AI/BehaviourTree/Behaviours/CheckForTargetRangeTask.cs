@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CheckForTargetRangeTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		float interactionRange = context.GetData<float>(AIContextKeys.c_InteractionDistance);
@@ -37,4 +37,8 @@ public class CheckForTargetRangeTask : BTNodeBase
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		Debug.Log($"Checking if the target: {targetTransform} is in range.");
 	}
+
+	protected override void OnNodeExited(AIContext context) { }
+
+	protected override void OnNodeReset(AIContext context) { }
 }

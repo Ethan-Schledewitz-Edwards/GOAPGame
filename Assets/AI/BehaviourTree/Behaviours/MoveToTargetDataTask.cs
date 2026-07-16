@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class MoveToTargetDataTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 targetPos = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
@@ -34,4 +34,8 @@ public class MoveToTargetDataTask : BTNodeBase
 			pathing.SetDestination(targetDestination);
 		}
 	}
+
+	protected override void OnNodeExited(AIContext context) { }
+
+	protected override void OnNodeReset(AIContext context) { }
 }

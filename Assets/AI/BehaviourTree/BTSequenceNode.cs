@@ -7,21 +7,23 @@ namespace BehaviourTrees
 	/// </summary>
 	public class BTSequenceNode : BTNodeBase
 	{
+		private const string c_sequenceIndexKey = "SequenceIndex";
+
 		public BTSequenceNode() : base() { }
 		public BTSequenceNode(List<BTNodeBase> children) : base(children) { }
 
-		protected override EBTNodeState OnUpdate(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 		{
 			if (m_childNodes == null || m_childNodes.Count == 0)
 				return EBTNodeState.STATE_SUCSESS;
 
-			string sequenceKey = GetContextKey("SequenceIndex");
+			string sequenceKey = GetContextKey(c_sequenceIndexKey);
 			int currentChildIndex = context.GetData<int>(sequenceKey);
 
 			while (currentChildIndex < m_childNodes.Count)
 			{
 				BTNodeBase currentChild = m_childNodes[currentChildIndex];
-				EBTNodeState childState = currentChild.Evaluate(context, t);
+				EBTNodeState childState = currentChild.EvaluateNode(context, t);
 
 				switch (childState)
 				{
@@ -30,7 +32,7 @@ namespace BehaviourTrees
 						return EBTNodeState.STATE_FAILURE;
 
 					case EBTNodeState.STATE_SUCSESS:
-						currentChild.OnExit(context);
+						currentChild.ExitNode(context);
 						currentChildIndex++;
 						context.SetData<int>(sequenceKey, currentChildIndex); // Advance to the next task
 						break;
@@ -46,7 +48,17 @@ namespace BehaviourTrees
 
 		protected override void OnFirstEvaluate(AIContext context) 
 		{
-			context.SetData<int>(GetContextKey("SequenceIndex"), 0);
+			context.SetData<int>(GetContextKey(c_sequenceIndexKey), 0);
+		}
+
+		protected override void OnNodeExited(AIContext context) 
+		{
+			context.ClearData(GetContextKey(c_sequenceIndexKey));
+		}
+
+		protected override void OnNodeReset(AIContext context)
+		{
+			context.ClearData(GetContextKey(c_sequenceIndexKey));
 		}
 	}
 }

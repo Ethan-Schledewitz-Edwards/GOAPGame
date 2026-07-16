@@ -13,12 +13,13 @@ namespace BehaviourTrees
 
 	public abstract class BTNodeBase
 	{
+		private const string c_firstEvauatedKey = "FirstEvaluated";
+
 		public readonly string NodeID = Guid.NewGuid().ToString();
 
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
 
-        #region Consturctors
 
         public BTNodeBase()
 		{
@@ -35,41 +36,51 @@ namespace BehaviourTrees
 				AddChild(i);
 			}
 		}
-		#endregion
 
 		protected string GetContextKey(string propertyName)
 		{
 			return $"{NodeID}_{propertyName}";
 		}
 
-		public EBTNodeState Evaluate(AIContext context, float t)
+		public EBTNodeState EvaluateNode(AIContext context, float t)
 		{
-			string beganKey = GetContextKey("HasBegan");
+			string beganKey = GetContextKey(c_firstEvauatedKey);
 			if (!context.GetData<bool>(beganKey))
 			{
 				context.SetData<bool>(beganKey, true);
 				OnFirstEvaluate(context);
 			}
 
-			return OnUpdate(context, t);
+			return OnNodeEvaluated(context, t);
 		}
 
-		protected abstract EBTNodeState OnUpdate(AIContext context, float t);
+		protected abstract EBTNodeState OnNodeEvaluated(AIContext context, float t);
 
-		public virtual void Reset(AIContext context)
+		protected abstract void OnFirstEvaluate(AIContext context);
+
+		public void ExitNode(AIContext context) 
 		{
-			string beganKey = GetContextKey("HasBegan");
+			context.ClearData(GetContextKey(c_firstEvauatedKey));
+
+			OnNodeExited(context);
+		}
+
+		protected abstract void OnNodeExited(AIContext context);
+
+		public void ResetNode(AIContext context)
+		{
+			string beganKey = GetContextKey(c_firstEvauatedKey);
 			context.SetData<bool>(beganKey, false);
 
 			foreach (BTNodeBase child in m_childNodes)
 			{
-				child.Reset(context);
+				child.ResetNode(context);
 			}
+
+			OnNodeReset(context);
 		}
 
-		protected virtual void OnFirstEvaluate(AIContext context) { } // Only if children need it
-
-		public virtual void OnExit(AIContext context) { } // Only if children need it
+		protected abstract void OnNodeReset(AIContext context);
 
 		private void AddChild(BTNodeBase node)
 		{

@@ -59,10 +59,10 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (s_cachedBlueprintBT == null)
 			{
 				BTNodeBase findUseTask = new FindItemTask();
-				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f, AIContextKeys.c_Timeout);
+				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
 				BTNodeBase jobTask = new AquireJobFromTargetTask();
-				BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f, AIContextKeys.c_Timeout);
+				BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
 				BehaviourTree tree = new BehaviourTree();
 				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>

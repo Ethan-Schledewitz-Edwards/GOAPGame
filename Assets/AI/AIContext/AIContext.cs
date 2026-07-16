@@ -40,6 +40,5 @@ public static class AIContextKeys
 	public const string c_TargetDestination = "TargetDestination";
 	public const string c_HeldItemID = "HeldItemID";
 	public const string c_StructureID = "StructureID";
-	public const string c_Timeout = "Timeout";
 	public const string c_ItemToFindID = "ItemToFind";
 }

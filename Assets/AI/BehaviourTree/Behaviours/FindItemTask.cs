@@ -8,7 +8,7 @@ public class FindItemTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;
 
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform targetItemTransform = FindItemOfID(context);
 		if (targetItemTransform != null)
@@ -67,5 +67,9 @@ public class FindItemTask : BTNodeBase
 
 		return nearest;
 	}
+
+	protected override void OnNodeExited(AIContext context) {}
+
+	protected override void OnNodeReset(AIContext context) {}
 }
 

@@ -5,51 +5,51 @@ namespace BehaviourTrees
 {
 	public class BTTimeoutNode : BTNodeBase
 	{
-		private float m_timeoutDuration;
-		private string m_blackboardFlag;
+		private const string c_timerKey = "TimeElapsed";
+
+		private float m_duration;
 
 		/// <summary>
 		/// Times out a child node and sets a specific flag in the AIContext if it fails.
 		/// </summary>
-		public BTTimeoutNode(BTNodeBase child, float duration, string contextFlag = "Timeout")
-			: base(new System.Collections.Generic.List<BTNodeBase> { child })
+		public BTTimeoutNode(BTNodeBase child, float duration) : base(new List<BTNodeBase> { child } ) 
 		{
-			m_timeoutDuration = duration;
-			m_blackboardFlag = contextFlag;
+			m_duration = duration;
 		}
 
-		protected override EBTNodeState OnUpdate(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 		{
-			string beganKey = GetContextKey("HasBegan");
-			string timeKey = GetContextKey("TimeElapsed");
-
-			if (!context.GetData<bool>(beganKey))
-			{
-				context.SetData<bool>(beganKey, true);
-				context.SetData<float>(timeKey, 0f);
-			}
+			string timeKey = GetContextKey(c_timerKey);
 
 			float timeElapsed = context.GetData<float>(timeKey) + t;
 			context.SetData<float>(timeKey, timeElapsed);
 
-			if (timeElapsed >= m_timeoutDuration)
+			if (timeElapsed >= m_duration)
 			{
 				// Timeout!
-				context.SetData<bool>(m_blackboardFlag, true);
-				m_childNodes[0].Reset(context);
+				m_childNodes[0].ResetNode(context);
 
 				return EBTNodeState.STATE_FAILURE;
 			}
 
-			return m_childNodes[0].Evaluate(context, t);
+			return m_childNodes[0].EvaluateNode(context, t);
 		}
 
-		public override void Reset(AIContext context)
+		protected override void OnFirstEvaluate(AIContext context)
 		{
-			base.Reset(context);
-			context.ClearData(GetContextKey("TimeElapsed"));
+			context.ClearData(GetContextKey(c_timerKey));
+
+			context.SetData<float>(c_timerKey, 0f);
 		}
 
-		protected override void OnFirstEvaluate(AIContext context) { }
+		protected override void OnNodeExited(AIContext context) 
+		{
+			context.ClearData(GetContextKey(c_timerKey));
+		}
+
+		protected override void OnNodeReset(AIContext context)
+		{
+			context.ClearData(GetContextKey(c_timerKey));
+		}
 	}
 }

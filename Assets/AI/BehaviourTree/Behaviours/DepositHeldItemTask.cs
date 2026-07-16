@@ -5,16 +5,13 @@ using UnityEngine;
 
 public class DepositHeldItemTask : BTNodeBase
 {
-	private const string c_doneKey = "DoneDepositing";
+	private const string c_doneDepositingKey = "DoneDepositing";
 	private const string c_depositCooldownKey = "DepositCooldownTimer";
 	private const float c_depositCooldown = 0.5f;
 
-	private const string c_stackSizeKey = "SizeOfItemStackToTransfer";
-	private const string c_containerRoomKey = "ContainerRoom";
-
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		if (context.GetData<bool>(c_doneKey))
+		if (context.GetData<bool>(c_doneDepositingKey))
 		{
 			return EBTNodeState.STATE_SUCSESS;
 		}
@@ -50,7 +47,7 @@ public class DepositHeldItemTask : BTNodeBase
 				if (heldItemData == null || heldItemSlot.AmountInSlot <= 0)
 				{
 					// Executor has nothing to deposit
-					context.SetData<bool>(c_doneKey, true);
+					context.SetData<bool>(c_doneDepositingKey, true);
 					return EBTNodeState.STATE_SUCSESS;
 				}
 
@@ -70,14 +67,14 @@ public class DepositHeldItemTask : BTNodeBase
 					// Did the executor run out of items?
 					if (heldItemSlot.AmountInSlot <= 0)
 					{
-						context.SetData<bool>(c_doneKey, true);
+						context.SetData<bool>(c_doneDepositingKey, true);
 						return EBTNodeState.STATE_SUCSESS;
 					}
 
 					// Is the container completely full of this item?
 					if (!containerInventory.TryFindRoomForItem(heldItemData, 1, out _, out _))
 					{
-						context.SetData<bool>(c_doneKey, true);
+						context.SetData<bool>(c_doneDepositingKey, true);
 						return EBTNodeState.STATE_SUCSESS;
 					}
 
@@ -85,7 +82,7 @@ public class DepositHeldItemTask : BTNodeBase
 				}
 				else // No room at all
 				{
-					context.SetData<bool>(c_doneKey, true);
+					context.SetData<bool>(c_doneDepositingKey, true);
 					return EBTNodeState.STATE_SUCSESS;
 				}
 			}
@@ -103,13 +100,19 @@ public class DepositHeldItemTask : BTNodeBase
 	protected override void OnFirstEvaluate(AIContext context)
 	{
 		Debug.Log("Begin item deposit attempt");
-		context.SetData<bool>(c_doneKey, false);
+		context.SetData<bool>(c_doneDepositingKey, false);
 		context.SetData<float>(c_depositCooldownKey, c_depositCooldown); // Reset timer
 	}
 
-	public override void OnExit(AIContext context)
+	protected override void OnNodeExited(AIContext context) 
 	{
-		context.ClearData(c_doneKey);
+		context.ClearData(c_doneDepositingKey);
+		context.ClearData(c_depositCooldownKey);
+	}
+
+	protected override void OnNodeReset(AIContext context)
+	{
+		context.ClearData(c_doneDepositingKey);
 		context.ClearData(c_depositCooldownKey);
 	}
 }

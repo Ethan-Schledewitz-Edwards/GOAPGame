@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FindUseForItemTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 executorPos = executorTransform.position;
@@ -40,4 +40,8 @@ public class FindUseForItemTask : BTNodeBase
 	{
 		Debug.Log("Trying to find a resource deposit.");
 	}
+
+	protected override void OnNodeExited(AIContext context) {}
+
+	protected override void OnNodeReset(AIContext context) {}
 }

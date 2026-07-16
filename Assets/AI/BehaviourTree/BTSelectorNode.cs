@@ -7,17 +7,14 @@ namespace BehaviourTrees
 	/// </summary>
 	public class BTSelectorNode : BTNodeBase
 	{
-        #region Constructors
-
-        public BTSelectorNode() : base() { }
+		public BTSelectorNode() : base() { }
 		public BTSelectorNode(List<BTNodeBase> children) : base(children) { }
-		#endregion
 
-		protected override EBTNodeState OnUpdate(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 		{
 			foreach (BTNodeBase i in m_childNodes)
 			{
-				switch (i.Evaluate(context, t))
+				switch (i.EvaluateNode(context, t))
 				{
 					case EBTNodeState.STATE_FAILURE:
 						continue;
@@ -34,5 +31,9 @@ namespace BehaviourTrees
 		}
 
 		protected override void OnFirstEvaluate(AIContext context) { }
+
+		protected override void OnNodeExited(AIContext context) { }
+
+		protected override void OnNodeReset(AIContext context) { }
 	}
 }

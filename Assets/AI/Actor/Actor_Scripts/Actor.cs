@@ -51,6 +51,7 @@ public class Actor : Entity, IInteractor
 
 	private EActorState m_logicExecutorState = default;
 	private float m_timeFindingJob;
+	private int m_jobAssignmentID = 0;
 	private float m_timeIdleAtWork;
 
 	private bool m_isInteracting;
@@ -136,16 +137,15 @@ public class Actor : Entity, IInteractor
 					if (BehaviourTreeExecutor != null &&
 						BehaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
-						BehaviourTree activeTreeBeforeTick = BehaviourTreeExecutor.CurrentBehaviourTree;
+						int jobAssignmentBeforeTick = m_jobAssignmentID;
 
 						EBTNodeState treeState = BehaviourTreeExecutor.TickBehaviour(t);
 
 						// Reset the actor if it's BehaviourTree never changed and it either finished or timed out
-						if(BehaviourTreeExecutor.CurrentBehaviourTree == activeTreeBeforeTick)
+						if(m_jobAssignmentID == jobAssignmentBeforeTick)
 						{
 							if (treeState == EBTNodeState.STATE_SUCSESS ||
-								treeState == EBTNodeState.STATE_FAILURE ||
-								BehaviourTreeExecutor.AIContext.GetData<bool>(AIContextKeys.c_Timeout))
+								treeState == EBTNodeState.STATE_FAILURE)
 							{
 								ClearLogicExecutorState();
 							}
@@ -288,6 +288,8 @@ public class Actor : Entity, IInteractor
 		m_targetTransform = newObjective.transform;
 		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
 		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, newObjective.GetInteractionPositon());
+
+		m_jobAssignmentID++;
 
 		BehaviourTreeExecutor.SetCurrentBehaviourTree(newObjective.GetBehaviourTree());
 		SetLogicExecutorState(EActorState.STATE_Working);

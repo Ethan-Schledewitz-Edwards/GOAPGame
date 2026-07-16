@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AquireJobFromTargetTask : BTNodeBase
 {
-	protected override EBTNodeState OnUpdate(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
@@ -21,4 +21,8 @@ public class AquireJobFromTargetTask : BTNodeBase
 	}
 
 	protected override void OnFirstEvaluate(AIContext context){}
+
+	protected override void OnNodeExited(AIContext context) {}
+
+	protected override void OnNodeReset(AIContext context) {}
 }

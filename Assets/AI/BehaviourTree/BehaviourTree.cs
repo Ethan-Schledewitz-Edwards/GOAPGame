@@ -11,7 +11,7 @@ namespace BehaviourTrees
 		{
 			if (m_rootNode != null)
 			{
-				return m_rootNode.Evaluate(aiContext, t);
+				return m_rootNode.EvaluateNode(aiContext, t);
 			}
 			else
 			{
