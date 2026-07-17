@@ -23,11 +23,6 @@ public class FindItemTask : BTNodeBase
 		return EBTNodeState.STATE_RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
-	{
-		Debug.Log($"Trying to find an item of ID {context.GetData<int>(AIContextKeys.c_ItemToFindID)}.");
-	}
-
 	private Transform FindItemOfID(AIContext context)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
@@ -51,6 +46,9 @@ public class FindItemTask : BTNodeBase
 			TerrainChunk terrainChunk = WorldBuilder.GetChunkData(chunkXZ);
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
+				if(entity == null) 
+					continue;	
+
 				if (entity.TryGetComponent(out IItemObject itemObject) &&
 					!itemObject.IsItemStored && 
 					itemObject.ItemData.ItemID == itemID)
@@ -66,6 +64,11 @@ public class FindItemTask : BTNodeBase
 		}
 
 		return nearest;
+	}
+
+	protected override void OnFirstEvaluate(AIContext context)
+	{
+		Debug.Log($"Trying to find an item of ID {context.GetData<int>(AIContextKeys.c_ItemToFindID)}.");
 	}
 
 	protected override void OnNodeExited(AIContext context) {}

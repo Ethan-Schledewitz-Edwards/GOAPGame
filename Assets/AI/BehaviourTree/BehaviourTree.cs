@@ -11,7 +11,14 @@ namespace BehaviourTrees
 		{
 			if (m_rootNode != null)
 			{
-				return m_rootNode.EvaluateNode(aiContext, t);
+				EBTNodeState state = m_rootNode.EvaluateNode(aiContext, t);
+
+				if (state != EBTNodeState.STATE_RUNNING)
+				{
+					m_rootNode.ExitNode(aiContext);
+				}
+
+				return state;
 			}
 			else
 			{

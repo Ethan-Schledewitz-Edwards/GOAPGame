@@ -97,7 +97,7 @@ public class Actor : Entity, IInteractor
 	public void TickBehaviour(float t)
 	{
 		if(Pathing == null ||
-			BehaviourTreeExecutor == null || 
+			m_behaviourTreeExecutor == null || 
 			GOAPAgentComp == null) 
 			return;
 
@@ -134,12 +134,12 @@ public class Actor : Entity, IInteractor
 					break;
 
 				case EActorState.STATE_Working:
-					if (BehaviourTreeExecutor != null &&
-						BehaviourTreeExecutor.CurrentBehaviourTree != null)
+					if (m_behaviourTreeExecutor != null &&
+						m_behaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
 						int jobAssignmentBeforeTick = m_jobAssignmentID;
 
-						EBTNodeState treeState = BehaviourTreeExecutor.TickBehaviour(t);
+						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
 						// Reset the actor if it's BehaviourTree never changed and it either finished or timed out
 						if(m_jobAssignmentID == jobAssignmentBeforeTick)
@@ -147,7 +147,8 @@ public class Actor : Entity, IInteractor
 							if (treeState == EBTNodeState.STATE_SUCSESS ||
 								treeState == EBTNodeState.STATE_FAILURE)
 							{
-								ClearLogicExecutorState();
+								ClearJob();
+								DropHeldItem();
 							}
 						}
 					}
@@ -181,8 +182,6 @@ public class Actor : Entity, IInteractor
 
 	#endregion
 
-	#region Actor Logic Executor
-
 	/// <summary>
 	/// Setting the logic executor state determines the method used by an Actor to calculate its behaviour.
 	/// Off-Duty actors use GOAP to drive emergent behaviour.
@@ -215,43 +214,13 @@ public class Actor : Entity, IInteractor
 		Debug.Log($"{transform.name}'s state: {m_logicExecutorState}");
 	}
 
-	private void ClearLogicExecutorState()
-	{
-		// Reset task
-		if (m_targetTransform != null)
-		{
-			if(m_isInteracting &&
-				m_targetTransform.TryGetComponent(out InteractableObjectBase interactableObject))
-				interactableObject.StopInteract();
-
-			m_targetTransform = null;
-		}
-
-		// Reset behaviour
-		if(BehaviourTreeExecutor != null)
-		{
-			BehaviourTreeExecutor.SetCurrentBehaviourTree(null);
-			BehaviourTreeExecutor.ResetContext();
-		}
-		m_timeFindingJob = 0;
-
-		// Drop the actors held slot
-		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
-		if (amountToDrop > 0)
-			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
-
-		SetLogicExecutorState(EActorState.STATE_OffDuty);
-		Pathing.SetStoppingDistance(c_workingDist);
-		Pathing.ClearDestination();
-	}
-	#endregion
-
 	#region Player Commands
 
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear the actors state
-		ClearLogicExecutorState();
+		ClearJob();
+		DropHeldItem();
 
 		// Follow the player
 		SetLogicExecutorState(EActorState.STATE_Follow);
@@ -281,17 +250,19 @@ public class Actor : Entity, IInteractor
 			return;
 
 		// Ignore an incoming job if it does not take precedence
-		if (BehaviourTreeExecutor.CurrentBehaviourTree != null && !newJobTakesPrecedence)
+		if (m_behaviourTreeExecutor.CurrentBehaviourTree != null && !newJobTakesPrecedence)
 			return;
+
+		ClearJob();
+		m_jobAssignmentID++;
 
 		// Set targeting
 		m_targetTransform = newObjective.transform;
 		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
 		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, newObjective.GetInteractionPositon());
 
-		m_jobAssignmentID++;
-
-		BehaviourTreeExecutor.SetCurrentBehaviourTree(newObjective.GetBehaviourTree());
+		m_behaviourTreeExecutor.SetCurrentBehaviourTree(newObjective.GetBehaviourTree());
+		Debug.Log(newObjective.GetBehaviourTree());
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
 
@@ -300,13 +271,22 @@ public class Actor : Entity, IInteractor
 		TrySetActorJob(actorInteractableObjectBase, takesPriority);
 	}
 
+	private void ClearJob()
+	{
+		m_timeFindingJob = 0;
+		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
+		SetLogicExecutorState(EActorState.STATE_OffDuty);
+		Pathing.SetStoppingDistance(c_workingDist);
+		Pathing.ClearDestination();
+	}
+
 	/// <summary>
 	/// Checks if this actor should be searching for a job
 	/// </summary>
 	private bool IsJobNeeded()
 	{
 		bool isJobFinished = (m_logicExecutorState == EActorState.STATE_Working &&
-			BehaviourTreeExecutor.CurrentBehaviourTree == null);
+			m_behaviourTreeExecutor.CurrentBehaviourTree == null);
 
 		return m_logicExecutorState == EActorState.STATE_SearchingForWork || 
 			isJobFinished;
@@ -372,7 +352,8 @@ public class Actor : Entity, IInteractor
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
 				// Clear the actors state
-				ClearLogicExecutorState();
+				ClearJob();
+				DropHeldItem();
 				return null;
 			}
 
@@ -389,4 +370,12 @@ public class Actor : Entity, IInteractor
 		return null;
 	}
 	#endregion
+
+	private void DropHeldItem()
+	{
+		// Drop the actors held slot
+		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
+		if (amountToDrop > 0)
+			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
+	}
 }

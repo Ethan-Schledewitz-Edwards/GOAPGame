@@ -5,9 +5,8 @@ namespace BehaviourTrees
 {
 	public class BTTimeoutNode : BTNodeBase
 	{
-		private const string c_timerKey = "TimeElapsed";
-
-		private float m_duration;
+		private readonly string m_timeoutKey;
+		private readonly float m_duration;
 
 		/// <summary>
 		/// Times out a child node and sets a specific flag in the AIContext if it fails.
@@ -15,14 +14,13 @@ namespace BehaviourTrees
 		public BTTimeoutNode(BTNodeBase child, float duration) : base(new List<BTNodeBase> { child } ) 
 		{
 			m_duration = duration;
+			m_timeoutKey = $"{NodeID}_Timeout";
 		}
 
 		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 		{
-			string timeKey = GetContextKey(c_timerKey);
-
-			float timeElapsed = context.GetData<float>(timeKey) + t;
-			context.SetData<float>(timeKey, timeElapsed);
+			float timeElapsed = context.GetData<float>(m_timeoutKey) + t;
+			context.SetData<float>(m_timeoutKey, timeElapsed);
 
 			if (timeElapsed >= m_duration)
 			{
@@ -37,19 +35,18 @@ namespace BehaviourTrees
 
 		protected override void OnFirstEvaluate(AIContext context)
 		{
-			context.ClearData(GetContextKey(c_timerKey));
-
-			context.SetData<float>(c_timerKey, 0f);
+			context.ClearData(m_timeoutKey);
+			context.SetData<float>(m_timeoutKey, 0f);
 		}
 
 		protected override void OnNodeExited(AIContext context) 
 		{
-			context.ClearData(GetContextKey(c_timerKey));
+			context.ClearData(m_timeoutKey);
 		}
 
 		protected override void OnNodeReset(AIContext context)
 		{
-			context.ClearData(GetContextKey(c_timerKey));
+			context.ClearData(m_timeoutKey);
 		}
 	}
 }

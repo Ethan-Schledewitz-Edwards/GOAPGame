@@ -13,17 +13,16 @@ namespace BehaviourTrees
 
 	public abstract class BTNodeBase
 	{
-		private const string c_firstEvauatedKey = "FirstEvaluated";
-
 		public readonly string NodeID = Guid.NewGuid().ToString();
+		protected readonly string m_firstEvaluatedKey;
 
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
 
-
         public BTNodeBase()
 		{
 			m_parentNode = null;
+			m_firstEvaluatedKey = $"{NodeID}_FirstEvaluated";
 		}
 
 		/// <summary>
@@ -37,17 +36,11 @@ namespace BehaviourTrees
 			}
 		}
 
-		protected string GetContextKey(string propertyName)
-		{
-			return $"{NodeID}_{propertyName}";
-		}
-
 		public EBTNodeState EvaluateNode(AIContext context, float t)
 		{
-			string beganKey = GetContextKey(c_firstEvauatedKey);
-			if (!context.GetData<bool>(beganKey))
+			if (!context.GetData<bool>(m_firstEvaluatedKey))
 			{
-				context.SetData<bool>(beganKey, true);
+				context.SetData<bool>(m_firstEvaluatedKey, true);
 				OnFirstEvaluate(context);
 			}
 
@@ -60,8 +53,7 @@ namespace BehaviourTrees
 
 		public void ExitNode(AIContext context) 
 		{
-			context.ClearData(GetContextKey(c_firstEvauatedKey));
-
+			context.ClearData(m_firstEvaluatedKey);
 			OnNodeExited(context);
 		}
 
@@ -69,8 +61,7 @@ namespace BehaviourTrees
 
 		public void ResetNode(AIContext context)
 		{
-			string beganKey = GetContextKey(c_firstEvauatedKey);
-			context.SetData<bool>(beganKey, false);
+			context.SetData<bool>(m_firstEvaluatedKey, false);
 
 			foreach (BTNodeBase child in m_childNodes)
 			{

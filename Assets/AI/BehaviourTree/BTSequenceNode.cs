@@ -7,9 +7,12 @@ namespace BehaviourTrees
 	/// </summary>
 	public class BTSequenceNode : BTNodeBase
 	{
-		private const string c_sequenceIndexKey = "SequenceIndex";
+		private readonly string m_sequenceIndexKey;
 
-		public BTSequenceNode() : base() { }
+		public BTSequenceNode() : base() 
+		{
+			m_sequenceIndexKey = $"{NodeID}_SequenceIndex";
+		}
 		public BTSequenceNode(List<BTNodeBase> children) : base(children) { }
 
 		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
@@ -17,8 +20,7 @@ namespace BehaviourTrees
 			if (m_childNodes == null || m_childNodes.Count == 0)
 				return EBTNodeState.STATE_SUCSESS;
 
-			string sequenceKey = GetContextKey(c_sequenceIndexKey);
-			int currentChildIndex = context.GetData<int>(sequenceKey);
+			int currentChildIndex = context.GetData<int>(m_sequenceIndexKey);
 
 			while (currentChildIndex < m_childNodes.Count)
 			{
@@ -28,13 +30,14 @@ namespace BehaviourTrees
 				switch (childState)
 				{
 					case EBTNodeState.STATE_FAILURE:
-						context.SetData<int>(sequenceKey, 0); // Reset for next execution cycle
+						currentChild.ExitNode(context);
+						context.SetData<int>(m_sequenceIndexKey, 0); // Reset for next execution cycle
 						return EBTNodeState.STATE_FAILURE;
 
 					case EBTNodeState.STATE_SUCSESS:
 						currentChild.ExitNode(context);
 						currentChildIndex++;
-						context.SetData<int>(sequenceKey, currentChildIndex); // Advance to the next task
+						context.SetData<int>(m_sequenceIndexKey, currentChildIndex); // Advance to the next task
 						break;
 
 					case EBTNodeState.STATE_RUNNING:
@@ -42,23 +45,23 @@ namespace BehaviourTrees
 				}
 			}
 
-			context.SetData<int>(sequenceKey, 0);
+			context.SetData<int>(m_sequenceIndexKey, 0);
 			return EBTNodeState.STATE_SUCSESS;
 		}
 
 		protected override void OnFirstEvaluate(AIContext context) 
 		{
-			context.SetData<int>(GetContextKey(c_sequenceIndexKey), 0);
+			context.SetData<int>(m_sequenceIndexKey, 0);
 		}
 
 		protected override void OnNodeExited(AIContext context) 
 		{
-			context.ClearData(GetContextKey(c_sequenceIndexKey));
+			context.ClearData(m_sequenceIndexKey);
 		}
 
 		protected override void OnNodeReset(AIContext context)
 		{
-			context.ClearData(GetContextKey(c_sequenceIndexKey));
+			context.ClearData(m_sequenceIndexKey);
 		}
 	}
 }

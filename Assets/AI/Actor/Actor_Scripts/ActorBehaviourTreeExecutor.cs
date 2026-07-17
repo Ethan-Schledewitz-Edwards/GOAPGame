@@ -32,6 +32,7 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 	public override void ResetContext()
 	{
 		base.ResetContext();
+
 		AIContext.SetData<Transform>(AIContextKeys.c_ExecutorTransform, transform);
 		AIContext.SetData<int>(AIContextKeys.c_InteractionLayer, 1 << LayerMask.NameToLayer("Interaction"));
 		SetInteractionDistance(m_actor.InteractionDistance);
