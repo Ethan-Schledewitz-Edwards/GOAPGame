@@ -9,11 +9,10 @@ namespace BehaviourTrees
 	{
 		private readonly string m_sequenceIndexKey;
 
-		public BTSequenceNode() : base() 
+		public BTSequenceNode(List<BTNodeBase> children) : base(children) 
 		{
 			m_sequenceIndexKey = $"{NodeID}_SequenceIndex";
 		}
-		public BTSequenceNode(List<BTNodeBase> children) : base(children) { }
 
 		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 		{

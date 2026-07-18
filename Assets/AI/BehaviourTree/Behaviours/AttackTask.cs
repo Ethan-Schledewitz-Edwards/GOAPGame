@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class AttackTask : BTNodeBase
 {
-	private const string c_attackTimerKey = "AttackTimer";
+	private readonly string m_cooldownKey;
 
 	private const float c_timeBetweenAttacks = 2f;
 	private const int c_attackDamage = 2;
 
+	public AttackTask() : base()
+	{
+		m_cooldownKey = $"{NodeID}_AttackCooldown";
+	}
+
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		string attackTimerKey = GetContextKey(c_attackTimerKey);
-
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
@@ -24,18 +27,18 @@ public class AttackTask : BTNodeBase
 		if (targetTransform.TryGetComponent(out HealthComponent health))
 		{
 
-			float currentTimer = context.GetData<float>(attackTimerKey) + t;
+			float currentTimer = context.GetData<float>(m_cooldownKey) + t;
 
 			if (currentTimer >= c_timeBetweenAttacks)
 			{
-				context.SetData<float>(attackTimerKey, 0f);
+				context.SetData<float>(m_cooldownKey, 0f);
 				Debug.Log("ATTACK");
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
 				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
 			}
 			else
 			{
-				context.SetData<float>(attackTimerKey, currentTimer);
+				context.SetData<float>(m_cooldownKey, currentTimer);
 			}
 
 			return EBTNodeState.STATE_RUNNING;
@@ -51,11 +54,11 @@ public class AttackTask : BTNodeBase
 
 	protected override void OnNodeExited(AIContext context) 
 	{
-		context.ClearData(GetContextKey(c_attackTimerKey));
+		context.ClearData(m_cooldownKey);
 	}
 
 	protected override void OnNodeReset(AIContext context)
 	{
-		context.ClearData(GetContextKey(c_attackTimerKey));
+		context.ClearData(m_cooldownKey);
 	}
 }

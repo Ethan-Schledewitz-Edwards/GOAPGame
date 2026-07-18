@@ -6,7 +6,7 @@ public class ReturnToBlueprintTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		int settlementID = context.GetData<int>(AIContextKeys.c_SettlementID);
+		int settlementID = context.GetData<int>(AIContextKeys.c_HomeSettlementID);
 		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
 
 		Settlement settlement = SettlementManager.s_WorldSettlements[settlementID];

@@ -7,8 +7,7 @@ public class MoveToTargetDataTask : BTNodeBase
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Vector3 targetPos = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
-
+		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
@@ -18,6 +17,7 @@ public class MoveToTargetDataTask : BTNodeBase
 				return EBTNodeState.STATE_SUCSESS;
 
 			// We are still walking.
+			pathing.SetDestination(targetDestination);
 			return EBTNodeState.STATE_RUNNING;
 		}
 

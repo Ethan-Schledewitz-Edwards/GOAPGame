@@ -14,7 +14,8 @@ public class AquireJobFromTargetTask : BTNodeBase
 		if (targetTransform != null &&
 			targetTransform.TryGetComponent(out InteractableObjectBase iob))
 		{
-			iob.TryInteract(interactor, true);
+			if(iob.TryInteract(interactor, true))
+				return EBTNodeState.STATE_SUCSESS;
 		}
 
 		return EBTNodeState.STATE_RUNNING;

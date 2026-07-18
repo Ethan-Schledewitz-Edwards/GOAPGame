@@ -35,7 +35,7 @@ public static class AIContextKeys
 	public const string c_ExecutorTransform = "ExecutorTransform";
 	public const string c_InteractionDistance = "InteractionDistance";
 	public const string c_InteractionLayer = "InteractionLayer";
-	public const string c_SettlementID = "HomeSettlementID";
+	public const string c_HomeSettlementID = "HomeSettlementID";
 	public const string c_TargetTransform = "TargetTransform";
 	public const string c_TargetDestination = "TargetDestination";
 	public const string c_HeldItemID = "HeldItemID";

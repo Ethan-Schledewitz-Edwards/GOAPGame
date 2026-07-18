@@ -28,7 +28,7 @@ namespace BehaviourTrees
 		/// <summary>
 		/// Fills the nodes list of children on construction
 		/// </summary>
-		public BTNodeBase(List<BTNodeBase> children)
+		public BTNodeBase(List<BTNodeBase> children) : this()
 		{
 			foreach (BTNodeBase i in children)
 			{

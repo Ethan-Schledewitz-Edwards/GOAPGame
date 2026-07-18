@@ -118,7 +118,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
 			if (executor != null && executor.AIContext != null)
 			{
-				executor.AIContext.SetData<int>(AIContextKeys.c_SettlementID, m_settlementID);
+				executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
 
 				foreach (ItemQuantity item in m_requiredItems)
