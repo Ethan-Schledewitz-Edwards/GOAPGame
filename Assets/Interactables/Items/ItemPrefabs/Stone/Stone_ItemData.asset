@@ -16,3 +16,5 @@ MonoBehaviour:
   <ItemName>k__BackingField: Stone
   <MaxStackSize>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 6673996059420899831, guid: 3ad4e379c4f97e34aa810cacaed6ee78, type: 3}
+  m_itemTags:
+  - {fileID: 11400000, guid: 97c68dc4729accb48b01a4c82245dd66, type: 2}

@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace ObjectTags
 {
-	public interface IObjectTaggable
+	public interface ITaggable<T>
 	{
-		HashSet<ObjectTag> RuntimeTagSet { get; }
+		HashSet<T> RuntimeTagSet { get; }
 
-		public bool HasTag(ObjectTag tagToCheck)
+		public bool HasTag(T tagToCheck)
 		{
 			if (tagToCheck == null || RuntimeTagSet == null) 
 				return false;

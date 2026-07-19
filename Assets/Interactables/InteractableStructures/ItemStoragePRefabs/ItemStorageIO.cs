@@ -30,7 +30,7 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_actorsAssigned = 0;
 
 		[Header("Storage Configuration")]
-		private ObjectTag[] m_permittedItemTypes;
+		[SerializeField] private ItemTag[] m_permittedItemTypes;
 
 		public override bool UseFormationRadius { get => false; }
 

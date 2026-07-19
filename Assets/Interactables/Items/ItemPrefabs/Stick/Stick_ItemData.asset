@@ -16,3 +16,5 @@ MonoBehaviour:
   <ItemName>k__BackingField: Stick
   <MaxStackSize>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 1874837442947906605, guid: 5b36e768f8738774e93279f9eb240148, type: 3}
+  m_itemTags:
+  - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}

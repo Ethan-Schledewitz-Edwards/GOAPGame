@@ -67,7 +67,8 @@ MonoBehaviour:
   m_formationRadius: 2
   m_maxCapacity: 4
   m_actorsAssigned: 0
-  m_itemType: {fileID: 0}
+  m_permittedItemTypes:
+  - {fileID: 11400000, guid: 4ed713c2e26940c4f9a7f2a2fb76bcbe, type: 2}
 --- !u!208 &7827061921092389273
 NavMeshObstacle:
   m_ObjectHideFlags: 0

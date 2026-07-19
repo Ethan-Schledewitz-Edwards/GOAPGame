@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66f67550dbd23ee499844233d57d3565, type: 3}
-  m_Name: Storage_StructureTag
-  m_EditorClassIdentifier: InventorySystem.Items::InventorySystem.Items.ItemTag
+  m_Script: {fileID: 11500000, guid: 37c907cd73aee5140b9d0843125beceb, type: 3}
+  m_Name: Stone_ItemTag
+  m_EditorClassIdentifier: ObjectTags::ObjectTags.ItemTag
   DeveloperNotes: 

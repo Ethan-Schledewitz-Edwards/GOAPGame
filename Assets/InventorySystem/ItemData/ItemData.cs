@@ -6,22 +6,22 @@ using UnityEngine;
 namespace InventorySystem.Items
 {
 	[CreateAssetMenu(fileName = "ItemData", menuName = "Items/ItemData")]
-	public class ItemData : ScriptableObject, IIndexedAsset, IObjectTaggable
+	public class ItemData : ScriptableObject, IIndexedAsset, ITaggable<ItemTag>
 	{
 		[field: SerializeField] public int ItemID { get; private set; }
 		[field: SerializeField] public string ItemName { get; private set; }
 		[field: SerializeField] public int MaxStackSize { get; private set; } = 100;
 		[field: SerializeField] public GameObject ItemPrefab { get; private set; }
 
-		[SerializeField] private ObjectTag[] m_tags;
+		[SerializeField] private ItemTag[] m_itemTags;
 
-		private HashSet<ObjectTag> m_tagCache;
-		public HashSet<ObjectTag> RuntimeTagSet
+		private HashSet<ItemTag> m_itemTagCache;
+		HashSet<ItemTag> ITaggable<ItemTag>.RuntimeTagSet
 		{
 			get
 			{
-				if (m_tagCache == null) m_tagCache = new HashSet<ObjectTag>(m_tags);
-				return m_tagCache;
+				if (m_itemTagCache == null) m_itemTagCache = new HashSet<ItemTag>(m_itemTags);
+				return m_itemTagCache;
 			}
 		}
 
