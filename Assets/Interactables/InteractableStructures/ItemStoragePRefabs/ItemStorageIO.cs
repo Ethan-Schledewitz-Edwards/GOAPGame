@@ -4,6 +4,7 @@ using UnityEngine;
 using InventorySystem;
 using InventorySystem.Items;
 using Settlements;
+using ObjectTags;
 
 namespace Interaction.InteractableStructures
 {
@@ -29,8 +30,7 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_actorsAssigned = 0;
 
 		[Header("Storage Configuration")]
-		[SerializeField] private ItemData m_itemType;
-		public ItemData ItemType => m_itemType;
+		private ObjectTag[] m_permittedItemTypes;
 
 		public override bool UseFormationRadius { get => false; }
 

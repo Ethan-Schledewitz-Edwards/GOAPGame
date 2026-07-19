@@ -1,10 +1,7 @@
 {
-    "name": "InventorySystem.Items",
-    "rootNamespace": "InventorySystem.Items",
-    "references": [
-        "GUID:0eec0e3185c110644ab23d853bdbea41",
-        "GUID:4226e2a0af523234d863bc360ce6fd4d"
-    ],
+    "name": "ObjectTags",
+    "rootNamespace": "ObjectTags",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7827061921092389273}
   - component: {fileID: 8920827537773528951}
   m_Layer: 7
-  m_Name: FoodStall_Interactable
+  m_Name: FoodStorage_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
