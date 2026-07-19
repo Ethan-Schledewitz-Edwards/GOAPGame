@@ -46,5 +46,14 @@ namespace GenericIndex
 
 			return index.GetIndexedAsset(id);
 		}
+
+		public static T GetAsset<T>(string assetName) where T : ScriptableObject, IIndexedAsset
+		{
+			var index = GetIndex<T>();
+			if (index == null)
+				return null;
+
+			return index.GetIndexedAsset(assetName);
+		}
 	}
 }

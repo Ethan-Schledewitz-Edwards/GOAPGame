@@ -9,6 +9,8 @@ namespace GenericIndex
 		public int AssetsInIndex => assets.Length;
 		[field: SerializeField] protected T[] assets { get; private set; }
 
+		private Dictionary<string, T> m_nameCache;
+
 		public void RegisterSelf()
 		{
 			IndexRegistry.Register<T>(this);
@@ -21,6 +23,29 @@ namespace GenericIndex
 
 			return 
 				assets[id];
+		}
+
+		public T GetIndexedAsset(string assetName)
+		{
+			if (m_nameCache == null)
+			{
+				m_nameCache = new Dictionary<string, T>(assets.Length);
+				foreach (var asset in assets)
+				{
+					if (asset != null)
+					{
+						m_nameCache[asset.name] = asset;
+					}
+				}
+			}
+
+			if (m_nameCache.TryGetValue(assetName, out T foundAsset))
+			{
+				return foundAsset;
+			}
+
+			Debug.LogError($"[GenericIndex] Asset named '{assetName}' could not be found in the {typeof(T).Name} index.");
+			return null;
 		}
 
 #if UNITY_EDITOR

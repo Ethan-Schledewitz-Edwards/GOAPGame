@@ -1,7 +1,9 @@
 {
     "name": "ObjectTags",
     "rootNamespace": "ObjectTags",
-    "references": [],
+    "references": [
+        "GUID:0eec0e3185c110644ab23d853bdbea41"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

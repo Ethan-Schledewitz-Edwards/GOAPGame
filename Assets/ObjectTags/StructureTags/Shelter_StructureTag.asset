@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25685853ec3e87f43880cffb9f44ad90, type: 3}
   m_Name: Shelter_StructureTag
   m_EditorClassIdentifier: ObjectTags::ObjectTags.StructureTag
+  <TagID>k__BackingField: 1
   DeveloperNotes: 

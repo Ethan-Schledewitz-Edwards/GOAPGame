@@ -1,3 +1,4 @@
+using GenericIndex;
 using UnityEngine;
 
 namespace ObjectTags

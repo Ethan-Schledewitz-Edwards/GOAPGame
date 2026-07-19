@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c907cd73aee5140b9d0843125beceb, type: 3}
   m_Name: Wood_ItemTag
   m_EditorClassIdentifier: ObjectTags::ObjectTags.ItemTag
+  <TagID>k__BackingField: 2
   DeveloperNotes: 

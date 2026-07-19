@@ -5,15 +5,12 @@ using UnityEngine;
 using InventorySystem.Items;
 using InventorySystem;
 using ObjectTags;
+using GenericIndex;
 
 [RequireComponent(typeof(Rigidbody))]
 public class ItemIO : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree m_ItemBT;
-
-	// Tags used by tasks
-	[SerializeField] private StructureTag m_blueprintStructureTag;
-	[SerializeField] private StructureTag m_storageStructureTag;
 
 	// Components
 	private Rigidbody m_rb;
@@ -43,7 +40,10 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		{
 			BehaviourTree tree = new BehaviourTree();
 
-			BTNodeBase findUseTask = new FindUseForItemTask(m_blueprintStructureTag, m_storageStructureTag);
+			StructureTag blueprintTag = IndexRegistry.GetAsset<StructureTag>("Blueprint_StructureTag");
+			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
+
+			BTNodeBase findUseTask = new FindUseForItemTask(blueprintTag, storageTag);
 			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 2f);
 
 			BTNodeBase depositTask = new DepositHeldItemTask();
