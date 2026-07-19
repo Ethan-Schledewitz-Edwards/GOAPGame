@@ -42,7 +42,7 @@ namespace Terrain.Generation
 		{
 			this.m_worldBuilder = worldBuilder;
 
-			var tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
+			TileIndex tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
 
 			if (tileIndex != null)
 			{
