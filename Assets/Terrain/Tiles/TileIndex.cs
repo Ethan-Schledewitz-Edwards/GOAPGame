@@ -2,7 +2,4 @@ using UnityEngine;
 using GenericIndex;
 
 [CreateAssetMenu(fileName = "TileIndex", menuName = "Tiles/TileIndex")]
-public class TileIndex : GenericIndexBase<TileDataBase> 
-{
-	public TileDataBase[] Tiles => assets;
-}
+public class TileIndex : GenericIndexBase<TileDataBase> { }

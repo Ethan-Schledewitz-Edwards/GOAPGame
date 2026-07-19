@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Terrain.WorldProperties;
+using GenericIndex;
 
 namespace Terrain.Generation
 {
@@ -29,6 +30,8 @@ namespace Terrain.Generation
 		public static Dictionary<Vector2Int, (TerrainChunk chunkData, GameObject gameObject)> s_ActiveChunks =
 			new Dictionary<Vector2Int, (TerrainChunk chunkData, GameObject gameObject)>();
 
+		private TileIndex m_tileIndex;
+
 		private static readonly HashSet<Vector2Int> s_requestedChunks = new HashSet<Vector2Int>(); // Active chunks that are generating
 		private static readonly HashSet<Vector2Int> s_pendingChunks = new HashSet<Vector2Int>(); // Chunk data that is generating but is not active
 
@@ -44,6 +47,8 @@ namespace Terrain.Generation
 
 			m_chunkBuilder = new ChunkDataBuilder(this, m_biomeIndex);
 			m_chunkMesher = new ChunkMeshBuilder(this);
+
+			m_tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
 		}
 
 
@@ -174,9 +179,9 @@ namespace Terrain.Generation
 						{
 							int tileID = targetChunk.TileData[x, y, z];
 
-							if (tileID >= 0 && tileID < m_tileIndex.Tiles.Length)
+							if (tileID >= 0 && tileID < m_tileIndex.AssetsInIndex)
 							{
-								if (m_tileIndex.Tiles[tileID] is FeatureTileData featureData)
+								if (m_tileIndex.GetIndexedAsset(tileID) is FeatureTileData featureData)
 								{
 									GameObject featureTile = GameObject.Instantiate
 										(

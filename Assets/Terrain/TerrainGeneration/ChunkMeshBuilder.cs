@@ -28,7 +28,8 @@ namespace Terrain.Generation
 		private WorldBuilder m_worldBuilder;
 		private Dictionary<int, Color32> m_tileColorDict = new Dictionary<int, Color32>();
 
-		private TileIndex m_tileIndex;
+		private int m_totalRegisteredTiles;
+		private bool[] m_isFeatureTileLookup;
 
 		// Multithreading
 		private Queue<GeneratingChunkMesh> m_meshQueue = new Queue<GeneratingChunkMesh>();
@@ -40,12 +41,29 @@ namespace Terrain.Generation
 		public ChunkMeshBuilder(WorldBuilder worldBuilder)
 		{
 			this.m_worldBuilder = worldBuilder;
-			m_tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
 
-			for (int i = 0; i < m_tileIndex.Tiles.Length; i++)
+			var tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
+
+			if (tileIndex != null)
 			{
-				if (m_tileIndex.Tiles[i] is VoxelTileData voxelData)
-					m_tileColorDict[i] = voxelData.TileVertexColour;
+				m_totalRegisteredTiles = tileIndex.AssetsInIndex;
+				m_isFeatureTileLookup = new bool[m_totalRegisteredTiles];
+
+				// Cache all property data into thread-safe types right now
+				for (int i = 0; i < m_totalRegisteredTiles; i++)
+				{
+					var tileAsset = tileIndex.GetIndexedAsset(i);
+					if (tileAsset == null) continue;
+
+					if (tileAsset is VoxelTileData voxelData)
+					{
+						m_tileColorDict[i] = voxelData.TileVertexColour;
+					}
+					else if (tileAsset is FeatureTileData)
+					{
+						m_isFeatureTileLookup[i] = true;
+					}
+				}
 			}
 
 			m_meshingSemaphore = new SemaphoreSlim(4);
@@ -73,10 +91,10 @@ namespace Terrain.Generation
 				if (TerrainQueryUtility.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighboursTileID))
 				{
 					if (neighboursTileID >= 0 &&
-						neighboursTileID < m_tileIndex.Tiles.Length)
+						neighboursTileID < m_totalRegisteredTiles)
 					{
 						// Ignore feature tiles
-						if (m_tileIndex.Tiles[neighboursTileID] is FeatureTileData)
+						if (m_isFeatureTileLookup[neighboursTileID])
 							continue;
 
 						configBitmask |= 1 << i;
@@ -90,20 +108,21 @@ namespace Terrain.Generation
 
 			// Ensure only voxel tiles are meshed
 			Color32 tileColor = new Color32(255, 255, 255, 255);
-			if (tileID >= 0 && tileID < m_tileIndex.Tiles.Length)
+			if (tileID >= 0 && tileID < m_totalRegisteredTiles)
 			{
-				tileColor = m_tileColorDict[tileID];
+				if (m_tileColorDict.TryGetValue(tileID, out Color32 cachedColor))
+					tileColor = cachedColor;
 			}
 			else
 			{
-				// Air tiles with gemetry moving through them sample the first valid neighbours colour
+				// Air tiles sample first valid neighbors color safely from local thread cache
 				for (int i = 0; i < 8; i++)
 				{
 					if (TerrainQueryUtility.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, MarchingTable.Corners[i], out int neighborID))
 					{
-						if (neighborID >= 0 && neighborID < m_tileIndex.Tiles.Length && m_tileColorDict.ContainsKey(neighborID))
+						if (neighborID >= 0 && neighborID < m_totalRegisteredTiles && m_tileColorDict.TryGetValue(neighborID, out Color32 neighborColor))
 						{
-							tileColor = m_tileColorDict[neighborID];
+							tileColor = neighborColor;
 							break;
 						}
 					}
@@ -170,9 +189,7 @@ namespace Terrain.Generation
 						// Using your existing neighbor check
 						if (TerrainQueryUtility.IsNeighborTileSolid(chunkXZ, chunkTiles, localPos, offset, out int tileId))
 						{
-							if (tileId >= 0 &&
-								tileId < m_tileIndex.Tiles.Length &&
-								!(m_tileIndex.Tiles[tileId] is FeatureTileData))
+							if (tileId >= 0 && tileId < m_totalRegisteredTiles && !m_isFeatureTileLookup[tileId])
 							{
 								solidCount++;
 							}
