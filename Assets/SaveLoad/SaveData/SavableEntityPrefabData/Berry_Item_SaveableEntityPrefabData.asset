@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: Berry_Item_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabID>k__BackingField: 4
+  <PrefabID>k__BackingField: 1
   <EntityPrefab>k__BackingField: {fileID: 5367155534341536093, guid: 819ff9ddf8a009149ae7bb03815e4960, type: 3}

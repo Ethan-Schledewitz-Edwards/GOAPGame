@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8163ce1ed665af541938791b47570d79, type: 3}
   m_Name: SavableEntityPrefabDataIndex
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityIndex
-  <Assets>k__BackingField:
+  <assets>k__BackingField:
   - {fileID: 11400000, guid: e9dc6ca03b2fbe24897ea9f6c2a4e351, type: 2}
-  - {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}
-  - {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}
-  - {fileID: 11400000, guid: 8bafd1e26fc88a443b0400675490750c, type: 2}
   - {fileID: 11400000, guid: 2d9dc667733c7d24b9ed64cc77ef59bb, type: 2}
-  - {fileID: 11400000, guid: 70b7d9ab0da8d5948899999eb64c0499, type: 2}
   - {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
+  - {fileID: 11400000, guid: 8bafd1e26fc88a443b0400675490750c, type: 2}
+  - {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}
+  - {fileID: 11400000, guid: 70b7d9ab0da8d5948899999eb64c0499, type: 2}
+  - {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}

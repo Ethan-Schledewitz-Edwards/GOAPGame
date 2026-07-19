@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: BlueprintIO_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabID>k__BackingField: 6
+  <PrefabID>k__BackingField: 2
   <EntityPrefab>k__BackingField: {fileID: 262572155233583462, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}

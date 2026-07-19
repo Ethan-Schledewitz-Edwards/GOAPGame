@@ -1,10 +1,11 @@
 using UnityEngine;
+using ObjectTags;
 
 namespace Settlements
 {
 	public interface IStructure
 	{
-		public string StructureTypeKey { get; }
+		public StructureTag StructureTypeTag { get; }
 		public int SettlementStructureID { get; set; }
 		public GameObject StructureObject { get; }
 		public int MaxCapacity { get; }

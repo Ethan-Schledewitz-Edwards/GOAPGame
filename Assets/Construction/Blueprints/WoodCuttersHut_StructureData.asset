@@ -23,3 +23,4 @@ MonoBehaviour:
   <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 4d2f1e7ab8ce7b64eac7db7ab614b81a, type: 2}
   <BlueprintMesh>k__BackingField: {fileID: -2989305052099074096, guid: fbb14d6c9cb5e88478cfe966804a837d, type: 3}
   <PlacementClearenceRadius>k__BackingField: 2
+  <InteractionLocalOffset>k__BackingField: {x: 0, y: 0, z: 0}

@@ -2,6 +2,7 @@ using Settlements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using GenericIndex;
 
 namespace Construction 
 {
@@ -38,7 +39,8 @@ namespace Construction
 				return;
 			}
 
-			StructureBlueprintData blueprintData = m_blueprintIndex.Assets[structureBlueprintID];
+			StructureBlueprintData blueprintData = IndexRegistry.GetAsset<StructureBlueprintData>(structureBlueprintID);
+			//StructureBlueprintData blueprintData = m_blueprintIndex.GetIndexedAsset(structureBlueprintID);
 
 			GameObject prefab = Instantiate(m_blueprintPrefab);
 			IStructure structure = prefab.GetComponent<IStructure>();

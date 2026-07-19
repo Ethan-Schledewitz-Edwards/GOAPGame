@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: Rock_FeatureTileData
   m_EditorClassIdentifier: Assembly-CSharp::FeatureTileData
-  <TileID>k__BackingField: 3
+  <TileID>k__BackingField: 7
   <Prefab>k__BackingField: {fileID: 860123527070760326, guid: 10af354e49dd7b74f9508ef6fa387918, type: 3}

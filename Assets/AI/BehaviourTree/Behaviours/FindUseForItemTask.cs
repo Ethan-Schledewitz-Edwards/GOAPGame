@@ -1,9 +1,19 @@
 using BehaviourTrees;
+using ObjectTags;
 using Settlements;
 using UnityEngine;
 
 public class FindUseForItemTask : BTNodeBase
 {
+	private readonly StructureTag m_blueprintTag;
+	private readonly StructureTag m_storageTag;
+
+	public FindUseForItemTask(StructureTag blueprintTag, StructureTag storageTag) : base()
+	{
+		m_blueprintTag = blueprintTag;
+		m_storageTag = storageTag;
+	}
+
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
@@ -12,7 +22,7 @@ public class FindUseForItemTask : BTNodeBase
 		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
 		if (closestSettlement != null)
 		{
-			GameObject closestBlueprint = closestSettlement.FindNearestStructureOfType(executorPos, "Blueprint").StructureObject;
+			GameObject closestBlueprint = closestSettlement.FindNearestStructureOfType(executorPos, m_blueprintTag).StructureObject;
 			if (closestBlueprint != null &&
 				closestBlueprint.TryGetComponent(out InteractableObjectBase interactable))
 			{
@@ -22,7 +32,7 @@ public class FindUseForItemTask : BTNodeBase
 				return EBTNodeState.STATE_SUCSESS;
 			}
 
-			GameObject closestStorage = closestSettlement.FindNearestStructureOfType(executorPos, "Storage").StructureObject;
+			GameObject closestStorage = closestSettlement.FindNearestStructureOfType(executorPos, m_storageTag).StructureObject;
 			if (closestStorage != null &&
 				closestStorage.TryGetComponent(out InteractableObjectBase interactableObject))
 			{

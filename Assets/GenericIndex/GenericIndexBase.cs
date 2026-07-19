@@ -4,16 +4,31 @@ using UnityEngine;
 
 namespace GenericIndex
 {
-	public abstract class GenericIndexBase<T> : ScriptableObject where T : ScriptableObject, IIndexedAsset
+	public abstract class GenericIndexBase<T> : ScriptableObject, IRegistrableIndex where T : ScriptableObject, IIndexedAsset
 	{
-		[field: SerializeField] public T[] Assets { get; private set; }
+		public int AssetsInIndex => assets.Length;
+		[field: SerializeField] protected T[] assets { get; private set; }
+
+		public void RegisterSelf()
+		{
+			IndexRegistry.Register<T>(this);
+		}
+
+		public T GetIndexedAsset(int id)
+		{
+			if (id < 0 || id >= assets.Length) 
+				return null;
+
+			return 
+				assets[id];
+		}
 
 #if UNITY_EDITOR
 		public void PopulateUniqueAssets()
 		{
 			string[] guids = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}");
 			List<T> newAssets = new List<T>();
-			List<T> currentAssets = Assets != null ? new List<T>(Assets) : new List<T>();
+			List<T> currentAssets = assets != null ? new List<T>(assets) : new List<T>();
 
 			// Gather unique assets
 			foreach (string guid in guids)
@@ -45,20 +60,20 @@ namespace GenericIndex
 				newAssetIndex++;
 			}
 
-			Assets = currentAssets.ToArray();
+			assets = currentAssets.ToArray();
 			AssignNewIDs();
 		}
 
 		public void AssignNewIDs()
 		{
 			int updatedCount = 0;
-			for (int i = 0; i < Assets.Length; i++)
+			for (int i = 0; i < assets.Length; i++)
 			{
-				if (Assets[i] == null) 
+				if (assets[i] == null) 
 					continue;
 
-				Assets[i].SetID(i);
-				UnityEditor.EditorUtility.SetDirty(Assets[i]);
+				assets[i].SetID(i);
+				UnityEditor.EditorUtility.SetDirty(assets[i]);
 				updatedCount++;
 			}
 

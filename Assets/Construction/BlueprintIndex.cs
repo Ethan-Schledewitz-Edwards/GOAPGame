@@ -6,6 +6,6 @@ namespace Construction
 	[CreateAssetMenu(fileName = "BlueprintIndex", menuName = "Blueprints/BlueprintIndex")]
 	public class BlueprintDataIndex : GenericIndexBase<StructureBlueprintData>
 	{
-		public StructureBlueprintData[] StructureBlueprintData => Assets;
+		public StructureBlueprintData[] StructureBlueprintData => assets;
 	}
 }

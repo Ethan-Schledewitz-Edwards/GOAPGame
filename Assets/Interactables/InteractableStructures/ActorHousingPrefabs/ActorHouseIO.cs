@@ -1,7 +1,8 @@
 using BehaviourTrees;
+using ObjectTags;
+using Settlements;
 using System.Collections.Generic;
 using UnityEngine;
-using Settlements;
 
 namespace Interaction.InteractableStructures
 {
@@ -10,7 +11,8 @@ namespace Interaction.InteractableStructures
 		private static BehaviourTree m_cachedHousingBT;
 
 		// System
-		public string StructureTypeKey => "House";
+		public StructureTag StructureTypeTag => m_structureTypeTag;
+		[SerializeField] private StructureTag m_structureTypeTag;
 		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
 		private int m_structureID;
 

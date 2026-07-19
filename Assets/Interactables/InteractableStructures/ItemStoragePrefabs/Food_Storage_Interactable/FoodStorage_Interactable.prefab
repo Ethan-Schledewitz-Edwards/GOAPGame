@@ -65,6 +65,7 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 1209870151540661286}
   m_formationRadius: 2
+  m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
   m_permittedItemTypes:

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f89048ac5a53f849819891912d3d740, type: 3}
   m_Name: ItemIndex
   m_EditorClassIdentifier: InventorySystem::InventorySystem.Items.ItemIndex
-  <Assets>k__BackingField:
+  <assets>k__BackingField:
   - {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
   - {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
   - {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}

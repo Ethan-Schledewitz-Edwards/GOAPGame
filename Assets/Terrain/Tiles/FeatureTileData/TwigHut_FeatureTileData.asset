@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: TwigHut_FeatureTileData
   m_EditorClassIdentifier: Terrain.Tiles::FeatureTileData
-  <TileID>k__BackingField: 5
+  <TileID>k__BackingField: 10
   <Prefab>k__BackingField: {fileID: 5747243181978247873, guid: 97433afd129006145bed5be5f0641782, type: 3}

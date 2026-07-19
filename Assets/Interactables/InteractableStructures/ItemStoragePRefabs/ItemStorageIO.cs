@@ -17,7 +17,8 @@ namespace Interaction.InteractableStructures
 		public InventoryComponent InventoryComponent { get; private set; }
 
 		// System
-		public string StructureTypeKey => "Storage";
+		public StructureTag StructureTypeTag => m_structureTypeTag;
+		[SerializeField] private StructureTag m_structureTypeTag;
 		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
 		private int m_structureID;
 
@@ -33,7 +34,6 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private ItemTag[] m_permittedItemTypes;
 
 		public override bool UseFormationRadius { get => false; }
-
 
 		private void Awake()
 		{

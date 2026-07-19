@@ -58,6 +58,7 @@ MonoBehaviour:
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
   m_meshFilter: {fileID: 1086525549323106786}
   m_meshRenderer: {fileID: 9099140680238688444}
+  m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
 --- !u!114 &7143371825989947593

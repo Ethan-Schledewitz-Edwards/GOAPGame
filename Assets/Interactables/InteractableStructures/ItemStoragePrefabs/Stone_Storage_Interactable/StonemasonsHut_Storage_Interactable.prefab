@@ -65,9 +65,11 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 249155638142965169}
   m_formationRadius: 2
+  m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
-  m_itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
+  m_permittedItemTypes:
+  - {fileID: 11400000, guid: 97c68dc4729accb48b01a4c82245dd66, type: 2}
 --- !u!208 &7252548703486566623
 NavMeshObstacle:
   m_ObjectHideFlags: 0

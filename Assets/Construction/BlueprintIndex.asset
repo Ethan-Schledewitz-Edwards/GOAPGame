@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b6790cec3c41443b9b79fd3031ad5e, type: 3}
   m_Name: BlueprintIndex
   m_EditorClassIdentifier: Construction::BlueprintIndex
-  <Assets>k__BackingField:
+  <assets>k__BackingField:
   - {fileID: 11400000, guid: b4f8d4cffa91c5849886a1850b15d65a, type: 2}
   - {fileID: 11400000, guid: 9facc05493df1cc4a85b86bba56b8caf, type: 2}
   - {fileID: 11400000, guid: 9c8741652eeb23e4eb13ff5cbd7b6206, type: 2}

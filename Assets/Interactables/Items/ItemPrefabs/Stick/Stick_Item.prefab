@@ -158,6 +158,8 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 0}
   m_formationRadius: 2
+  m_blueprintStructureTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
+  m_storageStructureTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_itemData: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
   <m_stackSize>k__BackingField: 1
 --- !u!114 &7329337748475398938

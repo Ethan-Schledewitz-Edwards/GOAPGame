@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: Wood_Item_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabID>k__BackingField: 1
+  <PrefabID>k__BackingField: 6
   <EntityPrefab>k__BackingField: {fileID: 1874837442947906605, guid: ef83c1d186251ad47aae7488708f1e49, type: 3}

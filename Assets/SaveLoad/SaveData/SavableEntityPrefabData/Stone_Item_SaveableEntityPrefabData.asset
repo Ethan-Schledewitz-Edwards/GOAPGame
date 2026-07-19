@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: Stone_Item_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabID>k__BackingField: 2
+  <PrefabID>k__BackingField: 4
   <EntityPrefab>k__BackingField: {fileID: 6673996059420899831, guid: 3ad4e379c4f97e34aa810cacaed6ee78, type: 3}

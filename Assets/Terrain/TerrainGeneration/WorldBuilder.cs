@@ -13,9 +13,6 @@ namespace Terrain.Generation
 		public static BiomeIndex BiomeIndex => Instance.m_biomeIndex;
 		[SerializeField] private BiomeIndex m_biomeIndex;
 
-		public static TileIndex TileIndex => Instance.m_tileIndex;
-		[SerializeField] private TileIndex m_tileIndex;
-
 		[SerializeField] private Material m_terrainMaterial;
 
 		[Header("Components")]
@@ -46,7 +43,7 @@ namespace Terrain.Generation
 			Instance = this;
 
 			m_chunkBuilder = new ChunkDataBuilder(this, m_biomeIndex);
-			m_chunkMesher = new ChunkMeshBuilder(this, m_tileIndex);
+			m_chunkMesher = new ChunkMeshBuilder(this);
 		}
 
 

@@ -2,12 +2,12 @@ using BehaviourTrees;
 using Construction;
 using InventorySystem;
 using InventorySystem.Items;
+using ObjectTags;
 using Settlements;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
@@ -35,7 +35,8 @@ namespace Interaction.InteractableStructures.Blueprints
 		public event Action<IBlueprintObject> BlueprintCanceled;
 
 		// System
-		public string StructureTypeKey => "Blueprint";
+		public StructureTag StructureTypeTag => m_structureTypeTag;
+		[SerializeField] private StructureTag m_structureTypeTag;
 		public int SettlementStructureID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
 		private int m_settlementStructureID;
 

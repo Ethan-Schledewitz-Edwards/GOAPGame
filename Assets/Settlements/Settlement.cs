@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ObjectTags;
 
 namespace Settlements
 {
@@ -45,14 +46,14 @@ namespace Settlements
 				SettlementStructures.Remove(structureID);
 		}
 
-		public IStructure FindNearestStructureOfType(Vector3 position, string structureType)
+		public IStructure FindNearestStructureOfType(Vector3 position, StructureTag structureTag)
 		{
 			IStructure closest = null;
 			float minDistance = float.MaxValue;
 
 			foreach (var structure in SettlementStructures.Values)
 			{
-				if (structure.StructureTypeKey == structureType)
+				if (structure.StructureTypeTag == structureTag)
 				{
 					float dist = Vector3.Distance(structure.StructureObject.transform.position, position);
 					if (dist < minDistance)

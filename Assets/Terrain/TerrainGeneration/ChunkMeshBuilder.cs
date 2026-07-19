@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Terrain.WorldProperties;
+using GenericIndex;
 
 namespace Terrain.Generation
 {
@@ -25,8 +26,9 @@ namespace Terrain.Generation
 
 		// --- System ---
 		private WorldBuilder m_worldBuilder;
-		private TileIndex m_tileIndex;
 		private Dictionary<int, Color32> m_tileColorDict = new Dictionary<int, Color32>();
+
+		private TileIndex m_tileIndex;
 
 		// Multithreading
 		private Queue<GeneratingChunkMesh> m_meshQueue = new Queue<GeneratingChunkMesh>();
@@ -35,10 +37,10 @@ namespace Terrain.Generation
 
 		#region Constructor
 
-		public ChunkMeshBuilder(WorldBuilder worldBuilder, TileIndex tileIndex)
+		public ChunkMeshBuilder(WorldBuilder worldBuilder)
 		{
-			this.m_tileIndex = tileIndex;
 			this.m_worldBuilder = worldBuilder;
+			m_tileIndex = IndexRegistry.GetIndex<TileDataBase>() as TileIndex;
 
 			for (int i = 0; i < m_tileIndex.Tiles.Length; i++)
 			{
