@@ -7,10 +7,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(BoxCollider), typeof(BluerprintInventoryComponent), (typeof(BlueprintCancelation)))]
+	[RequireComponent(typeof(BoxCollider), 
+		typeof(InventoryComponent), 
+		typeof(BlueprintCancelation))]
 	public class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IBlueprintObject
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -20,13 +23,12 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] private Material m_blueprintMaterial;
 
 		// Components
+		private BoxCollider m_boxCollider;
+		private BlueprintCancelation m_cancelBlueprint;
+		private ItemRequestComponent m_itemRequestComponent;
+		private InventoryComponent m_inventoryComponent;
 		[SerializeField] private MeshFilter m_meshFilter;
 		[SerializeField] private MeshRenderer m_meshRenderer;
-
-		private BluerprintInventoryComponent m_bluerprintInventory;
-		private BlueprintCancelation m_cancelBlueprint;
-		private ItemQuantity[] m_requiredItems;
-		private BoxCollider m_boxCollider;
 
 		// Events
 		public event Action<IBlueprintObject> BlueprintCompleted;
@@ -53,6 +55,8 @@ namespace Interaction.InteractableStructures.Blueprints
 		public GameObject BlueprintObject => gameObject;
 
 		public override bool UseFormationRadius { get => false; }
+
+		private ItemQuantity[] m_requiredItems;
 
 		private void Awake()
 		{
@@ -83,17 +87,22 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 
-			m_bluerprintInventory = GetComponent<BluerprintInventoryComponent>();
-			m_bluerprintInventory.BlueprintItemsAchieved += HandleBlueprintCompleted;
+			m_inventoryComponent = GetComponent<InventoryComponent>();
+
+			if (m_itemRequestComponent == null)
+			{
+				m_itemRequestComponent = gameObject.AddComponent<ItemRequestComponent>();
+				m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
+			}
 
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
-
 		}
 
 		private void OnDestroy()
 		{
-			m_bluerprintInventory.BlueprintItemsAchieved -= HandleBlueprintCompleted;
+			m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
+			m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 		}
 
 		public override void UpdateSpeed(int extra)
@@ -113,29 +122,30 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
-			// ONLY GIVE OUT THE FIND ITEM TASK ONE AT A TIME SO WE DON'T GRAB UNECESSARY ITEMS 
+			if(m_itemRequestComponent == null)
+				return false;
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
 			if (executor != null && executor.AIContext != null)
 			{
-				executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+				interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent);
 
-				foreach (ItemQuantity item in m_requiredItems)
+				int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+				if (requestedItemID > -1)
 				{
-					if (item.itemType != null)
-					{
-						interactor.OnInteractWithObject(this, interactionTakesPriority);
-						executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, item.itemType.ItemID);
-						return true;
-					}
+					executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
+					executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+
+					interactor.OnInteractWithObject(this, interactionTakesPriority);
+					executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, requestedItemID);
+
+					return true;
 				}
 			}
 
 			// Construction workers
 			AssignActor();
-
-			return false;
+			return true;
 		}
 
 		public void HandleBlueprintStarted
@@ -150,8 +160,8 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_settlementID = settlementID;
 			m_structureBlueprintID = structureBlueprintData.StructureBlueprintID;
 
-			m_bluerprintInventory.InitializeBlueprintInventory(structureBlueprintData.RequiredItems);
-			m_requiredItems = structureBlueprintData.RequiredItems;
+			m_inventoryComponent.InitializeInventory(structureBlueprintData.RequiredItems.Length);
+			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, structureBlueprintData.RequiredItems);
 
 			SetBlueprintMesh(structureBlueprintData.BlueprintMesh);
 			SetInteractionOffsetTransform(m_interactOffset, structureBlueprintData.InteractionLocalOffset);
@@ -171,7 +181,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			Debug.Log($"A blueprint of SettlementBlueprintID:{SettlementBlueprintID} was canceld in settlement:{SettlementID}.");
 			BlueprintCanceled?.Invoke(this);
 
-			foreach (InventorySlot slot in m_bluerprintInventory.Slots)
+			foreach (InventorySlot slot in m_inventoryComponent.Slots)
 			{
 				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
 			}

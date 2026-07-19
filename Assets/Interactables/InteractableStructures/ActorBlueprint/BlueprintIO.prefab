@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4303596133692988039}
   - component: {fileID: 8906892727660683798}
   - component: {fileID: 7143371825989947593}
+  - component: {fileID: 3914431523302564834}
   - component: {fileID: 3017703126850601998}
   - component: {fileID: 8727153449917918207}
   - component: {fileID: 6019955960294120562}
@@ -68,10 +69,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 262572155233583462}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c33b9df867628f4faee085fc066ad97, type: 3}
+  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Blueprint::BluerprintInventoryComponent
   m_inventorySize: 1
+--- !u!114 &3914431523302564834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262572155233583462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e523031d3b5eb624fab4bcc6c981af1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.InteractableStructures::Interaction.InteractableStructures.ItemRequestComponent
 --- !u!65 &3017703126850601998
 BoxCollider:
   m_ObjectHideFlags: 0
