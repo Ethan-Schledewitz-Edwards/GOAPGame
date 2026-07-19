@@ -5,42 +5,32 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CapsuleCollider))]
 public class PlayerController : MonoBehaviour, IInputHandler
 {
-	#region Constants
-
-	private const float k_HitEpsilon = 0.02f; // Min distance to wall
-	private const float k_GroundCheckDist = 0.01f;
-	private const float k_StopEpsilon = 0.001f; // Stop when <= this speed
-	private const int k_MaxBounces = 4; // Max number of iterations per frame
-	private const int k_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
+	private const float c_HitEpsilon = 0.02f; // Min distance to wall
+	private const float c_GroundCheckDist = 0.01f;
+	private const float c_StopEpsilon = 0.001f; // Stop when <= this speed
+	private const int c_MaxBounces = 4; // Max number of iterations per frame
+	private const int c_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
 
 	// Ground Movement
-	private const float k_walkingSpeed = 5f;
-	private const float k_friction = 3.8f;
-	private const float k_acceleration = 8.5f;
-	private const float k_maxSpeed = 7f;
+	private const float c_walkingSpeed = 5f;
+	private const float c_friction = 3.8f;
+	private const float c_acceleration = 8.5f;
+	private const float c_maxSpeed = 7f;
 
-	private const float k_stepHeight = 0.7f;
+	private const float c_stepHeight = 0.7f;
 
 	// Normals with Y greater than this are walkable
-	private const float k_maxWalkableAngle = 45;
-	private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * k_maxWalkableAngle);
-
-	// Jumping
-	private const float k_jumpForce = 7;
+	private const float c_maxWalkableAngle = 45;
+	private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
 
 	// Air Movement Values
-	private const float k_airSpeed = .5f;
-	private const float k_airAcceleration = 20;
-	private const float k_gravity = 15;
+	private const float c_airSpeed = .5f;
+	private const float c_airAcceleration = 20;
+	private const float c_gravity = 15;
 
 	// Collision Values
-	private LayerMask m_collisionLayerMask;
-	private const float k_horizontalSize = .5f;
-	private const float k_verticalSize = 2;
-
-	#endregion
-
-	#region System Vars
+	private const float c_horizontalSize = .5f;
+	private const float c_verticalSize = 2;
 
 	// Components
 	private Rigidbody m_rb;
@@ -67,11 +57,8 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private int m_framesStuck = 0;
 	private bool m_justJumped;
 
+	private LayerMask m_collisionLayerMask;
 	private GameObject m_surfaceObject;
-
-	#endregion
-
-	#region Initialization Methods
 
 	void Awake()
 	{
@@ -97,7 +84,6 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	{
 		((IInputHandler)this).SetControlsSubscription(true);
 	}
-	#endregion
 
 	#region Unity Callbacks
 
@@ -149,43 +135,20 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		m_inputDir = context.ReadValue<Vector2>();
 	}
 
-	private void OnJumpInput(InputAction.CallbackContext context)
-	{
-		m_isJumpPressed = context.ReadValueAsButton();
-
-		if (m_isJumpPressed && m_isGrounded)
-			Jump();
-	}
 
 	public void Subscribe()
 	{
 		InputManager.Controls.Player.Movement.performed += OnMoveInput;
 		InputManager.Controls.Player.Movement.canceled += OnMoveInput;
-		InputManager.Controls.Player.Jump.performed += OnJumpInput;
-		InputManager.Controls.Player.Jump.canceled += OnJumpInput;
 	}
 
 	public void UnSubscribe()
 	{
 		InputManager.Controls.Player.Movement.performed -= OnMoveInput;
 		InputManager.Controls.Player.Movement.canceled -= OnMoveInput;
-		InputManager.Controls.Player.Jump.performed -= OnJumpInput;
-		InputManager.Controls.Player.Jump.canceled -= OnJumpInput;
 
 		m_inputDir = Vector2.zero;
 	}
-	#endregion
-
-	#region Input Actions
-
-	private void Jump()
-	{
-		m_velocity.y += k_jumpForce;
-
-		m_isGrounded = false;
-		m_justJumped = true;
-	}
-
 	#endregion
 
 	#region Collision
@@ -202,11 +165,11 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		bool hit = Physics.BoxCast
 		(
 			position + Vector3.up * halfHeight,
-			new Vector3(k_horizontalSize / 2f, halfHeight, k_horizontalSize / 2f),
+			new Vector3(c_horizontalSize / 2f, halfHeight, c_horizontalSize / 2f),
 			direction,
 			out hitInfo,
 			Quaternion.identity,
-			maxDist + k_HitEpsilon,
+			maxDist + c_HitEpsilon,
 			m_collisionLayerMask,
 			QueryTriggerInteraction.Ignore
 		);
@@ -215,7 +178,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		if (hit)
 		{
 			float nDot = -Vector3.Dot(hitInfo.normal, direction);
-			float backup = k_HitEpsilon / nDot;
+			float backup = c_HitEpsilon / nDot;
 			hitInfo.distance -= backup;
 		}
 		else
@@ -234,9 +197,9 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		(
 			m_position + Vector3.up * halfHeight, new Vector3
 			(
-				k_horizontalSize / 2f - k_HitEpsilon,
-				halfHeight - k_HitEpsilon,
-				k_horizontalSize / 2f - k_HitEpsilon
+				c_horizontalSize / 2f - c_HitEpsilon,
+				halfHeight - c_HitEpsilon,
+				c_horizontalSize / 2f - c_HitEpsilon
 			),
 			Quaternion.identity,
 			m_collisionLayerMask,
@@ -267,7 +230,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 				out float dist
 			))
 			{
-				m_position += dir * (dist + k_HitEpsilon * 2.0f);
+				m_position += dir * (dist + c_HitEpsilon * 2.0f);
 				m_velocity = Vector3.zero;
 			}
 			else
@@ -290,16 +253,16 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		Vector3 velocityBeforePlanes = startVelocity;
 
 		// When we collide with multiple planes at once (crease)
-		Vector3[] planes = new Vector3[k_MaxConcurrentPlanes];
+		Vector3[] planes = new Vector3[c_MaxConcurrentPlanes];
 		int planeCount = 0;
 
 		float time = Time.fixedDeltaTime; // The amount of time remaining in the frame, decreases with each iteration
 		int bounceCount;
-		for (bounceCount = 0; bounceCount < k_MaxBounces; ++bounceCount)
+		for (bounceCount = 0; bounceCount < c_MaxBounces; ++bounceCount)
 		{
 			float speed = velocity.magnitude;
 
-			if (speed <= k_StopEpsilon)
+			if (speed <= c_StopEpsilon)
 			{
 				velocity = Vector3.zero;
 				break;
@@ -330,7 +293,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 					velocityBeforePlanes = velocity;
 				}
 
-				if (planeCount >= k_MaxConcurrentPlanes)
+				if (planeCount >= c_MaxConcurrentPlanes)
 				{
 					Debug.LogWarning("Colliding with too many planes at once");
 					velocity = Vector3.zero;
@@ -407,7 +370,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 			}
 		}
 
-		if (bounceCount >= k_MaxBounces)
+		if (bounceCount >= c_MaxBounces)
 		{
 			Debug.LogWarning("Bounces exceeded");
 		}
@@ -420,7 +383,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	{
 		float speed = m_velocity.magnitude;
 
-		float control = Mathf.Max(speed, k_maxSpeed);
+		float control = Mathf.Max(speed, c_maxSpeed);
 
 		float newSpeed = Mathf.Max(speed - (control * friction * Time.fixedDeltaTime), 0);
 
@@ -481,16 +444,16 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	{
 		m_velocity.y = 0;
 
-		Friction(k_friction);
+		Friction(c_friction);
 
-		float desiredSpeed = k_walkingSpeed * m_inputDir.magnitude;
-		Accelerate(moveDir, k_acceleration, desiredSpeed);
+		float desiredSpeed = c_walkingSpeed * m_inputDir.magnitude;
+		Accelerate(moveDir, c_acceleration, desiredSpeed);
 
 		// Clamp Speed
 		float speed = m_velocity.magnitude;
-		if (speed > k_walkingSpeed)
+		if (speed > c_walkingSpeed)
 		{
-			float mult = k_walkingSpeed / speed;
+			float mult = c_walkingSpeed / speed;
 			m_velocity *= mult;
 		}
 
@@ -511,7 +474,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		CollideAndSlide(ref prevPosition, ref prevVelocity);
 
 		// Move down to ground
-		CastHull(prevPosition, Vector3.down, k_stepHeight, out RaycastHit downHit1);
+		CastHull(prevPosition, Vector3.down, c_stepHeight, out RaycastHit downHit1);
 		Vector3 groundedPos = prevPosition + Vector3.down * downHit1.distance;
 
 		bool regGrounded = GroundCheck(groundedPos, out GameObject _);
@@ -523,14 +486,14 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		}
 
 		// Move up and try another move, stepping over stuff
-		CastHull(m_position, Vector3.up, k_stepHeight, out RaycastHit upHit);
+		CastHull(m_position, Vector3.up, c_stepHeight, out RaycastHit upHit);
 		Vector3 steppedPosition = m_position + Vector3.up * upHit.distance;
 		Vector3 steppVelocity = m_velocity;
 
 		CollideAndSlide(ref steppedPosition, ref steppVelocity);
 
 		// Move back down
-		CastHull(steppedPosition, Vector3.down, k_stepHeight + upHit.distance, out RaycastHit downHit);
+		CastHull(steppedPosition, Vector3.down, c_stepHeight + upHit.distance, out RaycastHit downHit);
 		steppedPosition += Vector3.down * downHit.distance;
 
 		bool stepGrounded = GroundCheck(steppedPosition, out GameObject stepSurface);
@@ -562,13 +525,13 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
 	private void AirMove(Vector3 moveDir)
 	{
-		float desiredSpeed = k_airSpeed * m_inputDir.magnitude;
-		Accelerate(moveDir, k_airAcceleration, desiredSpeed);
+		float desiredSpeed = c_airSpeed * m_inputDir.magnitude;
+		Accelerate(moveDir, c_airAcceleration, desiredSpeed);
 
 		float yVel = m_velocity.y;
-		m_velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
+		m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
 		CollideAndSlide(ref m_position, ref m_velocity);
-		m_velocity.y -= k_gravity * Time.fixedDeltaTime / 2f;
+		m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
 
 		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
 	}
@@ -605,14 +568,14 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private void UpdateCollider()
 	{
 		float h = GetColliderHeight();
-		m_col.height = k_verticalSize;
-		m_col.radius = k_horizontalSize;
+		m_col.height = c_verticalSize;
+		m_col.radius = c_horizontalSize;
 		m_col.center = new Vector3(0, h / 2.0f, 0);
 	}
 
 	public float GetColliderHeight()
 	{
-		return k_verticalSize;
+		return c_verticalSize;
 	}
 
 	private IEnumerator AnimWait(float animTime)
@@ -626,7 +589,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		surfaceObject = null;
 		if (m_justJumped) return false;
 
-		if (CastHull(position, Vector3.down, k_GroundCheckDist, out RaycastHit hit))
+		if (CastHull(position, Vector3.down, c_GroundCheckDist, out RaycastHit hit))
 		{
 			if (hit.normal.y > s_minWalkableNormalY)
 			{
@@ -644,7 +607,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 		if (Physics.Raycast(position,
 			Vector3.down,
 			out RaycastHit hit2,
-			k_GroundCheckDist * 2,
+			c_GroundCheckDist * 2,
 			m_collisionLayerMask,
 			QueryTriggerInteraction.Ignore
 		))
