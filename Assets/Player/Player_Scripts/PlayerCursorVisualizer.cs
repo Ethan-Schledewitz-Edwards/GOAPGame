@@ -1,6 +1,8 @@
+using Construction;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerCursorVisualizer : MonoBehaviour
 {
@@ -128,14 +130,23 @@ public class PlayerCursorVisualizer : MonoBehaviour
 
 	#region
 
-	public void SetBlueprint(Mesh mesh, Material[] materials, Vector3 localOffset = default, Quaternion localRotation = default)
+	public void SetBlueprint(StructureBlueprintData blueprintData, Material[] materials, Quaternion localRotation = default)
 	{
 		m_cursorObject.SetActive(false);
 
-		m_meshFilter.mesh = mesh;
+		Mesh blueprintMesh = blueprintData.BlueprintMesh;
+		Bounds blueprintBounds = blueprintMesh.bounds;
+
+		m_meshFilter.mesh = blueprintData.BlueprintMesh;
 		m_meshRenderer.sharedMaterials = materials;
-		m_meshRenderer.transform.localPosition = localOffset;
+
+		float scale = blueprintData.BlueprintMeshScale;
+		m_meshRenderer.transform.localScale = Vector3.one * scale;
 		m_meshRenderer.transform.rotation = localRotation;
+
+		float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y) * scale;
+		m_meshRenderer.transform.localPosition = new Vector3(0, distanceToBottom, 0);
+
 		m_blueprintVisualsObject.SetActive(true);
 	}
 

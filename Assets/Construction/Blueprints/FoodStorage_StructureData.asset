@@ -20,7 +20,8 @@ MonoBehaviour:
     amount: 5
   - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
     amount: 5
-  <BlueprintFeatureData>k__BackingField: {fileID: 0}
-  <BlueprintMesh>k__BackingField: {fileID: -2989305052099074096, guid: fbb14d6c9cb5e88478cfe966804a837d, type: 3}
-  <PlacementClearenceRadius>k__BackingField: 2
+  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: ea06873464d5573458809938651e047c, type: 2}
+  <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: 28c4449d10bdd3b439b33fa1766fc1ca, type: 3}
+  <BlueprintMeshScale>k__BackingField: 1
+  <PlacementClearenceRadius>k__BackingField: 0.2
   <InteractionLocalOffset>k__BackingField: {x: 0, y: 0, z: 0}

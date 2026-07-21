@@ -127,9 +127,13 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
 		if (m_blueprintData != null)
 		{
+			Vector3 extents = m_blueprintData.BlueprintMesh.bounds.extents * m_blueprintData.BlueprintMeshScale;
+			float baseRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
+			float clearance = baseRadius + m_blueprintData.PlacementClearenceRadius;
+
 			bool isBlocked = Physics.CheckSphere(
 				placementPosition,
-				m_blueprintData.PlacementClearenceRadius,
+				clearance,
 				combinedCheckMask
 			);
 
@@ -210,9 +214,8 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 
 		Bounds bounds = m_blueprintData.BlueprintMesh.bounds;
 		Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
-		m_cursorVisualizer?.SetBlueprint(m_blueprintData.BlueprintMesh, 
-			materials, 
-			localOffset, 
+		m_cursorVisualizer?.SetBlueprint(m_blueprintData, 
+			materials,
 			m_placementRotation
 			);
 	}

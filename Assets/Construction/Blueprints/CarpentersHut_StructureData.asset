@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 786778a487d56414ab4ec85e47575082, type: 3}
-  m_Name: StonemasonsHut_StructureData
+  m_Name: CarpentersHut_StructureData
   m_EditorClassIdentifier: Construction::StructureBlueprintData
   <StructureBlueprintID>k__BackingField: 1
-  <DisplayName>k__BackingField: Stonemasons
+  <DisplayName>k__BackingField: Carpenters Hut
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
     amount: 5
   - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
     amount: 5
-  <BlueprintFeatureData>k__BackingField: {fileID: 0}
-  <BlueprintMesh>k__BackingField: {fileID: -2989305052099074096, guid: fbb14d6c9cb5e88478cfe966804a837d, type: 3}
-  <PlacementClearenceRadius>k__BackingField: 2
+  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 27183139e6ad8e94b9f2aa79db3294a5, type: 2}
+  <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: 28c4449d10bdd3b439b33fa1766fc1ca, type: 3}
+  <BlueprintMeshScale>k__BackingField: 1
+  <PlacementClearenceRadius>k__BackingField: 0.2
   <InteractionLocalOffset>k__BackingField: {x: 0, y: 0, z: 0}
