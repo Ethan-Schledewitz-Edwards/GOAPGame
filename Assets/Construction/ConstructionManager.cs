@@ -51,8 +51,9 @@ namespace Construction
 			structure.SettlementStructureID = structureID;
 
 			// Offset the blueprint out of the ground
-			Bounds bounds = blueprintData.BlueprintMesh.bounds;
-			Vector3 offsetPosition = worldPosition + new Vector3(0, bounds.extents.y, 0);
+			Bounds blueprintBounds = blueprintData.BlueprintMesh.bounds;
+			float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y);
+			Vector3 offsetPosition = worldPosition +  Vector3.up * distanceToBottom;
 
 			// Init the blueprint
 			blueprintObject.HandleBlueprintStarted

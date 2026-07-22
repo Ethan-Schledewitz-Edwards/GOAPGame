@@ -127,7 +127,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
 		if (m_blueprintData != null)
 		{
-			Vector3 extents = m_blueprintData.BlueprintMesh.bounds.extents * m_blueprintData.BlueprintMeshScale;
+			Vector3 extents = m_blueprintData.BlueprintMesh.bounds.extents;
 			float baseRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
 			float clearance = baseRadius + m_blueprintData.PlacementClearenceRadius;
 

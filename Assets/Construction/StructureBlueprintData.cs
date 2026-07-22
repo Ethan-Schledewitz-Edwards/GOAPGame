@@ -15,7 +15,6 @@ namespace Construction
 
 		[Header("Blueprint World Properties")]
 		[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
-		[field: SerializeField] public float BlueprintMeshScale { get; private set; } = 1f;
 		[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 0.2f;
 		[field: SerializeField] public Vector3 InteractionLocalOffset { get; private set; }
 

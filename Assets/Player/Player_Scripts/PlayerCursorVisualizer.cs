@@ -140,12 +140,10 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		m_meshFilter.mesh = blueprintData.BlueprintMesh;
 		m_meshRenderer.sharedMaterials = materials;
 
-		float scale = blueprintData.BlueprintMeshScale;
-		m_meshRenderer.transform.localScale = Vector3.one * scale;
 		m_meshRenderer.transform.rotation = localRotation;
 
-		float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y) * scale;
-		m_meshRenderer.transform.localPosition = new Vector3(0, distanceToBottom, 0);
+		float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y);
+		m_meshRenderer.transform.localPosition = Vector3.up * distanceToBottom;
 
 		m_blueprintVisualsObject.SetActive(true);
 	}
