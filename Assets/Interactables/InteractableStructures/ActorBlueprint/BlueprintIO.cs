@@ -88,6 +88,11 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 
+			m_boxCollider = GetComponent<BoxCollider>();
+
+			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
+			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
+
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
@@ -95,9 +100,6 @@ namespace Interaction.InteractableStructures.Blueprints
 				m_itemRequestComponent = gameObject.AddComponent<ItemRequestComponent>();
 
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
-
-			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
-			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 		}
 
 		private void OnDestroy()
@@ -194,6 +196,11 @@ namespace Interaction.InteractableStructures.Blueprints
 		{
 			m_meshFilter.mesh = blueprintMesh;
 			m_meshRenderer.material = m_blueprintMaterial;
+
+			// Adjust the blueprints box collider to match the mesh
+			Bounds meshBounds = blueprintMesh.bounds;
+			m_boxCollider.size = meshBounds.size;
+			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
 		}
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

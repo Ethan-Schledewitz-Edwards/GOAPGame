@@ -40,7 +40,6 @@ namespace Construction
 			}
 
 			StructureBlueprintData blueprintData = IndexRegistry.GetAsset<StructureBlueprintData>(structureBlueprintID);
-			//StructureBlueprintData blueprintData = m_blueprintIndex.GetIndexedAsset(structureBlueprintID);
 
 			GameObject prefab = Instantiate(m_blueprintPrefab);
 			IStructure structure = prefab.GetComponent<IStructure>();
@@ -50,10 +49,10 @@ namespace Construction
 			SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure, out int structureID);
 			structure.SettlementStructureID = structureID;
 
-			// Offset the blueprint out of the ground
+			// Place the blueprint on the ground
 			Bounds blueprintBounds = blueprintData.BlueprintMesh.bounds;
 			float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y);
-			Vector3 offsetPosition = worldPosition +  Vector3.up * distanceToBottom;
+			Vector3 offsetPosition = worldPosition + Vector3.up * distanceToBottom;
 
 			// Init the blueprint
 			blueprintObject.HandleBlueprintStarted
