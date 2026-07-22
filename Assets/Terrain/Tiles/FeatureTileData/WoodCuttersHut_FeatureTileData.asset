@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: WoodCuttersHut_FeatureTileData
   m_EditorClassIdentifier: Terrain.Tiles::FeatureTileData
-  <TileID>k__BackingField: 11
+  <TileID>k__BackingField: 13
   <Prefab>k__BackingField: {fileID: 162404230185621835, guid: 361bb5efaaf16e84a87039137681aed4, type: 3}

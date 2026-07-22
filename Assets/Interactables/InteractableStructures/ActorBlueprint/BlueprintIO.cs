@@ -90,11 +90,11 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
+			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
 			if (m_itemRequestComponent == null)
-			{
 				m_itemRequestComponent = gameObject.AddComponent<ItemRequestComponent>();
-				m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
-			}
+
+			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;

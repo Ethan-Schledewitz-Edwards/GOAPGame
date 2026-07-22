@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: CarpentersHut_FeatureTileData
   m_EditorClassIdentifier: Terrain.Tiles::FeatureTileData
-  <TileID>k__BackingField: 9
+  <TileID>k__BackingField: 2
   <Prefab>k__BackingField: {fileID: 1141740547682511482, guid: c8279d05b04399e41aa12c00cf0b8307, type: 3}

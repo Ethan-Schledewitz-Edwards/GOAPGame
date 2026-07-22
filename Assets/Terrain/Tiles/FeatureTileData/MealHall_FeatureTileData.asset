@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: MealHall_FeatureTileData
   m_EditorClassIdentifier: Terrain.Tiles::FeatureTileData
-  <TileID>k__BackingField: 3
+  <TileID>k__BackingField: 6
   <Prefab>k__BackingField: {fileID: 3494104293989071018, guid: 1702a8ab56bc54449a27dd3ee4379156, type: 3}

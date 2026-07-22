@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45858b63c8aeb2d42a6247ba45655d39, type: 3}
   m_Name: FoodStorage_FeatureTileData
   m_EditorClassIdentifier: Terrain.Tiles::FeatureTileData
-  <TileID>k__BackingField: 12
+  <TileID>k__BackingField: 4
   <Prefab>k__BackingField: {fileID: 3494104293989071018, guid: 1dabcf10e8201824d9514dcbec2b3ce2, type: 3}

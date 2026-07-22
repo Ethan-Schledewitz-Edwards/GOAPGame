@@ -16,10 +16,8 @@ MonoBehaviour:
   <DisplayName>k__BackingField: Wood Storage
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:
-  - itemType: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-    amount: 5
-  - itemType: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-    amount: 5
+  - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
+    amount: 1
   <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 73bea34b4f566ac4b883de86ec87a123, type: 2}
   <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: 28c4449d10bdd3b439b33fa1766fc1ca, type: 3}
   <BlueprintMeshScale>k__BackingField: 1

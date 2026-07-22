@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e825080ca9603459767e54bfbe4ef8, type: 3}
   m_Name: Grass_VoxelTileData
   m_EditorClassIdentifier: 
-  <TileID>k__BackingField: 4
+  <TileID>k__BackingField: 5
   TileVertexColour:
     serializedVersion: 2
     rgba: 4280453922
