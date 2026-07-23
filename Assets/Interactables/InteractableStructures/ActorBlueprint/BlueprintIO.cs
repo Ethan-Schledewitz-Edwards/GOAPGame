@@ -57,8 +57,6 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override bool UseFormationRadius { get => false; }
 
-		private ItemQuantity[] m_requiredItems;
-
 		private void Awake()
 		{
 			if (s_cachedBlueprintBT == null)
