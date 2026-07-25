@@ -32,6 +32,8 @@ public class MoveToTargetDataTask : BTNodeBase
 		if (executorTransform.TryGetComponent(out AIPathing pathing))
 		{
 			pathing.SetDestination(targetDestination);
+			Debug.Log(targetDestination);
+			Debug.Log("OKAY THIS IS NOT WORKING");
 		}
 	}
 

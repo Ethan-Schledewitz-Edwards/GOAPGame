@@ -221,6 +221,7 @@ public class Actor : Entity, IInteractor
 		// Clear the actors state
 		ClearJob();
 		DropHeldItem();
+		m_behaviourTreeExecutor.ResetContext();
 
 		// Follow the player
 		SetLogicExecutorState(EActorState.STATE_Follow);
@@ -354,6 +355,7 @@ public class Actor : Entity, IInteractor
 				// Clear the actors state
 				ClearJob();
 				DropHeldItem();
+				m_behaviourTreeExecutor.ResetContext();
 				return null;
 			}
 

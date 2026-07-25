@@ -67,25 +67,22 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 	{
-		AssignActor();
-		interactor.OnInteractWithObject(this, interactionTakesPriority);
-
 		if (m_itemData == null)
 			return false;
 
-		// Add to actor inventory
-		if(interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
+		if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
 		{
 			if (inventoryComponent.Inventory == null)
 				return false;
 
-			Transform[] itemTransform =
-			{
-				transform
-			};
+			Transform[] itemTransform = { transform };
 			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, itemTransform);
+
 			if (isItemAdded)
 			{
+				AssignActor();
+				interactor.OnInteractWithObject(this, interactionTakesPriority);
+
 				ItemPickedUp?.Invoke(transform);
 				return true;
 			}

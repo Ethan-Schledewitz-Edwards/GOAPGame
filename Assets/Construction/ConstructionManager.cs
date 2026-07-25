@@ -82,14 +82,19 @@ namespace Construction
 
 			// Create the final structure
 			GameObject prefab = m_blueprintIndex.StructureBlueprintData[blueprintObject.StructureBlueprintID].BlueprintFeatureData.Prefab;
-			Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
+			GameObject spawnedStructureObj = Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 
-			// Add the structure to the settlement
-			IStructure builtStructure = prefab.GetComponent<IStructure>();
-			SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
-			builtStructure.SettlementStructureID = structureID;
+			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
+			{
+				SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
+				builtStructure.SettlementStructureID = structureID;
 
-			Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{settlementID}");
+				Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{settlementID}");
+			}
+			else
+			{
+				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
+			}
 		}
 
 		public void OnBlueprintCanceled(IBlueprintObject blueprintIO)

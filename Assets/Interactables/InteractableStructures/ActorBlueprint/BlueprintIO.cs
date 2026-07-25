@@ -18,8 +18,6 @@ namespace Interaction.InteractableStructures.Blueprints
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
-		private const string c_interactionLayer = "Interaction";
-
 		[SerializeField] private Material m_blueprintMaterial;
 
 		// Components
@@ -83,8 +81,6 @@ namespace Interaction.InteractableStructures.Blueprints
 				tree.SetTree(root);
 				s_cachedBlueprintBT = tree;
 			}
-
-			gameObject.layer = LayerMask.NameToLayer(c_interactionLayer);
 
 			m_boxCollider = GetComponent<BoxCollider>();
 

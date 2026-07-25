@@ -17,33 +17,20 @@ public class FindUseForItemTask : BTNodeBase
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Vector3 executorPos = executorTransform.position;
 
-		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorPos, true, true);
+		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, true, true);
 		if (closestSettlement != null)
 		{
-			GameObject closestBlueprint = closestSettlement.FindNearestStructureOfType(executorPos, m_blueprintTag).StructureObject;
-			if (closestBlueprint != null &&
-				closestBlueprint.TryGetComponent(out InteractableObjectBase interactable))
-			{
-				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestBlueprint.transform);
-				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
-
+			if(TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
 				return EBTNodeState.STATE_SUCSESS;
-			}
 
-			GameObject closestStorage = closestSettlement.FindNearestStructureOfType(executorPos, m_storageTag).StructureObject;
-			if (closestStorage != null &&
-				closestStorage.TryGetComponent(out InteractableObjectBase interactableObject))
-			{
-				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStorage.transform);
-				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactableObject.GetInteractionPositon());
-
+			if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
 				return EBTNodeState.STATE_SUCSESS;
-			}
+
+			return EBTNodeState.STATE_RUNNING;
 		}
 
-		return EBTNodeState.STATE_RUNNING;
+		return EBTNodeState.STATE_FAILURE;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context)
@@ -54,4 +41,26 @@ public class FindUseForItemTask : BTNodeBase
 	protected override void OnNodeExited(AIContext context) {}
 
 	protected override void OnNodeReset(AIContext context) {}
+
+	private bool TryFindStructureOfTag(StructureTag structureTag, 
+		Transform executorTransform, 
+		Settlement closestSettlement, 
+		AIContext context)
+	{
+		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
+		if (closestStructure != null)
+		{
+			GameObject closestStructureObject = closestStructure.StructureObject;
+			if (closestStructureObject != null &&
+				closestStructureObject.TryGetComponent(out InteractableObjectBase interactable))
+			{
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
+				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
+
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

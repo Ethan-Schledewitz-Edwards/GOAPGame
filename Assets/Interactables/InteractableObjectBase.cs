@@ -49,15 +49,15 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// </summary>
 	public abstract void UpdateSpeed(int extra);
 
-	public Transform GetInteractionOffsetTransform()
-	{
-		return m_interactOffset ? m_interactOffset : transform;
-	}
-
 	public void SetInteractionOffsetTransform(Transform transform, Vector3 localPosition)
 	{
 		m_interactOffset = transform;
 		m_interactOffset.localPosition = localPosition;
+	}
+
+	public Transform GetInteractionOffsetTransform()
+	{
+		return m_interactOffset ? m_interactOffset : transform;
 	}
 
 	/// <summary>
@@ -65,7 +65,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// </summary>
 	public Vector3 GetInteractionPositon()
 	{
-		Vector3 interactOffset = GetInteractionOffsetTransform().position;
+		Transform targetTransform = GetInteractionOffsetTransform();
 
 		if (UseFormationRadius)
 		{
@@ -74,9 +74,9 @@ public abstract class InteractableObjectBase : MonoBehaviour
 			float x = Mathf.Cos(angle) * m_formationRadius;
 			float z = Mathf.Sin(angle) * m_formationRadius;
 
-			return interactOffset + new Vector3(x, 0, z);
+			return targetTransform.TransformPoint(new Vector3(x, 0, z));
 		}
 
-		return interactOffset;
-    }
+		return targetTransform.position;
+	}
 }

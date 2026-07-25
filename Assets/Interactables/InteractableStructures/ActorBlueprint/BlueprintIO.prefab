@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8727153449917918207}
   - component: {fileID: 6019955960294120562}
   - component: {fileID: 2585908903848927346}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BlueprintIO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4299432510428715485}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: InteractOffset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 6481859380391125491}
   - component: {fileID: 1086525549323106786}
   - component: {fileID: 9099140680238688444}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
