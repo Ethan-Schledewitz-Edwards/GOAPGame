@@ -19,6 +19,11 @@ public class AIContext
 		return defaultValue;
 	}
 
+	public Dictionary<string, object> GetDataSet()
+	{
+		return m_data;
+	}
+
 	public void ClearData(string key)
 	{
 		m_data.Remove(key);
@@ -41,4 +46,5 @@ public static class AIContextKeys
 	public const string c_HeldItemID = "HeldItemID";
 	public const string c_StructureID = "StructureID";
 	public const string c_ItemToFindID = "ItemToFind";
+	public const string c_ItemTagPrefix = "itemTagID_";
 }

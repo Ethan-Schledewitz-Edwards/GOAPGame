@@ -59,7 +59,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		{
 			if (s_cachedBlueprintBT == null)
 			{
-				BTNodeBase findUseTask = new FindItemTask();
+				BTNodeBase findUseTask = new FindItemEntityOfIDTask();
 				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
 				BTNodeBase jobTask = new AquireJobFromTargetTask();
@@ -72,7 +72,7 @@ namespace Interaction.InteractableStructures.Blueprints
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
 					new InteractWithTargetTask(),
-					new ReturnToBlueprintTask(),
+					new ReturnToStructureTask(),
 					new MoveToTargetDataTask(),
 					new CheckForTargetRangeTask(),
 					new DepositHeldItemTask(),

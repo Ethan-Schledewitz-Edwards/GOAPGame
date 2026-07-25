@@ -2,7 +2,7 @@ using BehaviourTrees;
 using Settlements;
 using UnityEngine;
 
-public class ReturnToBlueprintTask : BTNodeBase
+public class ReturnToStructureTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
@@ -10,12 +10,12 @@ public class ReturnToBlueprintTask : BTNodeBase
 		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
 
 		Settlement settlement = SettlementManager.s_WorldSettlements[settlementID];
-		IStructure blueprintStructure = settlement.SettlementStructures[structureID];
+		IStructure structure = settlement.SettlementStructures[structureID];
 
-		if (blueprintStructure != null && 
-			blueprintStructure.StructureObject != null)
+		if (structure != null && 
+			structure.StructureObject != null)
 		{
-			GameObject structureObject = blueprintStructure.StructureObject;
+			GameObject structureObject = structure.StructureObject;
 			if (structureObject.TryGetComponent(out InteractableObjectBase interactableObject))
 			{
 				Debug.Log($"An Actor set their target to StructureID:{structureID} in SettlementID:{settlementID}.");

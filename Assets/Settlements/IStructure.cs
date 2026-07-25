@@ -6,6 +6,7 @@ namespace Settlements
 	public interface IStructure
 	{
 		public StructureTag StructureTypeTag { get; }
+		public int SettlementID { get; set; }
 		public int SettlementStructureID { get; set; }
 		public GameObject StructureObject { get; }
 		public int MaxCapacity { get; }

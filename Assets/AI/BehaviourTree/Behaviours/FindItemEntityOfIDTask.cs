@@ -4,7 +4,7 @@ using InventorySystem.Items;
 using Terrain.Generation;
 using UnityEngine;
 
-public class FindItemTask : BTNodeBase
+public class FindItemEntityOfIDTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;
 
@@ -75,4 +75,3 @@ public class FindItemTask : BTNodeBase
 
 	protected override void OnNodeReset(AIContext context) {}
 }
-

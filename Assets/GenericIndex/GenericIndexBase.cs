@@ -48,6 +48,11 @@ namespace GenericIndex
 			return null;
 		}
 
+		public T[] GetAllIndexedAssets()
+		{
+			return assets;
+		}
+
 #if UNITY_EDITOR
 		public void PopulateUniqueAssets()
 		{
