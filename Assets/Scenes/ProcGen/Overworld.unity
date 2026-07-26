@@ -770,7 +770,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43e354c4d2c90334f9d6aa100538a506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Construction::ConstructionManager
-  m_blueprintIndex: {fileID: 11400000, guid: 3e7777cff23412549867c6c4ba01fb8b, type: 2}
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
   m_blueprintPrefab: {fileID: 262572155233583462, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
 --- !u!1 &1347652341
@@ -783,6 +782,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1347652342}
   - component: {fileID: 1347652343}
+  - component: {fileID: 1347652344}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -818,6 +818,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   <PlayerObject>k__BackingField: {fileID: 1263727301}
+--- !u!114 &1347652344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347652341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7061346aed9fd64408fe447334e05e0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Managers::Managers.RealtimeClock
 --- !u!1 &1458649742
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,6 +908,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   m_lightingProfile: {fileID: 11400000, guid: 0b18a0a6ac85cd940890204f884767a7, type: 2}
+  m_mapCenter: {x: 0, y: 0, z: 0}
+  m_orbitRadius: 500
+  m_orbitHeight: 500
+  m_orbitAngleOffset: -45
 --- !u!1 &1792661988
 GameObject:
   m_ObjectHideFlags: 0

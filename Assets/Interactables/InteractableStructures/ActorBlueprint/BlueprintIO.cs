@@ -1,14 +1,13 @@
-using BehaviourTrees;
-using Construction;
-using InventorySystem;
-using InventorySystem.Items;
-using ObjectTags;
-using Settlements;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using BehaviourTrees;
+using Construction;
+using InventorySystem;
+using ObjectTags;
+using Settlements;
+
 
 namespace Interaction.InteractableStructures.Blueprints
 {

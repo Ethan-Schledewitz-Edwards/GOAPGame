@@ -1,7 +1,9 @@
 {
     "name": "WorldLighting",
     "rootNamespace": "WorldLighting",
-    "references": [],
+    "references": [
+        "GUID:82a8d3db3bc98a34382d1f953bc8489e"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

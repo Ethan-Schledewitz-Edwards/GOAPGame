@@ -1,11 +1,12 @@
+using Managers;
+using System.Linq;
 using UnityEngine;
 
 namespace WorldLighting
 {
-	public class TimeOfDayLightingManager : MonoBehaviour
+	public class TimeOfDayLighting : MonoBehaviour
 	{
-		[field: Header("Lighting Controller")]
-		[field: SerializeField] private ITimeOfDayController m_timeOfDayController;
+		private IGameClock m_gameClock;
 
 		[field: Header("Lighting Profile")]
 		[field: SerializeField] private LightingProfile m_lightingProfile;
@@ -16,8 +17,37 @@ namespace WorldLighting
 		[SerializeField] private float m_orbitHeight = 300f;
 		[SerializeField] private float m_orbitAngleOffset = -45f; // Adjusts which side the sun rises/sets from
 
+		private void Awake()
+		{
+			m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+				.OfType<IGameClock>()
+				.FirstOrDefault();
+
+			if (m_gameClock == null)
+				Debug.LogError($"{gameObject}: {typeof(TimeOfDayLighting)} is missing an {typeof(IGameClock)} reference.");
+		}
+
+		private void OnEnable()
+		{
+			if (m_gameClock != null)
+			{
+				m_gameClock.TimeOfDayFractionUpdated += UpdateTime;
+				UpdateTime(m_gameClock.GetTimeOfDayFraction());
+			}
+		}
+
+		private void OnDisable()
+		{
+			if (m_gameClock != null)
+			{
+				m_gameClock.TimeOfDayFractionUpdated -= UpdateTime;
+			}
+		}
+
 		public void UpdateTime(float timeOfDayPercentage)
 		{
+			Debug.Log(timeOfDayPercentage);
+
 			if (m_lightingProfile != null)
 			{
 				float sunriseHr = (m_lightingProfile.SunriseHr / 24f);

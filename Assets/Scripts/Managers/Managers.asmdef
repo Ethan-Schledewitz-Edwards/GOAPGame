@@ -1,9 +1,7 @@
 {
     "name": "Managers",
-    "rootNamespace": "",
-    "references": [
-        "GUID:525a9c522794d2448bb8f33e0776d250"
-    ],
+    "rootNamespace": "Managers",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
