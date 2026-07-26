@@ -1,13 +1,11 @@
 {
-    "name": "Managers",
-    "rootNamespace": "",
-    "references": [
-        "GUID:525a9c522794d2448bb8f33e0776d250"
-    ],
+    "name": "WorldLighting",
+    "rootNamespace": "WorldLighting",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -1,28 +1,32 @@
 using TMPro;
 using UnityEngine;
+using WorldLighting;
 
 public class ClockElement : UIElement
 {
+	[SerializeField] private ITimeOfDayController m_timeOfDayController;
 	[SerializeField] private TextMeshProUGUI m_clockText;
 
 	private void Start()
 	{
-		(int currentHour, int currentMinute) = GameManager.Instance.GetTimeOfDay();
+		(int currentHour, int currentMinute) = m_timeOfDayController.GetTimeOfDay();
 		OnClockUpdated(currentHour, currentMinute);
 	}
 
 	private void OnEnable()
 	{
-		if (GameManager.Instance != null)
+		if (m_timeOfDayController != null)
 		{
-			GameManager.Instance.ClockUpdated += OnClockUpdated;
+			m_timeOfDayController.ClockUpdated += OnClockUpdated;
 		}
 	}
 
 	private void OnDisable()
 	{
-		if (GameManager.Instance != null)
-			GameManager.Instance.ClockUpdated -= OnClockUpdated;
+		if (m_timeOfDayController != null)
+		{
+			m_timeOfDayController.ClockUpdated -= OnClockUpdated;
+		}
 	}
 
 	private void OnClockUpdated(int hour, int minute)
