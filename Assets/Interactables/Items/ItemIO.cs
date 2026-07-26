@@ -119,7 +119,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	private void InitializeBehaviourTree()
 	{
-		if (s_ItemBT == null)
+		if (s_ItemBT != null)
 			return;
 
 		StructureTag blueprintTag = IndexRegistry.GetAsset<StructureTag>("Blueprint_StructureTag");

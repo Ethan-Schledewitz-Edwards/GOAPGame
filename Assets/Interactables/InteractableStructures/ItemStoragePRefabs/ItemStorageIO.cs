@@ -82,7 +82,7 @@ namespace Interaction.InteractableStructures
 
 		private void InitializeBehaviourTree()
 		{
-			if (s_cachedBT == null)
+			if (s_cachedBT != null)
 				return;
 
 			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
