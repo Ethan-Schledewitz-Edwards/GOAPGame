@@ -10,60 +10,46 @@ using GenericIndex;
 [RequireComponent(typeof(Rigidbody))]
 public class ItemIO : InteractableObjectBase, IItemObject
 {
-	private static BehaviourTree m_ItemBT;
+	private static BehaviourTree s_ItemBT;
 
 	// Components
 	private Rigidbody m_rb;
 
 	[Header("Item Data")]
-	public ItemData ItemData => m_itemData;
 	[SerializeField] private ItemData m_itemData;
-
-	public int StackSize => m_stackSize;
 	[field: SerializeField] public int m_stackSize { get; private set; } = 1;
-
-	public Transform Transform => transform;
 
 	// Events
 	public event Action<Transform> ItemPickedUp;
 
 	// System
-	public bool IsItemStored => m_isItemStored;
 	private bool m_isItemStored;
+
+	// IItemObject properties
+	public ItemData ItemData => m_itemData;
+	public int StackSize => m_stackSize;
+	public Transform Transform => transform;
+	public bool IsItemStored => m_isItemStored;
+
+	// Base
 	public override bool UseFormationRadius { get => false; }
 
 	public void Awake()
 	{
 		m_rb = GetComponent<Rigidbody>();
 
-		if (m_ItemBT == null)
-		{
-			BehaviourTree tree = new BehaviourTree();
-
-			StructureTag blueprintTag = IndexRegistry.GetAsset<StructureTag>("Blueprint_StructureTag");
-			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
-
-			BTNodeBase findUseTask = new FindUseForItemTask(blueprintTag, storageTag);
-			BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 2f);
-
-			BTNodeBase depositTask = new DepositHeldItemTask();
-			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
-
-			BTNodeBase jobTask = new AquireJobFromTargetTask();
-			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
-
-			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-			{
-				timeoutSearch,
-				new MoveToTargetDataTask(),
-				new CheckForTargetRangeTask(),
-				timeoutDeposit,
-				timeoutJobSearch
-			});
-			tree.SetTree(root);
-			m_ItemBT = tree;
-		}
+		InitializeBehaviourTree();
 	}
+
+
+	public override void StopInteract()
+	{
+		base.StopInteract();
+	}
+
+	public override void UpdateSpeed(int extra) { }
+
+	public override BehaviourTree GetBehaviourTree() => s_ItemBT;
 
 	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 	{
@@ -91,25 +77,17 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		return false;
 	}
 
-	public override void StopInteract()
-	{
-		base.StopInteract();
-	}
-
-	public override void UpdateSpeed(int extra){}
-
 	public void SetAmount(int amount)
 	{
 		m_stackSize = amount;
 
-		if(m_stackSize <= 0)
+		if (m_stackSize <= 0)
 			Destroy(gameObject);
 	}
 
+
 	public void HandleItemStored(Transform parent)
 	{
-		Debug.Log("Item Stored");
-
 		m_isItemStored = true;
 		ConstrainPhysics(true);
 
@@ -124,8 +102,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public void HandleItemDropped(Vector3 dropPosition)
 	{
-		Debug.Log("Item Dropped");
-
 		m_isItemStored = false;
 		ConstrainPhysics(false);
 
@@ -141,5 +117,31 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}
 
-	public override BehaviourTree GetBehaviourTree() => m_ItemBT;
+	private void InitializeBehaviourTree()
+	{
+		if (s_ItemBT == null)
+			return;
+
+		BTNodeBase findUseTask = new FindItemEntityOfTagTask();
+		BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
+
+		BTNodeBase jobTask = new AquireJobFromTargetTask();
+		BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
+
+		BehaviourTree tree = new BehaviourTree();
+		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+				{
+					timeoutFind,
+					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
+					new InteractWithTargetTask(),
+					new ReturnToStructureTask(),
+					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
+					new DepositHeldItemTask(),
+					timeoutJobSearch // Try to loop item search
+				});
+		tree.SetTree(root);
+		s_ItemBT = tree;
+	}
 }

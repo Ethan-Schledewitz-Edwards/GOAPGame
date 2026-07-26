@@ -11,12 +11,12 @@ namespace Construction
 
 		public int SettlementID { get; } // The settlement this blueprint belongs to
 		public int SettlementStructureID { get; } // What blueprint this is within the settlement
-		public int StructureBlueprintID { get; } // The asset this blueprint represents
-		public GameObject BlueprintObject { get; }
+		public int BlueprintDataID { get; } // The asset this blueprint represents
+		public GameObject Object { get; }
 
 		public void HandleBlueprintStarted
 			(
-				StructureBlueprintData structureBlueprintData,
+				BlueprintData structureBlueprintData,
 				Vector3 position,
 				Quaternion rotation
 			);

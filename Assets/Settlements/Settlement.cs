@@ -56,7 +56,7 @@ namespace Settlements
 			{
 				if (structure.StructureTypeTag == structureTag)
 				{
-					float dist = Vector3.Distance(structure.StructureObject.transform.position, position);
+					float dist = Vector3.Distance(structure.Object.transform.position, position);
 					if (dist < minDistance)
 					{
 						minDistance = dist;
@@ -77,7 +77,7 @@ namespace Settlements
 
 			foreach (var structure in SettlementStructures)
 			{
-				Vector3 structurePosition = structure.Value.StructureObject.transform.position;
+				Vector3 structurePosition = structure.Value.Object.transform.position;
 				totalPosition += structurePosition;
 				validCount++;
 			}

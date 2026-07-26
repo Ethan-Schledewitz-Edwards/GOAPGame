@@ -3,13 +3,13 @@ using UISystems.RecyclingScrollRect;
 using System.Linq;
 using Construction;
 
-public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<StructureBlueprintData>
+public class ConstructionRecyclingScrollRect : RecyclingScrollRectBase<BlueprintData>
 {
 	[Header("Data")]
 	[field: SerializeField] private BlueprintDataIndex m_blueprintIndex;
 
-	private StructureBlueprintData[] m_cachedData;
-	protected override StructureBlueprintData[] m_data => m_cachedData;
+	private BlueprintData[] m_cachedData;
+	protected override BlueprintData[] m_data => m_cachedData;
 
 	protected override void Awake()
 	{

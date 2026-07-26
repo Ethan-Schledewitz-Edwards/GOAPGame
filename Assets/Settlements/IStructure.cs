@@ -7,8 +7,8 @@ namespace Settlements
 	{
 		public StructureTag StructureTypeTag { get; }
 		public int SettlementID { get; }
-		public int SettlementStructureID { get;}
-		public GameObject StructureObject { get; }
+		public int SettlementStructureID { get; }
+		public GameObject Object { get; }
 		public int MaxCapacity { get; }
 		public int ActorsAssigned { get; }
 

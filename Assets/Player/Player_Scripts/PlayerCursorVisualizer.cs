@@ -130,7 +130,7 @@ public class PlayerCursorVisualizer : MonoBehaviour
 
 	#region
 
-	public void SetBlueprint(StructureBlueprintData blueprintData, Material[] materials, Quaternion localRotation = default)
+	public void SetBlueprint(BlueprintData blueprintData, Material[] materials, Quaternion localRotation = default)
 	{
 		m_cursorObject.SetActive(false);
 

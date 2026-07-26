@@ -59,17 +59,14 @@ public class FindItemEntityOfTagTask : BTNodeBase
 				if (entity == null)
 					continue;
 
+				// Check if the entity is an item
 				if (entity.TryGetComponent(out IItemObject itemObject) &&
 					!itemObject.IsItemStored &&
 					itemObject.ItemData is ITaggable<ItemTag> taggable
 					)
 
 				{
-					foreach (var item in itemTags)
-					{
-						Debug.Log(item);
-					}
-
+					// Check if the items tags match the actors current search filters
 					if (itemTags.Any(tag => taggable.HasTag(tag)))
 					{
 						float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;

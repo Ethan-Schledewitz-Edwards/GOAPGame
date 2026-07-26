@@ -4,10 +4,10 @@ using InventorySystem.Items;
 
 namespace Construction
 {
-	[CreateAssetMenu(fileName = "StructureBlueprint", menuName = "Blueprints/StructureBlueprint")]
-	public class StructureBlueprintData : ScriptableObject, IIndexedAsset
+	[CreateAssetMenu(fileName = "BlueprintData", menuName = "Blueprints/BlueprintData")]
+	public class BlueprintData : ScriptableObject, IIndexedAsset
 	{
-		[field: SerializeField] public int StructureBlueprintID { get; private set; }
+		[field: SerializeField] public int BlueprintDataID { get; private set; }
 		[field: SerializeField] public string DisplayName { get; private set; }
 		[field: SerializeField, TextArea(5, 5)] public string Description { get; private set; }
 		[field: SerializeField] public ItemQuantity[] RequiredItems { get; private set; }
@@ -21,7 +21,7 @@ namespace Construction
 #if UNITY_EDITOR
 		public void SetID(int newID)
 		{
-			StructureBlueprintID = newID;
+			BlueprintDataID = newID;
 		}
 #endif
 	}

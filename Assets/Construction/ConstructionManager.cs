@@ -10,14 +10,11 @@ namespace Construction
 	{
 		public static ConstructionManager Instance;
 
-		public BlueprintDataIndex BlueprintIndex => m_blueprintIndex;
-		[SerializeField] private BlueprintDataIndex m_blueprintIndex;
-
 		[SerializeField] private Material m_blueprintMaterial;
 		[SerializeField] private GameObject m_blueprintPrefab;
 
 		// Events
-		public event Action<StructureBlueprintData> NewDevelopmentAttempted;
+		public event Action<BlueprintData> NewDevelopmentAttempted;
 
 		private void Awake()
 		{
@@ -26,12 +23,12 @@ namespace Construction
 			else Destroy(this);
 		}
 
-		public void HandleBlueprintButton(StructureBlueprintData blueprintData)
+		public void HandleBlueprintButton(BlueprintData blueprintData)
 		{
 			NewDevelopmentAttempted?.Invoke(blueprintData);
 		}
 
-		public void CreateStructureBlueprint(int settlementID, int structureBlueprintID, Vector3 worldPosition, Quaternion rotation)
+		public void CreateBlueprint(int settlementID, int structureBlueprintID, Vector3 worldPosition, Quaternion rotation)
 		{
 			if (m_blueprintPrefab == null)
 			{
@@ -39,7 +36,7 @@ namespace Construction
 				return;
 			}
 
-			StructureBlueprintData blueprintData = IndexRegistry.GetAsset<StructureBlueprintData>(structureBlueprintID);
+			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(structureBlueprintID);
 
 			GameObject prefab = Instantiate(m_blueprintPrefab);
 			IStructure structure = prefab.GetComponent<IStructure>();
@@ -70,15 +67,15 @@ namespace Construction
 			if (blueprintObject == null)
 				return;
 
-			IStructure blueprintStructure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.SettlementStructureID];
 			int settlementID = blueprintObject.SettlementID;
-			Vector3 blueprintIOPosition = blueprintObject.BlueprintObject.transform.position;
-			Quaternion blueprintIORotation = blueprintObject.BlueprintObject.transform.rotation;
+			Vector3 blueprintIOPosition = blueprintObject.Object.transform.position;
+			Quaternion blueprintIORotation = blueprintObject.Object.transform.rotation;
 
 			CleanupBlueprint(blueprintObject);
 
 			// Create the final structure
-			GameObject prefab = m_blueprintIndex.StructureBlueprintData[blueprintObject.StructureBlueprintID].BlueprintFeatureData.Prefab;
+			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(blueprintObject.BlueprintDataID);
+			GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
 			GameObject spawnedStructureObj = Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
 
 			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
@@ -107,7 +104,7 @@ namespace Construction
 			blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
 			blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;
 
-			Destroy(blueprintObject.BlueprintObject);
+			Destroy(blueprintObject.Object);
 		}
 	}
 

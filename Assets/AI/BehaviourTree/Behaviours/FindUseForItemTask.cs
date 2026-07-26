@@ -54,22 +54,26 @@ public class FindUseForItemTask : BTNodeBase
 		AIContext context)
 	{
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
-		if (closestStructure != null && closestStructure.StructureObject is GameObject closestStructureObject)
+		if (closestStructure != null && 
+			closestStructure.Object is GameObject closestStructureObject)
 		{
-			if (closestStructureObject.TryGetComponent(out InteractableObjectBase interactable) &&
-				interactable.TryGetComponent(out IItemFiltered itemFiltered))
+			if (closestStructureObject.TryGetComponent(out InteractableObjectBase interactable))
 			{
-				ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-				int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
-
-				if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
+				if(interactable.TryGetComponent(out IItemFiltered itemFiltered))
 				{
-					bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
-					if (passesFilter)
+					ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
+					int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
+
+					if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
 					{
-						context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
-						context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
-						return true;
+						// Check if the structures tags include the held items tags
+						bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
+						if (passesFilter)
+						{
+							context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
+							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
+							return true;
+						}
 					}
 				}
 			}

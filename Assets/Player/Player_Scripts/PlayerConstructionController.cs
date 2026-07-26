@@ -15,7 +15,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 	private bool m_isCancleHeld = false;
 
 	private bool m_isPlacementValid;
-	private StructureBlueprintData m_blueprintData;
+	private BlueprintData m_blueprintData;
 	private Quaternion m_placementRotation;
 
 	private LayerMask m_blockingLayer;
@@ -45,7 +45,7 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 			ConstructionManager.Instance.NewDevelopmentAttempted -= SetBlueprint;
 	}
 
-	private void SetBlueprint(StructureBlueprintData structureData)
+	private void SetBlueprint(BlueprintData structureData)
 	{
 		m_blueprintData = structureData;
 		m_placementRotation = Quaternion.identity;
@@ -99,10 +99,10 @@ public class PlayerConstructionController : PlayerWorldControllerBase
 		if (nearestSettlementID == -1)
 			SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
-		ConstructionManager.Instance.CreateStructureBlueprint
+		ConstructionManager.Instance.CreateBlueprint
 		(
 			nearestSettlementID, 
-			m_blueprintData.StructureBlueprintID, 
+			m_blueprintData.BlueprintDataID, 
 			position,
 			rotation
 		);

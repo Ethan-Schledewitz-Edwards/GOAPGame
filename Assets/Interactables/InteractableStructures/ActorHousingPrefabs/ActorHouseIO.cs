@@ -18,7 +18,7 @@ namespace Interaction.InteractableStructures
 		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
 		private int m_structureID;
 
-		public GameObject StructureObject => gameObject;
+		public GameObject Object => gameObject;
 
 		public int MaxCapacity => m_maxCapacity;
 		[SerializeField] private int m_maxCapacity = 4;

@@ -13,9 +13,9 @@ public class ReturnToStructureTask : BTNodeBase
 		IStructure structure = settlement.SettlementStructures[structureID];
 
 		if (structure != null && 
-			structure.StructureObject != null)
+			structure.Object != null)
 		{
-			GameObject structureObject = structure.StructureObject;
+			GameObject structureObject = structure.Object;
 			if (structureObject.TryGetComponent(out InteractableObjectBase interactableObject))
 			{
 				Debug.Log($"An Actor set their target to StructureID:{structureID} in SettlementID:{settlementID}.");

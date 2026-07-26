@@ -13,30 +13,27 @@ namespace Interaction.InteractableStructures
 	{
 		private static BehaviourTree s_cachedBT;
 
+		[Header("Settings")]
+		public ItemTag[] ItemTagFilter => m_tagFilter;
+		[SerializeField] private ItemTag[] m_tagFilter;
+		[SerializeField] private StructureTag m_structureTypeTag;
+		[SerializeField] private int m_maxCapacity = 4;
+		[SerializeField] private int m_actorsAssigned = 0;
+
 		// Components
 		public InventoryComponent InventoryComponent { get; private set; }
 
 		// System
-		public StructureTag StructureTypeTag => m_structureTypeTag;
-		[SerializeField] private StructureTag m_structureTypeTag;
-
-		public int SettlementID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
 		private int m_settlementID;
-
-		public int SettlementStructureID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
 		private int m_settlementStructureID;
 
-		public GameObject StructureObject => gameObject;
-
+		// IStructure Properties
+		public StructureTag StructureTypeTag => m_structureTypeTag;
+		public int SettlementID => m_settlementID;
+		public int SettlementStructureID => m_settlementStructureID;
+		public GameObject Object => gameObject;
 		public int MaxCapacity => m_maxCapacity;
-		[SerializeField] private int m_maxCapacity = 4;
-
 		public int ActorsAssigned => m_actorsAssigned;
-		[SerializeField] private int m_actorsAssigned = 0;
-
-		[Header("Storage Configuration")]
-		public ItemTag[] ItemTagFilter => m_tagFilter;
-		[SerializeField] private ItemTag[] m_tagFilter;
 
 		public override bool UseFormationRadius { get => false; }
 
@@ -44,30 +41,7 @@ namespace Interaction.InteractableStructures
 		{
 			InventoryComponent = GetComponent<InventoryComponent>();
 
-			if (s_cachedBT == null)
-			{
-				BTNodeBase findUseTask = new FindItemEntityOfTagTask();
-				BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
-
-				BTNodeBase jobTask = new AquireJobFromTargetTask();
-				BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
-
-				BehaviourTree tree = new BehaviourTree();
-				BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-				{
-					timeoutFind,
-					new MoveToTargetDataTask(),
-					new CheckForTargetRangeTask(),
-					new InteractWithTargetTask(),
-					new ReturnToStructureTask(),
-					new MoveToTargetDataTask(),
-					new CheckForTargetRangeTask(),
-					new DepositHeldItemTask(),
-					timeoutJobSearch // Try to loop item search
-				});
-				tree.SetTree(root);
-				s_cachedBT = tree;
-			}
+			InitializeBehaviourTree();
 		}
 
 		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
@@ -76,15 +50,14 @@ namespace Interaction.InteractableStructures
 			m_settlementStructureID = settlementStructureID;
 		}
 
-		public override void UpdateSpeed(int extra)
-		{
-
-		}
+		public override void UpdateSpeed(int extra) { }
 
 		public void AssignActor(out ItemStorageIO structure)
 		{
 			structure = null; // Storage should not have anyone assigned to it
 		}
+
+		public override BehaviourTree GetBehaviourTree() => s_cachedBT;
 
 		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
@@ -100,13 +73,39 @@ namespace Interaction.InteractableStructures
 
 				executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
+
+				return true;
 			}
 
-			// Construction workers
-			AssignActor();
-			return true;
+			return false;
 		}
 
-		public override BehaviourTree GetBehaviourTree() => s_cachedBT;
+		private void InitializeBehaviourTree()
+		{
+			if (s_cachedBT == null)
+				return;
+
+			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
+			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
+
+			BTNodeBase jobTask = new AquireJobFromTargetTask();
+			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
+
+			BehaviourTree tree = new BehaviourTree();
+			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
+				{
+					timeoutFind,
+					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
+					new InteractWithTargetTask(),
+					new ReturnToStructureTask(),
+					new MoveToTargetDataTask(),
+					new CheckForTargetRangeTask(),
+					new DepositHeldItemTask(),
+					timeoutJobSearch // Try to loop item search
+				});
+			tree.SetTree(root);
+			s_cachedBT = tree;
+		}
 	}
 }
