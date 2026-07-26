@@ -24,9 +24,9 @@ namespace Settlements
 			Debug.Log($"New settlement of ID:{SettlementID} was created");
 		}
 
-		public void AddStructure(IStructure structure, out int structureID)
+		public void AddStructure(IStructure structure)
 		{
-			structureID = -1;
+			int structureID = -1;
 
 			if (structure == null)
 			{
@@ -35,9 +35,10 @@ namespace Settlements
 			}
 
 			structureID = m_nextAvailableID++;
-			structure.SettlementStructureID = structureID;
-
 			SettlementStructures[structureID] = structure;
+
+			structure.AddStructureToSettlement(SettlementID, structureID);
+			Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{SettlementID}");
 		}
 
 		public void RemoveStructure(int structureID)

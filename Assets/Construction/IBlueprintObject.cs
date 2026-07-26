@@ -16,8 +16,6 @@ namespace Construction
 
 		public void HandleBlueprintStarted
 			(
-				int settlementID,
-				int structureID,
 				StructureBlueprintData structureBlueprintData,
 				Vector3 position,
 				Quaternion rotation

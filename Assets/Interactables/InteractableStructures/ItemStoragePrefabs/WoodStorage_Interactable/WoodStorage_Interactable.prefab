@@ -68,7 +68,7 @@ MonoBehaviour:
   m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
-  m_permittedItemTypes:
+  m_tagFilter:
   - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
 --- !u!208 &6691724862660079407
 NavMeshObstacle:
@@ -165,7 +165,7 @@ Transform:
   m_GameObject: {fileID: 9060549702506707196}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 0.000002382611, y: 0, z: -0.000007710096}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

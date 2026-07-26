@@ -7,6 +7,7 @@ using Settlements;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
@@ -14,7 +15,7 @@ namespace Interaction.InteractableStructures.Blueprints
 	[RequireComponent(typeof(BoxCollider), 
 		typeof(InventoryComponent), 
 		typeof(BlueprintCancelation))]
-	public class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IBlueprintObject
+	public class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IBlueprintObject, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
@@ -35,6 +36,10 @@ namespace Interaction.InteractableStructures.Blueprints
 		// System
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		[SerializeField] private StructureTag m_structureTypeTag;
+
+		public int SettlementID => m_settlementID;
+		private int m_settlementID;
+
 		public int SettlementStructureID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
 		private int m_settlementStructureID;
 
@@ -46,12 +51,13 @@ namespace Interaction.InteractableStructures.Blueprints
 		public int ActorsAssigned => m_actorsAssigned;
 		[SerializeField] private int m_actorsAssigned = 0;
 
-		public int SettlementID => m_settlementID;
-		private int m_settlementID;
 		public int SettlementBlueprintID => m_settlementStructureID;
 		public int StructureBlueprintID => m_structureBlueprintID;
 		private int m_structureBlueprintID;
 		public GameObject BlueprintObject => gameObject;
+
+		public ItemTag[] ItemTagFilter => m_tagFilter;
+		private ItemTag[] m_tagFilter;
 
 		public override bool UseFormationRadius { get => false; }
 
@@ -102,6 +108,12 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 		}
 
+		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
+		{
+			m_settlementID = settlementID;
+			m_settlementStructureID = settlementStructureID;
+		}
+
 		public override void UpdateSpeed(int extra)
 		{
 
@@ -147,15 +159,25 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public void HandleBlueprintStarted
 			(
-				int settlementID,
-				int settlementBlueprintID,
 				StructureBlueprintData structureBlueprintData,
 				Vector3 position,
 				Quaternion rotation
 			)
 		{
-			m_settlementID = settlementID;
-			m_structureBlueprintID = structureBlueprintData.StructureBlueprintID;
+			// Extract item tags from required items
+			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
+			if (structureBlueprintData.RequiredItems != null)
+			{
+				foreach (var requiredItem in structureBlueprintData.RequiredItems)
+				{
+					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && taggableItem.RuntimeTagSet != null)
+					{
+						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
+					}
+				}
+			}
+
+			m_tagFilter = uniqueTags.ToArray();
 
 			m_inventoryComponent.InitializeInventory(structureBlueprintData.RequiredItems.Length);
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, structureBlueprintData.RequiredItems);
@@ -165,6 +187,8 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			transform.position = position;
 			transform.rotation = rotation;
+
+			Debug.Log($"Starting blueprint: {structureBlueprintData.DisplayName}");
 		}
 
 		public void HandleBlueprintCompleted()

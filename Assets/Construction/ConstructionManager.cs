@@ -46,8 +46,7 @@ namespace Construction
 			IBlueprintObject blueprintObject = prefab.GetComponent<IBlueprintObject>();
 
 			// Add to settlement
-			SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure, out int structureID);
-			structure.SettlementStructureID = structureID;
+			SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure);
 
 			// Place the blueprint on the ground
 			Bounds blueprintBounds = blueprintData.BlueprintMesh.bounds;
@@ -57,8 +56,6 @@ namespace Construction
 			// Init the blueprint
 			blueprintObject.HandleBlueprintStarted
 				(
-					settlementID,
-					structureID,
 					blueprintData,
 					offsetPosition,
 					rotation
@@ -86,10 +83,7 @@ namespace Construction
 
 			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
 			{
-				SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure, out int structureID);
-				builtStructure.SettlementStructureID = structureID;
-
-				Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{settlementID}");
+				SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure);
 			}
 			else
 			{
@@ -109,8 +103,6 @@ namespace Construction
 		{
 			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.SettlementStructureID];
 			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure.SettlementStructureID);
-
-			Debug.Log($"Removed blueprint of StructureID:{blueprintObject.SettlementStructureID} from Settlement of SettlementID:{blueprintObject.SettlementID}");
 
 			blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
 			blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7784177406041691803}
   - component: {fileID: 4229108502621824834}
   - component: {fileID: 7252548703486566623}
-  - component: {fileID: 9186016780483068045}
+  - component: {fileID: 3638441544696181070}
   m_Layer: 7
   m_Name: StoneStorage_Interactable
   m_TagString: Untagged
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
-  m_permittedItemTypes:
+  m_tagFilter:
   - {fileID: 11400000, guid: 97c68dc4729accb48b01a4c82245dd66, type: 2}
 --- !u!208 &7252548703486566623
 NavMeshObstacle:
@@ -80,13 +80,13 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.95, y: 0.5, z: 0.95}
+  m_Extents: {x: 1.35, y: 1, z: 1.35}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
---- !u!65 &9186016780483068045
+--- !u!65 &3638441544696181070
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,8 +105,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2.7, y: 2, z: 2.7}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &2875366397077230197
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,7 +132,7 @@ Transform:
   m_GameObject: {fileID: 2875366397077230197}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4, y: -0.5, z: 0}
+  m_LocalPosition: {x: -1.75, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -165,12 +165,12 @@ Transform:
   m_GameObject: {fileID: 8224332354439030363}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 0, y: -0.5, z: -0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6293151688012630339}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3458617370989737078
 MeshFilter:
   m_ObjectHideFlags: 0

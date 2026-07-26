@@ -65,7 +65,10 @@ public class FindItemEntityOfTagTask : BTNodeBase
 					)
 
 				{
-					Debug.Log("AT LEAST THIS");
+					foreach (var item in itemTags)
+					{
+						Debug.Log(item);
+					}
 
 					if (itemTags.Any(tag => taggable.HasTag(tag)))
 					{

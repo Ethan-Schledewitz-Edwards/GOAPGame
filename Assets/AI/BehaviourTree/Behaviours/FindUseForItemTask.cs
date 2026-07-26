@@ -1,6 +1,12 @@
 using BehaviourTrees;
+using GenericIndex;
+using Interaction.InteractableStructures;
+using InventorySystem;
+using InventorySystem.Items;
 using ObjectTags;
 using Settlements;
+using System.Linq;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 public class FindUseForItemTask : BTNodeBase
@@ -48,19 +54,26 @@ public class FindUseForItemTask : BTNodeBase
 		AIContext context)
 	{
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
-		if (closestStructure != null)
+		if (closestStructure != null && closestStructure.StructureObject is GameObject closestStructureObject)
 		{
-			GameObject closestStructureObject = closestStructure.StructureObject;
-			if (closestStructureObject != null &&
-				closestStructureObject.TryGetComponent(out InteractableObjectBase interactable))
+			if (closestStructureObject.TryGetComponent(out InteractableObjectBase interactable) &&
+				interactable.TryGetComponent(out IItemFiltered itemFiltered))
 			{
-				context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
-				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
+				ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
+				int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
 
-				return true;
+				if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
+				{
+					bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
+					if (passesFilter)
+					{
+						context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
+						context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
+						return true;
+					}
+				}
 			}
 		}
-
 		return false;
 	}
 }

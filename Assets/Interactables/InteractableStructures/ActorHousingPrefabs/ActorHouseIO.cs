@@ -13,6 +13,8 @@ namespace Interaction.InteractableStructures
 		// System
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		[SerializeField] private StructureTag m_structureTypeTag;
+		public int SettlementID { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
 		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
 		private int m_structureID;
 
@@ -63,6 +65,11 @@ namespace Interaction.InteractableStructures
 			interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 			return true;
+		}
+
+		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

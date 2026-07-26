@@ -9,7 +9,7 @@ using ObjectTags;
 namespace Interaction.InteractableStructures
 {
 	[RequireComponent(typeof(InventoryComponent))]
-	public class ItemStorageIO : InteractableObjectBase, IStructure<ItemStorageIO>
+	public class ItemStorageIO : InteractableObjectBase, IStructure<ItemStorageIO>, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBT;
 
@@ -20,11 +20,11 @@ namespace Interaction.InteractableStructures
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		[SerializeField] private StructureTag m_structureTypeTag;
 
-		public int SettlementID { get => m_structureID; set => m_structureID = value; }
+		public int SettlementID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
 		private int m_settlementID;
 
-		public int SettlementStructureID { get => m_structureID; set => m_structureID = value; }
-		private int m_structureID;
+		public int SettlementStructureID { get => m_settlementStructureID; set => m_settlementStructureID = value; }
+		private int m_settlementStructureID;
 
 		public GameObject StructureObject => gameObject;
 
@@ -35,7 +35,8 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_actorsAssigned = 0;
 
 		[Header("Storage Configuration")]
-		[SerializeField] private ItemTag[] m_permittedItemTypes;
+		public ItemTag[] ItemTagFilter => m_tagFilter;
+		[SerializeField] private ItemTag[] m_tagFilter;
 
 		public override bool UseFormationRadius { get => false; }
 
@@ -69,6 +70,12 @@ namespace Interaction.InteractableStructures
 			}
 		}
 
+		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
+		{
+			m_settlementID = settlementID;
+			m_settlementStructureID = settlementStructureID;
+		}
+
 		public override void UpdateSpeed(int extra)
 		{
 
@@ -84,7 +91,7 @@ namespace Interaction.InteractableStructures
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
 			if (executor != null && executor.AIContext != null)
 			{
-				foreach (ItemTag tag in m_permittedItemTypes)
+				foreach (ItemTag tag in m_tagFilter)
 				{
 					executor.AIContext.SetData<int>(AIContextKeys.c_ItemTagPrefix + tag.TagID, tag.TagID);
 				}
