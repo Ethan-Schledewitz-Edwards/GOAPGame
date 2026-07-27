@@ -7,7 +7,7 @@ namespace Managers
 	{
 		public static MissionManager Instance;
 
-		private MissionClock m_Clock;
+		private MissionClock m_clock;
 
 		private void Awake()
 		{
@@ -15,12 +15,17 @@ namespace Managers
 				Instance = this;
 			else Destroy(Instance);
 
-			m_Clock = GetComponent<MissionClock>();
+			m_clock = GetComponent<MissionClock>();
+		}
+
+		private void Start()
+		{
+			StartMission();
 		}
 
 		public void StartMission()
 		{
-
+			m_clock.StartClock(1);
 		}
 
 		public void EndMission(bool isSucsess)

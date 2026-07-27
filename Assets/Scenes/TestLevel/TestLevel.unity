@@ -1217,6 +1217,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dcb6342fa0c1a44293fc76a1fa32a52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Managers::MissionClock
+  m_minutesPerSecond: 2
+  m_sunriseHour: 6
+  m_sunsetHour: 18
 --- !u!1 &615411844
 GameObject:
   m_ObjectHideFlags: 0
@@ -2112,7 +2115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2e3af0c8eba2e4bad6a7d738eed800, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  m_lightingProfile: {fileID: 11400000, guid: 0b18a0a6ac85cd940890204f884767a7, type: 2}
+  m_lightingProfile: {fileID: 11400000, guid: 0d7655442b7824149a43f8a6ab584347, type: 2}
   m_mapCenter: {x: 0, y: 0, z: 0}
   m_orbitRadius: 500
   m_orbitHeight: 300

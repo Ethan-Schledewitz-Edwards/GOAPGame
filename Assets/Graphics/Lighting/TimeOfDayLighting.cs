@@ -46,8 +46,6 @@ namespace WorldLighting
 
 		public void UpdateTime(float timeOfDayPercentage)
 		{
-			Debug.Log(timeOfDayPercentage);
-
 			if (m_lightingProfile != null)
 			{
 				float sunriseHr = (m_lightingProfile.SunriseHr / 24f);
@@ -66,9 +64,10 @@ namespace WorldLighting
 			}
 			else
 			{
-				return time < sunrise
-					? Mathf.InverseLerp(sunset, sunrise + 1, time + 1) * 0.5f + 0.5f// Night before sunrise
-					: Mathf.InverseLerp(sunset, sunrise + 1, time) * 0.5f + 0.5f;// Night after sunset
+				float nightDuration = (1f - sunset) + sunrise;
+				float timeIntoNight = (time > sunset) ? (time - sunset) : (1f - sunset + time);
+
+				return 0.5f + (timeIntoNight / nightDuration) * 0.5f;
 			}
 		}
 
