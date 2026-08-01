@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c613e89f0171a0146bcfce4aa62ac1de
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 8574412962073106934
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Terrain/Layers/PB_TL_Blue.terrainlayer
+  uploadId: 836914

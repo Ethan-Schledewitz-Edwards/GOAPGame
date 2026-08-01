@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
 	[CreateAssetMenu(fileName = "BiomeIndex", menuName = "Biomes/BiomeIndex")]
 	public class BiomeIndex : ScriptableObject

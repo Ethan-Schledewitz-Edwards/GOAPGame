@@ -2,8 +2,8 @@ using GenericIndex;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Terrain.Generation;
-using Terrain.WorldProperties;
+using TerrainGeneration.Core;
+using TerrainGeneration.WorldProperties;
 
 namespace SaveLoad.Data
 {

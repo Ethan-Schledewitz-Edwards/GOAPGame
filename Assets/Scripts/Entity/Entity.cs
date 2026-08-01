@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 
 public class Entity : MonoBehaviour
 {

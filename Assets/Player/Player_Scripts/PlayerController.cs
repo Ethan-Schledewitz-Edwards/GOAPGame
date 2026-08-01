@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private const float c_stepHeight = 0.7f;
 
 	// Normals with Y greater than this are walkable
-	private const float c_maxWalkableAngle = 45;
+	private const float c_maxWalkableAngle = 30;
 	private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
 
 	// Air Movement Values

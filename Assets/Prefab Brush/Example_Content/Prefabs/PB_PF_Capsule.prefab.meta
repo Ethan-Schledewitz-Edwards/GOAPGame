@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7908bb875e092f4488e947488cac38ed
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Prefabs/PB_PF_Capsule.prefab
+  uploadId: 836914

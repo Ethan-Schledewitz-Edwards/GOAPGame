@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
-using Terrain.Generation;
+using TerrainGeneration.Core;
 using UnityEngine;
 
 public class FindItemEntityOfIDTask : BTNodeBase

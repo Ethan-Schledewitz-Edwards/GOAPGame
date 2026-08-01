@@ -1,7 +1,7 @@
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 
-namespace Terrain.WorldProperties
+namespace TerrainGeneration.WorldProperties
 {
     public static class CoordinateUtility
     {

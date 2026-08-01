@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 using GenericIndex;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
 	/// <summary>
 	/// Interprets the block data stored in a given chunk coordinate position.

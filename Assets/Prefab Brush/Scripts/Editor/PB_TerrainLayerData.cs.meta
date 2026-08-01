@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: a3db86a74512ef54da0f9db61bf522d1
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Scripts/Editor/PB_TerrainLayerData.cs
+  uploadId: 836914

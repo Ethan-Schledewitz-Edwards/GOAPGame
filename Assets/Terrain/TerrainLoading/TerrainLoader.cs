@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Terrain.WorldProperties;
-using Terrain.Generation;
+using TerrainGeneration.WorldProperties;
+using TerrainGeneration.Core;
 
 /// <summary>
 /// Loads chunks based on the player's current position.

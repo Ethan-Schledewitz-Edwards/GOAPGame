@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Terrain.WorldProperties
+namespace TerrainGeneration.WorldProperties
 {
 	public static class WorldPropertyUtility
 	{

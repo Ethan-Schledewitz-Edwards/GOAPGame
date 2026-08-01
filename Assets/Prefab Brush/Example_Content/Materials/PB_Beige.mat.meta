@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9c04eaf1a5d99cd4fa9debcdb54535c6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Materials/PB_Beige.mat
+  uploadId: 836914

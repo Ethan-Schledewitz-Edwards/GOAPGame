@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6ad5585e91b5f6b4da3ab7ea668a89c8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 112000000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Scenes/PB_Example/LightingData.asset
+  uploadId: 836914

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
 
 	/// <summary>

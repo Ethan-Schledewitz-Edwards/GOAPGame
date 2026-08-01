@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 94a59635c45323047b2dd001a2452a07
+timeCreated: 1448972664
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Scripts/Editor/PrefabBrush.cs
+  uploadId: 836914

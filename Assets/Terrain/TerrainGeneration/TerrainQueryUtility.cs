@@ -1,7 +1,7 @@
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
     public static class TerrainQueryUtility
     {

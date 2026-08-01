@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 332e021f9c9329446b7c952d73829bdf
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 15600000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Terrain/PB_Example Terrain.asset
+  uploadId: 836914

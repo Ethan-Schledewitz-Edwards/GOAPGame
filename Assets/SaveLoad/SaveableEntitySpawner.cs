@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SaveLoad.Data;
-using Terrain.Generation;
+using TerrainGeneration.Core;
 
 namespace SaveLoad.Management
 {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
 	[CreateAssetMenu(fileName = "RollingHillsBiome", menuName = "Biomes/RollingHillsBiome")]
 	public class RollingHillsBiome : TerrainBiomeData

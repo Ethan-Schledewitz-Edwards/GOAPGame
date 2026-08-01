@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c855ca3dcac8e0b4484f14427f38f3f1
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Example_Content/Prefabs/PB_PF_Sphere.prefab
+  uploadId: 836914

@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: e17e9f8320c621041ae340e417ea8ae1
+AssetOrigin:
+  serializedVersion: 1
+  productId: 44846
+  packageName: Prefab Brush+
+  packageVersion: 1.4.3
+  assetPath: Assets/Prefab Brush/Scripts/Editor/PB_SaveObjectEditor.cs
+  uploadId: 836914

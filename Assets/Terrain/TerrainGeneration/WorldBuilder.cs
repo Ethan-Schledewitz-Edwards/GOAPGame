@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Terrain.WorldProperties;
+using TerrainGeneration.WorldProperties;
 using GenericIndex;
 
-namespace Terrain.Generation
+namespace TerrainGeneration.Core
 {
 	public class WorldBuilder : MonoBehaviour
 	{
