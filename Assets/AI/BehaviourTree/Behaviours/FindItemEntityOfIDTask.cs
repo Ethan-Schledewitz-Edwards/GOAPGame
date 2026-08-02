@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using InventorySystem;
 using InventorySystem.Items;
-using TerrainGeneration.Core;
+using WorldManagement.Core;
 using UnityEngine;
 
 public class FindItemEntityOfIDTask : BTNodeBase
@@ -43,7 +43,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		float minDistanceSqr = float.MaxValue;
 		foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
 		{
-			TerrainChunk terrainChunk = WorldBuilder.GetChunkData(chunkXZ);
+			TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
 				if(entity == null) 

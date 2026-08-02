@@ -921,9 +921,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1792661992}
+  - component: {fileID: 1792661995}
   - component: {fileID: 1792661994}
   - component: {fileID: 1792661993}
-  - component: {fileID: 1792661995}
+  - component: {fileID: 1792661996}
   m_Layer: 0
   m_Name: WorldBuilder
   m_TagString: Untagged
@@ -955,11 +956,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1792661988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ed0d22ae585a34418659b5e99e04e40, type: 3}
+  m_Script: {fileID: 11500000, guid: c9a97ded2148f2c4181f204aef70fa39, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TerrainLoader
-  m_player: {fileID: 1827997840}
-  m_renderDist: 4
+  m_EditorClassIdentifier: WorldManagement.TerrainGeneration::WorldManagement.TerrainGeneration.TerrainChunkGenerator
+  m_terrainMaterial: {fileID: 2100000, guid: 4f2610c0ed4b3464bb33d04c390f1554, type: 2}
+  m_tileIndex: {fileID: 11400000, guid: 7a0fa87d6b2b01d4e9a63877462ba180, type: 2}
+  m_biomeIndex: {fileID: 11400000, guid: 48d8807aecdfc7849afe45325b2c2aa9, type: 2}
 --- !u!114 &1792661994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -969,11 +971,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1792661988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5525797def62a65418434800572228e5, type: 3}
+  m_Script: {fileID: 11500000, guid: 94a5812ece1eb3649b5dacf59b846645, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldBuilder
-  m_biomeIndex: {fileID: 11400000, guid: 48d8807aecdfc7849afe45325b2c2aa9, type: 2}
-  m_terrainMaterial: {fileID: 2100000, guid: 4f2610c0ed4b3464bb33d04c390f1554, type: 2}
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.TerrainChunkManager
+  <BuilderMethod>k__BackingField: 0
 --- !u!114 &1792661995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -983,10 +984,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1792661988}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d33028b00952c747bd64f2e38ac1478, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a1ec52af1e73d04ca5a8df061aa99ef, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  m_navMeshSurface: {fileID: 746061956}
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.WorldManager
+--- !u!114 &1792661996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792661988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c19f5a0933cf83b449a6a5b2d14db167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.ProximityTerrainLoader
+  m_player: {fileID: 1827997840}
+  m_renderDist: 4
 --- !u!4 &1827997840 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}

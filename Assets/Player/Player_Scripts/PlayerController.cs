@@ -12,10 +12,10 @@ public class PlayerController : MonoBehaviour, IInputHandler
 	private const int c_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
 
 	// Ground Movement
-	private const float c_walkingSpeed = 5f;
+	private const float c_walkingSpeed = 6f;
 	private const float c_friction = 3.8f;
 	private const float c_acceleration = 8.5f;
-	private const float c_maxSpeed = 7f;
+	private const float c_maxSpeed = 8f;
 
 	private const float c_stepHeight = 0.7f;
 

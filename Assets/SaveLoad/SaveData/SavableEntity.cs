@@ -2,8 +2,7 @@ using GenericIndex;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TerrainGeneration.Core;
-using TerrainGeneration.WorldProperties;
+using WorldManagement.Core;
 
 namespace SaveLoad.Data
 {
@@ -56,7 +55,7 @@ namespace SaveLoad.Data
 
 		private void RegisterToClosestChunk()
 		{
-			Vector3Int chunkSize = WorldPropertyUtility.s_ChunkSize;
+			Vector3Int chunkSize = WorldManager.s_ChunkSize;
 			Vector2Int currentChunkXZ = new Vector2Int
 				(
 					Mathf.FloorToInt(transform.position.x / chunkSize.x),
@@ -66,13 +65,13 @@ namespace SaveLoad.Data
 			if (currentChunkXZ != m_chunkXZ)
 			{
 				// Unregister this entity from its previous chunk
-				TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
+				TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
 				if (previousTerrainChunk != null)
 					previousTerrainChunk.UnregisterEntity(gameObject);
 
 				// Register this entity to the chunk it overlaps with
 				m_chunkXZ = currentChunkXZ;
-				TerrainChunk terrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
+				TerrainChunk terrainChunk = WorldManager.GetChunkData(m_chunkXZ);
 
 				if (terrainChunk != null)
 					terrainChunk.RegisterEntity(gameObject);
@@ -82,7 +81,7 @@ namespace SaveLoad.Data
 		public void UnregisterFromCurrentChunk()
 		{
 			// Unregister this entity from its previous chunk
-			TerrainChunk previousTerrainChunk = WorldBuilder.GetChunkData(m_chunkXZ);
+			TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
 
 			if (previousTerrainChunk != null)
 				previousTerrainChunk.UnregisterEntity(gameObject);

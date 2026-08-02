@@ -1,0 +1,19 @@
+{
+    "name": "WorldManagement.TerrainGeneration",
+    "rootNamespace": "WorldManagement.TerrainGeneration",
+    "references": [
+        "GUID:0eec0e3185c110644ab23d853bdbea41",
+        "GUID:a39e3cb598875424c9296d54a5202212",
+        "GUID:b85b26eebd1b5c549a59e2da7531da88",
+        "GUID:fc7511d31bfe16d40b7b18bb9d5245c5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using SaveLoad.Data;
 using UnityEngine;
-using TerrainGeneration.Core;
+using WorldManagement.Core;
 
 namespace SaveLoad.Management
 {
@@ -28,16 +28,16 @@ namespace SaveLoad.Management
 
 		private void OnEnable()
 		{
-			WorldBuilder.OnRequestChunkData += FetchChunkData;
-			WorldBuilder.OnReleaseChunkData += SaveAndUnloadChunkData;
+			WorldManager.OnRequestChunkData += FetchChunkData;
+			WorldManager.OnReleaseChunkData += SaveAndUnloadChunkData;
 
 			LoadGame();
 		}
 
 		private void OnDisable()
 		{
-			WorldBuilder.OnRequestChunkData -= FetchChunkData;
-			WorldBuilder.OnReleaseChunkData -= SaveAndUnloadChunkData;
+			WorldManager.OnRequestChunkData -= FetchChunkData;
+			WorldManager.OnReleaseChunkData -= SaveAndUnloadChunkData;
 		}
 		#region File paths
 
@@ -197,12 +197,12 @@ namespace SaveLoad.Management
 		/// </summary>
 		private void SaveLoadedChunks()
 		{
-			if (WorldBuilder.Instance != null)
+			if (WorldManager.Instance != null)
 			{
-				var activeKeys = new List<Vector2Int>(WorldBuilder.s_ActiveChunks.Keys);
+				var activeKeys = new List<Vector2Int>(WorldManager.s_ActiveChunks.Keys);
 				foreach (var key in activeKeys)
 				{
-					if (WorldBuilder.s_ActiveChunks.TryGetValue(key, out var activeChunkTuple))
+					if (WorldManager.s_ActiveChunks.TryGetValue(key, out var activeChunkTuple))
 					{
 						if (activeChunkTuple.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
 							SaveAndUnloadChunkData(activeChunkTuple.chunkData);

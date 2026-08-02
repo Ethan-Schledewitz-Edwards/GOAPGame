@@ -1,0 +1,16 @@
+{
+    "name": "WorldManagement.Tiles",
+    "rootNamespace": "WorldManagement.Tiles",
+    "references": [
+        "GUID:0eec0e3185c110644ab23d853bdbea41"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
