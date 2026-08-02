@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using WorldManagement.Core;
 using WorldManagement.Tiles;
@@ -8,14 +9,14 @@ namespace WorldManagement.TerrainGeneration
 {
 	[RequireComponent(typeof(TerrainChunkManager))]
     public class TerrainChunkGenerator : MonoBehaviour
-    {
+	{
 		[Header("Procedural References")]
 		[SerializeField] private Material m_terrainMaterial;
 		[SerializeField] private TileIndex m_tileIndex;
 		[SerializeField] private BiomeIndex m_biomeIndex;
+
 		private ChunkDataBuilder m_chunkBuilder;
 		private ChunkMeshBuilder m_chunkMesher;
-
 		private TerrainChunkManager m_chunkManager;
 
 		private void Awake()
@@ -27,23 +28,104 @@ namespace WorldManagement.TerrainGeneration
 
 		private void OnEnable()
 		{
-			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Procedural) 
+			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Procedural)
 				return;
 
-			m_chunkManager.OnGenerateBaseTerrain += GenerateBaseTerrain;
-			m_chunkManager.OnDecorateChunk += DecorateChunk;
-			m_chunkManager.OnGenerateMesh += GenerateMesh;
-			m_chunkManager.OnSpawnFeatures += SpawnFeatures;
-			m_chunkManager.OnRebuildMeshRequested += RebuildMesh;
+			m_chunkManager.OnProcessChunkSpawn += GenerateProceduralChunk;
+			m_chunkManager.OnProcessChunkRebuild += RebuildMesh;
 		}
 
 		private void OnDisable()
 		{
-			m_chunkManager.OnGenerateBaseTerrain -= GenerateBaseTerrain;
-			m_chunkManager.OnDecorateChunk -= DecorateChunk;
-			m_chunkManager.OnGenerateMesh -= GenerateMesh;
-			m_chunkManager.OnSpawnFeatures -= SpawnFeatures;
-			m_chunkManager.OnRebuildMeshRequested -= RebuildMesh;
+			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Procedural)
+				return;
+
+			m_chunkManager.OnProcessChunkSpawn -= GenerateProceduralChunk;
+			m_chunkManager.OnProcessChunkRebuild -= RebuildMesh;
+		}
+
+		private IEnumerator GenerateProceduralChunk
+			(
+				Vector2Int chunkXZ,
+				HashSet<Vector2Int> requestedChunks,
+				HashSet<Vector2Int> pendingChunks,
+				Action<Vector2Int> chunkUpdated,
+				Action<TerrainChunk, GameObject> chunkGenerated
+			)
+		{
+			requestedChunks.Add(chunkXZ);
+
+			// Generate a 3x3 neighbour hood of chunks
+			for (int x = -1; x <= 1; x++)
+			{
+				for (int z = -1; z <= 1; z++)
+				{
+					Vector2Int neighborCoord = chunkXZ + new Vector2Int(x, z);
+
+					if (!WorldManager.s_ActiveChunks.ContainsKey(neighborCoord) && !pendingChunks.Contains(neighborCoord))
+					{
+						TerrainChunk savedChunk = WorldManager.OnRequestChunkData?.Invoke(neighborCoord);
+						if (savedChunk != null)
+						{
+							WorldManager.s_ActiveChunks.TryAdd(neighborCoord, (savedChunk, null));
+						}
+						else
+						{
+							pendingChunks.Add(neighborCoord);
+							yield return StartCoroutine(GenerateBaseTerrain(neighborCoord));
+							pendingChunks.Remove(neighborCoord);
+						}
+					}
+				}
+			}
+
+			yield return new WaitUntil(() => CheckNeighborhoodReady(chunkXZ));
+
+			// Decorate the center chunk
+			TerrainChunk targetChunk = WorldManager.s_ActiveChunks[chunkXZ].chunkData;
+			if (targetChunk != null && targetChunk.ChunkGenerationState == TerrainChunk.EChunkGenerationState.BaseTerrain)
+			{
+				m_chunkBuilder.DecorateChunk(targetChunk);
+				targetChunk.SetGenerationState(TerrainChunk.EChunkGenerationState.Decorated);
+			}
+
+			// Create the chunks GameObject
+			string chunkName = $"Chunk({chunkXZ.x}, {chunkXZ.y})";
+			GameObject chunkObject = new GameObject(chunkName, typeof(MeshRenderer), typeof(MeshFilter), typeof(MeshCollider));
+			chunkObject.transform.position = new Vector3(chunkXZ.x * WorldManager.s_ChunkSize.x, 0f, chunkXZ.y * WorldManager.s_ChunkSize.z);
+			chunkObject.isStatic = true;
+
+			if (targetChunk != null)
+			{
+				targetChunk.OnChunkUpdate += chunkUpdated;
+			}
+
+			// Notify cardinal neighbors
+			for (int i = 0; i < 4; i++)
+			{
+				Vector2Int neighbourToUpdate = chunkXZ + DirectionsUtility.CardinalDirections2D[i];
+				if (WorldManager.s_ActiveChunks.TryGetValue(neighbourToUpdate, out var neighbor))
+				{
+					neighbor.chunkData?.UpdateChunk();
+				}
+			}
+
+			// Generate the chunks mesh
+			Mesh chunkMesh = null;
+			yield return StartCoroutine(GenerateMesh(targetChunk, (mesh) => chunkMesh = mesh));
+
+			// 5. Apply Mesh & Features
+			if (chunkMesh != null)
+			{
+				chunkObject.GetComponent<MeshFilter>().mesh = chunkMesh;
+				chunkObject.GetComponent<MeshCollider>().sharedMesh = chunkMesh;
+			}
+
+			SpawnFeatures(targetChunk, chunkObject.transform);
+
+			// Pass the finished chunk back to the manager
+			chunkGenerated?.Invoke(targetChunk, chunkObject);
+			requestedChunks.Remove(chunkXZ);
 		}
 
 		private IEnumerator GenerateBaseTerrain(Vector2Int chunkXZ)
@@ -62,11 +144,6 @@ namespace WorldManagement.TerrainGeneration
 			});
 
 			yield return new WaitUntil(() => isComplete);
-		}
-
-		private void DecorateChunk(TerrainChunk chunk)
-		{
-			m_chunkBuilder.DecorateChunk(chunk);
 		}
 
 		private IEnumerator GenerateMesh(TerrainChunk chunk, Action<Mesh> onComplete)
@@ -138,6 +215,20 @@ namespace WorldManagement.TerrainGeneration
 					meshCollider.sharedMesh = null;
 				}
 			}));
+		}
+
+		private bool CheckNeighborhoodReady(Vector2Int centerCoord)
+		{
+			for (int x = -1; x <= 1; x++)
+			{
+				for (int z = -1; z <= 1; z++)
+				{
+					Vector2Int neighbor = centerCoord + new Vector2Int(x, z);
+					if (!WorldManager.s_ActiveChunks.ContainsKey(neighbor))
+						return false;
+				}
+			}
+			return true;
 		}
 	}
 }

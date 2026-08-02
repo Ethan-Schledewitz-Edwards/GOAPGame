@@ -11,7 +11,7 @@ namespace WorldManagement.Core
 		// Signleton
 		public static WorldManager Instance { get; private set; }
 		public static readonly int s_Seed = 64;
-		public static readonly Vector3Int s_ChunkSize = new Vector3Int(16, 32, 16);
+		public static readonly Vector3Int s_ChunkSize = new Vector3Int(32, 32, 32);
 
 		// Components
 		private TerrainChunkManager m_chunkBuilder;
@@ -44,7 +44,7 @@ namespace WorldManagement.Core
 			if ((s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null) || s_requestedChunks.Contains(chunkXZ))
 				yield break;
 
-			yield return StartCoroutine(m_chunkBuilder.BuildChunk(chunkXZ, s_requestedChunks, s_pendingChunks, OnChunkUpdate));
+			yield return StartCoroutine(m_chunkBuilder.SpawnChunk(chunkXZ, s_requestedChunks, s_pendingChunks, HandleChunkUpdated));
 		}
 
 		public IEnumerator LoadChunkBatch(Vector2Int[] chunkCoords)
@@ -57,26 +57,27 @@ namespace WorldManagement.Core
 
 		public void RemoveActiveChunk(Vector2Int chunkXZ)
 		{
-			if (!s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple))
+			if (!s_ActiveChunks.TryGetValue(chunkXZ, out var chunk))
 				return;
 
 			if (s_requestedChunks.Contains(chunkXZ))
 				s_requestedChunks.Remove(chunkXZ);
 
-			activeChunkTuple.chunkData.OnChunkUpdate -= OnChunkUpdate;
+			chunk.chunkData.OnChunkUpdate -= HandleChunkUpdated;
 
-			if (activeChunkTuple.gameObject != null)
+			if (m_chunkBuilder.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Procedural &&
+				chunk.gameObject != null)
 			{
-				Destroy(activeChunkTuple.gameObject);
+				Destroy(chunk.gameObject);
 			}
 
-			if (activeChunkTuple.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
-				OnReleaseChunkData?.Invoke(activeChunkTuple.chunkData);
+			if (chunk.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
+				OnReleaseChunkData?.Invoke(chunk.chunkData);
 
 			s_ActiveChunks.Remove(chunkXZ);
 		}
 
-		public void OnChunkUpdate(Vector2Int chunkXZ)
+		public void HandleChunkUpdated(Vector2Int chunkXZ)
 		{
 			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null && !s_requestedChunks.Contains(chunkXZ))
 			{

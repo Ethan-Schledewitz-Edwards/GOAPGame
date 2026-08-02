@@ -3145,6 +3145,7 @@ Transform:
   - {fileID: 1557145055}
   - {fileID: 556560224}
   - {fileID: 1021814318}
+  - {fileID: 421255482}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &155311842
@@ -6649,7 +6650,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -22.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6657,7 +6658,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -91.509
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6699,6 +6700,11 @@ PrefabInstance:
 --- !u!1 &333293983 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7674105291137834835, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
+  m_PrefabInstance: {fileID: 333293982}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &333293984 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
   m_PrefabInstance: {fileID: 333293982}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &337855314
@@ -8303,7 +8309,7 @@ GameObject:
   - component: {fileID: 404850627}
   - component: {fileID: 404850626}
   m_Layer: 0
-  m_Name: Terrain_(32.00, 0.00, 32.00)
+  m_Name: Chunk(1, 1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8684,6 +8690,318 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1675931210}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &421255481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 421255482}
+  - component: {fileID: 421255486}
+  - component: {fileID: 421255485}
+  - component: {fileID: 421255484}
+  - component: {fileID: 421255483}
+  m_Layer: 0
+  m_Name: WorldBuilder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &421255482
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421255481}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 155092988}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &421255483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421255481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b665330739aab4e4ea38c107f350de05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.AuthoredTiles::WorldManagement.AuthoredTiles.AuthoredTileLoader
+  m_sceneChunks:
+  - {fileID: 754207980}
+  - {fileID: 1489999926}
+  - {fileID: 404850625}
+  - {fileID: 880550513}
+  - {fileID: 1007522896}
+  - {fileID: 628931137}
+  - {fileID: 966961789}
+  - {fileID: 1488590968}
+  - {fileID: 1627337452}
+  - {fileID: 2041359821}
+  - {fileID: 528466114}
+  - {fileID: 572738496}
+  - {fileID: 1486367310}
+  - {fileID: 648549291}
+  - {fileID: 1016081960}
+  - {fileID: 974658358}
+  - {fileID: 2098232275}
+  - {fileID: 740741257}
+  - {fileID: 1798153329}
+  - {fileID: 50895079}
+  - {fileID: 183198087}
+  - {fileID: 1214375352}
+  - {fileID: 1723978134}
+  - {fileID: 1446771263}
+  - {fileID: 2045212150}
+  - {fileID: 1262270016}
+  - {fileID: 651350805}
+  - {fileID: 1366283158}
+  - {fileID: 66462690}
+  - {fileID: 1297353453}
+  - {fileID: 977907822}
+  - {fileID: 1733731233}
+  - {fileID: 374015209}
+  - {fileID: 1720860445}
+  - {fileID: 296328568}
+  - {fileID: 1696766424}
+  - {fileID: 383569576}
+  - {fileID: 464358460}
+  - {fileID: 1468301155}
+  - {fileID: 84856931}
+  - {fileID: 521293260}
+  - {fileID: 1757713443}
+  - {fileID: 1080182614}
+  - {fileID: 998514757}
+  - {fileID: 940172546}
+  - {fileID: 824387004}
+  - {fileID: 2003934606}
+  - {fileID: 2012122138}
+  - {fileID: 1296600431}
+  - {fileID: 1019921061}
+  - {fileID: 1973075673}
+  - {fileID: 1414950221}
+  - {fileID: 1390446290}
+  - {fileID: 1875172276}
+  - {fileID: 1179448378}
+  - {fileID: 1681674626}
+  - {fileID: 638808407}
+  - {fileID: 366448321}
+  - {fileID: 1686686548}
+  - {fileID: 1529035230}
+  - {fileID: 572664502}
+  - {fileID: 1582690163}
+  - {fileID: 2025383315}
+  - {fileID: 1849878355}
+  - {fileID: 1411712474}
+  - {fileID: 1920636457}
+  - {fileID: 800537451}
+  - {fileID: 972060088}
+  - {fileID: 1600074952}
+  - {fileID: 1540413452}
+  - {fileID: 64135269}
+  - {fileID: 1213580184}
+  - {fileID: 1802370258}
+  - {fileID: 84650545}
+  - {fileID: 985542225}
+  - {fileID: 970152206}
+  - {fileID: 737721884}
+  - {fileID: 4712878}
+  - {fileID: 1776113259}
+  - {fileID: 904199078}
+  - {fileID: 1464834921}
+  - {fileID: 415115695}
+  - {fileID: 2035594815}
+  - {fileID: 1318423429}
+  - {fileID: 1749348174}
+  - {fileID: 1972540193}
+  - {fileID: 191332922}
+  - {fileID: 163964493}
+  - {fileID: 1032067556}
+  - {fileID: 2035346300}
+  - {fileID: 1116214538}
+  - {fileID: 1562197252}
+  - {fileID: 347739487}
+  - {fileID: 1338938786}
+  - {fileID: 793119108}
+  - {fileID: 1036944392}
+  - {fileID: 782149170}
+  - {fileID: 1210390959}
+  - {fileID: 1876932773}
+  - {fileID: 723979405}
+  - {fileID: 1896020978}
+  - {fileID: 743534976}
+  - {fileID: 1955988801}
+  - {fileID: 269045465}
+  - {fileID: 1463900649}
+  - {fileID: 1320338854}
+  - {fileID: 388917931}
+  - {fileID: 756896346}
+  - {fileID: 924180470}
+  - {fileID: 1442969744}
+  - {fileID: 1320060134}
+  - {fileID: 1528312135}
+  - {fileID: 1354115198}
+  - {fileID: 518052593}
+  - {fileID: 1577674079}
+  - {fileID: 5340825}
+  - {fileID: 1204889898}
+  - {fileID: 1346510178}
+  - {fileID: 505939393}
+  - {fileID: 1808109649}
+  - {fileID: 215182074}
+  - {fileID: 2120204677}
+  - {fileID: 646171377}
+  - {fileID: 908975395}
+  - {fileID: 47162898}
+  - {fileID: 387572671}
+  - {fileID: 256114600}
+  - {fileID: 1417413957}
+  - {fileID: 996529354}
+  - {fileID: 1656709024}
+  - {fileID: 1111696630}
+  - {fileID: 1253357635}
+  - {fileID: 1877400745}
+  - {fileID: 224765745}
+  - {fileID: 1911501337}
+  - {fileID: 453496344}
+  - {fileID: 24933311}
+  - {fileID: 354237800}
+  - {fileID: 451812764}
+  - {fileID: 562523332}
+  - {fileID: 1786757469}
+  - {fileID: 805830502}
+  - {fileID: 2099826527}
+  - {fileID: 653110229}
+  - {fileID: 1714918049}
+  - {fileID: 801920449}
+  - {fileID: 103528105}
+  - {fileID: 1386366749}
+  - {fileID: 1618295017}
+  - {fileID: 950152576}
+  - {fileID: 208344774}
+  - {fileID: 626190076}
+  - {fileID: 2028215648}
+  - {fileID: 432383756}
+  - {fileID: 858997876}
+  - {fileID: 1121187599}
+  - {fileID: 692654381}
+  - {fileID: 584126903}
+  - {fileID: 1585836683}
+  - {fileID: 1160104585}
+  - {fileID: 1718464471}
+  - {fileID: 288207036}
+  - {fileID: 136475453}
+  - {fileID: 1539250817}
+  - {fileID: 1407490676}
+  - {fileID: 527490257}
+  - {fileID: 527009015}
+  - {fileID: 1713232336}
+  - {fileID: 2109091286}
+  - {fileID: 1418169181}
+  - {fileID: 1593638622}
+  - {fileID: 1432034116}
+  - {fileID: 832278679}
+  - {fileID: 1380648771}
+  - {fileID: 296965106}
+  - {fileID: 933913033}
+  - {fileID: 1443280563}
+  - {fileID: 1179696490}
+  - {fileID: 790700997}
+  - {fileID: 600326314}
+  - {fileID: 1474880966}
+  - {fileID: 2072134472}
+  - {fileID: 99689108}
+  - {fileID: 688634874}
+  - {fileID: 1543436033}
+  - {fileID: 309169182}
+  - {fileID: 457634325}
+  - {fileID: 1493528660}
+  - {fileID: 1140960113}
+  - {fileID: 1423687484}
+  - {fileID: 1946599657}
+  - {fileID: 1754178303}
+  - {fileID: 1114264594}
+  - {fileID: 1583334489}
+  - {fileID: 1682901868}
+  - {fileID: 1540239376}
+  - {fileID: 1563959858}
+  - {fileID: 405033413}
+  - {fileID: 1837778587}
+  - {fileID: 1580931452}
+  - {fileID: 2115463626}
+  - {fileID: 1154888110}
+  - {fileID: 951154278}
+  - {fileID: 114613015}
+  - {fileID: 375751637}
+  - {fileID: 1200059269}
+  - {fileID: 1454182093}
+  - {fileID: 1723778021}
+  - {fileID: 363369323}
+  - {fileID: 1595528257}
+  - {fileID: 754162189}
+  - {fileID: 492685084}
+  - {fileID: 1816446974}
+  - {fileID: 487441040}
+  - {fileID: 366250347}
+  - {fileID: 1962970399}
+  - {fileID: 135210721}
+  - {fileID: 920109257}
+  - {fileID: 2068016874}
+  - {fileID: 1651761191}
+  - {fileID: 332772964}
+  - {fileID: 240676899}
+  - {fileID: 451967800}
+  - {fileID: 130995002}
+  - {fileID: 1240112971}
+--- !u!114 &421255484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421255481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c19f5a0933cf83b449a6a5b2d14db167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.ProximityTerrainLoader
+  m_player: {fileID: 333293984}
+  m_renderDist: 4
+--- !u!114 &421255485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421255481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a5812ece1eb3649b5dacf59b846645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.TerrainChunkManager
+  <BuilderMethod>k__BackingField: 1
+--- !u!114 &421255486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421255481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a1ec52af1e73d04ca5a8df061aa99ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.WorldManager
 --- !u!1001 &422876303
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11681,7 +11999,7 @@ GameObject:
   - component: {fileID: 528466116}
   - component: {fileID: 528466115}
   m_Layer: 0
-  m_Name: Terrain_(0.00, 0.00, 64.00)
+  m_Name: Chunk(0, 2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12441,7 +12759,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556560223}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aee2fb556568bae468dd8cfc597b32c9, type: 3}
   m_Name: 
@@ -12453,7 +12771,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556560223}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e211d393bb29c4b45b381f898f7c6309, type: 3}
   m_Name: 
@@ -12884,7 +13202,7 @@ GameObject:
   - component: {fileID: 572738498}
   - component: {fileID: 572738497}
   m_Layer: 0
-  m_Name: Terrain_(32.00, 0.00, 64.00)
+  m_Name: Chunk(1, 2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14273,7 +14591,7 @@ GameObject:
   - component: {fileID: 628931139}
   - component: {fileID: 628931138}
   m_Layer: 0
-  m_Name: Terrain_(0.00, 0.00, -32.00)
+  m_Name: Chunk(0, -1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14780,7 +15098,7 @@ GameObject:
   - component: {fileID: 648549293}
   - component: {fileID: 648549292}
   m_Layer: 0
-  m_Name: Terrain_(64.00, 0.00, 32.00)
+  m_Name: Terrain_(2, 1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16850,7 +17168,7 @@ GameObject:
   - component: {fileID: 754207982}
   - component: {fileID: 754207981}
   m_Layer: 0
-  m_Name: Terrain
+  m_Name: Chunk(0, 0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20103,7 +20421,7 @@ GameObject:
   - component: {fileID: 880550515}
   - component: {fileID: 880550514}
   m_Layer: 0
-  m_Name: Terrain_(32.00, 0.00, 0.00)
+  m_Name: Chunk(1, 0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21966,7 +22284,7 @@ GameObject:
   - component: {fileID: 966961791}
   - component: {fileID: 966961790}
   m_Layer: 0
-  m_Name: Terrain_(-32.00, 0.00, -32.00)
+  m_Name: Chunk(-1, -1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22302,7 +22620,7 @@ GameObject:
   - component: {fileID: 974658360}
   - component: {fileID: 974658359}
   m_Layer: 0
-  m_Name: Terrain_(64.00, 0.00, -32.00)
+  m_Name: Terrain_(2, -1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23052,7 +23370,7 @@ GameObject:
   - component: {fileID: 1007522898}
   - component: {fileID: 1007522897}
   m_Layer: 0
-  m_Name: Terrain_(32.00, 0.00, -32.00)
+  m_Name: Chunk(1, -1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23316,7 +23634,7 @@ GameObject:
   - component: {fileID: 1016081962}
   - component: {fileID: 1016081961}
   m_Layer: 0
-  m_Name: Terrain_(64.00, 0.00, 0.00)
+  m_Name: Terrain_(2, 0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34016,7 +34334,7 @@ GameObject:
   - component: {fileID: 1486367312}
   - component: {fileID: 1486367311}
   m_Layer: 0
-  m_Name: Terrain_(64.00, 0.00, 64.00)
+  m_Name: Chunk(2, 2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34109,7 +34427,7 @@ GameObject:
   - component: {fileID: 1488590970}
   - component: {fileID: 1488590969}
   m_Layer: 0
-  m_Name: Terrain_(-32.00, 0.00, 0.00)
+  m_Name: Chunk(-1, 0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34202,7 +34520,7 @@ GameObject:
   - component: {fileID: 1489999928}
   - component: {fileID: 1489999927}
   m_Layer: 0
-  m_Name: Terrain_(0.00, 0.00, 32.00)
+  m_Name: Chunk(0, 1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38352,7 +38670,7 @@ GameObject:
   - component: {fileID: 1627337454}
   - component: {fileID: 1627337453}
   m_Layer: 0
-  m_Name: Terrain_(-32.00, 0.00, 32.00)
+  m_Name: Chunk(-1, 1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47965,7 +48283,7 @@ GameObject:
   - component: {fileID: 2041359823}
   - component: {fileID: 2041359822}
   m_Layer: 0
-  m_Name: Terrain_(-32.00, 0.00, 64.00)
+  m_Name: Chunk(-1,  2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
