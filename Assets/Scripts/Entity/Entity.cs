@@ -2,42 +2,45 @@ using System;
 using UnityEngine;
 using WorldManagement.Core;
 
-public class Entity : MonoBehaviour
+namespace Entities.Core
 {
-	private const float c_moveThreshold = 0.1f;
-	private const float c_moveThresholdSqrt = c_moveThreshold * c_moveThreshold;
-
-	// Events
-	public event Action EntityPositionChanged;
-
-	// System
-	protected Vector3 m_position { get; private set; }
-	private Vector2Int m_currentChunkXZ;
-
-	private void OnDestroy()
+	public class Entity : MonoBehaviour
 	{
-		EntityPositionChanged = null;
-	}
+		private const float c_moveThreshold = 0.1f;
+		private const float c_moveThresholdSqrt = c_moveThreshold * c_moveThreshold;
 
-	private void FixedUpdate()
-	{
-		UpdatePosition();
-	}
+		// Events
+		public event Action EntityPositionChanged;
 
-	protected virtual void UpdatePosition()
-	{
-		float delta = (transform.position - m_position).sqrMagnitude;
+		// System
+		protected Vector3 m_position { get; private set; }
+		private Vector2Int m_currentChunkXZ;
 
-		if(delta > c_moveThresholdSqrt)
+		private void OnDestroy()
 		{
-			m_position = transform.position;
-			EntityPositionChanged?.Invoke();
+			EntityPositionChanged = null;
+		}
 
-			// Check if the entity entered a new chunk
-			Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(m_position);
-			if(chunkXZ != m_currentChunkXZ)
+		private void FixedUpdate()
+		{
+			UpdatePosition();
+		}
+
+		protected virtual void UpdatePosition()
+		{
+			float delta = (transform.position - m_position).sqrMagnitude;
+
+			if (delta > c_moveThresholdSqrt)
 			{
-				m_currentChunkXZ = chunkXZ;
+				m_position = transform.position;
+				EntityPositionChanged?.Invoke();
+
+				// Check if the entity entered a new chunk
+				Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(m_position);
+				if (chunkXZ != m_currentChunkXZ)
+				{
+					m_currentChunkXZ = chunkXZ;
+				}
 			}
 		}
 	}

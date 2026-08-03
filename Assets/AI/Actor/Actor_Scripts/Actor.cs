@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using Entities.Core;
 using InventorySystem;
 using System;
 using System.Collections;

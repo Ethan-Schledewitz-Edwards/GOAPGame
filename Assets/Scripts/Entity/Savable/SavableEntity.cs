@@ -2,12 +2,15 @@ using GenericIndex;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Entities.Core;
 using WorldManagement.Core;
+using SaveLoad.Core;
+using SaveLoad.Data;
 
-namespace SaveLoad.Data
+namespace Entities.Savable
 {
-	[RequireComponent(typeof(Entity))]
-	public class SaveableEntity : MonoBehaviour
+	[RequireComponent(typeof(Entities.Core.Entity))]
+	public class SaveableEntity : MonoBehaviour, ISavableEntity
 	{
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
 
@@ -92,16 +95,16 @@ namespace SaveLoad.Data
 		/// <summary>
 		/// Gathers data from all ISaveableComponent scripts on this GameObject
 		/// </summary>
-		public EntitySaveData GenerateSaveData()
+		public SerializableEntityData GenerateSaveData()
 		{
-			EntitySaveData data = null;
+			SerializableEntityData data = null;
 
 			// Get prefab id from index
 			int prefabID = GetPrefabID();
 			if (prefabID == -1)
 				return null;
 
-			data = new EntitySaveData
+			data = new SerializableEntityData
 			{
 				GUID = this.m_guid,
 				PrefabId = prefabID,
@@ -113,7 +116,7 @@ namespace SaveLoad.Data
 				RotZ = transform.rotation.z
 			};
 
-			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 			foreach (var component in saveableComponents)
 			{
 				data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
@@ -125,7 +128,7 @@ namespace SaveLoad.Data
 		/// <summary>
 		/// Pushes the loaded data back into the individual components
 		/// </summary>
-		public void RestoreFromSaveData(EntitySaveData data)
+		public void RestoreFromSaveData(SerializableEntityData data)
 		{
 			this.m_guid = data.GUID;
 
@@ -137,7 +140,7 @@ namespace SaveLoad.Data
 			TransformRestored?.Invoke(position, rotation);
 
 			// Restore component data
-			ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 			foreach (var component in saveableComponents)
 			{
 				string compId = component.GetComponentId();

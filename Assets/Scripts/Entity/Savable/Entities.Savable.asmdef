@@ -1,16 +1,17 @@
 {
-    "name": "InventorySystem",
-    "rootNamespace": "InventorySystem",
+    "name": "Entities.Savable",
+    "rootNamespace": "Entities.Savable",
     "references": [
+        "GUID:9ba38f2c76031274599e13fd9c690966",
         "GUID:0eec0e3185c110644ab23d853bdbea41",
-        "GUID:f5a277d94bd7dc44f8d8d59e8969a2b5",
-        "GUID:4226e2a0af523234d863bc360ce6fd4d",
-        "GUID:bb26d4ea364d05b46969c64fbf1cf0ce"
+        "GUID:a39e3cb598875424c9296d54a5202212",
+        "GUID:bb26d4ea364d05b46969c64fbf1cf0ce",
+        "GUID:60da26fc834cb264884db85c50367034"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

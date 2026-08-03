@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace SaveLoad.Data
 {
 	[System.Serializable]
-	public class EntitySaveData
+	public class SerializableEntityData
 	{
 		public string GUID;
 		public int PrefabId;

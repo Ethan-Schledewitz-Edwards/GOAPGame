@@ -422,9 +422,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 557260858}
-  - component: {fileID: 557260857}
-  - component: {fileID: 557260860}
+  - component: {fileID: 557260862}
+  - component: {fileID: 557260861}
   - component: {fileID: 557260859}
+  - component: {fileID: 557260860}
   m_Layer: 0
   m_Name: SaveManager
   m_TagString: Untagged
@@ -432,18 +433,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &557260857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 557260856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e211d393bb29c4b45b381f898f7c6309, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!4 &557260858
 Transform:
   m_ObjectHideFlags: 0
@@ -484,6 +473,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aee2fb556568bae468dd8cfc597b32c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Management::SaveLoad.Management.QuickSaveController
+--- !u!114 &557260861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557260856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6519b28a859452b4583afb6ca896aae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Main.Core::Main.Core.GameSaveCoordinator
+--- !u!114 &557260862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557260856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ef074aebcf44894496433fbf37bcf53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Core::SaveLoad.Core.SaveLoadManager
 --- !u!1 &746061955
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,6 @@
-namespace SaveLoad.Data
+namespace SaveLoad.Core
 {
-	public interface ISaveable
+	public interface ISaveableComponent
 	{
 		string GetComponentId();
 		object GenerateComponentData();

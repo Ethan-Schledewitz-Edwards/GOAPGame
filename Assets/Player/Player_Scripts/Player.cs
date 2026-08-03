@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Entities.Core;
 
 [RequireComponent(typeof(PlayerController), typeof(PlayerHealthComponent))]
 public class Player : Entity

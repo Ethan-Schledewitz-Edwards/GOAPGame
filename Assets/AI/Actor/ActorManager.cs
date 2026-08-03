@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.AI;
-using SaveLoad.Management;
 
 public class ActorManager : MonoBehaviour
 {
@@ -33,25 +31,9 @@ public class ActorManager : MonoBehaviour
 		else Destroy(Instance);
 	}
 
-
-	private void OnEnable()
-	{
-		SaveManager.GameLoaded += OnGameLoaded;
-	}
-
-	private void OnDestroy()
-	{
-		SaveManager.GameLoaded -= OnGameLoaded;
-	}
-
 	private void Update()
 	{
 		TickActors(Time.deltaTime);
-	}
-
-	private void OnGameLoaded(SaveManager.SaveData saveData)
-	{
-		SyncSimulation(saveData.SaveTime, System.DateTime.Now);
 	}
 
 	public void SyncSimulation(DateTime lastSave, DateTime now)
@@ -103,7 +85,7 @@ public class ActorManager : MonoBehaviour
 			{
 				if (actor != null)
 				{
-					float distToPlayerSqrt = (m_playerPosition - actor.transform.position).sqrMagnitude;
+					float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
 					actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
 
 					actor.TickBehaviour(k_tpsThreshold);

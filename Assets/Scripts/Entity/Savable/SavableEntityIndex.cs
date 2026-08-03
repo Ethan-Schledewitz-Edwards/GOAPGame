@@ -1,7 +1,7 @@
 using GenericIndex;
 using UnityEngine;
 
-namespace SaveLoad.Data
+namespace Entities.Savable
 {
 	[CreateAssetMenu(fileName = "SaveData", menuName = "SaveData/SavableEntityPrefabDataIndex")]
 	public class SavableEntityIndex : GenericIndexBase<SavableEntityPrefabData>

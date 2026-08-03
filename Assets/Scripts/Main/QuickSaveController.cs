@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SaveLoad.Management
+namespace Main.Core
 {
+	[RequireComponent(typeof(GameSaveCoordinator))]
     public class QuickSaveController : MonoBehaviour, IInputHandler
     {
-		SaveManager m_saveManager;
+		GameSaveCoordinator m_saveCoordinator;
 
 		private void Awake()
 		{
-			m_saveManager = GetComponent<SaveManager>();
+			m_saveCoordinator = GetComponent<GameSaveCoordinator>();
 
 			((IInputHandler)this).SetControlsSubscription(true);
 		}
@@ -33,12 +34,12 @@ namespace SaveLoad.Management
 
 		private void OnQuickSaveInput(InputAction.CallbackContext context)
 		{
-			m_saveManager?.SaveGame();
+			m_saveCoordinator?.SaveGame();
 		}
 
 		private void OnQuickLoadInput(InputAction.CallbackContext context)
 		{
-			m_saveManager?.LoadGame();
+			m_saveCoordinator?.LoadGame();
 		}
 	}
 }

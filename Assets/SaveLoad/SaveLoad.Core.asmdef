@@ -1,13 +1,13 @@
 {
-    "name": "Settlements",
-    "rootNamespace": "Settlements",
+    "name": "SaveLoad.Core",
+    "rootNamespace": "SaveLoad.Core",
     "references": [
-        "GUID:4226e2a0af523234d863bc360ce6fd4d"
+        "GUID:60da26fc834cb264884db85c50367034"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

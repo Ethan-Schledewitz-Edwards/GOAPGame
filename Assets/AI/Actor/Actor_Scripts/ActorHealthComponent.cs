@@ -1,8 +1,9 @@
-using SaveLoad.Data;
+using Entities.Savable;
+using SaveLoad.Core;
 using System.Collections;
 using UnityEngine;
 
-public class ActorHealthComponent : HealthComponent, ISaveable
+public class ActorHealthComponent : HealthComponent, ISaveableComponent
 {
 	// Constants
 	private const float c_hungerDegredation = 0.2f;

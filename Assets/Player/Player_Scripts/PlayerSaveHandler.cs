@@ -1,5 +1,7 @@
+using Entities.Savable;
+using SaveLoad.Core;
 using SaveLoad.Data;
-using SaveLoad.Management;
+using System;
 using UnityEngine;
 
 public class PlayerSaveHandler : MonoBehaviour
@@ -11,57 +13,59 @@ public class PlayerSaveHandler : MonoBehaviour
 	private void Awake()
 	{
 		m_playerController = GetComponent<PlayerController>();
-		
-		if(m_playerController != null )
+
+		if (m_playerController != null)
 			m_playerController.enabled = false;
 	}
 
 	private void OnEnable()
 	{
-		SaveManager.RequestPlayerData += ProvidePlayerData;
-		SaveManager.GameLoaded += ApplyLoadedData;
+		SaveEvents.PlayerDataRequested += ProvidePlayerData;
+		SaveEvents.GameLoaded += ApplyLoadedData;
 	}
 
 	private void OnDestroy()
 	{
-		SaveManager.RequestPlayerData -= ProvidePlayerData;
-		SaveManager.GameLoaded -= ApplyLoadedData;
+		SaveEvents.PlayerDataRequested -= ProvidePlayerData;
+		SaveEvents.GameLoaded -= ApplyLoadedData;
 	}
 
-	private EntitySaveData ProvidePlayerData()
+	private SerializablePlayerData ProvidePlayerData()
 	{
-		EntitySaveData data = new EntitySaveData
+		Vector3 playerRotation = transform.eulerAngles;
+
+		SerializableEntityData data = new SerializableEntityData
 		{
 			GUID = c_GUID,
 			PrefabId = -1,
 			PosX = transform.position.x,
 			PosY = transform.position.y,
 			PosZ = transform.position.z,
-			RotX = transform.rotation.x,
-			RotY = transform.rotation.y,
-			RotZ = transform.rotation.z
+			RotX = playerRotation.x,
+			RotY = playerRotation.y,
+			RotZ = playerRotation.z
 		};
 
-		ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 		foreach (var component in saveableComponents)
 		{
 			data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
 		}
 
-		return data;
+		return new SerializablePlayerData(DateTime.Now, data);
 	}
 
-	private void ApplyLoadedData(SaveManager.SaveData saveFile)
+	private void ApplyLoadedData(SerializablePlayerData saveFile)
 	{
-		EntitySaveData data = saveFile.PlayerData;
-
-		if (data == null)
+		// Handle new save
+		if (saveFile == null || saveFile.PlayerData == null)
 		{
 			if (m_playerController != null)
 				m_playerController.enabled = true;
-
 			return;
 		}
+
+		SerializableEntityData data = saveFile.PlayerData;
 
 		// Restore Position and Rotation
 		Vector3 spawnPosition = new Vector3(data.PosX, data.PosY, data.PosZ);
@@ -69,7 +73,7 @@ public class PlayerSaveHandler : MonoBehaviour
 		transform.rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
 
 		// Restore component data
-		ISaveable[] saveableComponents = GetComponentsInChildren<ISaveable>();
+		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 		foreach (var component in saveableComponents)
 		{
 			string compId = component.GetComponentId();

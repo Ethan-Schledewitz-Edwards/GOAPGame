@@ -1,3 +1,5 @@
+using SaveLoad.Core;
+using SaveLoad.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +11,8 @@ namespace WorldManagement.Core
 		public Vector2Int ChunkXZ { get; private set; }
 		public int[,,] TileData { get; private set; }
 		public int[,] BiomeMap { get; private set; }
+
+		public List<SerializableEntityData> PendingSavables;
 		public HashSet<GameObject> ResidentEntities { get; private set; } = new HashSet<GameObject>();
 
 		public EChunkGenerationState ChunkGenerationState { get; private set; }
@@ -66,11 +70,7 @@ namespace WorldManagement.Core
 				return;
 
 			ResidentEntities.Add(entity);
-
-			foreach (var item in ResidentEntities)
-			{
-				Debug.Log(item.name + " Entered chunk");
-			}
+			Debug.Log(entity.name + " Entered chunk");
 		}
 
 		public void UnregisterEntity(GameObject entity)

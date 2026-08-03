@@ -12714,6 +12714,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 556560224}
+  - component: {fileID: 556560228}
   - component: {fileID: 556560227}
   - component: {fileID: 556560226}
   - component: {fileID: 556560225}
@@ -12773,9 +12774,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 556560223}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e211d393bb29c4b45b381f898f7c6309, type: 3}
+  m_Script: {fileID: 11500000, guid: 6519b28a859452b4583afb6ca896aae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+--- !u!114 &556560228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556560223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ef074aebcf44894496433fbf37bcf53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Core::SaveLoad.Core.SaveLoadManager
 --- !u!1001 &556672454
 PrefabInstance:
   m_ObjectHideFlags: 0

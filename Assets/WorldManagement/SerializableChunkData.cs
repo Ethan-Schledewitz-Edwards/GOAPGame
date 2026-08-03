@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using SaveLoad.Core;
 using SaveLoad.Data;
 using UnityEngine;
 using WorldManagement.Core;
 
-namespace SaveLoad.Management
+namespace WorldManagement.Core
 {
 	[System.Serializable]
 	public class SerializableChunkData
@@ -12,7 +13,7 @@ namespace SaveLoad.Management
 		public int ChunkZ;
 		public int[,,] TileData;
 		public int[,] BiomeMap;
-		public List<EntitySaveData> SavedEntities = new List<EntitySaveData>();
+		public List<SerializableEntityData> ChunkSavables = new List<SerializableEntityData>();
 		public TerrainChunk.EChunkGenerationState GenerationState;
 
 		public SerializableChunkData(TerrainChunk chunk)
@@ -25,13 +26,13 @@ namespace SaveLoad.Management
 
 			foreach (GameObject entityObj in chunk.ResidentEntities)
 			{
-				if (entityObj != null && entityObj.TryGetComponent(out SaveableEntity saveableEntity))
+				if (entityObj != null && entityObj.TryGetComponent(out ISavableEntity saveableEntity))
 				{
-					EntitySaveData data = saveableEntity.GenerateSaveData();
+					SerializableEntityData data = saveableEntity.GenerateSaveData();
 					if (data == null)
 						continue;
 
-					SavedEntities.Add(data);
+					ChunkSavables.Add(data);
 				}
 			}
 		}

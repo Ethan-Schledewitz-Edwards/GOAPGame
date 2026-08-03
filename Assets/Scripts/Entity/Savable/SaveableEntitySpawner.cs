@@ -1,9 +1,10 @@
+using SaveLoad.Core;
+using SaveLoad.Data;
 using System.Collections.Generic;
 using UnityEngine;
-using SaveLoad.Data;
 using WorldManagement.Core;
 
-namespace SaveLoad.Management
+namespace Entities.Savable
 {
 	public class SavableEntitySpawner : MonoBehaviour
 	{
@@ -11,19 +12,28 @@ namespace SaveLoad.Management
 
 		private void OnEnable()
 		{
-			SaveManager.ChunkEntitiesLoaded += SpawnEntitiesForChunk;
+			WorldSaveHandler.ChunkReadyForEntities += SpawnEntitiesForChunk;
 		}
 
 		private void OnDisable()
 		{
-			SaveManager.ChunkEntitiesLoaded -= SpawnEntitiesForChunk;
+			WorldSaveHandler.ChunkReadyForEntities -= SpawnEntitiesForChunk;
 		}
 
-		private void SpawnEntitiesForChunk(TerrainChunk chunk, List<EntitySaveData> savedEntities)
+		private void SpawnEntitiesForChunk(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
 		{
-			foreach (EntitySaveData entityData in savedEntities)
+			bool isAuthoredWorld = FindFirstObjectByType<TerrainChunkManager>().BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
+
+			foreach (SerializableEntityData entityData in savedEntities)
 			{
-				TrySpawnSavableEntity(chunk, entityData);
+				if (isAuthoredWorld)
+				{
+					TrySpawnPersistentSavableEntity(chunk, entityData);
+				}
+				else
+				{
+					TrySpawnSavableEntity(chunk, entityData);
+				}
 			}
 		}
 
@@ -39,7 +49,7 @@ namespace SaveLoad.Management
 			return null;
 		}
 
-		private void TrySpawnSavableEntity(TerrainChunk chunk, EntitySaveData entityData)
+		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
 			GameObject prefabToSpawn = GetPrefabById(entityData.PrefabId);
 
@@ -59,23 +69,22 @@ namespace SaveLoad.Management
 			}
 		}
 
-		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, EntitySaveData entityData)
+		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(sortMode: FindObjectsSortMode.InstanceID);
+			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
 
 			foreach (SaveableEntity entity in allEntities)
 			{
-				// Look for the entity that matches the saved GUID
 				if (entity.GetGUID() == entityData.GUID)
 				{
-					// Restore data
 					entity.RestoreFromSaveData(entityData);
 					chunk.RegisterEntity(entity.gameObject);
 					return;
 				}
 			}
 
-			Debug.LogWarning($"Could not find persistent entity with GUID {entityData.GUID} in the scene. Was it destroyed?");
+			// Try to spawn normally
+			TrySpawnSavableEntity(chunk, entityData);
 		}
 	}
 }

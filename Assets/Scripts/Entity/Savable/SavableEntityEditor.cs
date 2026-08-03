@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-using SaveLoad.Data;
-using System.IO;
+using UnityEditor.SceneManagement;using System.IO;
 
-namespace SaveLoad.Editor
+namespace Entities.Savable
 {
 #if UNITY_EDITOR
 	[CustomEditor(typeof(SaveableEntity))]
