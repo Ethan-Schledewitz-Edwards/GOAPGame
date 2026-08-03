@@ -25,7 +25,29 @@ namespace Entities.Savable
 		private Entity m_entity;
 
 		private bool m_isMoveable = false;
-		private Vector2Int m_chunkXZ;
+		private Vector2Int m_chunkXZ = default;
+
+#if UNITY_EDITOR
+		private void OnValidate()
+		{
+			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
+			{
+				m_guid = System.Guid.NewGuid().ToString();
+				UnityEditor.EditorUtility.SetDirty(this);
+				UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+				UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+			}
+		}
+
+		[ContextMenu("Force Generate GUID")]
+		private void ForceGenerateGUID()
+		{
+			m_guid = System.Guid.NewGuid().ToString();
+			UnityEditor.EditorUtility.SetDirty(this);
+			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+			UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+		}
+#endif
 
 		private void Awake()
 		{
@@ -40,11 +62,7 @@ namespace Entities.Savable
 
 		private void Start()
 		{
-			Vector2Int chunkCoord = CoordinateUtility.WorldToChunkXZ(transform.position);
-			if (WorldManager.s_ActiveChunks.TryGetValue(chunkCoord, out var chunk))
-			{
-				chunk.chunkData.RegisterEntity(this.gameObject);
-			}
+			RegisterToClosestChunk();
 		}
 
 		private void OnDestroy()
@@ -67,26 +85,28 @@ namespace Entities.Savable
 
 		private void RegisterToClosestChunk()
 		{
-			Vector3Int chunkSize = WorldManager.s_ChunkSize;
-			Vector2Int currentChunkXZ = new Vector2Int
-				(
-					Mathf.FloorToInt(transform.position.x / chunkSize.x),
-					Mathf.FloorToInt(transform.position.z / chunkSize.z)
-				);
-
-			if (currentChunkXZ != m_chunkXZ)
+			Vector2Int entityChunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+			if (entityChunkXZ != m_chunkXZ || m_chunkXZ == default)
 			{
 				// Unregister this entity from its previous chunk
-				TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
-				if (previousTerrainChunk != null)
-					previousTerrainChunk.UnregisterEntity(gameObject);
+				if (m_chunkXZ != default)
+				{
+					TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
+					if (previousTerrainChunk != null)
+						previousTerrainChunk.UnregisterEntity(gameObject);
+				}
 
 				// Register this entity to the chunk it overlaps with
-				m_chunkXZ = currentChunkXZ;
+				m_chunkXZ = entityChunkXZ;
 				TerrainChunk terrainChunk = WorldManager.GetChunkData(m_chunkXZ);
 
 				if (terrainChunk != null)
 					terrainChunk.RegisterEntity(gameObject);
+
+				if (WorldManager.s_ActiveChunks.TryGetValue(entityChunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
+				{
+					transform.parent = activeChunkTuple.gameObject.transform;
+				}
 			}
 		}
 

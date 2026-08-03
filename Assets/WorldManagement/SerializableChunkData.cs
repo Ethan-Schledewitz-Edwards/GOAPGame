@@ -13,7 +13,7 @@ namespace WorldManagement.Core
 		public int ChunkZ;
 		public int[,,] TileData;
 		public int[,] BiomeMap;
-		public List<SerializableEntityData> ChunkSavables = new List<SerializableEntityData>();
+		public List<SerializableEntityData> SavableEntities = new List<SerializableEntityData>();
 		public TerrainChunk.EChunkGenerationState GenerationState;
 
 		public SerializableChunkData(TerrainChunk chunk)
@@ -32,14 +32,9 @@ namespace WorldManagement.Core
 					if (data == null)
 						continue;
 
-					ChunkSavables.Add(data);
+					SavableEntities.Add(data);
 				}
 			}
-		}
-
-		public Vector2Int GetVector2Int()
-		{
-			return new Vector2Int(ChunkX, ChunkZ);
 		}
 	}
 }

@@ -49,13 +49,13 @@ namespace WorldManagement.Core
 			// Wait for the new chunk to load
 			yield return StartCoroutine(m_chunkBuilder.SpawnChunk(chunkXZ, s_requestedChunks, s_pendingChunks, HandleChunkUpdated));
 
-			// Spawn and initialize any entities saved in the chunk
-			if (s_ActiveChunks.TryGetValue(chunkXZ, out var loadedChunk))
+			// Spawn and initialize any entities saved in the chunk after it has been completely loaded
+			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple))
 			{
-				if (loadedChunk.chunkData.PendingSavables != null && loadedChunk.chunkData.PendingSavables.Count > 0)
+				if (activeChunkTuple.chunkData.PendingSavables != null && activeChunkTuple.chunkData.PendingSavables.Count > 0)
 				{
-					ChunkSpawnedEntities?.Invoke(loadedChunk.chunkData, loadedChunk.chunkData.PendingSavables);
-					loadedChunk.chunkData.PendingSavables = null;
+					ChunkSpawnedEntities?.Invoke(activeChunkTuple.chunkData, activeChunkTuple.chunkData.PendingSavables);
+					activeChunkTuple.chunkData.PendingSavables = null;
 				}
 			}
 		}

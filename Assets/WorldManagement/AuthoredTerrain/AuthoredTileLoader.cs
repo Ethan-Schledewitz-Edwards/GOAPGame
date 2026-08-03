@@ -35,7 +35,7 @@ namespace WorldManagement.AuthoredTiles
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
 				return;
 
-			m_chunkManager.OnProcessChunkSpawn += LoadAuthoredChunk;
+			m_chunkManager.ProcessChunkSpawned += LoadAuthoredChunk;
 		}
 
 		private void OnDisable()
@@ -43,7 +43,7 @@ namespace WorldManagement.AuthoredTiles
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
 				return;
 
-			m_chunkManager.OnProcessChunkSpawn -= LoadAuthoredChunk;
+			m_chunkManager.ProcessChunkSpawned -= LoadAuthoredChunk;
 		}
 
 		private IEnumerator LoadAuthoredChunk
@@ -68,11 +68,7 @@ namespace WorldManagement.AuthoredTiles
 			chunkData.OnChunkUpdate += chunkUpdated;
 
 			// Lookup the chunk
-			if (m_chunkDictionary.TryGetValue(chunkXZ, out GameObject chunkObject))
-			{
-				chunkObject.SetActive(true);
-			}
-			else
+			if (!m_chunkDictionary.TryGetValue(chunkXZ, out GameObject chunkObject))
 			{
 				Debug.LogWarning($"Authored chunk object '{chunkXZ}' not found in the Dictionary.");
 
@@ -80,9 +76,16 @@ namespace WorldManagement.AuthoredTiles
 				chunkObject.transform.position = new Vector3(chunkXZ.x * WorldManager.s_ChunkSize.x, 0f, chunkXZ.y * WorldManager.s_ChunkSize.z);
 			}
 
+			// Add to active chunks
 			chunkFound?.Invoke(chunkData, chunkObject);
-			requestedChunks.Remove(chunkXZ);
 
+			// Enable the object and its children
+			if (chunkObject != null)
+			{
+				chunkObject.SetActive(true);
+			}
+
+			requestedChunks.Remove(chunkXZ);
 			yield break;
 		}
 	}

@@ -31,8 +31,8 @@ namespace WorldManagement.TerrainGeneration
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Procedural)
 				return;
 
-			m_chunkManager.OnProcessChunkSpawn += GenerateProceduralChunk;
-			m_chunkManager.OnProcessChunkRebuild += RebuildMesh;
+			m_chunkManager.ProcessChunkSpawned += GenerateProceduralChunk;
+			m_chunkManager.ProcessChunkRebuilt += RebuildMesh;
 		}
 
 		private void OnDisable()
@@ -40,8 +40,8 @@ namespace WorldManagement.TerrainGeneration
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Procedural)
 				return;
 
-			m_chunkManager.OnProcessChunkSpawn -= GenerateProceduralChunk;
-			m_chunkManager.OnProcessChunkRebuild -= RebuildMesh;
+			m_chunkManager.ProcessChunkSpawned -= GenerateProceduralChunk;
+			m_chunkManager.ProcessChunkRebuilt -= RebuildMesh;
 		}
 
 		private IEnumerator GenerateProceduralChunk

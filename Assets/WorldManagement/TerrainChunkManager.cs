@@ -24,18 +24,18 @@ namespace WorldManagement.Core
 				Action<TerrainChunk, GameObject> chunkCompletedCallback
 			);
 
-		public SpawnChunkDelegate OnProcessChunkSpawn;
-		public Action<Vector2Int, TerrainChunk, GameObject> OnProcessChunkRebuild;
+		public SpawnChunkDelegate ProcessChunkSpawned;
+		public Action<Vector2Int, TerrainChunk, GameObject> ProcessChunkRebuilt;
 
 		public IEnumerator SpawnChunk(Vector2Int chunkXZ, HashSet<Vector2Int> requestedChunks, HashSet<Vector2Int> pendingChunks, Action<Vector2Int> onChunkUpdateCallback)
 		{
-			if (OnProcessChunkSpawn != null)
+			if (ProcessChunkSpawned != null)
 			{
 				TerrainChunk finalData = null;
 				GameObject finalObject = null;
 
 				// Ask the active generator/loader for a chunk then return the paired data and object
-				yield return StartCoroutine(OnProcessChunkSpawn(
+				yield return StartCoroutine(ProcessChunkSpawned(
 					chunkXZ,
 					requestedChunks,
 					pendingChunks,
@@ -63,7 +63,7 @@ namespace WorldManagement.Core
 
 		public void RebuildChunkMesh(Vector2Int chunkXZ, TerrainChunk chunkData, GameObject chunkObject)
 		{
-			OnProcessChunkRebuild?.Invoke(chunkXZ, chunkData, chunkObject);
+			ProcessChunkRebuilt?.Invoke(chunkXZ, chunkData, chunkObject);
 		}
 	}
 }

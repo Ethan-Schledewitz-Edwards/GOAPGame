@@ -20,7 +20,8 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 
 	protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
 	{
-		TryAssignActor(m_cursorWorldPosition);
+		if (context.ReadValueAsButton())
+			TryAssignActor(m_cursorWorldPosition);
 	}
 
 	protected override void OnSecondaryFireInput(InputAction.CallbackContext context) 

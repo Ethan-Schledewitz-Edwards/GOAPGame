@@ -77,13 +77,22 @@ namespace Entities.Savable
 			{
 				if (entity.GetGUID() == entityData.GUID)
 				{
+					if (WorldManager.s_ActiveChunks.TryGetValue(chunk.ChunkXZ, out var activeChunkTuple))
+						entity.transform.parent = activeChunkTuple.gameObject.transform;
+
 					entity.RestoreFromSaveData(entityData);
 					chunk.RegisterEntity(entity.gameObject);
+
+					if (!entity.gameObject.activeSelf)
+						entity.gameObject.SetActive(true);
+
 					return;
 				}
 			}
 
 			// Try to spawn normally
+			Debug.LogWarning($"[SaveableEntitySpawner] Could not find a persistent SavableEntity with GUID {entityData.GUID} in the scene. " +
+				$"Spawning duplicate from Prefab ID {entityData.PrefabId}. Ensure Editor GUIDs are serialized if this entity is persistent!");
 			TrySpawnSavableEntity(chunk, entityData);
 		}
 	}

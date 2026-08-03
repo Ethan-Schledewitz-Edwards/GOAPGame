@@ -34,15 +34,15 @@ namespace WorldManagement.Core
 			if (chunkData != null)
 			{
 				TerrainChunk chunk = new TerrainChunk(
-					chunkData.GetVector2Int(),
+					chunkXZ,
 					chunkData.TileData,
 					chunkData.BiomeMap
 				);
 				chunk.SetGenerationState(chunkData.GenerationState);
 
-				if (chunkData.ChunkSavables != null && chunkData.ChunkSavables.Count > 0)
+				if (chunkData.SavableEntities != null && chunkData.SavableEntities.Count > 0)
 				{
-					chunk.PendingSavables = chunkData.ChunkSavables;
+					chunk.PendingSavables = chunkData.SavableEntities;
 				}
 				return chunk;
 			}
@@ -62,9 +62,9 @@ namespace WorldManagement.Core
 
 		public void SaveAllActiveChunks()
 		{
-			foreach (var key in WorldManager.s_ActiveChunks.Keys)
+			foreach (var kvp in WorldManager.s_ActiveChunks.Keys)
 			{
-				if (WorldManager.s_ActiveChunks.TryGetValue(key, out var activeChunkTuple))
+				if (WorldManager.s_ActiveChunks.TryGetValue(kvp, out var activeChunkTuple))
 				{
 					if (activeChunkTuple.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
 					{
