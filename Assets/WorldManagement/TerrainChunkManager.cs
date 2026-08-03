@@ -52,12 +52,6 @@ namespace WorldManagement.Core
 					WorldManager.s_ActiveChunks[chunkXZ] = (finalData, finalObject);
 
 					finalObject.SetActive(true);
-
-					if (finalData.PendingSavables != null)
-					{
-						//SaveManager.ChunkEntitiesLoaded?.Invoke(finalData, finalData.PendingSavedEntities);
-						finalData.PendingSavables = null; // clear it
-					}
 				}
 			}
 			else

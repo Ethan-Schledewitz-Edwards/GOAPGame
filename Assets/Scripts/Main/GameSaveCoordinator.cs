@@ -9,9 +9,6 @@ namespace Main.Core
 	[RequireComponent(typeof(SaveLoadManager))]
 	public class GameSaveCoordinator : MonoBehaviour
 	{
-		private const string c_fileName = "save.dat";
-		private const string c_playerName = "Ethan";
-
 		public static GameSaveCoordinator Instance { get; private set; }
 
 		private SaveLoadManager m_saveLoadManager;
@@ -31,15 +28,6 @@ namespace Main.Core
 			LoadGame();
 		}
 
-		private string GetSavePath()
-		{
-			string folderPath = Path.Combine(Application.persistentDataPath, c_playerName);
-			if (!Directory.Exists(folderPath)) 
-				Directory.CreateDirectory(folderPath);
-			return 
-				Path.Combine(folderPath, c_fileName);
-		}
-
 		public void SaveGame()
 		{
 			SaveEvents.SavingBegan?.Invoke();
@@ -50,7 +38,7 @@ namespace Main.Core
 			// Write to the disk
 			if (playerSaveData != null)
 			{
-				string finalPath = GetSavePath();
+				string finalPath = SaveUtility.GetPlayerSaveFilePath();
 				m_saveLoadManager.SaveData(finalPath, playerSaveData);
 				Debug.Log($"Game Saved at {playerSaveData.SaveTime} to {finalPath}");
 			}
@@ -62,7 +50,7 @@ namespace Main.Core
 
 		public void LoadGame()
 		{
-			string finalPath = GetSavePath();
+			string finalPath = SaveUtility.GetPlayerSaveFilePath();
 			SerializablePlayerData loadedData = m_saveLoadManager.LoadData<SerializablePlayerData>(finalPath);
 
 			if (loadedData != null)

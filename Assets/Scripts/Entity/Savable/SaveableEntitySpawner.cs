@@ -12,12 +12,12 @@ namespace Entities.Savable
 
 		private void OnEnable()
 		{
-			WorldSaveHandler.ChunkReadyForEntities += SpawnEntitiesForChunk;
+			WorldManager.ChunkSpawnedEntities += SpawnEntitiesForChunk;
 		}
 
 		private void OnDisable()
 		{
-			WorldSaveHandler.ChunkReadyForEntities -= SpawnEntitiesForChunk;
+			WorldManager.ChunkSpawnedEntities -= SpawnEntitiesForChunk;
 		}
 
 		private void SpawnEntitiesForChunk(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
@@ -39,7 +39,7 @@ namespace Entities.Savable
 
 		private GameObject GetPrefabById(int prefabId)
 		{
-			foreach (var data in m_entityIndex.SavableEntityPrefabData)
+			foreach (SavableEntityPrefabData data in m_entityIndex.SavableEntityPrefabData)
 			{
 				if (data.PrefabID == prefabId)
 				{
@@ -51,7 +51,7 @@ namespace Entities.Savable
 
 		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			GameObject prefabToSpawn = GetPrefabById(entityData.PrefabId);
+			GameObject prefabToSpawn = m_entityIndex.GetIndexedAsset(entityData.PrefabId).EntityPrefab;
 
 			if (prefabToSpawn == null)
 			{

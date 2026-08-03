@@ -114,7 +114,7 @@ namespace WorldManagement.TerrainGeneration
 			Mesh chunkMesh = null;
 			yield return StartCoroutine(GenerateMesh(targetChunk, (mesh) => chunkMesh = mesh));
 
-			// 5. Apply Mesh & Features
+			// Apply Mesh
 			if (chunkMesh != null)
 			{
 				chunkObject.GetComponent<MeshFilter>().mesh = chunkMesh;

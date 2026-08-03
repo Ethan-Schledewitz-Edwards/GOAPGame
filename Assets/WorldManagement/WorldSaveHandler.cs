@@ -9,10 +9,6 @@ namespace WorldManagement.Core
 {
     public class WorldSaveHandler : MonoBehaviour
     {
-		private string m_playerName = "Ethan";
-
-		public static Action<TerrainChunk, List<SerializableEntityData>> ChunkEntitiesWereLoaded;
-
 		private void OnEnable()
 		{
 			WorldManager.OnRequestChunkData += FetchChunkData;
@@ -29,28 +25,24 @@ namespace WorldManagement.Core
 			SaveEvents.SavingBegan -= SaveAllActiveChunks;
 		}
 
-		private string GetChunkFilePath(Vector2Int chunkXZ)
-		{
-			return Path.Combine(Application.persistentDataPath, m_playerName, "Chunks", $"chunk_{chunkXZ.x}_{chunkXZ.y}.dat");
-		}
-
 		private TerrainChunk FetchChunkData(Vector2Int chunkXZ)
 		{
-			string path = GetChunkFilePath(chunkXZ);
+			string path = SaveUtility.GetChunkFilePath(chunkXZ);
 
-			var serializableData = SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
-			if (serializableData != null)
+			SerializableChunkData chunkData = 
+				SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
+			if (chunkData != null)
 			{
 				TerrainChunk chunk = new TerrainChunk(
-					serializableData.GetVector2Int(),
-					serializableData.TileData,
-					serializableData.BiomeMap
+					chunkData.GetVector2Int(),
+					chunkData.TileData,
+					chunkData.BiomeMap
 				);
-				chunk.SetGenerationState(serializableData.GenerationState);
+				chunk.SetGenerationState(chunkData.GenerationState);
 
-				if (serializableData.ChunkSavables != null && serializableData.ChunkSavables.Count > 0)
+				if (chunkData.ChunkSavables != null && chunkData.ChunkSavables.Count > 0)
 				{
-					ChunkEntitiesWereLoaded?.Invoke(chunk, serializableData.ChunkSavables);
+					chunk.PendingSavables = chunkData.ChunkSavables;
 				}
 				return chunk;
 			}
@@ -63,9 +55,8 @@ namespace WorldManagement.Core
 			if (chunk == null) 
 				return;
 
-			string path = GetChunkFilePath(chunk.ChunkXZ);
+			string path = SaveUtility.GetChunkFilePath(chunk.ChunkXZ);
 			SerializableChunkData dataToSave = new SerializableChunkData(chunk);
-
 			SaveLoadManager.Instance.SaveData(path, dataToSave);
 		}
 

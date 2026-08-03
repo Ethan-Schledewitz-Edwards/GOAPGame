@@ -38,6 +38,15 @@ namespace Entities.Savable
 			}
 		}
 
+		private void Start()
+		{
+			Vector2Int chunkCoord = CoordinateUtility.WorldToChunkXZ(transform.position);
+			if (WorldManager.s_ActiveChunks.TryGetValue(chunkCoord, out var chunk))
+			{
+				chunk.chunkData.RegisterEntity(this.gameObject);
+			}
+		}
+
 		private void OnDestroy()
 		{
 			if (m_entity != null)

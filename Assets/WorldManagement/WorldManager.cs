@@ -20,6 +20,7 @@ namespace WorldManagement.Core
 		// Events
 		public static Func<Vector2Int, TerrainChunk> OnRequestChunkData;
 		public static Action<TerrainChunk> OnReleaseChunkData;
+		public static Action<TerrainChunk, List<SerializableEntityData>> ChunkSpawnedEntities;
 
 		[Header("System")]
 		public static Dictionary<Vector2Int, (TerrainChunk chunkData, GameObject gameObject)> s_ActiveChunks =
@@ -45,7 +46,18 @@ namespace WorldManagement.Core
 			if ((s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null) || s_requestedChunks.Contains(chunkXZ))
 				yield break;
 
+			// Wait for the new chunk to load
 			yield return StartCoroutine(m_chunkBuilder.SpawnChunk(chunkXZ, s_requestedChunks, s_pendingChunks, HandleChunkUpdated));
+
+			// Spawn and initialize any entities saved in the chunk
+			if (s_ActiveChunks.TryGetValue(chunkXZ, out var loadedChunk))
+			{
+				if (loadedChunk.chunkData.PendingSavables != null && loadedChunk.chunkData.PendingSavables.Count > 0)
+				{
+					ChunkSpawnedEntities?.Invoke(loadedChunk.chunkData, loadedChunk.chunkData.PendingSavables);
+					loadedChunk.chunkData.PendingSavables = null;
+				}
+			}
 		}
 
 		public IEnumerator LoadChunkBatch(Vector2Int[] chunkCoords)
