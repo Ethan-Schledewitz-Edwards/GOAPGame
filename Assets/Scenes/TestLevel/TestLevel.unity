@@ -12718,6 +12718,7 @@ GameObject:
   - component: {fileID: 556560227}
   - component: {fileID: 556560226}
   - component: {fileID: 556560225}
+  - component: {fileID: 556560229}
   m_Layer: 0
   m_Name: SaveManager
   m_TagString: Untagged
@@ -12789,6 +12790,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef074aebcf44894496433fbf37bcf53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Core::SaveLoad.Core.SaveLoadManager
+--- !u!114 &556560229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556560223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee74f693ddd79e749ba6d3cba839759c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.WorldSaveHandler
 --- !u!1001 &556672454
 PrefabInstance:
   m_ObjectHideFlags: 0
