@@ -87,10 +87,10 @@ public class GOAPAgent : MonoBehaviour
 				NotifyClearDestination();
 
 				m_currentGoal = m_actionPlan.GoalToAcheive;
-				Debug.Log($"Goal: {m_currentGoal.GoalName} with {m_actionPlan.Actions.Count} actions in plan");
+				//Debug.Log($"Goal: {m_currentGoal.GoalName} with {m_actionPlan.Actions.Count} actions in plan");
 
 				m_currentAction = m_actionPlan.Actions.Pop();
-				Debug.Log($"Popped action: {m_currentAction.ActionName}");
+				//Debug.Log($"Popped action: {m_currentAction.ActionName}");
 
 				// Verify all precodnitions
 				if (m_currentAction.ActionPreconditions.All(b => b.Evaluate()))
@@ -112,14 +112,14 @@ public class GOAPAgent : MonoBehaviour
 
 			if (m_currentAction.Complete)
 			{
-				Debug.Log($"{m_currentAction.ActionName} is complete");
+				//Debug.Log($"{m_currentAction.ActionName} is complete");
 				m_currentAction.StopAction();
 
 				m_currentAction = null;
 
 				if (m_actionPlan.Actions.Count == 0)
 				{
-					Debug.Log($"{this.name}'s plan is complete!");
+					//Debug.Log($"{this.name}'s plan is complete!");
 					m_lastGoal = m_currentGoal;
 					m_currentGoal = null;
 					m_actionPlan = null;

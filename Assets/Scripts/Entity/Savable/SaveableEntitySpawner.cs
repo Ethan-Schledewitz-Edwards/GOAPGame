@@ -65,6 +65,7 @@ namespace Entities.Savable
 			if (spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
 			{
 				saveableEntity.RestoreFromSaveData(entityData);
+				saveableEntity.InitializeSavableEntity();
 				chunk.RegisterEntity(spawnedEntity);
 			}
 		}
@@ -73,18 +74,19 @@ namespace Entities.Savable
 		{
 			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
 
-			foreach (SaveableEntity entity in allEntities)
+			foreach (SaveableEntity saveableEntity in allEntities)
 			{
-				if (entity.GetGUID() == entityData.GUID)
+				if (saveableEntity.GetGUID() == entityData.GUID)
 				{
 					if (WorldManager.s_ActiveChunks.TryGetValue(chunk.ChunkXZ, out var activeChunkTuple))
-						entity.transform.parent = activeChunkTuple.gameObject.transform;
+						saveableEntity.transform.parent = activeChunkTuple.gameObject.transform;
 
-					entity.RestoreFromSaveData(entityData);
-					chunk.RegisterEntity(entity.gameObject);
+					saveableEntity.RestoreFromSaveData(entityData);
+					saveableEntity.InitializeSavableEntity();
+					chunk.RegisterEntity(saveableEntity.gameObject);
 
-					if (!entity.gameObject.activeSelf)
-						entity.gameObject.SetActive(true);
+					if (!saveableEntity.gameObject.activeSelf)
+						saveableEntity.gameObject.SetActive(true);
 
 					return;
 				}

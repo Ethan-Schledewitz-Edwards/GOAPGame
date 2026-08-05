@@ -1,23 +1,27 @@
 using BehaviourTrees;
+using Entities.Core;
+using Entities.Savable;
+using GenericIndex;
+using InventorySystem;
+using InventorySystem.Items;
+using ObjectTags;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using InventorySystem.Items;
-using InventorySystem;
-using ObjectTags;
-using GenericIndex;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody), typeof(Entity))]
 public class ItemIO : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
 
 	// Components
+	private Entity m_entity;
 	private Rigidbody m_rb;
+	private SaveableEntity m_savableEntity;
 
 	[Header("Item Data")]
 	[SerializeField] private ItemData m_itemData;
-	[field: SerializeField] public int m_stackSize { get; private set; } = 1;
+	[field: SerializeField] private int m_stackSize = 1;
 
 	// Events
 	public event Action<Transform> ItemPickedUp;
@@ -36,11 +40,36 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public void Awake()
 	{
+		m_entity = GetComponent<Entity>();
 		m_rb = GetComponent<Rigidbody>();
+		m_savableEntity = GetComponent<SaveableEntity>();
 
 		InitializeBehaviourTree();
 	}
 
+	private void OnEnable()
+	{
+		if (!m_isItemStored)
+		{
+			m_savableEntity.InitializeSavableEntity();
+		}
+	}
+
+	private void OnDisable()
+	{
+		if (!m_isItemStored)
+		{
+			m_savableEntity.UnregisterFromCurrentChunk();
+		}
+	}
+
+	private void OnDestroy()
+	{
+		if (!m_isItemStored)
+		{
+			m_savableEntity.UnregisterFromCurrentChunk();
+		}
+	}
 
 	public override void StopInteract()
 	{
@@ -85,19 +114,19 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			Destroy(gameObject);
 	}
 
-
 	public void HandleItemStored(Transform parent)
 	{
 		m_isItemStored = true;
+		m_entity.EnableDynamicPositionUpdates(false);
 		ConstrainPhysics(true);
+
+		gameObject.SetActive(false);
 
 		if (parent != null)
 		{
 			transform.parent = parent;
 			transform.position = parent.position;
 		}
-
-		gameObject.SetActive(false);
 	}
 
 	public void HandleItemDropped(Vector3 dropPosition)
@@ -110,6 +139,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			transform.position = dropPosition;
 
 		gameObject.SetActive(true);
+		m_entity.EnableDynamicPositionUpdates(true);
 	}
 
 	private void ConstrainPhysics(bool isConstrained)

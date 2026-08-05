@@ -1,14 +1,18 @@
 using BehaviourTrees;
-using System.Collections.Generic;
-using UnityEngine;
+using Entities.Core;
+using Entities.Savable;
 using InventorySystem;
 using InventorySystem.Items;
-using Settlements;
 using ObjectTags;
+using Settlements;
+using System.Collections.Generic;
+using System.Xml;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Interaction.InteractableStructures
 {
-	[RequireComponent(typeof(InventoryComponent))]
+	[RequireComponent(typeof(InventoryComponent), typeof(Entity), typeof(SaveableEntity))]
 	public class ItemStorageIO : InteractableObjectBase, IStructure<ItemStorageIO>, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBT;
@@ -21,7 +25,9 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_actorsAssigned = 0;
 
 		// Components
+		private Entity m_entity;
 		public InventoryComponent InventoryComponent { get; private set; }
+		private SaveableEntity m_saveableEntity;
 
 		// System
 		private int m_settlementID;
@@ -39,9 +45,28 @@ namespace Interaction.InteractableStructures
 
 		private void Awake()
 		{
+			m_entity = GetComponent<Entity>();
+			m_entity.EnableDynamicPositionUpdates(false);
+
 			InventoryComponent = GetComponent<InventoryComponent>();
+			m_saveableEntity = GetComponent<SaveableEntity>();
 
 			InitializeBehaviourTree();
+		}
+
+		private void OnEnable()
+		{
+			m_saveableEntity.InitializeSavableEntity();
+		}
+
+		private void OnDisable()
+		{
+			m_saveableEntity.UnregisterFromCurrentChunk();
+		}
+
+		private void OnDestroy()
+		{
+			m_saveableEntity.UnregisterFromCurrentChunk();
 		}
 
 		public void AddStructureToSettlement(int settlementID, int settlementStructureID)

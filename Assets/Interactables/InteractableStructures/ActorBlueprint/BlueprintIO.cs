@@ -1,12 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using BehaviourTrees;
 using Construction;
+using Entities.Core;
+using Entities.Savable;
 using InventorySystem;
 using ObjectTags;
 using Settlements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using UnityEngine;
 
 
 namespace Interaction.InteractableStructures.Blueprints
@@ -29,8 +32,10 @@ namespace Interaction.InteractableStructures.Blueprints
 		// Components
 		private BoxCollider m_boxCollider;
 		private BlueprintCancelation m_cancelBlueprint;
+		private Entity m_entity;
 		private ItemRequestComponent m_itemRequestComponent;
 		private InventoryComponent m_inventoryComponent;
+		private SaveableEntity m_saveableEntity;
 
 		// Events
 		public event Action<IBlueprintObject> BlueprintCompleted;
@@ -63,11 +68,16 @@ namespace Interaction.InteractableStructures.Blueprints
 		{
 			InitializeBehaviourTree();
 
+			m_entity = GetComponent<Entity>();
+			m_entity.EnableDynamicPositionUpdates(false);
+
 			m_boxCollider = GetComponent<BoxCollider>();
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
+
+			m_saveableEntity = GetComponent<SaveableEntity>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
 			if (m_itemRequestComponent == null)
@@ -89,6 +99,8 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 			}
+
+			m_saveableEntity.UnregisterFromCurrentChunk();
 		}
 
 		public override void UpdateSpeed(int extra) { }
@@ -171,6 +183,8 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public void HandleBlueprintCompleted()
 		{
+			m_saveableEntity.InitializeSavableEntity();
+
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}

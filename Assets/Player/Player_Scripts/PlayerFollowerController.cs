@@ -17,7 +17,6 @@ public class PlayerFollowerController : PlayerWorldControllerBase
 			m_actorLayers = LayerMask.GetMask("Actor");
 	}
 
-
 	protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
 	{
 		if (context.ReadValueAsButton())

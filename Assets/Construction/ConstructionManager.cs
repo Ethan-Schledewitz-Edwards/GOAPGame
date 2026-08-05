@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GenericIndex;
+using Entities.Savable;
+using Entities.Core;
 
 namespace Construction 
 {
@@ -86,6 +88,17 @@ namespace Construction
 			{
 				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
 			}
+
+			//// Stop the structure entity from allowing movement
+			//if (spawnedStructureObj.TryGetComponent(out Entity entity))
+			//{
+			//	entity.EnableDynamicPositionUpdates(false);
+			//}
+
+			if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
+			{
+				saveableEntity.InitializeSavableEntity();
+			}
 		}
 
 		public void OnBlueprintCanceled(IBlueprintObject blueprintIO)
@@ -107,5 +120,4 @@ namespace Construction
 			Destroy(blueprintObject.Object);
 		}
 	}
-
 }

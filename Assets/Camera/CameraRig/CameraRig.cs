@@ -129,7 +129,7 @@ public class CameraRig : MonoBehaviour
 	}
 
 
-	private void FixedUpdate()
+	private void Update()
 	{
 		if (!isInitialized && isCenteredOnStart)
 			return;

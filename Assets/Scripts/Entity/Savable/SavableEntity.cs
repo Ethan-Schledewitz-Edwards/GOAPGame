@@ -23,8 +23,6 @@ namespace Entities.Savable
 
 		// System
 		private Entity m_entity;
-
-		private bool m_isMoveable = false;
 		private Vector2Int m_chunkXZ = default;
 
 #if UNITY_EDITOR
@@ -58,11 +56,6 @@ namespace Entities.Savable
 			{
 				m_guid = System.Guid.NewGuid().ToString();
 			}
-		}
-
-		private void Start()
-		{
-			RegisterToClosestChunk();
 		}
 
 		private void OnDestroy()
