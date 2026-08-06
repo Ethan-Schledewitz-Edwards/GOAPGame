@@ -54,10 +54,10 @@ public class FindUseForItemTask : BTNodeBase
 		AIContext context)
 	{
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
-		if (closestStructure != null && 
-			closestStructure.Object is GameObject closestStructureObject)
+		if (closestStructure != null)
 		{
-			if (closestStructureObject.TryGetComponent(out InteractableObjectBase interactable))
+			GameObject structureObject = closestStructure.Object;
+			if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
 			{
 				if(interactable.TryGetComponent(out IItemFiltered itemFiltered))
 				{
@@ -70,7 +70,7 @@ public class FindUseForItemTask : BTNodeBase
 						bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
 						if (passesFilter)
 						{
-							context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestStructureObject.transform);
+							context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
 							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
 							return true;
 						}

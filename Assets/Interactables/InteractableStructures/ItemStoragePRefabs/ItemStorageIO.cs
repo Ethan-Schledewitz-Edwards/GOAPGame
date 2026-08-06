@@ -6,16 +6,14 @@ using InventorySystem.Items;
 using ObjectTags;
 using Settlements;
 using System.Collections.Generic;
-using System.Xml;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Interaction.InteractableStructures
 {
 	[RequireComponent(typeof(InventoryComponent), typeof(Entity), typeof(SaveableEntity))]
 	public class ItemStorageIO : InteractableObjectBase, IStructure<ItemStorageIO>, IItemFiltered
 	{
-		private static BehaviourTree s_cachedBT;
+		private static BehaviourTree s_takeItemBT;
 
 		[Header("Settings")]
 		public ItemTag[] ItemTagFilter => m_tagFilter;
@@ -82,7 +80,7 @@ namespace Interaction.InteractableStructures
 			structure = null; // Storage should not have anyone assigned to it
 		}
 
-		public override BehaviourTree GetBehaviourTree() => s_cachedBT;
+		public override BehaviourTree GetBehaviourTree() => s_takeItemBT;
 
 		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
@@ -107,9 +105,10 @@ namespace Interaction.InteractableStructures
 
 		private void InitializeBehaviourTree()
 		{
-			if (s_cachedBT != null)
+			if (s_takeItemBT != null)
 				return;
 
+			// Create the find item task sequence
 			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
@@ -130,7 +129,7 @@ namespace Interaction.InteractableStructures
 					timeoutJobSearch // Try to loop item search
 				});
 			tree.SetTree(root);
-			s_cachedBT = tree;
+			s_takeItemBT = tree;
 		}
 	}
 }

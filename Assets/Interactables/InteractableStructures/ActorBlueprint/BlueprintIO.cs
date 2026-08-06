@@ -2,13 +2,13 @@ using BehaviourTrees;
 using Construction;
 using Entities.Core;
 using Entities.Savable;
+using GenericIndex;
 using InventorySystem;
 using ObjectTags;
 using Settlements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using UnityEngine;
 
 
@@ -207,7 +207,9 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (s_cachedBlueprintBT != null)
 				return;
 
-			BTNodeBase findUseTask = new FindItemEntityOfIDTask();
+			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
+
+			BTNodeBase findUseTask = new FindItemEntityOfIDTask(storageTag);
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
 			BTNodeBase jobTask = new AquireJobFromTargetTask();
@@ -219,7 +221,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				timeoutFind,
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
-				new InteractWithTargetTask(),
+				new TryGetItemTask(),
 				new ReturnToStructureTask(),
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
