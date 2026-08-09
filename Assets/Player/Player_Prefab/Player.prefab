@@ -657,6 +657,7 @@ GameObject:
   - component: {fileID: 9114751940600103196}
   - component: {fileID: 3369361332770066614}
   - component: {fileID: 2988294567450087518}
+  - component: {fileID: 1613715350608868700}
   - component: {fileID: 8055755646343992628}
   - component: {fileID: 7488782142776458643}
   - component: {fileID: 2388740294352789583}
@@ -710,7 +711,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7674105291137834835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ba8dab82247dc04283d7f923d7bd719, type: 3}
+  m_Script: {fileID: 11500000, guid: 53689a96073cb0d468c3894c18cd8a51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerCamera>k__BackingField: {fileID: 1121418079944000196}
@@ -728,6 +729,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementMode: 0
+--- !u!114 &1613715350608868700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674105291137834835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97651f1d2f1d3114aaec24fda4098471, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Player.Core::Player.Core.PlayerWorldControllerManager
+  CursorVisualizer: {fileID: 6828390110988528725}
+  m_mainCamera: {fileID: 6661631668660036274}
 --- !u!114 &8055755646343992628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,8 +755,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813c82e9450fed04ab582635f57263c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  m_mainCamera: {fileID: 6661631668660036274}
-  m_cursorVisualizer: {fileID: 6828390110988528725}
 --- !u!114 &7488782142776458643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,8 +767,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b628fe65ed7fadf46863cc4f5e768990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Player::PlayerConstructionController
-  m_mainCamera: {fileID: 6661631668660036274}
-  m_cursorVisualizer: {fileID: 6828390110988528725}
   m_validMaterial: {fileID: 2100000, guid: ccaa27d7dbce4804a83a9e6de0936711, type: 2}
   m_invalidMaterial: {fileID: 2100000, guid: beefd3942915ba5438d48cdbeac43797, type: 2}
 --- !u!54 &2388740294352789583

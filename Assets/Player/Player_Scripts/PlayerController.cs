@@ -2,624 +2,627 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CapsuleCollider))]
-public class PlayerController : MonoBehaviour, IInputHandler
+namespace Player.Core
 {
-	private const float c_HitEpsilon = 0.02f; // Min distance to wall
-	private const float c_GroundCheckDist = 0.01f;
-	private const float c_StopEpsilon = 0.001f; // Stop when <= this speed
-	private const int c_MaxBounces = 4; // Max number of iterations per frame
-	private const int c_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
-
-	// Ground Movement
-	private const float c_walkingSpeed = 6f;
-	private const float c_friction = 3.8f;
-	private const float c_acceleration = 8.5f;
-	private const float c_maxSpeed = 8f;
-
-	private const float c_stepHeight = 0.7f;
-
-	// Normals with Y greater than this are walkable
-	private const float c_maxWalkableAngle = 30;
-	private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
-
-	// Air Movement Values
-	private const float c_airSpeed = .5f;
-	private const float c_airAcceleration = 20;
-	private const float c_gravity = 15;
-
-	// Collision Values
-	private const float c_horizontalSize = .5f;
-	private const float c_verticalSize = 2;
-
-	// Components
-	private Rigidbody m_rb;
-	private CapsuleCollider m_col;
-	private Player m_player;
-
-	// Movement type
-	[SerializeField] private EMovementMode movementMode;
-	public enum EMovementMode
+	[RequireComponent(typeof(CapsuleCollider))]
+	public class PlayerController : MonoBehaviour, IInputHandler
 	{
-		Standard,
-		Animation,
-	}
+		private const float c_HitEpsilon = 0.02f; // Min distance to wall
+		private const float c_GroundCheckDist = 0.01f;
+		private const float c_StopEpsilon = 0.001f; // Stop when <= this speed
+		private const int c_MaxBounces = 4; // Max number of iterations per frame
+		private const int c_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
 
-	// System Vars
-	private Vector2 m_inputDir;
-	private Vector3 m_velocity;
-	private Vector3 m_position;
-	private Quaternion m_rotation;
+		// Ground Movement
+		private const float c_walkingSpeed = 6f;
+		private const float c_friction = 3.8f;
+		private const float c_acceleration = 8.5f;
+		private const float c_maxSpeed = 8f;
 
-	private bool m_isGrounded;
-	private bool m_isJumpPressed;
+		private const float c_stepHeight = 0.7f;
 
-	private int m_framesStuck = 0;
-	private bool m_justJumped;
+		// Normals with Y greater than this are walkable
+		private const float c_maxWalkableAngle = 30;
+		private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
 
-	private LayerMask m_collisionLayerMask;
-	private GameObject m_surfaceObject;
+		// Air Movement Values
+		private const float c_airSpeed = .5f;
+		private const float c_airAcceleration = 20;
+		private const float c_gravity = 15;
 
-	void Awake()
-	{
-		m_rb = GetComponent<Rigidbody>();
-		m_col = GetComponent<CapsuleCollider>();
-		m_player = GetComponent<Player>();
+		// Collision Values
+		private const float c_horizontalSize = .5f;
+		private const float c_verticalSize = 2;
 
-		m_rb.isKinematic = true;
-		m_rb.freezeRotation = true;
+		// Components
+		private Rigidbody m_rb;
+		private CapsuleCollider m_col;
+		private PlayerEntity m_player;
 
-		m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
-		m_col.layerOverridePriority = 100;
-
-		LayerMask colliderMask = m_collisionLayerMask | LayerMask.GetMask("Trigger");
-		m_col.excludeLayers = ~colliderMask;
-		m_col.includeLayers = colliderMask;
-
-		m_position = transform.position;
-		UpdateCollider();
-	}
-
-	void Start()
-	{
-		((IInputHandler)this).SetControlsSubscription(true);
-	}
-
-	#region Unity Callbacks
-
-	private void OnDestroy()
-	{
-		((IInputHandler)this).SetControlsSubscription(false);
-	}
-
-	private void FixedUpdate()
-	{
-		UpdateCollider();
-
-		if (InputManager.ControlMode != InputManager.ControlType.Player)
+		// Movement type
+		[SerializeField] private EMovementMode movementMode;
+		public enum EMovementMode
 		{
-			m_inputDir = Vector2.zero;
+			Standard,
+			Animation,
 		}
 
-		switch (movementMode)
-		{
-			case EMovementMode.Standard:
-				PlayerMovement();
-				break;
+		// System Vars
+		private Vector2 m_inputDir;
+		private Vector3 m_velocity;
+		private Vector3 m_position;
+		private Quaternion m_rotation;
 
-			case EMovementMode.Animation:
-				AnimationMovement();
-				break;
+		private bool m_isGrounded;
+		private bool m_isJumpPressed;
+
+		private int m_framesStuck = 0;
+		private bool m_justJumped;
+
+		private LayerMask m_collisionLayerMask;
+		private GameObject m_surfaceObject;
+
+		void Awake()
+		{
+			m_rb = GetComponent<Rigidbody>();
+			m_col = GetComponent<CapsuleCollider>();
+			m_player = GetComponent<PlayerEntity>();
+
+			m_rb.isKinematic = true;
+			m_rb.freezeRotation = true;
+
+			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
+			m_col.layerOverridePriority = 100;
+
+			LayerMask colliderMask = m_collisionLayerMask | LayerMask.GetMask("Trigger");
+			m_col.excludeLayers = ~colliderMask;
+			m_col.includeLayers = colliderMask;
+
+			m_position = transform.position;
+			UpdateCollider();
 		}
 
-		if (!float.IsNaN(m_position.x) && !float.IsNaN(m_position.y) && !float.IsNaN(m_position.z))
+		void Start()
 		{
-			m_rb.MovePosition(m_position);
-		}
-		else
-		{
-			Debug.LogError("Position is NaN, skipping MovePosition.");
-			m_velocity = Vector3.zero;
+			((IInputHandler)this).SetControlsSubscription(true);
 		}
 
-		UpdateCollider();
+		#region Unity Callbacks
 
-		m_justJumped = false;
-	}
-	#endregion
-
-	#region Input Handlers
-
-	private void OnMoveInput(InputAction.CallbackContext context)
-	{
-		m_inputDir = context.ReadValue<Vector2>();
-	}
-
-
-	public void Subscribe()
-	{
-		InputManager.Controls.Player.Movement.performed += OnMoveInput;
-		InputManager.Controls.Player.Movement.canceled += OnMoveInput;
-	}
-
-	public void UnSubscribe()
-	{
-		InputManager.Controls.Player.Movement.performed -= OnMoveInput;
-		InputManager.Controls.Player.Movement.canceled -= OnMoveInput;
-
-		m_inputDir = Vector2.zero;
-	}
-	#endregion
-
-	#region Collision
-
-	/// <summary>
-	/// Casts the players hull in a position
-	/// </summary>
-	private bool CastHull(Vector3 position, Vector3 direction, float maxDist, out RaycastHit hitInfo)
-	{
-		direction.Normalize();
-
-		float halfHeight = GetColliderHeight() / 2f;
-
-		bool hit = Physics.BoxCast
-		(
-			position + Vector3.up * halfHeight,
-			new Vector3(c_horizontalSize / 2f, halfHeight, c_horizontalSize / 2f),
-			direction,
-			out hitInfo,
-			Quaternion.identity,
-			maxDist + c_HitEpsilon,
-			m_collisionLayerMask,
-			QueryTriggerInteraction.Ignore
-		);
-
-		// Back up a little
-		if (hit)
+		private void OnDestroy()
 		{
-			float nDot = -Vector3.Dot(hitInfo.normal, direction);
-			float backup = c_HitEpsilon / nDot;
-			hitInfo.distance -= backup;
+			((IInputHandler)this).SetControlsSubscription(false);
 		}
-		else
+
+		private void FixedUpdate()
 		{
-			hitInfo.distance = maxDist;
-		}
-		if (hitInfo.distance < 0) hitInfo.distance = 0;
+			UpdateCollider();
 
-		return hit;
-	}
-
-	private bool StuckCheck()
-	{
-		float halfHeight = GetColliderHeight() / 2f;
-		Collider[] colliders = Physics.OverlapBox
-		(
-			m_position + Vector3.up * halfHeight, new Vector3
-			(
-				c_horizontalSize / 2f - c_HitEpsilon,
-				halfHeight - c_HitEpsilon,
-				c_horizontalSize / 2f - c_HitEpsilon
-			),
-			Quaternion.identity,
-			m_collisionLayerMask,
-			QueryTriggerInteraction.Ignore
-		);
-
-		if (colliders.Length > 0)
-		{
-			++m_framesStuck;
-
-			Debug.LogWarning("Player stuck!");
-
-			if (m_framesStuck > 5)
+			if (InputManager.ControlMode != InputManager.ControlType.Player)
 			{
-				Debug.Log("Wow, you're REALLY stuck.");
-				m_velocity = Vector3.zero;
-				m_position += Vector3.up * 0.5f;
+				m_inputDir = Vector2.zero;
 			}
 
-			if (Physics.ComputePenetration(
-				m_col,
-				m_position,
-				transform.rotation,
-				colliders[0],
-				colliders[0].transform.position,
-				colliders[0].transform.rotation,
-				out Vector3 dir,
-				out float dist
-			))
+			switch (movementMode)
 			{
-				m_position += dir * (dist + c_HitEpsilon * 2.0f);
-				m_velocity = Vector3.zero;
+				case EMovementMode.Standard:
+					PlayerMovement();
+					break;
+
+				case EMovementMode.Animation:
+					AnimationMovement();
+					break;
+			}
+
+			if (!float.IsNaN(m_position.x) && !float.IsNaN(m_position.y) && !float.IsNaN(m_position.z))
+			{
+				m_rb.MovePosition(m_position);
 			}
 			else
 			{
+				Debug.LogError("Position is NaN, skipping MovePosition.");
 				m_velocity = Vector3.zero;
-				m_position += Vector3.up * 0.5f;
 			}
 
-			return true;
+			UpdateCollider();
+
+			m_justJumped = false;
+		}
+		#endregion
+
+		#region Input Handlers
+
+		private void OnMoveInput(InputAction.CallbackContext context)
+		{
+			m_inputDir = context.ReadValue<Vector2>();
 		}
 
-		m_framesStuck = 0;
 
-		return false;
-	}
-
-	private void CollideAndSlide(ref Vector3 position, ref Vector3 velocity)
-	{
-		Vector3 startVelocity = velocity;
-		Vector3 velocityBeforePlanes = startVelocity;
-
-		// When we collide with multiple planes at once (crease)
-		Vector3[] planes = new Vector3[c_MaxConcurrentPlanes];
-		int planeCount = 0;
-
-		float time = Time.fixedDeltaTime; // The amount of time remaining in the frame, decreases with each iteration
-		int bounceCount;
-		for (bounceCount = 0; bounceCount < c_MaxBounces; ++bounceCount)
+		public void Subscribe()
 		{
-			float speed = velocity.magnitude;
+			InputManager.Controls.Player.Movement.performed += OnMoveInput;
+			InputManager.Controls.Player.Movement.canceled += OnMoveInput;
+		}
 
-			if (speed <= c_StopEpsilon)
+		public void UnSubscribe()
+		{
+			InputManager.Controls.Player.Movement.performed -= OnMoveInput;
+			InputManager.Controls.Player.Movement.canceled -= OnMoveInput;
+
+			m_inputDir = Vector2.zero;
+		}
+		#endregion
+
+		#region Collision
+
+		/// <summary>
+		/// Casts the players hull in a position
+		/// </summary>
+		private bool CastHull(Vector3 position, Vector3 direction, float maxDist, out RaycastHit hitInfo)
+		{
+			direction.Normalize();
+
+			float halfHeight = GetColliderHeight() / 2f;
+
+			bool hit = Physics.BoxCast
+			(
+				position + Vector3.up * halfHeight,
+				new Vector3(c_horizontalSize / 2f, halfHeight, c_horizontalSize / 2f),
+				direction,
+				out hitInfo,
+				Quaternion.identity,
+				maxDist + c_HitEpsilon,
+				m_collisionLayerMask,
+				QueryTriggerInteraction.Ignore
+			);
+
+			// Back up a little
+			if (hit)
 			{
-				velocity = Vector3.zero;
-				break;
+				float nDot = -Vector3.Dot(hitInfo.normal, direction);
+				float backup = c_HitEpsilon / nDot;
+				hitInfo.distance -= backup;
 			}
-
-			// Try to move in this direction
-			Vector3 direction = velocity.normalized;
-			float maxDist = speed * time;
-			if (CastHull(position, direction, maxDist, out RaycastHit hit))
+			else
 			{
-				if (hit.distance > 0)
+				hitInfo.distance = maxDist;
+			}
+			if (hitInfo.distance < 0) hitInfo.distance = 0;
+
+			return hit;
+		}
+
+		private bool StuckCheck()
+		{
+			float halfHeight = GetColliderHeight() / 2f;
+			Collider[] colliders = Physics.OverlapBox
+			(
+				m_position + Vector3.up * halfHeight, new Vector3
+				(
+					c_horizontalSize / 2f - c_HitEpsilon,
+					halfHeight - c_HitEpsilon,
+					c_horizontalSize / 2f - c_HitEpsilon
+				),
+				Quaternion.identity,
+				m_collisionLayerMask,
+				QueryTriggerInteraction.Ignore
+			);
+
+			if (colliders.Length > 0)
+			{
+				++m_framesStuck;
+
+				Debug.LogWarning("Player stuck!");
+
+				if (m_framesStuck > 5)
 				{
-					// Move to where it collided
-					position += direction * hit.distance;
-
-					// Decrease time based on how far it travelled
-					float fraction = hit.distance / maxDist;
-
-					if (fraction > 1)
-					{
-						Debug.LogWarning("Fract too high");
-						fraction = 1;
-					}
-
-					time -= fraction * time;
-
-					planeCount = 0;
-					velocityBeforePlanes = velocity;
+					Debug.Log("Wow, you're REALLY stuck.");
+					m_velocity = Vector3.zero;
+					m_position += Vector3.up * 0.5f;
 				}
 
-				if (planeCount >= c_MaxConcurrentPlanes)
+				if (Physics.ComputePenetration(
+					m_col,
+					m_position,
+					transform.rotation,
+					colliders[0],
+					colliders[0].transform.position,
+					colliders[0].transform.rotation,
+					out Vector3 dir,
+					out float dist
+				))
 				{
-					Debug.LogWarning("Colliding with too many planes at once");
+					m_position += dir * (dist + c_HitEpsilon * 2.0f);
+					m_velocity = Vector3.zero;
+				}
+				else
+				{
+					m_velocity = Vector3.zero;
+					m_position += Vector3.up * 0.5f;
+				}
+
+				return true;
+			}
+
+			m_framesStuck = 0;
+
+			return false;
+		}
+
+		private void CollideAndSlide(ref Vector3 position, ref Vector3 velocity)
+		{
+			Vector3 startVelocity = velocity;
+			Vector3 velocityBeforePlanes = startVelocity;
+
+			// When we collide with multiple planes at once (crease)
+			Vector3[] planes = new Vector3[c_MaxConcurrentPlanes];
+			int planeCount = 0;
+
+			float time = Time.fixedDeltaTime; // The amount of time remaining in the frame, decreases with each iteration
+			int bounceCount;
+			for (bounceCount = 0; bounceCount < c_MaxBounces; ++bounceCount)
+			{
+				float speed = velocity.magnitude;
+
+				if (speed <= c_StopEpsilon)
+				{
 					velocity = Vector3.zero;
 					break;
 				}
 
-				planes[planeCount] = hit.normal;
-				++planeCount;
-
-				// Clip velocity to each plane
-				bool conflictingPlanes = false;
-				for (int j = 0; j < planeCount; ++j)
+				// Try to move in this direction
+				Vector3 direction = velocity.normalized;
+				float maxDist = speed * time;
+				if (CastHull(position, direction, maxDist, out RaycastHit hit))
 				{
-					velocity = Vector3.ProjectOnPlane(velocityBeforePlanes, planes[j]);
-
-					if (planeCount == 1)
+					if (hit.distance > 0)
 					{
+						// Move to where it collided
+						position += direction * hit.distance;
+
+						// Decrease time based on how far it travelled
+						float fraction = hit.distance / maxDist;
+
+						if (fraction > 1)
+						{
+							Debug.LogWarning("Fract too high");
+							fraction = 1;
+						}
+
+						time -= fraction * time;
+
+						planeCount = 0;
 						velocityBeforePlanes = velocity;
 					}
 
-					// Check if the velocity is against any other planes
-					for (int k = 0; k < planeCount; ++k)
+					if (planeCount >= c_MaxConcurrentPlanes)
 					{
-						if (j != k) // No point in checking the same plane we just clipped to
-						{
-							if (Vector3.Dot(velocity, planes[k]) < 0) // Moving into the plane, BAD!
-							{
-								conflictingPlanes = true;
-								break;
-							}
-						}
-					}
-
-					if (!conflictingPlanes) break;// Use the first good plane
-				}
-
-				// No good planes
-				if (conflictingPlanes)
-				{
-					if (planeCount == 2)
-					{
-						// Cross product of two planes is the only direction to go
-						Vector3 dir = Vector3.Cross(planes[0], planes[1]).normalized;
-
-						// Go in that direction
-						velocity = dir * Vector3.Dot(dir, velocity);
-					}
-					else
-					{
+						Debug.LogWarning("Colliding with too many planes at once");
 						velocity = Vector3.zero;
 						break;
 					}
+
+					planes[planeCount] = hit.normal;
+					++planeCount;
+
+					// Clip velocity to each plane
+					bool conflictingPlanes = false;
+					for (int j = 0; j < planeCount; ++j)
+					{
+						velocity = Vector3.ProjectOnPlane(velocityBeforePlanes, planes[j]);
+
+						if (planeCount == 1)
+						{
+							velocityBeforePlanes = velocity;
+						}
+
+						// Check if the velocity is against any other planes
+						for (int k = 0; k < planeCount; ++k)
+						{
+							if (j != k) // No point in checking the same plane we just clipped to
+							{
+								if (Vector3.Dot(velocity, planes[k]) < 0) // Moving into the plane, BAD!
+								{
+									conflictingPlanes = true;
+									break;
+								}
+							}
+						}
+
+						if (!conflictingPlanes) break;// Use the first good plane
+					}
+
+					// No good planes
+					if (conflictingPlanes)
+					{
+						if (planeCount == 2)
+						{
+							// Cross product of two planes is the only direction to go
+							Vector3 dir = Vector3.Cross(planes[0], planes[1]).normalized;
+
+							// Go in that direction
+							velocity = dir * Vector3.Dot(dir, velocity);
+						}
+						else
+						{
+							velocity = Vector3.zero;
+							break;
+						}
+					}
+				}
+				else
+				{
+					// Move rigibody according to velocity
+					position += direction * hit.distance;
+					break;
+				}
+
+				// Stop tiny oscillations
+				if (Vector3.Dot(velocity, startVelocity) < 0)
+				{
+					//Debug.Log("Oscillation");
+					velocity = Vector3.zero;
+					break;
+				}
+
+				if (time < 0)
+				{
+					Debug.Log("Outta time");
+					break; // outta time
+				}
+			}
+
+			if (bounceCount >= c_MaxBounces)
+			{
+				Debug.LogWarning("Bounces exceeded");
+			}
+		}
+		#endregion
+
+		#region Movement Methods
+
+		private void Friction(float friction)
+		{
+			float speed = m_velocity.magnitude;
+
+			float control = Mathf.Max(speed, c_maxSpeed);
+
+			float newSpeed = Mathf.Max(speed - (control * friction * Time.fixedDeltaTime), 0);
+
+			if (speed != 0)
+			{
+				float mult = newSpeed / speed;
+				m_velocity *= mult;
+			}
+		}
+
+		private void Accelerate(Vector3 dir, float acceleration, float maxSpeed)
+		{
+			float add = acceleration * maxSpeed * Time.fixedDeltaTime;
+
+			// Clamp added velocity in acceleration direction
+			float speed = Vector3.Dot(dir, m_velocity);
+
+			if (speed + add > maxSpeed)
+			{
+				add = Mathf.Max(maxSpeed - speed, 0);
+			}
+
+			m_velocity += add * dir;
+		}
+
+		private void PlayerMovement()
+		{
+			// Project inputDir onto the XZ plane
+			Vector3 moveDir = (Vector3.forward * m_inputDir.y + Vector3.right * m_inputDir.x).normalized;
+
+			if (moveDir.sqrMagnitude > 0.01f)
+			{
+				HandleRotation(moveDir);
+			}
+
+			m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
+
+			// Pick movement method
+			if (m_isGrounded)
+			{
+				GroundMove(moveDir);
+			}
+			else
+			{
+				AirMove(moveDir);
+			}
+
+			StuckCheck();
+		}
+
+		private void AnimationMovement()
+		{
+			m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
+			StuckCheck();
+		}
+
+		private void GroundMove(Vector3 moveDir)
+		{
+			m_velocity.y = 0;
+
+			Friction(c_friction);
+
+			float desiredSpeed = c_walkingSpeed * m_inputDir.magnitude;
+			Accelerate(moveDir, c_acceleration, desiredSpeed);
+
+			// Clamp Speed
+			float speed = m_velocity.magnitude;
+			if (speed > c_walkingSpeed)
+			{
+				float mult = c_walkingSpeed / speed;
+				m_velocity *= mult;
+			}
+
+			if (m_velocity.sqrMagnitude == 0)
+			{
+				return;
+			}
+
+			// Try to step up/down
+			StepMove();
+		}
+
+		private bool StepMove()
+		{
+			// Do the regular move
+			Vector3 prevPosition = m_position;
+			Vector3 prevVelocity = m_velocity;
+			CollideAndSlide(ref prevPosition, ref prevVelocity);
+
+			// Move down to ground
+			CastHull(prevPosition, Vector3.down, c_stepHeight, out RaycastHit downHit1);
+			Vector3 groundedPos = prevPosition + Vector3.down * downHit1.distance;
+
+			bool regGrounded = GroundCheck(groundedPos, out GameObject _);
+
+			// Only step down onto ground
+			if (regGrounded)
+			{
+				prevPosition = groundedPos;
+			}
+
+			// Move up and try another move, stepping over stuff
+			CastHull(m_position, Vector3.up, c_stepHeight, out RaycastHit upHit);
+			Vector3 steppedPosition = m_position + Vector3.up * upHit.distance;
+			Vector3 steppVelocity = m_velocity;
+
+			CollideAndSlide(ref steppedPosition, ref steppVelocity);
+
+			// Move back down
+			CastHull(steppedPosition, Vector3.down, c_stepHeight + upHit.distance, out RaycastHit downHit);
+			steppedPosition += Vector3.down * downHit.distance;
+
+			bool stepGrounded = GroundCheck(steppedPosition, out GameObject stepSurface);
+
+			// If we stepped onto air, just do the regular move
+			if (!stepGrounded)
+			{
+				m_position = prevPosition;
+				m_velocity = prevVelocity;
+				return false;
+			}
+
+			// Otherwise, pick the move that goes the furthest
+			if (Vector3.Distance(m_position, prevPosition) >= Vector3.Distance(m_position, steppedPosition))
+			{
+				m_position = prevPosition;
+				m_velocity = prevVelocity;
+				return false;
+			}
+
+			m_position = steppedPosition;
+			m_velocity = steppVelocity;
+			m_surfaceObject = stepSurface;
+			m_isGrounded = stepGrounded;
+
+			m_velocity.y = Mathf.Max(m_velocity.y, prevVelocity.y); // funny quake ramp jumps
+			return true;
+		}
+
+		private void AirMove(Vector3 moveDir)
+		{
+			float desiredSpeed = c_airSpeed * m_inputDir.magnitude;
+			Accelerate(moveDir, c_airAcceleration, desiredSpeed);
+
+			float yVel = m_velocity.y;
+			m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
+			CollideAndSlide(ref m_position, ref m_velocity);
+			m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
+
+			m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
+		}
+
+		public void Teleport(Vector3 position)
+		{
+			this.m_position = position;
+			transform.position = this.m_position;
+		}
+
+		public void Stop()
+		{
+			m_velocity = Vector3.zero;
+		}
+		#endregion
+
+		#region Rotation Methods
+
+		private void HandleRotation(Vector3 moveDir)
+		{
+			Quaternion prevRot = m_rotation;
+
+			Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+			m_rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
+
+			// Rotate player mesh
+			m_player.PlayerMesh.rotation = m_rotation;
+		}
+
+		#endregion
+
+		#region Utility
+
+		private void UpdateCollider()
+		{
+			float h = GetColliderHeight();
+			m_col.height = c_verticalSize;
+			m_col.radius = c_horizontalSize;
+			m_col.center = new Vector3(0, h / 2.0f, 0);
+		}
+
+		public float GetColliderHeight()
+		{
+			return c_verticalSize;
+		}
+
+		private IEnumerator AnimWait(float animTime)
+		{
+			yield return new WaitForSeconds(animTime);
+			movementMode = EMovementMode.Standard;
+		}
+
+		private bool GroundCheck(Vector3 position, out GameObject surfaceObject)
+		{
+			surfaceObject = null;
+			if (m_justJumped) return false;
+
+			if (CastHull(position, Vector3.down, c_GroundCheckDist, out RaycastHit hit))
+			{
+				if (hit.normal.y > s_minWalkableNormalY)
+				{
+					surfaceObject = hit.collider.gameObject;
+					return true;
 				}
 			}
 			else
 			{
-				// Move rigibody according to velocity
-				position += direction * hit.distance;
-				break;
+				return false;
 			}
 
-			// Stop tiny oscillations
-			if (Vector3.Dot(velocity, startVelocity) < 0)
+			// If we're on a slope, check if any point on the player is on the ground
+			// Source uses 4 box checks, but I'm really lazy so I'll just do a raycast.
+			if (Physics.Raycast(position,
+				Vector3.down,
+				out RaycastHit hit2,
+				c_GroundCheckDist * 2,
+				m_collisionLayerMask,
+				QueryTriggerInteraction.Ignore
+			))
 			{
-				//Debug.Log("Oscillation");
-				velocity = Vector3.zero;
-				break;
+				if (hit2.normal.y > s_minWalkableNormalY)
+				{
+					surfaceObject = hit2.collider.gameObject;
+					return true;
+				}
 			}
 
-			if (time < 0)
-			{
-				Debug.Log("Outta time");
-				break; // outta time
-			}
-		}
-
-		if (bounceCount >= c_MaxBounces)
-		{
-			Debug.LogWarning("Bounces exceeded");
-		}
-	}
-	#endregion
-
-	#region Movement Methods
-
-	private void Friction(float friction)
-	{
-		float speed = m_velocity.magnitude;
-
-		float control = Mathf.Max(speed, c_maxSpeed);
-
-		float newSpeed = Mathf.Max(speed - (control * friction * Time.fixedDeltaTime), 0);
-
-		if (speed != 0)
-		{
-			float mult = newSpeed / speed;
-			m_velocity *= mult;
-		}
-	}
-
-	private void Accelerate(Vector3 dir, float acceleration, float maxSpeed)
-	{
-		float add = acceleration * maxSpeed * Time.fixedDeltaTime;
-
-		// Clamp added velocity in acceleration direction
-		float speed = Vector3.Dot(dir, m_velocity);
-
-		if (speed + add > maxSpeed)
-		{
-			add = Mathf.Max(maxSpeed - speed, 0);
-		}
-
-		m_velocity += add * dir;
-	}
-
-	private void PlayerMovement()
-	{
-		// Project inputDir onto the XZ plane
-		Vector3 moveDir = (Vector3.forward * m_inputDir.y + Vector3.right * m_inputDir.x).normalized;
-
-		if (moveDir.sqrMagnitude > 0.01f)
-		{
-			HandleRotation(moveDir);
-		}
-
-		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
-
-		// Pick movement method
-		if (m_isGrounded)
-		{
-			GroundMove(moveDir);
-		}
-		else
-		{
-			AirMove(moveDir);
-		}
-
-		StuckCheck();
-	}
-
-	private void AnimationMovement()
-	{
-		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
-		StuckCheck();
-	}
-
-	private void GroundMove(Vector3 moveDir)
-	{
-		m_velocity.y = 0;
-
-		Friction(c_friction);
-
-		float desiredSpeed = c_walkingSpeed * m_inputDir.magnitude;
-		Accelerate(moveDir, c_acceleration, desiredSpeed);
-
-		// Clamp Speed
-		float speed = m_velocity.magnitude;
-		if (speed > c_walkingSpeed)
-		{
-			float mult = c_walkingSpeed / speed;
-			m_velocity *= mult;
-		}
-
-		if (m_velocity.sqrMagnitude == 0)
-		{
-			return;
-		}
-
-		// Try to step up/down
-		StepMove();
-	}
-
-	private bool StepMove()
-	{
-		// Do the regular move
-		Vector3 prevPosition = m_position;
-		Vector3 prevVelocity = m_velocity;
-		CollideAndSlide(ref prevPosition, ref prevVelocity);
-
-		// Move down to ground
-		CastHull(prevPosition, Vector3.down, c_stepHeight, out RaycastHit downHit1);
-		Vector3 groundedPos = prevPosition + Vector3.down * downHit1.distance;
-
-		bool regGrounded = GroundCheck(groundedPos, out GameObject _);
-
-		// Only step down onto ground
-		if (regGrounded)
-		{
-			prevPosition = groundedPos;
-		}
-
-		// Move up and try another move, stepping over stuff
-		CastHull(m_position, Vector3.up, c_stepHeight, out RaycastHit upHit);
-		Vector3 steppedPosition = m_position + Vector3.up * upHit.distance;
-		Vector3 steppVelocity = m_velocity;
-
-		CollideAndSlide(ref steppedPosition, ref steppVelocity);
-
-		// Move back down
-		CastHull(steppedPosition, Vector3.down, c_stepHeight + upHit.distance, out RaycastHit downHit);
-		steppedPosition += Vector3.down * downHit.distance;
-
-		bool stepGrounded = GroundCheck(steppedPosition, out GameObject stepSurface);
-
-		// If we stepped onto air, just do the regular move
-		if (!stepGrounded)
-		{
-			m_position = prevPosition;
-			m_velocity = prevVelocity;
 			return false;
 		}
-
-		// Otherwise, pick the move that goes the furthest
-		if (Vector3.Distance(m_position, prevPosition) >= Vector3.Distance(m_position, steppedPosition))
-		{
-			m_position = prevPosition;
-			m_velocity = prevVelocity;
-			return false;
-		}
-
-		m_position = steppedPosition;
-		m_velocity = steppVelocity;
-		m_surfaceObject = stepSurface;
-		m_isGrounded = stepGrounded;
-
-		m_velocity.y = Mathf.Max(m_velocity.y, prevVelocity.y); // funny quake ramp jumps
-		return true;
+		#endregion
 	}
-
-	private void AirMove(Vector3 moveDir)
-	{
-		float desiredSpeed = c_airSpeed * m_inputDir.magnitude;
-		Accelerate(moveDir, c_airAcceleration, desiredSpeed);
-
-		float yVel = m_velocity.y;
-		m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
-		CollideAndSlide(ref m_position, ref m_velocity);
-		m_velocity.y -= c_gravity * Time.fixedDeltaTime / 2f;
-
-		m_isGrounded = GroundCheck(m_position, out m_surfaceObject);
-	}
-
-	public void Teleport(Vector3 position)
-	{
-		this.m_position = position;
-		transform.position = this.m_position;
-	}
-
-	public void Stop()
-	{
-		m_velocity = Vector3.zero;
-	}
-	#endregion
-
-	#region Rotation Methods
-
-	private void HandleRotation(Vector3 moveDir)
-	{
-		Quaternion prevRot = m_rotation;
-
-		Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-		m_rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
-
-		// Rotate player mesh
-		m_player.PlayerMesh.rotation = m_rotation;
-	}
-
-	#endregion
-
-	#region Utility
-
-	private void UpdateCollider()
-	{
-		float h = GetColliderHeight();
-		m_col.height = c_verticalSize;
-		m_col.radius = c_horizontalSize;
-		m_col.center = new Vector3(0, h / 2.0f, 0);
-	}
-
-	public float GetColliderHeight()
-	{
-		return c_verticalSize;
-	}
-
-	private IEnumerator AnimWait(float animTime)
-	{
-		yield return new WaitForSeconds(animTime);
-		movementMode = EMovementMode.Standard;
-	}
-
-	private bool GroundCheck(Vector3 position, out GameObject surfaceObject)
-	{
-		surfaceObject = null;
-		if (m_justJumped) return false;
-
-		if (CastHull(position, Vector3.down, c_GroundCheckDist, out RaycastHit hit))
-		{
-			if (hit.normal.y > s_minWalkableNormalY)
-			{
-				surfaceObject = hit.collider.gameObject;
-				return true;
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		// If we're on a slope, check if any point on the player is on the ground
-		// Source uses 4 box checks, but I'm really lazy so I'll just do a raycast.
-		if (Physics.Raycast(position,
-			Vector3.down,
-			out RaycastHit hit2,
-			c_GroundCheckDist * 2,
-			m_collisionLayerMask,
-			QueryTriggerInteraction.Ignore
-		))
-		{
-			if (hit2.normal.y > s_minWalkableNormalY)
-			{
-				surfaceObject = hit2.collider.gameObject;
-				return true;
-			}
-		}
-
-		return false;
-	}
-	#endregion
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Player.Core;
 
 public class HUD : Menu
 {
@@ -21,7 +22,7 @@ public class HUD : Menu
 	{
 		base.Start();
 
-		Player player = GameManager.Instance.PlayerObject.GetComponent<Player>();
+		PlayerEntity player = GameManager.Instance.PlayerObject.GetComponent<PlayerEntity>();
 		SetPlayer(player);
 	}
 
@@ -46,7 +47,7 @@ public class HUD : Menu
 		MenuManager.OpenMenu(this);
 	}
 
-	internal void SetPlayer(Player player)
+	internal void SetPlayer(PlayerEntity player)
 	{
 		HUDElement[] elements = GetComponentsInChildren<HUDElement>();
 		foreach (var element in elements)
