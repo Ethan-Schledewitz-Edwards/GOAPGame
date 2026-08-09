@@ -15,7 +15,7 @@ namespace InventorySystem
 
 		protected virtual void Awake()
 		{
-			if (Inventory == null) 
+			if (Inventory == null)
 				InitializeInventory(m_inventorySize);
 		}
 
@@ -38,6 +38,44 @@ namespace InventorySystem
 			if (Inventory.TryGetEmptySlot(out InventorySlot emptySlot))
 			{
 				emptySlot.SetSlotsItem(addedItemData, amount, transform, itemTransforms);
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Transfers an item stack from a source inventory slot into this inventory.
+		/// </summary>
+		public bool TryTransferFrom(InventorySlot sourceSlot, int amountToTransfer, out int transferredAmount)
+		{
+			transferredAmount = 0;
+
+			// Check if source slot has anything to transfer
+			if (sourceSlot == null ||
+				sourceSlot.SlotsItem == null ||
+				sourceSlot.AmountInSlot <= 0 ||
+				amountToTransfer <= 0)
+			{
+				return false;
+			}
+
+			ItemData itemToTransfer = sourceSlot.SlotsItem;
+			int availableToTake = Mathf.Min(amountToTransfer, sourceSlot.AmountInSlot);
+
+			// Check if this inventory has room for at least 1 item
+			if (!Inventory.TryFindRoomForItem(itemToTransfer, 1, out _, out _))
+			{
+				return false;
+			}
+
+			// Extract items from the source without destroying them
+			sourceSlot.RemoveFromStack(availableToTake, out Transform[] itemsToTransfer, dropItems: true);
+
+			// Add items into this inventory
+			if (TryAddItem(itemToTransfer, availableToTake, itemsToTransfer))
+			{
+				transferredAmount = availableToTake;
 				return true;
 			}
 

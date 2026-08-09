@@ -48,7 +48,6 @@ namespace InventorySystem
 		/// </summary>
 		public int GetTotalOfItem(int itemID)
 		{
-
 			int count = 0;
 			foreach (InventorySlot i in Slots)
 			{

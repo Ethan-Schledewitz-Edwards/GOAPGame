@@ -221,7 +221,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				timeoutFind,
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),
-				new TryGetItemTask(),
+				new TryPickupItemTask(),
 				new ReturnToStructureTask(),
 				new MoveToTargetDataTask(),
 				new CheckForTargetRangeTask(),

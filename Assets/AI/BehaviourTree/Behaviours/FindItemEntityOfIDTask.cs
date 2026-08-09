@@ -25,7 +25,6 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		{
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
 			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetItemTransform.position);
-			context.ClearData(AIContextKeys.c_ItemToFindID);
 
 			return EBTNodeState.STATE_SUCSESS;
 		}
@@ -121,7 +120,12 @@ public class FindItemEntityOfIDTask : BTNodeBase
 							bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
 							if (passesFilter)
 							{
-								return structureObject.transform;
+								// Check if the storage unit contains the desired item ID
+								if(structureObject.TryGetComponent(out InventoryComponent inventory))
+								{
+									if(inventory.Inventory.GetTotalOfItem(itemID) > 0)
+										return structureObject.transform;
+								}
 							}
 						}
 					}

@@ -42,27 +42,30 @@ public class ActorInventory : InventoryComponent
 		// Try to add the item
 		bool wasItemAdded = base.TryAddItem(addedItemData, amount, itemTransforms);
 
-		// Move the item to the held position
-		Transform itemTransform = itemTransforms[0];
-		if (itemTransform != null)
+		if (!wasItemAdded)
+			return false;
+
+		// Move the item to the held position if physical transforms were provided
+		if (itemTransforms != null && itemTransforms.Length > 0 && itemTransforms[0] != null)
 		{
-			if(itemTransform.TryGetComponent(out ItemIO item))
+			Transform itemTransform = itemTransforms[0];
+			if (itemTransform.TryGetComponent(out ItemIO item))
 			{
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
 				item.gameObject.SetActive(true);
-				return true;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	private void OnSlotChanged(InventorySlot slot)
 	{
-		if(slot.AmountInSlot > 0)
+		if (slot.AmountInSlot > 0)
 			m_behaviourTreeExecutor.AIContext.SetData<int>(AIContextKeys.c_HeldItemID, slot.SlotsItem.ItemID);
-		else m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_HeldItemID);
+		else
+			m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_HeldItemID);
 	}
 }
 
