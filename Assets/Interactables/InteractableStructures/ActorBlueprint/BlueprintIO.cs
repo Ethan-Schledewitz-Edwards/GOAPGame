@@ -220,11 +220,11 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				timeoutFind,
 				new MoveToTargetDataTask(),
-				new CheckForTargetRangeTask(),
+				new CheckForDestinationRangeTask(),
 				new TryPickupItemTask(),
 				new ReturnToStructureTask(),
 				new MoveToTargetDataTask(),
-				new CheckForTargetRangeTask(),
+				new CheckForDestinationRangeTask(),
 				new DepositHeldItemTask(),
 				timeoutJobSearch // Try to loop item search
 			});

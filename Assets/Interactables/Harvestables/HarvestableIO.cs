@@ -16,8 +16,8 @@ public class HarvestableIO : InteractableObjectBase
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new CheckForTargetRangeTask(),
 				new MoveToTargetDataTask(),
+				new CheckForDestinationRangeTask(),
 				new AttackTask()
 			});
 			tree.SetTree(root);

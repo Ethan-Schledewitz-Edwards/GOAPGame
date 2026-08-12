@@ -169,7 +169,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			{
 				timeoutSearch,
 				new MoveToTargetDataTask(),
-				new CheckForTargetRangeTask(),
+				new CheckForDestinationRangeTask(),
 				timeoutDeposit,
 				timeoutJobSearch
 			});

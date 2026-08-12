@@ -20,11 +20,20 @@ public class FindItemEntityOfIDTask : BTNodeBase
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
+		// Find the closest item
 		Transform targetItemTransform = FindItemOfID(context);
+
+		// Get the items interaction offset
+		Vector3 destination = targetItemTransform.position;
+		if (targetItemTransform != null && targetItemTransform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
+		{
+			destination = interactableObjectBase.GetInteractionPositon();
+		}
+
 		if (targetItemTransform != null)
 		{
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
-			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetItemTransform.position);
+			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, destination);
 
 			return EBTNodeState.STATE_SUCSESS;
 		}
@@ -39,6 +48,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		int idOfItemToFind = context.GetData<int>(AIContextKeys.c_ItemToFindID);
 
 		Transform candidate = SearchForItem(idOfItemToFind, executorTransform, context);
+		
 		return candidate;
 	}
 

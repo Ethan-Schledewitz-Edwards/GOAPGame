@@ -7,6 +7,7 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 	public AIContext AIContext { get; private set; }
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
+
 	protected virtual void Awake()
 	{
 		AIContext = new AIContext();
@@ -22,7 +23,8 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 	{
 		if (CurrentBehaviourTree != null && AIContext != null)
 		{
-			return CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
+			EBTNodeState nodeState = CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
+			return nodeState;
 		}
 
 		return EBTNodeState.STATE_FAILURE;

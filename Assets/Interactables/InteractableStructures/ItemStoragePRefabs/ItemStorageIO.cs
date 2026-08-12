@@ -120,11 +120,11 @@ namespace Interaction.InteractableStructures
 				{
 					timeoutFind,
 					new MoveToTargetDataTask(),
-					new CheckForTargetRangeTask(),
+					new CheckForDestinationRangeTask(),
 					new InteractWithTargetTask(),
 					new ReturnToStructureTask(),
 					new MoveToTargetDataTask(),
-					new CheckForTargetRangeTask(),
+					new CheckForDestinationRangeTask(),
 					new DepositHeldItemTask(),
 					timeoutJobSearch // Try to loop item search
 				});

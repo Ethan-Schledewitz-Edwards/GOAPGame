@@ -1,10 +1,7 @@
 {
-    "name": "AI.BehaviourTrees",
-    "rootNamespace": "AI.BehaviourTrees",
-    "references": [
-        "GUID:bbe32f9014a8f6f47993fc4b415cd254",
-        "GUID:238f5de6bd5666a4897151da08cf060d"
-    ],
+    "name": "Utilities.Core",
+    "rootNamespace": "Utilities.Core",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
