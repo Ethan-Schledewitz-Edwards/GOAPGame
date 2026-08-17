@@ -9470,6 +9470,10 @@ GameObject:
   - component: {fileID: 432301705}
   - component: {fileID: 432301704}
   - component: {fileID: 432301703}
+  - component: {fileID: 432301710}
+  - component: {fileID: 432301709}
+  - component: {fileID: 432301708}
+  - component: {fileID: 432301707}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -9570,6 +9574,64 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 5.49, z: 0}
+--- !u!114 &432301707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432301702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bea7fe0c30c492844b6d25e33228cce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.InteractableStructures::Interaction.InteractableStructures.SelfRegisteringStructure
+--- !u!114 &432301708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432301702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba4f3b07ce027b4d8bce483701cbf3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.BlueprintCancelation
+--- !u!114 &432301709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432301702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: InventorySystem::InventorySystem.InventoryComponent
+  m_inventorySize: 1
+--- !u!114 &432301710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432301702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded9b2b585b8f384398ee175ea3dc2d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.BlueprintIO
+  m_actorsNeeded: 1
+  m_interactOffset: {fileID: 0}
+  m_formationRadius: 2
+  m_blueprintMaterial: {fileID: 0}
+  m_meshFilter: {fileID: 0}
+  m_meshRenderer: {fileID: 0}
+  m_structureTypeTag: {fileID: 0}
+  m_maxCapacity: 4
+  m_actorsAssigned: 0
 --- !u!1 &432383756
 GameObject:
   m_ObjectHideFlags: 0

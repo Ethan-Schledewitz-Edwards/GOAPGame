@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Interaction.InteractableStructures
+namespace Interaction.InteractableStructures.Blueprints
 {
-    public class BridgeIO : MonoBehaviour
+    public class EnvironmentalBlueprint : MonoBehaviour
     {
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
