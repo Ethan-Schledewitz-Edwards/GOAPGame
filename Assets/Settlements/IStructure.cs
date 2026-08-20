@@ -12,7 +12,7 @@ namespace Settlements
 		public int MaxCapacity { get; }
 		public int ActorsAssigned { get; }
 
-		public void AddStructureToSettlement(int settlementID, int settlementStructureID);
+		public void HandleAddedToSettlement(int settlementID, int settlementStructureID);
 	}
 
 	public interface IStructure<T> : IStructure where T : IStructure<T>

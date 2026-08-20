@@ -14,38 +14,30 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(BoxCollider), 
-		typeof(InventoryComponent), 
-		typeof(BlueprintCancelation))]
-	public class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IBlueprintObject, IItemFiltered
+	[RequireComponent(typeof(InventoryComponent))]
+	public abstract class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
-		[Header("Settings & Visuals")]
-		[SerializeField] private Material m_blueprintMaterial;
-		[SerializeField] private MeshFilter m_meshFilter;
-		[SerializeField] private MeshRenderer m_meshRenderer;
+		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 		[SerializeField] private int m_maxCapacity = 4;
 		[SerializeField] private int m_actorsAssigned = 0;
 
 		// Components
-		private BoxCollider m_boxCollider;
-		private BlueprintCancelation m_cancelBlueprint;
 		private Entity m_entity;
-		private ItemRequestComponent m_itemRequestComponent;
-		private InventoryComponent m_inventoryComponent;
-		private SaveableEntity m_saveableEntity;
+		protected ItemRequestComponent m_itemRequestComponent;
+		protected InventoryComponent m_inventoryComponent;
+		protected SaveableEntity m_saveableEntity;
 
 		// Events
-		public event Action<IBlueprintObject> BlueprintCompleted;
-		public event Action<IBlueprintObject> BlueprintCanceled;
+		public abstract event Action<IBlueprintObject> BlueprintCompleted;
+		public abstract event Action<IBlueprintObject> BlueprintCanceled;
 
 		// System
-		private int m_settlementID;
-		private int m_settlementStructureID;
-		private int m_blueprintDataID;
-		private ItemTag[] m_tagFilter;
+		protected int m_settlementID;
+		protected int m_settlementStructureID;
+		protected int m_blueprintDataID;
 
 		// IStructure Properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
@@ -55,27 +47,21 @@ namespace Interaction.InteractableStructures.Blueprints
 		public int MaxCapacity => m_maxCapacity;
 		public int ActorsAssigned => m_actorsAssigned;
 
-		// IBlueprintObject Properties
-		public int BlueprintDataID => m_blueprintDataID;
-
 		// IItemFiltered Properties
+		[SerializeField] protected ItemTag[] m_tagFilter;
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 
 		// Base
 		public override bool UseFormationRadius => false;
 
-		private void Awake()
+		protected virtual void Awake()
 		{
 			InitializeBehaviourTree();
 
 			m_entity = GetComponent<Entity>();
 			m_entity.EnableDynamicPositionUpdates(false);
 
-			m_boxCollider = GetComponent<BoxCollider>();
 			m_inventoryComponent = GetComponent<InventoryComponent>();
-
-			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
-			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 
 			m_saveableEntity = GetComponent<SaveableEntity>();
 
@@ -88,16 +74,11 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
-		private void OnDestroy()
+		protected virtual void OnDestroy()
 		{
 			if (m_itemRequestComponent != null)
 			{
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
-			}
-
-			if (m_cancelBlueprint != null)
-			{
-				m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 			}
 
 			m_saveableEntity.UnregisterFromCurrentChunk();
@@ -145,63 +126,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			return true;
 		}
 
-		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
-		{
-			m_settlementID = settlementID;
-			m_settlementStructureID = settlementStructureID;
-		}
-
-		public void HandleBlueprintStarted(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
-		{
-			// Extract item tags from required items
-			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
-			if (blueprintData.RequiredItems != null)
-			{
-				foreach (var requiredItem in blueprintData.RequiredItems)
-				{
-					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && taggableItem.RuntimeTagSet != null)
-					{
-						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
-					}
-				}
-			}
-
-			m_blueprintDataID = blueprintData.BlueprintDataID;
-			m_tagFilter = uniqueTags.ToArray();
-
-			m_inventoryComponent.InitializeInventory(blueprintData.RequiredItems.Length);
-			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
-
-			SetBlueprintMesh(blueprintData.BlueprintMesh);
-			SetInteractionOffsetTransform(m_interactOffset, blueprintData.InteractionLocalOffset);
-
-			transform.position = position;
-			transform.rotation = rotation;
-
-			Debug.Log($"Starting blueprint: {blueprintData.DisplayName}");
-		}
-
-		public void HandleBlueprintCompleted()
-		{
-			m_saveableEntity.InitializeSavableEntity();
-
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
-			BlueprintCompleted?.Invoke(this);
-		}
-
-		public void HandleBlueprintCanceled()
-		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceld in settlement:{SettlementID}.");
-			BlueprintCanceled?.Invoke(this);
-
-			foreach (InventorySlot slot in m_inventoryComponent.Slots)
-			{
-				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
-			}
-
-			Destroy(gameObject);
-		}
-
 		private void InitializeBehaviourTree()
 		{
 			if (s_cachedBlueprintBT != null)
@@ -232,15 +156,14 @@ namespace Interaction.InteractableStructures.Blueprints
 			s_cachedBlueprintBT = tree;
 		}
 
-		private void SetBlueprintMesh(Mesh blueprintMesh)
+		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
 		{
-			m_meshFilter.mesh = blueprintMesh;
-			m_meshRenderer.material = m_blueprintMaterial;
-
-			// Adjust the blueprint's box collider to match the mesh
-			Bounds meshBounds = blueprintMesh.bounds;
-			m_boxCollider.size = meshBounds.size;
-			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
+			m_settlementID = settlementID;
+			m_settlementStructureID = settlementStructureID;
 		}
+
+		public abstract void HandleBlueprintCanceled();
+
+		public abstract void HandleBlueprintCompleted();
 	}
 }

@@ -37,7 +37,7 @@ namespace Settlements
 			structureID = m_nextAvailableID++;
 			SettlementStructures[structureID] = structure;
 
-			structure.AddStructureToSettlement(SettlementID, structureID);
+			structure.HandleAddedToSettlement(SettlementID, structureID);
 			Debug.Log($"Added structure of StructureID:{structureID} to Settlement of SettlementID:{SettlementID}");
 		}
 

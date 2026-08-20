@@ -67,7 +67,7 @@ namespace Interaction.InteractableStructures
 			return true;
 		}
 
-		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
+		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
 		{
 			throw new System.NotImplementedException();
 		}

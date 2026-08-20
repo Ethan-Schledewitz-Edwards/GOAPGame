@@ -67,7 +67,7 @@ namespace Interaction.InteractableStructures
 			m_saveableEntity.UnregisterFromCurrentChunk();
 		}
 
-		public void AddStructureToSettlement(int settlementID, int settlementStructureID)
+		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
