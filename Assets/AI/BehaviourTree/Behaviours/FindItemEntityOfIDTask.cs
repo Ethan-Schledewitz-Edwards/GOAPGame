@@ -23,6 +23,9 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		// Find the closest item
 		Transform targetItemTransform = FindItemOfID(context);
 
+		if (targetItemTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
 		// Get the items interaction offset
 		Vector3 destination = targetItemTransform.position;
 		if (targetItemTransform != null && targetItemTransform.TryGetComponent(out InteractableObjectBase interactableObjectBase))

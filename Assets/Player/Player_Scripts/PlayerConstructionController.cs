@@ -206,7 +206,7 @@ namespace Player.Core
 			if (m_blueprintData == null)
 				return;
 
-			int nearestSettlementID = SettlementManager.GetClosestSettlementID(transform.position, true, true);
+			int nearestSettlementID = SettlementManager.GetClosestSettlementID(transform.position, ESettlementFaction.FACTION_PLAYER);
 
 			// Create a new player settlement if none were found
 			if (nearestSettlementID == -1)

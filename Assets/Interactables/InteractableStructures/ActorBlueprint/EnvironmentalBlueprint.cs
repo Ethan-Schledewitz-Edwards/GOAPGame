@@ -1,7 +1,9 @@
 using Construction;
 using Entities.Savable;
+using GenericIndex;
 using InventorySystem;
 using InventorySystem.Items;
+using Settlements;
 using System;
 using UnityEngine;
 
@@ -9,15 +11,14 @@ namespace Interaction.InteractableStructures.Blueprints
 {
     public class EnvironmentalBlueprint : BlueprintIO, IBlueprintObject
 	{
+		[Header("Settings")]
 		[SerializeField] private ItemQuantity[] m_requiredItems;
 
-		[SerializeField] private GameObject m_prefab;
-		[SerializeField] private bool m_isPrefabInstantiated;
+		[SerializeField] private BlueprintData m_blueprintToSpawnOnCompletion;
+		[SerializeField] private GameObject m_objectEnabledOnCompletion;
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
-
-		// IBlueprintObject Properties
 
 		protected override void Awake()
 		{
@@ -30,6 +31,34 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override void HandleBlueprintCompleted()
 		{
+			if (m_objectEnabledOnCompletion != null)
+			{
+				m_objectEnabledOnCompletion.SetActive(true);
+			}
+			else if (m_blueprintToSpawnOnCompletion != null) // Try and spawn a prefab from blueprint data
+			{
+				Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
+
+				// Create the final structure
+				BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintToSpawnOnCompletion.BlueprintDataID);
+				GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
+				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
+
+				if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
+				{
+					SettlementManager.s_WorldSettlements[SettlementID].AddStructure(builtStructure);
+				}
+				else
+				{
+					Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
+				}
+
+				if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
+				{
+					saveableEntity.InitializeSavableEntity();
+				}
+			}
+
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}

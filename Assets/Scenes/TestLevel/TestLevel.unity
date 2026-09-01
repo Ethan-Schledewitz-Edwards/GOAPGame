@@ -34159,7 +34159,7 @@ GameObject:
   - component: {fileID: 1399096436}
   - component: {fileID: 1399096435}
   - component: {fileID: 1399096434}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BridgeBlueprint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34264,6 +34264,9 @@ MonoBehaviour:
   m_maxCapacity: 4
   m_actorsAssigned: 0
   m_tagFilter: []
+  m_requiredItems:
+  - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
+    amount: 1
   m_prefab: {fileID: 432301702}
   m_isPrefabInstantiated: 0
 --- !u!65 &1399096440
@@ -45006,7 +45009,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1779457726}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: InteractOffset
   m_TagString: Untagged
   m_Icon: {fileID: 0}

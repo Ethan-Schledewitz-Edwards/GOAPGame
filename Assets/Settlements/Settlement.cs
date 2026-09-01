@@ -11,16 +11,15 @@ namespace Settlements
 		public event Action<Vector3> OnSettlementBoundsUpdated;
 
 		public int SettlementID { get; private set; }
-		public bool IsSettlementFriendly { get; private set; }
-		public bool IsSettlementBuildable { get; private set; }
+		public ESettlementFaction SettlementFaction { get; private set; }
+
 		public Dictionary<int, IStructure> SettlementStructures { get; private set; } = new Dictionary<int, IStructure>();
 		private int m_nextAvailableID = 1;
 
-		public Settlement(int settlementID, bool isSettlementFriendly, bool isSettlementBuildable)
+		public Settlement(int settlementID, ESettlementFaction settlementFaction)
 		{
 			SettlementID = settlementID;
-			IsSettlementFriendly = isSettlementFriendly;
-			IsSettlementBuildable = isSettlementBuildable;
+			SettlementFaction = settlementFaction;
 			Debug.Log($"New settlement of ID:{SettlementID} was created");
 		}
 

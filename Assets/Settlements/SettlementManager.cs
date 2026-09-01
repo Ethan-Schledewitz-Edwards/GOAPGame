@@ -20,20 +20,32 @@ namespace Settlements
 				Destroy(this);
 		}
 
-		public void CreateNewSettlement(Vector3 position, bool isFriendly, bool isBuildable, out int id)
+		public void CreateNewSettlement(Vector3 position, ESettlementFaction settlementFaction, out int id)
 		{
 			id = s_WorldSettlements.Count + 1;
-			Settlement settlement = new Settlement(id, isFriendly, isBuildable);
+			Settlement settlement = new Settlement(id, settlementFaction);
 			s_WorldSettlements[id] = settlement;
+		}
+
+		public void CreateWorldSettelemnt(Vector3 position, out int id)
+		{
+			CreateNewSettlement(position, ESettlementFaction.FACTION_WORLD, out id);
+			PlayerSettlementCreated?.Invoke(id);
 		}
 
 		public void CreatePlayerSettlement(Vector3 position, out int id)
 		{
-			CreateNewSettlement(position, true, true, out id);
+			CreateNewSettlement(position, ESettlementFaction.FACTION_PLAYER, out id);
 			PlayerSettlementCreated?.Invoke(id);
 		}
 
-		public static Settlement GetClosestSettlement(Vector3 position, bool isBuildable, bool isFriendly)
+		public void CreateEnemySettlement(Vector3 position, out int id)
+		{
+			CreateNewSettlement(position, ESettlementFaction.FACTION_ENEMY, out id);
+			PlayerSettlementCreated?.Invoke(id);
+		}
+
+		public static Settlement GetClosestSettlement(Vector3 position, ESettlementFaction factionOfSettlement)
 		{
 			if (SettlementManager.s_WorldSettlements == null || SettlementManager.s_WorldSettlements.Count == 0)
 				return null;
@@ -45,8 +57,7 @@ namespace Settlements
 			{
 				Settlement settlement = i.Value;
 
-				if (settlement.IsSettlementFriendly != isFriendly ||
-					settlement.IsSettlementBuildable != isBuildable)
+				if (settlement.SettlementFaction != factionOfSettlement)
 					continue;
 
 				Vector3 settlementPos = settlement.GetSettlementCenter();
@@ -62,11 +73,10 @@ namespace Settlements
 			return closestSettlement;
 		}
 
-		public static int GetClosestSettlementID(Vector3 position, bool isBuildable, bool isFriendly)
+		public static int GetClosestSettlementID(Vector3 position, ESettlementFaction factionOfSettlement)
 		{
-			Settlement closest = GetClosestSettlement(position, isBuildable, isFriendly);
+			Settlement closest = GetClosestSettlement(position, factionOfSettlement);
 			return closest != null ? closest.SettlementID : -1;
 		}
 	}
-
 }

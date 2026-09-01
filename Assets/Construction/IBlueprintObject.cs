@@ -14,12 +14,9 @@ namespace Construction
 		public int SettlementStructureID { get; } // What blueprint this is within the settlement
 		public GameObject Object { get; }
 
-		public void HandleBlueprintPlaced
-			(
-				BlueprintData structureBlueprintData,
+		public void HandleBlueprintPlaced(BlueprintData structureBlueprintData,
 				Vector3 position,
-				Quaternion rotation
-			);
+				Quaternion rotation);
 
 		public void HandleBlueprintCompleted();
 
