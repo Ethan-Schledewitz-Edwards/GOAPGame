@@ -1,3 +1,4 @@
+using Factions.Core;
 using UnityEngine;
 
 [RequireComponent(typeof(Actor))]
@@ -35,6 +36,7 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 
 		AIContext.SetData<Transform>(AIContextKeys.c_ExecutorTransform, transform);
 		AIContext.SetData<int>(AIContextKeys.c_InteractionLayer, 1 << LayerMask.NameToLayer("Interaction"));
+		AIContext.SetData<EFaction>(AIContextKeys.c_ExecutorFaction, m_actor.ActorFaction);
 		SetInteractionDistance(m_actor.InteractionDistance);
 	}
 }

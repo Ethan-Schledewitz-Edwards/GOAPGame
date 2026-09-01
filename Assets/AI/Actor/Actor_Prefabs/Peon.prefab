@@ -467,7 +467,7 @@ GameObject:
   - component: {fileID: 8496172798646482293}
   - component: {fileID: 5922516635318417160}
   m_Layer: 6
-  m_Name: Actor
+  m_Name: Peon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -504,11 +504,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 852fecdcf5542e845b8511513c69e706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Actor
+  <ActorFaction>k__BackingField: 1
   m_interactionLayers:
     serializedVersion: 2
     m_Bits: 128
   <GOAPAgentComp>k__BackingField: {fileID: 3683834564411842312}
-  m_interactionDistance: 0
 --- !u!114 &3333077740091554456
 MonoBehaviour:
   m_ObjectHideFlags: 0

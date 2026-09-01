@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Factions.Core
 {
-    public enum ESettlementFaction
+    public enum EFaction
     {
         FACTION_WORLD,
 		FACTION_PLAYER,

@@ -107,7 +107,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
 				if (requestedItemID > -1)
 				{
-					executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
+					executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
 					executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
 
 					interactor.OnInteractWithObject(this, interactionTakesPriority);

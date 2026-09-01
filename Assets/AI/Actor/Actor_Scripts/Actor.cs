@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using Factions.Core;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor
@@ -25,6 +26,7 @@ public class Actor : Entity, IInteractor
 	#endregion
 
 	[Header("Parameters")]
+	[field: SerializeField] public EFaction ActorFaction { get; private set; }
 	[SerializeField] private LayerMask m_interactionLayers;
 
 	// Components

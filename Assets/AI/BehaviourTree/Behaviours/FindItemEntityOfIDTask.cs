@@ -116,36 +116,38 @@ public class FindItemEntityOfIDTask : BTNodeBase
 	/// <returns>The transform of the nearest matching storage structure, or null if none is found.</returns>
 	private Transform FindStorageStructure(int itemID, Transform executorTransform, AIContext context)
 	{
-		//Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, true, true);
-		//if (closestSettlement != null)
-		//{
-		//	IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, m_storageTag);
-		//	if (closestStructure != null)
-		//	{
-		//		GameObject structureObject = closestStructure.Object;
-		//		if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
-		//		{
-		//			if (interactable.TryGetComponent(out IItemFiltered itemFiltered))
-		//			{
-		//				ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-		//				if (itemIndex?.GetIndexedAsset(itemID) is ITaggable<ItemTag> itemTaggable)
-		//				{
-		//					// Check if the structures tags include the held items tags
-		//					bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
-		//					if (passesFilter)
-		//					{
-		//						// Check if the storage unit contains the desired item ID
-		//						if(structureObject.TryGetComponent(out InventoryComponent inventory))
-		//						{
-		//							if(inventory.Inventory.GetTotalOfItem(itemID) > 0)
-		//								return structureObject.transform;
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
+		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
+
+		Settlement closestFactionSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
+		if (closestFactionSettlement != null)
+		{
+			IStructure closestStructure = closestFactionSettlement.FindNearestStructureOfType(executorTransform.position, m_storageTag);
+			if (closestStructure != null)
+			{
+				GameObject structureObject = closestStructure.Object;
+				if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
+				{
+					if (interactable.TryGetComponent(out IItemFiltered itemFiltered))
+					{
+						ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
+						if (itemIndex?.GetIndexedAsset(itemID) is ITaggable<ItemTag> itemTaggable)
+						{
+							// Check if the structures tags include the held items tags
+							bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
+							if (passesFilter)
+							{
+								// Check if the storage unit contains the desired item ID
+								if (structureObject.TryGetComponent(out InventoryComponent inventory))
+								{
+									if (inventory.Inventory.GetTotalOfItem(itemID) > 0)
+										return structureObject.transform;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		return null;
 	}

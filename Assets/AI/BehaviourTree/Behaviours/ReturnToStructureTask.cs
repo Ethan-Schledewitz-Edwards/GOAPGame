@@ -6,7 +6,7 @@ public class ReturnToStructureTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		int settlementID = context.GetData<int>(AIContextKeys.c_HomeSettlementID);
+		int settlementID = context.GetData<int>(AIContextKeys.c_StructureSettlementID);
 		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
 
 		if(SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out Settlement settlement))

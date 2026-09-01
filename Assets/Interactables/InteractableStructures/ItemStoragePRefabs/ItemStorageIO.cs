@@ -94,7 +94,7 @@ namespace Interaction.InteractableStructures
 
 				interactor.OnInteractWithObject(this, interactionTakesPriority);
 
-				executor.AIContext.SetData<int>(AIContextKeys.c_HomeSettlementID, m_settlementID);
+				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
 
 				return true;
