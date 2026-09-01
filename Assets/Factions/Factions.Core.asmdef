@@ -1,10 +1,7 @@
 {
-    "name": "Settlements",
-    "rootNamespace": "Settlements",
-    "references": [
-        "GUID:4226e2a0af523234d863bc360ce6fd4d",
-        "GUID:48bfc5974a9f2e641a5f01674976d94c"
-    ],
+    "name": "Factions.Core",
+    "rootNamespace": "Factions.Core",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

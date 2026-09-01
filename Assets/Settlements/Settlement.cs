@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ObjectTags;
+using Factions.Core;
 
 namespace Settlements
 {

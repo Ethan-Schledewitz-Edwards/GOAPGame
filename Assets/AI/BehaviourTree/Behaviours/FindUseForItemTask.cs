@@ -8,6 +8,7 @@ using Settlements;
 using System.Linq;
 using UnityEditor.Graphs;
 using UnityEngine;
+using Factions.Core;
 
 public class FindUseForItemTask : BTNodeBase
 {
@@ -22,19 +23,19 @@ public class FindUseForItemTask : BTNodeBase
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		//Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 
-		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, true, true);
-		if (closestSettlement != null)
-		{
-			if(TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
-				return EBTNodeState.STATE_SUCSESS;
+		//Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, 2);
+		//if (closestSettlement != null)
+		//{
+		//	if(TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
+		//		return EBTNodeState.STATE_SUCSESS;
 
-			if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
-				return EBTNodeState.STATE_SUCSESS;
+		//	if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
+		//		return EBTNodeState.STATE_SUCSESS;
 
-			return EBTNodeState.STATE_RUNNING;
-		}
+		//	return EBTNodeState.STATE_RUNNING;
+		//}
 
 		return EBTNodeState.STATE_FAILURE;
 	}

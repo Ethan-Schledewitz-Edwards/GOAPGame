@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Settlements
+namespace Factions.Core
 {
     public enum ESettlementFaction
     {
