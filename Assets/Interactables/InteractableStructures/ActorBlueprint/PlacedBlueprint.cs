@@ -19,22 +19,31 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] private MeshFilter m_meshFilter;
 		[SerializeField] private MeshRenderer m_meshRenderer;
 
-		public override event Action<IBlueprintObject> BlueprintCompleted;
-		public override event Action<IBlueprintObject> BlueprintCanceled;
-
 		[Header("Components")]
 		private BoxCollider m_boxCollider;
 
 		public int m_blueprintDataID;
+
+		public event Action<IBlueprintObject> BlueprintCompleted;
+		public event Action<IBlueprintObject> BlueprintCanceled;
 
 		protected override void Awake()
 		{
 			base.Awake();
 
 			m_boxCollider = GetComponent<BoxCollider>();
+
+			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 		}
 
-		public void HandleBlueprintStarted(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+
+			m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
+		}
+
+		public void HandleBlueprintPlaced(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
 		{
 			// Extract item tags from required items
 			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
@@ -90,6 +99,18 @@ namespace Interaction.InteractableStructures.Blueprints
 			}
 
 			BlueprintCompleted?.Invoke(this);
+		}
+
+		public void HandleBlueprintCanceled()
+		{
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceled in settlement:{SettlementID}.");
+
+			foreach (InventorySlot slot in m_inventoryComponent.Slots)
+			{
+				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
+			}
+
+			BlueprintCanceled?.Invoke(this);
 		}
 
 		private void SetBlueprintMesh(Mesh blueprintMesh)

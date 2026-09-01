@@ -1,3 +1,4 @@
+using InventorySystem.Items;
 using System;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Construction
 		public int SettlementStructureID { get; } // What blueprint this is within the settlement
 		public GameObject Object { get; }
 
-		public void HandleBlueprintStarted
+		public void HandleBlueprintPlaced
 			(
 				BlueprintData structureBlueprintData,
 				Vector3 position,
@@ -21,6 +22,7 @@ namespace Construction
 			);
 
 		public void HandleBlueprintCompleted();
-		public void CancleBlueprint();
+
+		public void HandleBlueprintCanceled();
 	}
 }

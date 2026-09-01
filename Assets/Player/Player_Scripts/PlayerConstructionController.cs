@@ -46,7 +46,7 @@ namespace Player.Core
 		private void Start()
 		{
 			if (ConstructionManager.Instance != null)
-				ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprint;
+				ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprintVisuals;
 
 			UpdateVisuals();
 		}
@@ -54,7 +54,7 @@ namespace Player.Core
 		private void OnDestroy()
 		{
 			if (ConstructionManager.Instance != null)
-				ConstructionManager.Instance.NewDevelopmentAttempted -= SetBlueprint;
+				ConstructionManager.Instance.NewDevelopmentAttempted -= SetBlueprintVisuals;
 		}
 
 		protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
@@ -76,7 +76,8 @@ namespace Player.Core
 		{
 			if (m_blueprintData != null)
 			{
-				ClearBlueprintData();
+				ClearBlueprintVisuals();
+
 				m_isCancleHeld = false;
 				return;
 			}
@@ -179,7 +180,7 @@ namespace Player.Core
 			}
 		}
 
-		private void SetBlueprint(BlueprintData structureData)
+		private void SetBlueprintVisuals(BlueprintData structureData)
 		{
 			if (m_followerController != null)
 				m_followerController.enabled = false;
@@ -189,7 +190,7 @@ namespace Player.Core
 			UpdateVisuals(false);
 		}
 
-		private void ClearBlueprintData()
+		private void ClearBlueprintVisuals()
 		{
 			m_blueprintData = null;
 			m_isPlacementValid = false;
@@ -219,7 +220,7 @@ namespace Player.Core
 				rotation
 			);
 
-			ClearBlueprintData();
+			ClearBlueprintVisuals();
 		}
 
 		private void UpdateVisuals(bool isValid = false)

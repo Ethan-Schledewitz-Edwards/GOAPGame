@@ -60,7 +60,7 @@ namespace Construction
 			Vector3 offsetPosition = worldPosition + Vector3.up * distanceToBottom;
 
 			// Init the blueprint
-			blueprintObject.HandleBlueprintStarted
+			blueprintObject.HandleBlueprintPlaced
 				(
 					blueprintData,
 					offsetPosition,

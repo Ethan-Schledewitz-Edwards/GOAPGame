@@ -52,7 +52,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)
 		{
-			Vector3 originalPosition = transform.position;
+			Vector3 transformedOffset = transform.localPosition;
 			float elapsedTime = 0f;
 
 			// Generate a random starting point in the Perlin noise map so shakes feel unique
@@ -70,16 +70,16 @@ namespace Interaction.InteractableStructures.Blueprints
 				float noiseY = Mathf.PerlinNoise(0f, randomSeedY + elapsedTime * frequency) * 2f - 1f;
 
 				transform.localPosition = new Vector3(
-					originalPosition.x + (noiseX * currentMagnitude),
-					originalPosition.y,
-					originalPosition.z
+					transformedOffset.x + (noiseX * currentMagnitude),
+					transformedOffset.y,
+					transformedOffset.z
 				);
 
 				yield return null;
 			}
 
 			// Always force reset back to the exact initial position
-			transform.localPosition = originalPosition;
+			transform.localPosition = transformedOffset;
 			m_cancelationCoroutine = null;
 
 			CanceledBlueprint?.Invoke();
