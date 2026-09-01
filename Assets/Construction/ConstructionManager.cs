@@ -30,6 +30,13 @@ namespace Construction
 			NewDevelopmentAttempted?.Invoke(blueprintData);
 		}
 
+		/// <summary>
+		/// Creates and places a structure blueprint at the specified world position and rotation within a settlement.
+		/// </summary>
+		/// <param name="settlementID">The identifier of the settlement to which the structure will be added.</param>
+		/// <param name="structureBlueprintID">The identifier of the structure blueprint asset to instantiate.</param>
+		/// <param name="worldPosition">The world position where the blueprint will be placed.</param>
+		/// <param name="rotation">The rotation to apply to the blueprint upon creation.</param>
 		public void CreateBlueprint(int settlementID, int structureBlueprintID, Vector3 worldPosition, Quaternion rotation)
 		{
 			if (m_blueprintPrefab == null)
@@ -69,36 +76,7 @@ namespace Construction
 			if (blueprintObject == null)
 				return;
 
-			int settlementID = blueprintObject.SettlementID;
-			Vector3 blueprintIOPosition = blueprintObject.Object.transform.position;
-			Quaternion blueprintIORotation = blueprintObject.Object.transform.rotation;
-
 			CleanupBlueprint(blueprintObject);
-
-			// Create the final structure
-			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(blueprintObject.BlueprintDataID);
-			GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
-			GameObject spawnedStructureObj = Instantiate(prefab, blueprintIOPosition, blueprintIORotation);
-
-			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
-			{
-				SettlementManager.s_WorldSettlements[settlementID].AddStructure(builtStructure);
-			}
-			else
-			{
-				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
-			}
-
-			//// Stop the structure entity from allowing movement
-			//if (spawnedStructureObj.TryGetComponent(out Entity entity))
-			//{
-			//	entity.EnableDynamicPositionUpdates(false);
-			//}
-
-			if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
-			{
-				saveableEntity.InitializeSavableEntity();
-			}
 		}
 
 		public void OnBlueprintCanceled(IBlueprintObject blueprintIO)

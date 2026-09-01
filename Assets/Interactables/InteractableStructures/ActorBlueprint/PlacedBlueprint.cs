@@ -1,7 +1,9 @@
 using Construction;
 using Entities.Savable;
+using GenericIndex;
 using InventorySystem;
 using ObjectTags;
+using Settlements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
+	[RequireComponent(typeof(BoxCollider))]
 	public class PlacedBlueprint : BlueprintIO, IBlueprintObject
 	{
 		[Header("Settings & Visuals")]
@@ -22,29 +24,14 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		[Header("Components")]
 		private BoxCollider m_boxCollider;
-		private BlueprintCancelation m_cancelBlueprint;
 
-		// IBlueprintObject Properties
-		public int BlueprintDataID => m_blueprintDataID;
+		public int m_blueprintDataID;
 
 		protected override void Awake()
 		{
 			base.Awake();
 
 			m_boxCollider = GetComponent<BoxCollider>();
-
-			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
-			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
-		}
-
-		protected override void OnDestroy()
-		{
-			if (m_cancelBlueprint != null)
-			{
-				m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
-			}
-
-			base.OnDestroy();
 		}
 
 		public void HandleBlueprintStarted(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
@@ -74,27 +61,34 @@ namespace Interaction.InteractableStructures.Blueprints
 			transform.position = position;
 			transform.rotation = rotation;
 
+			m_saveableEntity.InitializeSavableEntity();
+
 			Debug.Log($"Starting blueprint: {blueprintData.DisplayName}");
-		}
-
-		public override void HandleBlueprintCanceled()
-		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceld in settlement:{SettlementID}.");
-			BlueprintCanceled?.Invoke(this);
-
-			foreach (InventorySlot slot in m_inventoryComponent.Slots)
-			{
-				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
-			}
-
-			Destroy(gameObject);
 		}
 
 		public override void HandleBlueprintCompleted()
 		{
-			m_saveableEntity.InitializeSavableEntity();
-
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
+
+			// Create the final structure
+			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintDataID);
+			GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
+			GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
+
+			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
+			{
+				SettlementManager.s_WorldSettlements[SettlementID].AddStructure(builtStructure);
+			}
+			else
+			{
+				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
+			}
+
+			if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
+			{
+				saveableEntity.InitializeSavableEntity();
+			}
+
 			BlueprintCompleted?.Invoke(this);
 		}
 

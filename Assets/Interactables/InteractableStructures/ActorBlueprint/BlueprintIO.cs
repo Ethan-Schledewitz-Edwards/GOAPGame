@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(InventoryComponent))]
+	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation))]
 	public abstract class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -26,6 +26,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		// Components
 		private Entity m_entity;
+		private BlueprintCancelation m_cancelBlueprint;
 		protected ItemRequestComponent m_itemRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
 		protected SaveableEntity m_saveableEntity;
@@ -37,7 +38,6 @@ namespace Interaction.InteractableStructures.Blueprints
 		// System
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
-		protected int m_blueprintDataID;
 
 		// IStructure Properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
@@ -61,6 +61,9 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_entity = GetComponent<Entity>();
 			m_entity.EnableDynamicPositionUpdates(false);
 
+			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
+			m_cancelBlueprint.CanceledBlueprint += CancleBlueprint;
+
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_saveableEntity = GetComponent<SaveableEntity>();
@@ -79,6 +82,11 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (m_itemRequestComponent != null)
 			{
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
+			}
+
+			if (m_cancelBlueprint != null)
+			{
+				m_cancelBlueprint.CanceledBlueprint -= CancleBlueprint;
 			}
 
 			m_saveableEntity.UnregisterFromCurrentChunk();
@@ -162,8 +170,19 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_settlementStructureID = settlementStructureID;
 		}
 
-		public abstract void HandleBlueprintCanceled();
+		public void CancleBlueprint()
+		{
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceld in settlement:{SettlementID}.");
 
+			foreach (InventorySlot slot in m_inventoryComponent.Slots)
+			{
+				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
+			}
+		}
+
+		/// <summary>
+		/// Concrete implementations define what happens when all of the blueprints required items are gathered.
+		/// </summary>
 		public abstract void HandleBlueprintCompleted();
 	}
 }

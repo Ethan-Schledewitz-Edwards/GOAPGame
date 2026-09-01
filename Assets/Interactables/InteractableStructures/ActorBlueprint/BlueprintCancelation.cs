@@ -16,6 +16,15 @@ namespace Interaction.InteractableStructures.Blueprints
 		private Coroutine m_cancelationCoroutine;
 		private float m_shakeStrength;
 
+		private void OnDestroy()
+		{
+			if(m_cancelationCoroutine != null)
+			{
+				StopCoroutine(m_cancelationCoroutine);
+				m_cancelationCoroutine = null;
+			}
+		}
+
 		public void BeginCancelation()
 		{
 			IsBeingCanceled = true;
@@ -34,6 +43,11 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			if (m_cancelationCoroutine != null)
 				StopCoroutine(m_cancelationCoroutine);
+		}
+
+		public void ForceCancelation()
+		{
+			CanceledBlueprint?.Invoke();
 		}
 
 		private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)

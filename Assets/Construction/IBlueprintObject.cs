@@ -11,7 +11,6 @@ namespace Construction
 
 		public int SettlementID { get; } // The settlement this blueprint belongs to
 		public int SettlementStructureID { get; } // What blueprint this is within the settlement
-		public int BlueprintDataID { get; } // The asset this blueprint represents
 		public GameObject Object { get; }
 
 		public void HandleBlueprintStarted
@@ -22,6 +21,6 @@ namespace Construction
 			);
 
 		public void HandleBlueprintCompleted();
-		public void HandleBlueprintCanceled();
+		public void CancleBlueprint();
 	}
 }

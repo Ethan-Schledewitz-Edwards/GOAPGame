@@ -59,7 +59,7 @@ namespace Player.Core
 
 		protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
 		{
-			if (m_blueprintData == null)
+			if (m_blueprintData == null || !context.ReadValueAsButton())
 				return;
 
 			if (m_isPlacementValid)

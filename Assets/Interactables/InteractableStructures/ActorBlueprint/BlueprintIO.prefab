@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4303596133692988039}
-  - component: {fileID: 8906892727660683798}
+  - component: {fileID: 2123883129720176227}
   - component: {fileID: 7143371825989947593}
   - component: {fileID: 3914431523302564834}
   - component: {fileID: 3017703126850601998}
@@ -40,7 +40,7 @@ Transform:
   - {fileID: 6481859380391125491}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8906892727660683798
+--- !u!114 &2123883129720176227
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,18 +49,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 262572155233583462}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ded9b2b585b8f384398ee175ea3dc2d9, type: 3}
+  m_Script: {fileID: 11500000, guid: 634ce75a9a241cf408ab4e803dec9534, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Interaction.Blueprint::BlueprintIO
+  m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.PlacedBlueprint
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 4299432510428715485}
   m_formationRadius: 2
-  m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
-  m_meshFilter: {fileID: 1086525549323106786}
-  m_meshRenderer: {fileID: 9099140680238688444}
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
+  m_tagFilter: []
+  m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
+  m_meshFilter: {fileID: 1086525549323106786}
+  m_meshRenderer: {fileID: 9099140680238688444}
+  m_blueprintDataID: 0
 --- !u!114 &7143371825989947593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
-  m_guid: 
+  m_guid: 1c529a71-adb8-465e-9378-361df44766bf
 --- !u!114 &6019955960294120562
 MonoBehaviour:
   m_ObjectHideFlags: 0
