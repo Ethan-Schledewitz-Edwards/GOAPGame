@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 53915460426571373}
   - component: {fileID: 6691724862660079407}
   - component: {fileID: 1269171079345121271}
+  - component: {fileID: 6566322804506918930}
+  - component: {fileID: 1319984024103182560}
   m_Layer: 7
   m_Name: WoodStorage_Interactable
   m_TagString: Untagged
@@ -49,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acbdf9c8b780d5a449203eb047a57b37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryComponent
-  m_inventorySize: 100
+  m_inventorySize: 1
 --- !u!114 &53915460426571373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,11 +67,11 @@ MonoBehaviour:
   m_actorsNeeded: 1
   m_interactOffset: {fileID: 2689462336767340648}
   m_formationRadius: 2
+  m_tagFilter:
+  - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
   m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
-  m_tagFilter:
-  - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
 --- !u!208 &6691724862660079407
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -107,6 +109,32 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7, y: 2, z: 2.7}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &6566322804506918930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162404230185621835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
+--- !u!114 &1319984024103182560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162404230185621835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
+  m_savablePrefabData: {fileID: 0}
+  m_guid: 3f5e23aa-6010-4625-977b-28fdf42e7293
 --- !u!1 &8151212730485061828
 GameObject:
   m_ObjectHideFlags: 0

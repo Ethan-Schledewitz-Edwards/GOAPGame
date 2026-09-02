@@ -119,7 +119,7 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 			Hunger = this.Hunger,
 			Rest = this.Rest,
 			Happiness = this.Hapiness,
-			CurrentHealth = this.m_health
+			CurrentHealth = this.Health
 		};
 	}
 
@@ -127,10 +127,10 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	{
 		if (data is ActorHealthData healthData)
 		{
-			this.Hunger = healthData.Hunger;
-			this.Rest = healthData.Rest;
-			this.Hapiness = healthData.Happiness;
-			this.m_health = healthData.CurrentHealth;
+			SetHunger(healthData.Hunger);
+			SetTiredness(healthData.Rest);
+			SetHapiness(healthData.Happiness);
+			SetHealth(healthData.CurrentHealth);
 		}
 	}
 

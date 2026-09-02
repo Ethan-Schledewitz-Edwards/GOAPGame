@@ -77,6 +77,8 @@ namespace Interaction.InteractableStructures.Blueprints
 				}
 			}
 
+			gameObject.SetActive(false);
+
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}

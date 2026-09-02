@@ -24,8 +24,8 @@ public class HealthComponent : MonoBehaviour
 
 	// System vars
 	protected bool m_isSpawning;
-	protected int m_health;
-	protected bool m_isDead;
+	public int Health { get; private set; }
+	public bool IsDead { get; private set; }
 	protected LayerMask m_collisionLayerMask;
 
 	#region Initialization Methods
@@ -50,28 +50,28 @@ public class HealthComponent : MonoBehaviour
 
 	#region Health State Methods
 
-	private void SetHealth(int newHealthValue)
+	public void SetHealth(int newHealthValue)
 	{
 		// Play damage sounds if the component lost health
-		bool wasHealthLost = newHealthValue < m_health;
+		bool wasHealthLost = newHealthValue < Health;
 		if (wasHealthLost && m_damageSounds.Length > 0)
 		{
 			m_audioSource.PlayOneShot(m_damageSounds[Random.Range(0, m_damageSounds.Length)], 0.6f);
 		}
 
-		m_health = Mathf.Clamp(newHealthValue, 0, MaxHealth);
+		Health = Mathf.Clamp(newHealthValue, 0, MaxHealth);
 
-		if (m_health <= 0 && !m_isDead)
+		if (Health <= 0 && !IsDead)
 			SetDead(true);
 	}
 
-	public void AddHealth(int value) => SetHealth(m_health + value);
+	public void AddHealth(int value) => SetHealth(Health + value);
 
-	public void RemoveHealth(int value) => SetHealth(m_health - value);
+	public void RemoveHealth(int value) => SetHealth(Health - value);
 
 	public void TryTakeDamage(int amount, Vector3 hitPos, Vector3 hitDir)
 	{
-		if (m_isDead)
+		if (IsDead)
 			return;
 
 		RemoveHealth(amount);
@@ -94,9 +94,9 @@ public class HealthComponent : MonoBehaviour
 
 	private void SetDead(bool isDeceased)
 	{
-		m_isDead = isDeceased;
+		IsDead = isDeceased;
 
-		if (m_isDead)
+		if (IsDead)
 		{
 			OnDie();
 		}
@@ -106,13 +106,9 @@ public class HealthComponent : MonoBehaviour
 		}
 	}
 
-    public float GetHealth() => m_health;
-
-    public bool GetIsDead() => m_isDead;
-
 	protected virtual void OnTakeDamage()
 	{
-		if (m_isDead) 
+		if (IsDead) 
 			return;
 	}
 

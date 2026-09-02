@@ -24,15 +24,15 @@ public class AttackTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		if (targetTransform.TryGetComponent(out HealthComponent health))
+		if (targetTransform.TryGetComponent(out HealthComponent health) &&
+			!health.IsDead)
 		{
-
 			float currentTimer = context.GetData<float>(m_cooldownKey) + t;
 
 			if (currentTimer >= c_timeBetweenAttacks)
 			{
 				context.SetData<float>(m_cooldownKey, 0f);
-				Debug.Log("ATTACK");
+				Debug.Log($"Actor:{executorTransform} attacked target:{targetTransform}.", targetTransform);
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
 				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
 			}

@@ -49,13 +49,12 @@ public class Actor : Entity, IInteractor
 	public float InteractionDistance => m_interactionDistance;
 	private float m_interactionDistance;
 
-	public int SettlementID { get; private set; } = 0;
-	public int HouseID { get; private set; } = 0;
+	public int SettlementID { get; private set; } = 0; // The id of the settlement the actor inhabits
+	public int WorkstationID { get; private set; } = 0; // The id of the structure the actor resides in within a settlement
 
 	private EActorState m_logicExecutorState = default;
-	private float m_timeFindingJob;
 	private int m_jobAssignmentID = 0;
-	private float m_timeIdleAtWork;
+	private float m_timeFindingJob;
 
 	private bool m_isInteracting;
 	private Transform m_targetTransform; // Used while in the follow state
@@ -169,18 +168,6 @@ public class Actor : Entity, IInteractor
 	{
 		m_interactionDistance = interactionDistance;
 		InteractionDistanceChanged?.Invoke(interactionDistance);
-	}
-
-	public void SetSettlementID(int id)
-	{
-		SettlementID = id;
-		OnSettlementUpdated?.Invoke(SettlementID);
-	}
-
-	public void SetHouseID(int id)
-	{
-		HouseID = id;
-		OnHouseUpdated?.Invoke(id);
 	}
 
 	#endregion

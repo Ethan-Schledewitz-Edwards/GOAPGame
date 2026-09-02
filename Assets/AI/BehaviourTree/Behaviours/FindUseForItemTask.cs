@@ -23,19 +23,20 @@ public class FindUseForItemTask : BTNodeBase
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		//Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
 
-		//Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, 2);
-		//if (closestSettlement != null)
-		//{
-		//	if(TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
-		//		return EBTNodeState.STATE_SUCSESS;
+		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
+		if (closestSettlement != null)
+		{
+			if (TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
+				return EBTNodeState.STATE_SUCSESS;
 
-		//	if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
-		//		return EBTNodeState.STATE_SUCSESS;
+			if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
+				return EBTNodeState.STATE_SUCSESS;
 
-		//	return EBTNodeState.STATE_RUNNING;
-		//}
+			return EBTNodeState.STATE_RUNNING;
+		}
 
 		return EBTNodeState.STATE_FAILURE;
 	}
