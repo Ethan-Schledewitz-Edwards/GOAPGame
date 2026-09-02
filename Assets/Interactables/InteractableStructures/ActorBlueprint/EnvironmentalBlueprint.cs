@@ -13,6 +13,12 @@ namespace Interaction.InteractableStructures.Blueprints
 	{
 		[Header("Settings")]
 		[SerializeField] private ItemQuantity[] m_requiredItems;
+		[SerializeField] private int m_blueprintSettlementID;
+
+		private void OnValidate()
+		{
+			m_settlementID = m_blueprintSettlementID;
+		}
 
 		[SerializeField] private BlueprintData m_blueprintToSpawnOnCompletion;
 		[SerializeField] private GameObject m_objectEnabledOnCompletion;
@@ -27,6 +33,18 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
 
 			m_saveableEntity.InitializeSavableEntity();
+		}
+
+		private void Start()
+		{
+			if(SettlementManager.s_WorldSettlements.TryGetValue(m_settlementID, out Settlement settlement))
+			{
+				settlement.AddStructure(this);
+			}
+			else
+			{
+				Debug.LogWarning("Tried to add an EnvironmentalBlueprint to a settlement that does not exist", this);
+			}
 		}
 
 		public override void HandleBlueprintCompleted()
@@ -50,7 +68,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				}
 				else
 				{
-					Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
+					Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!", this);
 				}
 
 				if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
