@@ -42,6 +42,7 @@ namespace BehaviourTrees
 			{
 				context.SetData<bool>(m_firstEvaluatedKey, true);
 				OnFirstEvaluate(context);
+				context.SetData<string>(AIContextKeys.c_CurrentBTNode, GetType().Name);
 			}
 
 			return OnNodeEvaluated(context, t);
