@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Interaction.InteractableStructures
 {
 	[RequireComponent(typeof(InventoryComponent), typeof(Entity), typeof(SaveableEntity))]
-	public class ItemStorageIO : InteractableObjectBase, IStructure<ItemStorageIO>, IItemFiltered
+	public class ItemStorageIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_takeItemBT;
 
@@ -74,11 +74,6 @@ namespace Interaction.InteractableStructures
 		}
 
 		public override void UpdateSpeed(int extra) { }
-
-		public void AssignActor(out ItemStorageIO structure)
-		{
-			structure = null; // Storage should not have anyone assigned to it
-		}
 
 		public override BehaviourTree GetBehaviourTree() => s_takeItemBT;
 

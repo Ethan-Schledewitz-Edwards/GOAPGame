@@ -14,7 +14,7 @@ using UnityEngine;
 namespace Interaction.InteractableStructures.Blueprints
 {
 	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation), typeof(SaveableEntity))]
-	public abstract class BlueprintIO : InteractableObjectBase, IStructure<BlueprintIO>, IItemFiltered
+	public abstract class BlueprintIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 
@@ -84,19 +84,12 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
 
-		public void AssignActor(out BlueprintIO structure)
-		{
-			if (ActorsAssigned < MaxCapacity)
-			{
-				m_actorsAssigned++;
-			}
-
-			structure = this;
-		}
-
 		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
-			if(m_itemRequestComponent == null)
+			if (!base.TryInteract(interactor, interactionTakesPriority))
+				return false;
+
+			if (m_itemRequestComponent == null)
 				return false;
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
@@ -117,8 +110,6 @@ namespace Interaction.InteractableStructures.Blueprints
 				}
 			}
 
-			// Construction workers
-			AssignActor(out _);
 			return true;
 		}
 

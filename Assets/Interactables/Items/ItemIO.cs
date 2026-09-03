@@ -82,6 +82,9 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 	{
+		if (!base.TryInteract(interactor, interactionTakesPriority))
+			return false;
+
 		if (m_itemData == null)
 			return false;
 
@@ -95,7 +98,9 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 			if (isItemAdded)
 			{
-				AssignActor();
+				if (!TryAssignActor())
+					return false;
+
 				interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 				ItemPickedUp?.Invoke(transform);

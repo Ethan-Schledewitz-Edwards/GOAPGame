@@ -19,7 +19,8 @@ public class TryPickupItemTask : BTNodeBase
 			// Try to interact with the target
 			Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 			if (targetTransform != null &&
-				targetTransform.TryGetComponent(out InteractableObjectBase iob))
+				targetTransform.TryGetComponent(out InteractableObjectBase iob) &&
+				!iob.IsAtActorCapacity())
 			{
 				// Pickup the item
 				if (iob.TryGetComponent(out IItemObject itemObject) &&

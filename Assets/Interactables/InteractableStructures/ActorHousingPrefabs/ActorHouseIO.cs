@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures
 {
-	public class ActorHouseIO : InteractableObjectBase, IStructure<ActorHouseIO>
+	public class ActorHouseIO : InteractableObjectBase, IStructure
 	{
 		private static BehaviourTree m_cachedHousingBT;
 
@@ -19,12 +19,6 @@ namespace Interaction.InteractableStructures
 		private int m_structureID;
 
 		public GameObject Object => gameObject;
-
-		public int MaxCapacity => m_maxCapacity;
-		[SerializeField] private int m_maxCapacity = 4;
-
-		public int ActorsAssigned => m_actorsAssigned;
-		[SerializeField] private int m_actorsAssigned = 0;
 
 		public override bool UseFormationRadius { get => false; }
 
@@ -47,21 +41,13 @@ namespace Interaction.InteractableStructures
 
 		}
 
-		public void AssignActor(out ActorHouseIO structure)
-		{
-			if (ActorsAssigned < MaxCapacity)
-			{
-				m_actorsAssigned++;
-			}
-
-			structure = this;
-		}
-
 		public override BehaviourTree GetBehaviourTree() => m_cachedHousingBT;
 
 		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 		{
-			AssignActor();
+			if (!base.TryInteract(interactor, interactionTakesPriority))
+				return false;
+
 			interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 			return true;

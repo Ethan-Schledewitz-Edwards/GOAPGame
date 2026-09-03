@@ -35,7 +35,12 @@ public class HarvestableIO : InteractableObjectBase
 
 	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
 	{
-		AssignActor();
+		if (!base.TryInteract(interactor, interactionTakesPriority))
+			return false;
+
+		if(!TryAssignActor())
+			return false;
+
 		interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 		return true;
