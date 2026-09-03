@@ -168,6 +168,9 @@ public class AIPathing : MonoBehaviour
 
 	public void HandleRotation(Vector3 targetLocation)
 	{
+		if (m_simFidelity == EPathingSimFidelity.Realtime)
+			return;
+
 		if (targetLocation != Vector3.zero)
 		{
 			Vector3 dirToTarget = targetLocation - transform.position;

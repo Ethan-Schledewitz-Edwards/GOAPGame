@@ -138,6 +138,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	{
 		m_isItemStored = false;
 		ConstrainPhysics(false);
+		ReleaseActor();
 
 		transform.parent = null;
 		if (dropPosition != Vector3.zero)

@@ -12,7 +12,6 @@ using Factions.Core;
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor
 {
-	#region Constants
 	private const float c_waitingForJobLimit = 5.0f;
 	private const float c_followDist = 1.2f;
 	private const float c_workingDist = 0.15f;
@@ -21,9 +20,8 @@ public class Actor : Entity, IInteractor
 	private const float c_offDutySpeed = 2f;
 	private const float c_searchForJobRange = 3.0f;
 	private const float c_searchForJobStoppingDistance = 0.25f;
-
+	private const float c_jobSearchCooldownDuration = 2.0f;
 	private const float c_baseInteractionDistance = 0.8f;
-	#endregion
 
 	[Header("Parameters")]
 	[field: SerializeField] public EFaction ActorFaction { get; private set; }
@@ -45,21 +43,23 @@ public class Actor : Entity, IInteractor
 	public event Action<int> OnHouseUpdated;
 	public event Action<float> InteractionDistanceChanged;
 
-	// System
+	// System Properties
 	public float InteractionDistance => m_interactionDistance;
+	public int SettlementID { get; private set; } = 0; // Settlement ID actor inhabits
+	public int WorkstationID { get; private set; } = 0; // Structure ID actor resides in
+
+	// Internal State Fields
 	private float m_interactionDistance;
-
-	public int SettlementID { get; private set; } = 0; // The id of the settlement the actor inhabits
-	public int WorkstationID { get; private set; } = 0; // The id of the structure the actor resides in within a settlement
-
 	private EActorState m_logicExecutorState = default;
 	private int m_jobAssignmentID = 0;
 	private float m_timeFindingJob;
+	private float m_jobSearchCooldown = 0f;
 
 	private bool m_isInteracting;
-	private Transform m_targetTransform; // Used while in the follow state
+	private Transform m_targetTransform;
+	private InteractableObjectBase m_targetInteractable;
 
-	#region Initialization
+	#region Lifecycle
 
 	private void Awake()
 	{
@@ -98,29 +98,40 @@ public class Actor : Entity, IInteractor
 
 	public void TickBehaviour(float t)
 	{
-		if(Pathing == null ||
-			m_behaviourTreeExecutor == null || 
-			GOAPAgentComp == null) 
+		if (Pathing == null || m_behaviourTreeExecutor == null || GOAPAgentComp == null)
 			return;
 
 		ActorHealth?.TickStats(t);
 		Pathing?.TickAIPathing();
 
-		if(IsJobNeeded())
+		// Tick search cooldown timer
+		if (m_jobSearchCooldown > 0f)
 		{
-			if (m_targetTransform == null)
-				m_targetTransform = TryGetNearbyJob(t);
+			m_jobSearchCooldown -= t;
+		}
 
-			if (m_targetTransform == null)
-				return;
-
-			// Interact once in range of target
-			float distanceRemaining = Pathing.PathDistRemaining();
-			float interactionDistance = 1f;
-			if (distanceRemaining <= interactionDistance &&
-				m_targetTransform.TryGetComponent(out InteractableObjectBase interactableObject))
+		if (IsJobNeeded())
+		{
+			// Don't attempt to find a new job while on cooldown after a failed interaction
+			if (m_jobSearchCooldown <= 0f)
 			{
-				interactableObject.TryInteract(this, true);
+				TryGetNearbyJob(t);
+			}
+
+			if (m_targetInteractable != null)
+			{
+				float distanceRemaining = Pathing.PathDistRemaining();
+				float interactionDistance = 1f;
+
+				if (distanceRemaining <= interactionDistance)
+				{
+					// Attempt interaction
+					bool interactionSuccessful = m_targetInteractable.TryInteract(this, true);
+
+					// If interaction failed or didn't result in a state change, clean up
+					if (!interactionSuccessful || m_logicExecutorState != EActorState.STATE_Working)
+						HandleFailedInteraction();
+				}
 			}
 		}
 		else
@@ -144,7 +155,7 @@ public class Actor : Entity, IInteractor
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
 						// Reset the actor if it's BehaviourTree never changed and it either finished or timed out
-						if(m_jobAssignmentID == jobAssignmentBeforeTick)
+						if (m_jobAssignmentID == jobAssignmentBeforeTick)
 						{
 							if (treeState == EBTNodeState.STATE_SUCSESS ||
 								treeState == EBTNodeState.STATE_FAILURE)
@@ -162,15 +173,11 @@ public class Actor : Entity, IInteractor
 			Pathing.HandleRotation(m_targetTransform.position);
 	}
 
-	#region Actor Knowledge
-
 	public void SetInteractionDistance(float interactionDistance)
 	{
 		m_interactionDistance = interactionDistance;
 		InteractionDistanceChanged?.Invoke(interactionDistance);
 	}
-
-	#endregion
 
 	/// <summary>
 	/// Setting the logic executor state determines the method used by an Actor to calculate its behaviour.
@@ -204,8 +211,6 @@ public class Actor : Entity, IInteractor
 		Debug.Log($"{transform.name}'s state: {m_logicExecutorState}");
 	}
 
-	#region Player Commands
-
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear the actors state
@@ -224,13 +229,14 @@ public class Actor : Entity, IInteractor
 		m_targetTransform = null;
 		Pathing.SetDestination(destination);
 	}
-	#endregion
 
-	#region BT Tasks
+	public void OnInteractWithObject(InteractableObjectBase actorInteractableObjectBase, bool takesPriority)
+	{
+		TrySetActorJob(actorInteractableObjectBase, takesPriority);
+	}
 
 	/// <summary>
-	/// Attempts to assign a new objective to the actor if the objective is valid and takes precedence over the current
-	/// job.
+	/// Attempts to assign a new objective to the actor if valid and higher precedence.
 	/// </summary>
 	/// <remarks>
 	/// The Actor is returned to the default state before any new data is assigned.
@@ -257,19 +263,54 @@ public class Actor : Entity, IInteractor
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
 
-	public void OnInteractWithObject(InteractableObjectBase actorInteractableObjectBase, bool takesPriority)
+	private void SetTargetInteractable(InteractableObjectBase newTarget)
 	{
-		TrySetActorJob(actorInteractableObjectBase, takesPriority);
+		if (m_targetInteractable == newTarget)
+			return;
+
+		// Unsubscribe from the old target
+		if (m_targetInteractable != null)
+		{
+			m_targetInteractable.OnInteractableInvalid -= ClearJob;
+		}
+
+		m_targetInteractable = newTarget;
+
+		// Subscribe to the new target
+		if (m_targetInteractable != null)
+		{
+			m_targetInteractable.OnInteractableInvalid += ClearJob;
+		}
 	}
 
 	private void ClearJob()
 	{
+		SetTargetInteractable(null);
 		m_targetTransform = null;
+
 		m_timeFindingJob = 0;
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
 		Pathing.SetStoppingDistance(c_workingDist);
 		Pathing.ClearDestination();
+	}
+
+	private void HandleFailedInteraction()
+	{
+		// Clear current target reference without fully resetting search timers if you want them to keep searching elsewhere
+		SetTargetInteractable(null);
+		Pathing.ClearDestination();
+
+		// Put job searching on a brief cooldown to prevent immediate re-targeting
+		m_jobSearchCooldown = c_jobSearchCooldownDuration;
+	}
+
+	private void DropHeldItem()
+	{
+		// Drop the actors held slot
+		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
+		if (amountToDrop > 0)
+			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 	}
 
 	/// <summary>
@@ -297,12 +338,14 @@ public class Actor : Entity, IInteractor
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)
 		{
-			if (i == null)
-				continue;
+			if (i == null) continue;
 
-			// Try to get interactable component
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
+				// Skip targets that are at capacity
+				if (aio.IsAtActorCapacity())
+					continue;
+
 				float dist = Vector3.Distance(pos, aio.transform.position);
 				if (dist < closestDist)
 				{
@@ -336,38 +379,27 @@ public class Actor : Entity, IInteractor
 
 		if (canSearchForJob)
 		{
-			// Track time spent searching for a job
 			m_timeFindingJob += t;
 
-			// Become off-duty
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
-				// Clear the actors state
 				ClearJob();
 				DropHeldItem();
 				m_behaviourTreeExecutor.ResetContext();
 				return null;
 			}
 
-			// Search for the nearest task
-			InteractableObjectBase aio = SearchForTask();
-			if (aio != null)
+			InteractableObjectBase foundTask = SearchForTask();
+			SetTargetInteractable(foundTask);
+
+			if (m_targetInteractable != null)
 			{
 				m_timeFindingJob = 0;
-				Pathing.SetDestination(aio.GetInteractionPositon());
-				return aio.transform;
+				Pathing.SetDestination(m_targetInteractable.GetInteractionPositon());
+				return m_targetInteractable.transform;
 			}
 		}
 
 		return null;
-	}
-	#endregion
-
-	private void DropHeldItem()
-	{
-		// Drop the actors held slot
-		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
-		if (amountToDrop > 0)
-			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 	}
 }

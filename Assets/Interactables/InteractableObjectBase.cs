@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using System;
 using UnityEngine;
 
 public abstract class InteractableObjectBase : MonoBehaviour
@@ -11,6 +12,9 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	public abstract bool UseFormationRadius { get; }
 	[SerializeField] protected Transform m_interactOffset;
 	[SerializeField] private float m_formationRadius = 2;
+
+	// Event
+	public event Action OnInteractableInvalid;
 
 	// System
 	private int m_actorsPresent = 0; // How many actors are currently using the interactable
