@@ -72,8 +72,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
   m_actorsNeeded: 1
+  m_maxActors: 12
   m_interactOffset: {fileID: 0}
-  m_formationRadius: 0.5
+  m_formationRadius: 0.8
 --- !u!114 &1914341159798471732
 MonoBehaviour:
   m_ObjectHideFlags: 0

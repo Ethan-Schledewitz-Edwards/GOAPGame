@@ -271,7 +271,7 @@ public class Actor : Entity, IInteractor
 		// Unsubscribe from the old target
 		if (m_targetInteractable != null)
 		{
-			m_targetInteractable.OnInteractableInvalid -= ClearJob;
+			m_targetInteractable.InteractableBecameInvalid -= ClearJob;
 		}
 
 		m_targetInteractable = newTarget;
@@ -279,7 +279,7 @@ public class Actor : Entity, IInteractor
 		// Subscribe to the new target
 		if (m_targetInteractable != null)
 		{
-			m_targetInteractable.OnInteractableInvalid += ClearJob;
+			m_targetInteractable.InteractableBecameInvalid += ClearJob;
 		}
 	}
 

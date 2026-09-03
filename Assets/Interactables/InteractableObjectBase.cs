@@ -14,7 +14,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	[SerializeField] private float m_formationRadius = 2;
 
 	// Event
-	public event Action OnInteractableInvalid;
+	public event Action InteractableBecameInvalid;
 
 	// System
 	private int m_actorsPresent = 0; // How many actors are currently using the interactable
@@ -41,6 +41,9 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 			if (m_actorsPresent > m_actorsNeeded)
 				UpdateSpeed(m_actorsPresent - m_actorsNeeded);
+
+			if (m_actorsPresent >= m_maxActors)
+				InteractableBecameInvalid?.Invoke();
 
 			return true;
 		}
