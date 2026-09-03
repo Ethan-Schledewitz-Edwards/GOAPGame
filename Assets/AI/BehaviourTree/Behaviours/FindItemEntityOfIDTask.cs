@@ -9,6 +9,12 @@ using UnityEngine;
 using WorldManagement.Core;
 using Factions.Core;
 
+/// <summary>
+/// A behavior tree node that searches for the nearest item with a specific ID.
+/// </summary>
+/// <remarks>
+/// This node should always be decorated with a timeout node.
+/// </remarks>
 public class FindItemEntityOfIDTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;

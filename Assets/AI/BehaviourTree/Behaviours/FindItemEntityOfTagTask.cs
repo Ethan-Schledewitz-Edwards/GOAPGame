@@ -8,6 +8,12 @@ using System.Linq;
 using WorldManagement.Core;
 using UnityEngine;
 
+/// <summary>
+/// A behavior tree node that searches for the nearest item with a specific tag.
+/// </summary>
+/// <remarks>
+/// This node should always be decorated with a timeout node.
+/// </remarks>
 public class FindItemEntityOfTagTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;

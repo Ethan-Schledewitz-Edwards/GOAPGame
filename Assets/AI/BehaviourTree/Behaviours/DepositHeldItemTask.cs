@@ -3,6 +3,12 @@ using InventorySystem;
 using InventorySystem.Items;
 using UnityEngine;
 
+/// <summary>
+/// A behavior tree node that attempts to move an item from the executors inventory to their targets inventory.
+/// </summary>
+/// <remarks>
+/// This node should always be decorated with a timeout node.
+/// </remarks>
 public class DepositHeldItemTask : BTNodeBase
 {
 	private const string c_doneDepositingKey = "DoneDepositing";

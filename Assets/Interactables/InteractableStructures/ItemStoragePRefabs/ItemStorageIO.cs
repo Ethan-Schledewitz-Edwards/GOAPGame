@@ -112,6 +112,9 @@ namespace Interaction.InteractableStructures
 			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
+			BTNodeBase depositTask = new DepositHeldItemTask();
+			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
+
 			BTNodeBase jobTask = new AquireJobFromTargetTask();
 			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
@@ -125,7 +128,7 @@ namespace Interaction.InteractableStructures
 					new ReturnToStructureTask(),
 					new MoveToTargetDataTask(),
 					new CheckForDestinationRangeTask(),
-					new DepositHeldItemTask(),
+					depositTask,
 					timeoutJobSearch // Try to loop item search
 				});
 			tree.SetTree(root);

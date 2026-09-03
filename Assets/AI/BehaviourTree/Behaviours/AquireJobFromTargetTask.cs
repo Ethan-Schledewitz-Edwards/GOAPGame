@@ -1,6 +1,12 @@
 using BehaviourTrees;
 using UnityEngine;
 
+/// <summary>
+/// A behavior tree node that attempts to interact with a target.
+/// </summary>
+/// <remarks>
+/// This node should always be decorated with a timeout node.
+/// </remarks>
 public class AquireJobFromTargetTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
