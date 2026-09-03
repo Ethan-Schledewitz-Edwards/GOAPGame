@@ -13,12 +13,16 @@ public class HarvestableIO : InteractableObjectBase
 	{
 		if(m_HarvestBT == null)
 		{
+			SearchForInteractionTask searchForInteractionTask = new SearchForInteractionTask();
+			BTTimeoutNode timeoutSearch = new BTTimeoutNode(searchForInteractionTask, 2f);
+
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				new MoveToTargetDataTask(),
 				new CheckForDestinationRangeTask(),
-				new AttackTask()
+				new AttackTask(),
+				timeoutSearch
 			});
 			tree.SetTree(root);
 			m_HarvestBT = tree;

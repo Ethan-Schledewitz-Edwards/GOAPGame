@@ -22,7 +22,6 @@ public class HarvestableHealthComponent : HealthComponent
 	private MeshRenderer m_meshRenderer;
 
 	private int m_consecutiveHits;
-	private List<IItemObject> m_droppedItems = new List<IItemObject>();
 
 	private int m_actorLayerMask;
 
@@ -68,9 +67,6 @@ public class HarvestableHealthComponent : HealthComponent
 			SpawnLoot(meshCenter, true);
 		}
 
-		// Assign dropped loot to workers
-		AssignDroppedItems();
-
 		gameObject.SetActive(false);
 	}
 
@@ -85,64 +81,6 @@ public class HarvestableHealthComponent : HealthComponent
 			{
 				GameObject spawnedItem = Instantiate(lootToDrop, null);
 				spawnedItem.transform.position = pos;
-
-				if(spawnedItem.TryGetComponent(out IItemObject item))
-				{
-					// Track the dropped item
-					m_droppedItems.Add(item);
-					item.ItemPickedUp += OnItemPickedUp;
-				}
-			}
-		}
-	}
-
-	private void OnItemPickedUp(Transform itemTransform)
-	{
-		if(itemTransform != null && itemTransform.TryGetComponent(out IItemObject itemObject))
-		{
-			if (m_droppedItems.Contains(itemObject))
-				m_droppedItems.Remove(itemObject);
-		}
-	}
-
-	private void AssignDroppedItems()
-	{
-		// Find nearby actors
-		Collider[] hitColliders = Physics.OverlapSphere(transform.position,
-				c_assignRange,
-				m_actorLayerMask,
-				QueryTriggerInteraction.Collide);
-
-		HashSet<IInteractor> interactors = new HashSet<IInteractor>();
-		for (int i = 0; i < m_droppedItems.Count; i++)
-		{
-			IItemObject item = m_droppedItems[i];
-
-			// Skip null items
-			if (item != null && item.Transform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
-			{
-				foreach (Collider hitCollider in hitColliders)
-				{
-					if (hitCollider.TryGetComponent(out IInteractor actor))
-					{
-						if (interactors.Contains(actor))
-							continue;
-
-						if (actor.Transform.TryGetComponent(out BehaviourTreeExecutorBase btExecutor))
-						{
-							AIContext aiContext = btExecutor.AIContext;
-							Transform agentsTarget = aiContext.GetData<Transform>("TargetTransform");
-
-							// Ensure the actor was responsible for destroying this harvestable
-							if (transform == agentsTarget)
-							{
-								interactableObjectBase.TryInteract(actor, true);
-								interactors.Add(actor);
-								break;
-							}
-						}
-					}
-				}
 			}
 		}
 	}

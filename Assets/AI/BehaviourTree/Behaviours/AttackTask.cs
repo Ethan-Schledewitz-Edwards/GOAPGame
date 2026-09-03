@@ -20,9 +20,7 @@ public class AttackTask : BTNodeBase
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
 		if (targetTransform == null)
-		{
 			return EBTNodeState.STATE_FAILURE;
-		}
 
 		if (targetTransform.TryGetComponent(out HealthComponent health) &&
 			!health.IsDead)
@@ -42,6 +40,10 @@ public class AttackTask : BTNodeBase
 			}
 
 			return EBTNodeState.STATE_RUNNING;
+		}
+		else if (health.IsDead)
+		{
+			return EBTNodeState.STATE_SUCSESS;
 		}
 
 		return EBTNodeState.STATE_FAILURE;

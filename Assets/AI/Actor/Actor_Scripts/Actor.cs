@@ -264,6 +264,7 @@ public class Actor : Entity, IInteractor
 
 	private void ClearJob()
 	{
+		m_targetTransform = null;
 		m_timeFindingJob = 0;
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
@@ -290,7 +291,6 @@ public class Actor : Entity, IInteractor
 	{
 		InteractableObjectBase closestTask = null;
 
-		// Try to select actors
 		Vector3 pos = transform.position;
 		Collider[] hitColliders = Physics.OverlapSphere(pos, c_searchForJobRange, m_interactionLayers, QueryTriggerInteraction.Collide);
 
@@ -303,7 +303,7 @@ public class Actor : Entity, IInteractor
 			// Try to get interactable component
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
-				float dist = Vector3.Distance(transform.position, aio.transform.position);
+				float dist = Vector3.Distance(pos, aio.transform.position);
 				if (dist < closestDist)
 				{
 					closestTask = aio;
