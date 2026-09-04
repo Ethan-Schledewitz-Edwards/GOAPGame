@@ -13,7 +13,7 @@ namespace WorldManagement.AuthoredTiles
 
 		private TerrainChunkManager m_chunkManager;
 
-		private Dictionary<Vector2Int, GameObject> m_chunkDictionary = new Dictionary<Vector2Int, GameObject>();
+		private Dictionary<Vector2Int, GameObject> m_loadedAuthoredChunks = new Dictionary<Vector2Int, GameObject>();
 
 		private void Awake()
 		{
@@ -24,7 +24,7 @@ namespace WorldManagement.AuthoredTiles
 				if (chunkObj != null)
 				{
 					Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(chunkObj.transform.position);
-					m_chunkDictionary[chunkXZ] = chunkObj;
+					m_loadedAuthoredChunks[chunkXZ] = chunkObj;
 					chunkObj.SetActive(false);
 				}
 			}
@@ -35,7 +35,7 @@ namespace WorldManagement.AuthoredTiles
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
 				return;
 
-			m_chunkManager.ProcessChunkSpawned += LoadAuthoredChunk;
+			m_chunkManager.ProcessChunkSpawned += HandleSpawnedChunk;
 		}
 
 		private void OnDisable()
@@ -43,10 +43,10 @@ namespace WorldManagement.AuthoredTiles
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
 				return;
 
-			m_chunkManager.ProcessChunkSpawned -= LoadAuthoredChunk;
+			m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
 		}
 
-		private IEnumerator LoadAuthoredChunk
+		private IEnumerator HandleSpawnedChunk
 			(
 				Vector2Int chunkXZ,
 				HashSet<Vector2Int> requestedChunks,
@@ -55,6 +55,10 @@ namespace WorldManagement.AuthoredTiles
 				Action<TerrainChunk, GameObject> chunkFound
 			)
 		{
+			// Ignore aut of bounds requests
+			if(!m_loadedAuthoredChunks.TryGetValue(chunkXZ, out GameObject chunkObject))
+				yield break;
+
 			requestedChunks.Add(chunkXZ);
 
 			TerrainChunk chunkData = WorldManager.OnRequestChunkData?.Invoke(chunkXZ);
@@ -66,15 +70,6 @@ namespace WorldManagement.AuthoredTiles
 
 			chunkData.SetGenerationState(TerrainChunk.EChunkGenerationState.Decorated);
 			chunkData.OnChunkUpdate += chunkUpdated;
-
-			// Lookup the chunk
-			if (!m_chunkDictionary.TryGetValue(chunkXZ, out GameObject chunkObject))
-			{
-				Debug.LogWarning($"Authored chunk object '{chunkXZ}' not found in the Dictionary.");
-
-				chunkObject = new GameObject($"Chunk({chunkXZ.x}, {chunkXZ.y})");
-				chunkObject.transform.position = new Vector3(chunkXZ.x * WorldManager.s_ChunkSize.x, 0f, chunkXZ.y * WorldManager.s_ChunkSize.z);
-			}
 
 			// Add to active chunks
 			chunkFound?.Invoke(chunkData, chunkObject);

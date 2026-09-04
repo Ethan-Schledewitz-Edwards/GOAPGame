@@ -11,11 +11,13 @@ namespace Entities.Savable
 		private const string c_IndexAssetPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabDataIndex.asset";
 		private const string c_PrefabDataSaveFolderPath = "Assets/SaveLoad/SaveData/SavableEntityPrefabData/";
 
+		private SerializedProperty m_isManuallyAuthoredProp;
 		private SerializedProperty m_savablePrefabDataProp;
 		private SerializedProperty m_guidProp;
 
 		private void OnEnable()
 		{
+			m_isManuallyAuthoredProp = serializedObject.FindProperty("<IsManuallyAuthored>k__BackingField");
 			m_savablePrefabDataProp = serializedObject.FindProperty("m_savablePrefabData");
 			m_guidProp = serializedObject.FindProperty("m_guid");
 		}
@@ -24,6 +26,7 @@ namespace Entities.Savable
 		{
 			serializedObject.Update();
 
+			EditorGUILayout.PropertyField(m_isManuallyAuthoredProp);
 			EditorGUILayout.PropertyField(m_savablePrefabDataProp);
 
 			if (m_savablePrefabDataProp.objectReferenceValue == null)
