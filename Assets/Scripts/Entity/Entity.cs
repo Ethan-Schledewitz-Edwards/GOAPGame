@@ -16,6 +16,7 @@ namespace Entities.Core
 		protected Vector3 m_position { get; private set; }
 		private Vector2Int m_currentChunkXZ;
 		private bool m_canUpdatePosition = true;
+
 		private void OnDestroy()
 		{
 			EntityPositionChanged = null;

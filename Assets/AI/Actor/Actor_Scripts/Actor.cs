@@ -1,7 +1,9 @@
 using BehaviourTrees;
 using Entities.Core;
+using Entities.Savable;
 using Factions.Core;
 using InventorySystem;
+using SaveLoad.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
-public class Actor : Entity, IInteractor
+public class Actor : Entity, IInteractor, ISaveableComponent
 {
 	private const float c_waitingForJobLimit = 5.0f;
 	private const float c_followDist = 1.2f;
@@ -402,4 +404,39 @@ private void OnDisable()
 
 		return null;
 	}
+
+	#region ISaveableComponent Implementation
+
+	public string GetComponentId() => "Actor";
+
+	public object GenerateComponentData()
+	{
+		return new ActorSaveData
+		{
+			LogicState = m_logicExecutorState,
+			IsFollowingPlayer = (m_logicExecutorState == EActorState.STATE_Follow),
+			SettlementID = this.SettlementID,
+			WorkstationID = this.WorkstationID
+		};
+	}
+
+	public void RestoreComponentData(object data)
+	{
+		if (data is ActorSaveData actorData)
+		{
+			if (actorData.IsFollowingPlayer)
+				FollowPlayer(GameManager.Instance.PlayerObject.transform);
+		}
+	}
+
+	[System.Serializable]
+	public class ActorSaveData
+	{
+		public EActorState LogicState;
+		public bool IsFollowingPlayer;
+		public int SettlementID;
+		public int WorkstationID;
+	}
+
+	#endregion
 }
