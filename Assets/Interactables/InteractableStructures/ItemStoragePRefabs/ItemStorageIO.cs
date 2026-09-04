@@ -1,6 +1,5 @@
 using BehaviourTrees;
 using Entities.Core;
-using Entities.Savable;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;
@@ -10,7 +9,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(Entity), typeof(SaveableEntity))]
+	[RequireComponent(typeof(InventoryComponent), typeof(Entity))]
 	public class ItemStorageIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_takeItemBT;
@@ -25,7 +24,6 @@ namespace Interaction.InteractableStructures
 		// Components
 		private Entity m_entity;
 		public InventoryComponent InventoryComponent { get; private set; }
-		private SaveableEntity m_saveableEntity;
 
 		// System
 		private int m_settlementID;
@@ -45,26 +43,9 @@ namespace Interaction.InteractableStructures
 		{
 			m_entity = GetComponent<Entity>();
 			m_entity.EnableDynamicPositionUpdates(false);
-
 			InventoryComponent = GetComponent<InventoryComponent>();
-			m_saveableEntity = GetComponent<SaveableEntity>();
 
 			InitializeBehaviourTree();
-		}
-
-		private void OnEnable()
-		{
-			m_saveableEntity.InitializeSavableEntity();
-		}
-
-		private void OnDisable()
-		{
-			m_saveableEntity.UnregisterFromCurrentChunk();
-		}
-
-		private void OnDestroy()
-		{
-			m_saveableEntity.UnregisterFromCurrentChunk();
 		}
 
 		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)

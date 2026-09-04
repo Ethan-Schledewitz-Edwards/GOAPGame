@@ -1,3 +1,5 @@
+using SaveLoad.Core;
+using SaveLoad.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +30,16 @@ namespace WorldManagement.Core
 		private void Start()
 		{
 			LoadBatchOfChunks();
+		}
+
+		private void OnEnable()
+		{
+			SaveEvents.GameLoaded += HandleGameLoaded;
+		}
+
+		private void OnDisable()
+		{
+			SaveEvents.GameLoaded -= HandleGameLoaded;
 		}
 
 		private void Update()
@@ -87,6 +99,20 @@ namespace WorldManagement.Core
 			}
 		}
 
+		private void HandleGameLoaded(SerializablePlayerData data)
+		{
+			if (data == null) 
+				return;
+
+			StopAllCoroutines();
+			m_isProcessing = false;
+
+			m_worldBuilder.ClearAllChunks(false);
+			m_chunksToUnload.Clear();
+			m_chunksToLoad.Clear();
+
+			m_lastPlayerChunk = new Vector2Int(int.MinValue, int.MinValue);
+		}
 		private IEnumerator LoadProcess(Vector2Int[] chunks)
 		{
 			m_isProcessing = true;

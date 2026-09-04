@@ -1,6 +1,5 @@
 using BehaviourTrees;
 using Entities.Core;
-using Entities.Savable;
 using GenericIndex;
 using InventorySystem;
 using InventorySystem.Items;
@@ -17,7 +16,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	// Components
 	private Entity m_entity;
 	private Rigidbody m_rb;
-	private SaveableEntity m_savableEntity;
 
 	[Header("Item Data")]
 	[SerializeField] private ItemData m_itemData;
@@ -42,33 +40,8 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	{
 		m_entity = GetComponent<Entity>();
 		m_rb = GetComponent<Rigidbody>();
-		m_savableEntity = GetComponent<SaveableEntity>();
 
 		InitializeBehaviourTree();
-	}
-
-	private void OnEnable()
-	{
-		if (!m_isItemStored)
-		{
-			m_savableEntity.InitializeSavableEntity();
-		}
-	}
-
-	private void OnDisable()
-	{
-		if (!m_isItemStored)
-		{
-			m_savableEntity.UnregisterFromCurrentChunk();
-		}
-	}
-
-	private void OnDestroy()
-	{
-		if (!m_isItemStored)
-		{
-			m_savableEntity.UnregisterFromCurrentChunk();
-		}
 	}
 
 	public override void StopInteract()

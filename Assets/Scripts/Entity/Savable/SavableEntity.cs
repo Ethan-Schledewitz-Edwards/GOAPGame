@@ -17,6 +17,9 @@ namespace Entities.Savable
 		[SerializeField] private string m_guid = "";
 		public string GetGUID() => m_guid;
 
+		[field: SerializeField, Tooltip("Should be true when an object is not spawned at run-time.")] 
+		public bool IsManuallyAuthored { get; private set; } = false;
+
 		// Events
 		public event Action DataRestored;
 		public event Action<Vector3, Quaternion> TransformRestored;
@@ -58,17 +61,17 @@ namespace Entities.Savable
 			}
 		}
 
+		private void OnEnable()
+		{
+			RegisterToClosestChunk();
+		}
+
 		private void OnDestroy()
 		{
 			if (m_entity != null)
 				m_entity.EntityPositionChanged -= OnEntityMoved;
 
 			UnregisterFromCurrentChunk();
-		}
-
-		public void InitializeSavableEntity()
-		{
-			RegisterToClosestChunk();
 		}
 
 		private void OnEntityMoved()
@@ -103,7 +106,7 @@ namespace Entities.Savable
 			}
 		}
 
-		public void UnregisterFromCurrentChunk()
+		private void UnregisterFromCurrentChunk()
 		{
 			// Unregister this entity from its previous chunk
 			TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);

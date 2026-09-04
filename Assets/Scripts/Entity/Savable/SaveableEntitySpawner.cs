@@ -12,17 +12,19 @@ namespace Entities.Savable
 
 		private void OnEnable()
 		{
-			WorldManager.ChunkSpawnedEntities += SpawnEntitiesForChunk;
+			WorldManager.ChunkSpawnedEntities += HandleChunkLoadedEntities;
+			SaveEvents.GameLoaded += CleanUpDynamicEntities;
 		}
 
 		private void OnDisable()
 		{
-			WorldManager.ChunkSpawnedEntities -= SpawnEntitiesForChunk;
+			WorldManager.ChunkSpawnedEntities -= HandleChunkLoadedEntities;
+			SaveEvents.GameLoaded -= CleanUpDynamicEntities;
 		}
 
-		private void SpawnEntitiesForChunk(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
+		private void HandleChunkLoadedEntities(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
 		{
-			bool isAuthoredWorld = FindFirstObjectByType<TerrainChunkManager>().BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
+			bool isAuthoredWorld = FindAnyObjectByType<TerrainChunkManager>().BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
 
 			foreach (SerializableEntityData entityData in savedEntities)
 			{
@@ -65,14 +67,13 @@ namespace Entities.Savable
 			if (spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
 			{
 				saveableEntity.RestoreFromSaveData(entityData);
-				saveableEntity.InitializeSavableEntity();
 				chunk.RegisterEntity(spawnedEntity);
 			}
 		}
 
 		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include);
 
 			foreach (SaveableEntity saveableEntity in allEntities)
 			{
@@ -82,7 +83,6 @@ namespace Entities.Savable
 						saveableEntity.transform.parent = activeChunkTuple.gameObject.transform;
 
 					saveableEntity.RestoreFromSaveData(entityData);
-					saveableEntity.InitializeSavableEntity();
 					chunk.RegisterEntity(saveableEntity.gameObject);
 
 					if (!saveableEntity.gameObject.activeSelf)
@@ -96,6 +96,27 @@ namespace Entities.Savable
 			Debug.LogWarning($"[SaveableEntitySpawner] Could not find a persistent SavableEntity with GUID {entityData.GUID} in the scene. " +
 				$"Spawning duplicate from Prefab ID {entityData.PrefabId}. Ensure Editor GUIDs are serialized if this entity is persistent!");
 			TrySpawnSavableEntity(chunk, entityData);
+		}
+
+		/// <summary>
+		/// Destroys all entities spawned at runtime.
+		/// </summary>
+		/// <summary>
+		/// Dynamic entities will respawn later if they actually belong in the save timeline.
+		/// </summary>
+		private void CleanUpDynamicEntities(SerializablePlayerData data)
+		{
+			if (data == null) 
+				return;
+
+			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include);
+			foreach (SaveableEntity entity in allEntities)
+			{
+				if (!entity.IsManuallyAuthored)
+				{
+					Destroy(entity.gameObject);
+				}
+			}
 		}
 	}
 }

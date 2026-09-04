@@ -68,7 +68,7 @@ namespace WorldManagement.Core
 			}
 		}
 
-		public void RemoveActiveChunk(Vector2Int chunkXZ)
+		public void RemoveActiveChunk(Vector2Int chunkXZ, bool shouldSave = true)
 		{
 			if (!s_ActiveChunks.TryGetValue(chunkXZ, out var chunk))
 				return;
@@ -78,16 +78,30 @@ namespace WorldManagement.Core
 
 			chunk.chunkData.OnChunkUpdate -= HandleChunkUpdated;
 
-			if (m_chunkBuilder.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Procedural &&
-				chunk.gameObject != null)
+			if (m_chunkBuilder.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Procedural && chunk.gameObject != null)
 			{
 				Destroy(chunk.gameObject);
 			}
+			else if (chunk.gameObject != null)
+			{
+				chunk.gameObject.SetActive(false);
+			}
 
-			if (chunk.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
+			if (shouldSave && chunk.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
+			{
 				OnReleaseChunkData?.Invoke(chunk.chunkData);
+			}
 
 			s_ActiveChunks.Remove(chunkXZ);
+		}
+
+		public void ClearAllChunks(bool shouldSave = true)
+		{
+			List<Vector2Int> keys = new List<Vector2Int>(s_ActiveChunks.Keys);
+			foreach (var key in keys)
+			{
+				RemoveActiveChunk(key, shouldSave);
+			}
 		}
 
 		public void HandleChunkUpdated(Vector2Int chunkXZ)

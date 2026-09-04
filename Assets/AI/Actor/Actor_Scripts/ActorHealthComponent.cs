@@ -1,4 +1,3 @@
-using Entities.Savable;
 using SaveLoad.Core;
 using System.Collections;
 using UnityEngine;
@@ -11,7 +10,6 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	private const float c_baseHealthDegredation = 2f;
 
 	private Actor m_actor;
-	private SaveableEntity m_saveableEntity;
 
 	private float m_healthInterval;
 
@@ -30,7 +28,6 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	{
 		base.Awake();
 		m_actor = GetComponent<Actor>();
-		m_saveableEntity = GetComponent<SaveableEntity>();
 	}
 
 	private void SetHunger(int newHungerValue)

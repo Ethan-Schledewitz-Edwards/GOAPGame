@@ -1,5 +1,4 @@
 using Construction;
-using Entities.Savable;
 using GenericIndex;
 using InventorySystem;
 using InventorySystem.Items;
@@ -31,8 +30,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			base.Awake();
 
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
-
-			m_saveableEntity.InitializeSavableEntity();
 		}
 
 		private void Start()
@@ -69,11 +66,6 @@ namespace Interaction.InteractableStructures.Blueprints
 				else
 				{
 					Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!", this);
-				}
-
-				if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
-				{
-					saveableEntity.InitializeSavableEntity();
 				}
 			}
 

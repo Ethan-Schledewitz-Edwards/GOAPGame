@@ -34195,6 +34195,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
   m_savablePrefabData: {fileID: 0}
   m_guid: 173329b3-0eea-4e32-aeeb-2bbb65f8afa8
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &1399096435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34245,6 +34246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
   m_actorsNeeded: 1
+  m_maxActors: 1
   m_interactOffset: {fileID: 1779457726}
   m_formationRadius: 2
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}

@@ -1,5 +1,4 @@
 using Construction;
-using Entities.Savable;
 using GenericIndex;
 using InventorySystem;
 using ObjectTags;
@@ -70,8 +69,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			transform.position = position;
 			transform.rotation = rotation;
 
-			m_saveableEntity.InitializeSavableEntity();
-
 			Debug.Log($"Starting blueprint: {blueprintData.DisplayName}");
 		}
 
@@ -91,11 +88,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			else
 			{
 				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
-			}
-
-			if (spawnedStructureObj.TryGetComponent(out SaveableEntity saveableEntity))
-			{
-				saveableEntity.InitializeSavableEntity();
 			}
 
 			BlueprintCompleted?.Invoke(this);

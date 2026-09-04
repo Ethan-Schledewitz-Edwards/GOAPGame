@@ -1,7 +1,6 @@
 using BehaviourTrees;
 using Construction;
 using Entities.Core;
-using Entities.Savable;
 using GenericIndex;
 using InventorySystem;
 using ObjectTags;
@@ -13,7 +12,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation), typeof(SaveableEntity))]
+	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation))]
 	public abstract class BlueprintIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -28,7 +27,6 @@ namespace Interaction.InteractableStructures.Blueprints
 		protected BlueprintCancelation m_cancelBlueprint;
 		protected ItemRequestComponent m_itemRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
-		protected SaveableEntity m_saveableEntity;
 
 		// System
 		protected int m_settlementID;
@@ -59,7 +57,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
-			m_saveableEntity = GetComponent<SaveableEntity>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
 			if (m_itemRequestComponent == null)
@@ -76,8 +73,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
 			}
-
-			m_saveableEntity.UnregisterFromCurrentChunk();
 		}
 
 		public override void UpdateSpeed(int extra) { }

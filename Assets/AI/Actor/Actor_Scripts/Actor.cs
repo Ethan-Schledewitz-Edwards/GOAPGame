@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using Entities.Core;
+using Factions.Core;
 using InventorySystem;
 using System;
 using System.Collections;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using Factions.Core;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor
@@ -65,9 +65,9 @@ public class Actor : Entity, IInteractor
 	{
 		ActorHealth = GetComponent<ActorHealthComponent>();
 		ActorInventory = GetComponent<ActorInventory>();
-		Pathing = GetComponent<AIPathing>();
 		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutorBase>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
+		Pathing = GetComponent<AIPathing>();
 	}
 
 	private void Start()
@@ -85,7 +85,7 @@ public class Actor : Entity, IInteractor
 		}
 	}
 
-	private void OnDisable()
+private void OnDisable()
 	{
 		if (GOAPAgentComp != null)
 		{
