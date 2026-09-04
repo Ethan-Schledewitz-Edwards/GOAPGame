@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation))]
+	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation), typeof(ItemRequestComponent))]
 	public abstract class BlueprintIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -59,11 +59,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
-			if (m_itemRequestComponent == null)
-			{
-				m_itemRequestComponent = gameObject.AddComponent<ItemRequestComponent>();
-			}
-
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
@@ -118,6 +113,15 @@ namespace Interaction.InteractableStructures.Blueprints
 			BTNodeBase findUseTask = new FindItemEntityOfIDTask(storageTag);
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
+			BTNodeBase checkDestination1 = new CheckForDestinationRangeTask();
+			BTTimeoutNode timeoutCheckDestination1 = new BTTimeoutNode(checkDestination1, 2f);
+
+			BTNodeBase checkDestination2 = new CheckForDestinationRangeTask();
+			BTTimeoutNode timeoutCheckDestination2 = new BTTimeoutNode(checkDestination2, 2f);
+
+			BTNodeBase pickupTask = new TryPickupItemTask();
+			BTTimeoutNode timeoutPickup = new BTTimeoutNode(pickupTask, 2f);
+
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
 
@@ -129,12 +133,12 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				timeoutFind,
 				new MoveToTargetDataTask(),
-				new CheckForDestinationRangeTask(),
-				new TryPickupItemTask(),
+				timeoutCheckDestination1,
+				timeoutPickup,
 				new ReturnToStructureTask(),
 				new MoveToTargetDataTask(),
-				new CheckForDestinationRangeTask(),
-				depositTask,
+				timeoutCheckDestination2,
+				timeoutDeposit,
 				timeoutJobSearch // Try to loop item search
 			});
 			tree.SetTree(root);

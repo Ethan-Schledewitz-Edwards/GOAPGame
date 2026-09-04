@@ -2,8 +2,11 @@ using Construction;
 using GenericIndex;
 using InventorySystem;
 using InventorySystem.Items;
+using ObjectTags;
 using Settlements;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
@@ -29,6 +32,22 @@ namespace Interaction.InteractableStructures.Blueprints
 		{
 			base.Awake();
 
+			// Extract item tags from required items
+			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
+			if (m_requiredItems != null)
+			{
+				foreach (var requiredItem in m_requiredItems)
+				{
+					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && taggableItem.RuntimeTagSet != null)
+					{
+						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
+					}
+				}
+			}
+
+			m_tagFilter = uniqueTags.ToArray();
+
+			m_inventoryComponent.InitializeInventory(m_requiredItems.Length);
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
 		}
 

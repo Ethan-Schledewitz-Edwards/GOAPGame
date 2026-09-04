@@ -6,12 +6,12 @@ using UnityEngine.AI;
 public class AIPathing : MonoBehaviour
 {
 	#region Constants
-	private const float c_nearRange = 16.0f;
+	private const float c_nearRange = 24.0f;
 	private const float c_nearRangeSqrt = c_nearRange * c_nearRange;
-	private const float c_distantRange = 32.0f;
+	private const float c_distantRange = 36.0f;
 	private const float c_distantRangeSqrt = c_distantRange * c_distantRange;
 
-	private const float c_rotSpeed = 24.0f;
+	private const float c_rotSpeed = 32.0f;
 	#endregion
 
 	// Components
@@ -166,7 +166,7 @@ public class AIPathing : MonoBehaviour
 		}
 	}
 
-	public void HandleRotation(Vector3 targetLocation)
+	public void FaceTarget(Vector3 targetLocation)
 	{
 		if (targetLocation != Vector3.zero)
 		{
@@ -235,7 +235,9 @@ public class AIPathing : MonoBehaviour
 		CurrentPath = null;
 		m_pathCorners = new Vector3[0];
 		m_cornersPassed = 0;
-		StopCoroutine(m_destinationCoroutine);
+
+		if (m_destinationCoroutine != null)
+			StopCoroutine(m_destinationCoroutine);
 	}
 
 	/// <summary>

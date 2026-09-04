@@ -171,8 +171,8 @@ private void OnDisable()
 			}
 		}
 
-		if (m_targetTransform != null)
-			Pathing.HandleRotation(m_targetTransform.position);
+		if (m_targetTransform != null && !Pathing.IsMoving)
+			Pathing.FaceTarget(m_targetTransform.position);
 	}
 
 	public void SetInteractionDistance(float interactionDistance)

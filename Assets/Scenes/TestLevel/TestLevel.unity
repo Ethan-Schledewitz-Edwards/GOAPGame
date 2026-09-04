@@ -3264,6 +3264,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: 20ca157e-0ea6-43e3-8cb7-d2eb78a816fa
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6944,6 +6948,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1121418079944000196, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
+      propertyPath: defaultOffset.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121418079944000196, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
+      propertyPath: isWorldSpaceOffset
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7143,6 +7155,7 @@ GameObject:
   - component: {fileID: 341450419}
   - component: {fileID: 341450418}
   - component: {fileID: 341450417}
+  - component: {fileID: 341450421}
   m_Layer: 7
   m_Name: BombBlueprint
   m_TagString: Untagged
@@ -7162,7 +7175,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.27, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 6}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1963983131}
   m_Father: {fileID: 1431175450}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &341450414
@@ -7180,7 +7194,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -7270,7 +7284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
   m_actorsNeeded: 1
   m_maxActors: 1
-  m_interactOffset: {fileID: 1779457726}
+  m_interactOffset: {fileID: 1963983131}
   m_formationRadius: 2
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
@@ -7307,6 +7321,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: InventorySystem::InventorySystem.InventoryComponent
   m_inventorySize: 1
+--- !u!114 &341450421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341450412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e523031d3b5eb624fab4bcc6c981af1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: InventorySystem::Interaction.InteractableStructures.ItemRequestComponent
 --- !u!1001 &346746401
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11164,6 +11190,10 @@ PrefabInstance:
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 13042e63-993d-42cb-b211-6693d7ce6905
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21481,6 +21511,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: 86367592-a740-41b6-b606-f35c66fae637
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -31631,6 +31665,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: 44523a1f-0a34-48bf-a008-e7091665ba96
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34063,6 +34101,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: 3b549a4d-2d29-457b-8777-34ab53e8685a
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34464,6 +34506,7 @@ GameObject:
   - component: {fileID: 1399096437}
   - component: {fileID: 1399096435}
   - component: {fileID: 1399096434}
+  - component: {fileID: 1399096443}
   m_Layer: 7
   m_Name: BridgeBlueprint
   m_TagString: Untagged
@@ -34501,7 +34544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
   m_savablePrefabData: {fileID: 0}
   m_guid: 173329b3-0eea-4e32-aeeb-2bbb65f8afa8
-  <IsManuallyAuthored>k__BackingField: 0
+  <IsManuallyAuthored>k__BackingField: 1
 --- !u!114 &1399096435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34581,7 +34624,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -34644,6 +34687,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399096432}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1399096443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399096432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e523031d3b5eb624fab4bcc6c981af1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: InventorySystem::Interaction.InteractableStructures.ItemRequestComponent
 --- !u!1001 &1400961373
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39185,6 +39240,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: 06a3d25e-bb78-4745-b05a-17c520051175
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -43048,6 +43107,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: e9a72832-3e58-47ff-9fb2-c0a4f73ecc6e
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -46321,6 +46384,10 @@ PrefabInstance:
       propertyPath: m_guid
       value: a30dd5b3-968e-4d31-b2d9-6b4195efb42d
       objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -47127,6 +47194,10 @@ PrefabInstance:
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 8122d645-52b2-404b-ba96-0feafcdd58a4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -48152,6 +48223,10 @@ PrefabInstance:
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 7cd175bf-54c3-4f84-9ac7-57395fe647be
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: <IsManuallyAuthored>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -49656,6 +49731,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1675931210}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1963983130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1963983131}
+  m_Layer: 7
+  m_Name: InteractOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1963983131
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963983130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.555, y: -0.373, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 341450413}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1964303450
 PrefabInstance:
