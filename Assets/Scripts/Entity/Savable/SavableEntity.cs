@@ -159,9 +159,18 @@ namespace Entities.Savable
 
 			// Restore the entities transform
 			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
-			transform.position = position;
 			Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
-			transform.rotation = rotation;
+			if (TryGetComponent<UnityEngine.AI.NavMeshAgent>(out var navAgent))
+			{
+				navAgent.Warp(position);
+				transform.rotation = rotation;
+			}
+			else
+			{
+				transform.position = position;
+				transform.rotation = rotation;
+			}
+
 			TransformRestored?.Invoke(position, rotation);
 
 			// Restore component data
