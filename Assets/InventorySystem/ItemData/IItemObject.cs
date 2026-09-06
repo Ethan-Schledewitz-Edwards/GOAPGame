@@ -14,8 +14,8 @@ namespace InventorySystem.Items
 		// Events
 		public event Action<Transform> ItemPickedUp;
 
-		public void HandleItemStored(Transform parent);
+		public void ItemStored(Transform parent);
 
-		public void HandleItemDropped(Vector3 dropPosition);
+		public void ItemDropped(Vector3 dropPosition);
 	}
 }

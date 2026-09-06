@@ -2,29 +2,36 @@ using BehaviourTrees;
 using UnityEngine;
 
 /// <summary>
-/// A behavior tree node that attempts to interact with a target.
+/// A behavior tree node that attempts to update the 
+/// executors current behaviour tree to the one defined by their target.
 /// </summary>
 /// <remarks>
 /// This node should always be decorated with a timeout node.
 /// </remarks>
-public class AquireJobFromTargetTask : BTNodeBase
+public class AquireNewBehaviourFromTargetTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		if (executorTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		Vector3 executorPosition = executorTransform.position;
+		if (interactor == null)
+			return EBTNodeState.STATE_FAILURE;
 
-		// Try to interact with the target
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		if (targetTransform != null &&
-			targetTransform.TryGetComponent(out InteractableObjectBase iob))
-		{
-			if(iob.TryInteract(interactor, true))
-				return EBTNodeState.STATE_SUCSESS;
-		}
+		if (targetTransform == null)
+			return EBTNodeState.STATE_FAILURE;
 
-		return EBTNodeState.STATE_RUNNING;
+		InteractableObjectBase iob = targetTransform.GetComponent<InteractableObjectBase>()
+								  ?? targetTransform.GetComponentInParent<InteractableObjectBase>();
+
+		if (iob == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		interactor.InteractWith(iob, true);
+		return EBTNodeState.STATE_SUCSESS;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context){}

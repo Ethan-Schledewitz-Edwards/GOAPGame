@@ -2,26 +2,57 @@ using BehaviourTrees;
 using UnityEngine;
 
 /// <summary>
-/// A behavior tree node that searches for the nearest interactable object and attempts to interact with it.
+/// A behavior tree node that searches for the nearest available interactable object, 
+/// reserves its closest interaction position, and sets it as the target destination.
 /// </summary>
 /// <remarks>
 /// This node should always be decorated with a timeout node.
 /// </remarks>
-public class SearchForInteractionTask : BTNodeBase
+public class SearchForClosestJobTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		if (executorTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
+		if (interactor == null)
+			return EBTNodeState.STATE_FAILURE;
+
 		Vector3 executorPosition = executorTransform.position;
 
 		InteractableObjectBase closestInteractable = SearchForTask(executorPosition, context);
-
-		// Try to interact with the target
 		if (closestInteractable != null)
 		{
-			if (closestInteractable.TryInteract(interactor, true))
+			InteractionPosition assignedPosition = null;
+			Vector3 validDestination = Vector3.zero;
+
+			// Check if this interactable requires reservations
+			if (closestInteractable.RequiresReservation)
+			{
+				if (closestInteractable.TryReserveClosestPosition(interactor, executorPosition, out assignedPosition))
+				{
+					if (assignedPosition != null)
+						assignedPosition.TryGetInteractionPosition(interactor, out validDestination);
+				}
+			}
+			else
+			{
+				validDestination = closestInteractable.transform.position;
+				if (closestInteractable.TryGetComponent(out InteractionPosition sharedPos))
+				{
+					assignedPosition = sharedPos;
+					sharedPos.TryGetInteractionPosition(interactor, out validDestination);
+				}
+			}
+
+			if (validDestination != Vector3.zero)
+			{
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, assignedPosition != null ? assignedPosition.transform : closestInteractable.transform);
+				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 				return EBTNodeState.STATE_SUCSESS;
+			}
 		}
 
 		return EBTNodeState.STATE_RUNNING;
@@ -52,9 +83,12 @@ public class SearchForInteractionTask : BTNodeBase
 			if (i == null)
 				continue;
 
-			// Try to get interactable component
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
+				// Skip targets that are already at capacity
+				if (aio.IsAtActorCapacity())
+					continue;
+
 				float dist = Vector3.Distance(pos, aio.transform.position);
 				if (dist < closestDist)
 				{

@@ -53,7 +53,7 @@ namespace Interaction.InteractableStructures
 			return true;
 		}
 
-		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
+		public void SetSettlement(int settlementID, int settlementStructureID)
 		{
 			throw new System.NotImplementedException();
 		}

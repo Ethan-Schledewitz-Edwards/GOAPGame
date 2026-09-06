@@ -33,97 +33,12 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	public Transform Transform => transform;
 	public bool IsItemStored => m_isItemStored;
 
-	// Base
-	public override bool UseFormationRadius { get => false; }
-
 	public void Awake()
 	{
 		m_entity = GetComponent<Entity>();
 		m_rb = GetComponent<Rigidbody>();
 
 		InitializeBehaviourTree();
-	}
-
-	public override void StopInteract()
-	{
-		base.StopInteract();
-	}
-
-	public override void UpdateSpeed(int extra) { }
-
-	public override BehaviourTree GetBehaviourTree() => s_ItemBT;
-
-	public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
-	{
-		if (!base.TryInteract(interactor, interactionTakesPriority))
-			return false;
-
-		if (m_itemData == null)
-			return false;
-
-		if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
-		{
-			if (inventoryComponent.Inventory == null)
-				return false;
-
-			Transform[] itemTransform = { transform };
-			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, itemTransform);
-
-			if (isItemAdded)
-			{
-				if (!TryAssignActor())
-					return false;
-
-				interactor.OnInteractWithObject(this, interactionTakesPriority);
-
-				ItemPickedUp?.Invoke(transform);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public void SetAmount(int amount)
-	{
-		m_stackSize = amount;
-
-		if (m_stackSize <= 0)
-			Destroy(gameObject);
-	}
-
-	public void HandleItemStored(Transform parent)
-	{
-		m_isItemStored = true;
-		m_entity.EnableDynamicPositionUpdates(false);
-		ConstrainPhysics(true);
-
-		gameObject.SetActive(false);
-
-		if (parent != null)
-		{
-			transform.parent = parent;
-			transform.position = parent.position;
-		}
-	}
-
-	public void HandleItemDropped(Vector3 dropPosition)
-	{
-		m_isItemStored = false;
-		ConstrainPhysics(false);
-		ReleaseActor();
-
-		transform.parent = null;
-		if (dropPosition != Vector3.zero)
-			transform.position = dropPosition;
-
-		gameObject.SetActive(true);
-		m_entity.EnableDynamicPositionUpdates(true);
-	}
-
-	private void ConstrainPhysics(bool isConstrained)
-	{
-		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}
 
 	private void InitializeBehaviourTree()
@@ -140,7 +55,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		BTNodeBase depositTask = new DepositHeldItemTask();
 		BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
 
-		BTNodeBase jobTask = new AquireJobFromTargetTask();
+		BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
 		BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
 		BehaviourTree tree = new BehaviourTree();
@@ -154,5 +69,89 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			});
 		tree.SetTree(root);
 		s_ItemBT = tree;
+	}
+
+	public void SetAmount(int amount)
+	{
+		m_stackSize = amount;
+
+		if (m_stackSize <= 0)
+			Destroy(gameObject);
+	}
+
+	public void ItemStored(Transform parent)
+	{
+		m_isItemStored = true;
+		m_entity.EnableDynamicPositionUpdates(false);
+		ConstrainPhysics(true);
+
+		gameObject.SetActive(false);
+
+		if (parent != null)
+		{
+			transform.parent = parent;
+			transform.position = parent.position;
+		}
+	}
+
+	public void ItemDropped(Vector3 dropPosition)
+	{
+		m_isItemStored = false;
+		ConstrainPhysics(false);
+		ReleaseActor();
+
+		transform.parent = null;
+		if (dropPosition != Vector3.zero)
+			transform.position = dropPosition;
+
+		gameObject.SetActive(true);
+		m_entity.EnableDynamicPositionUpdates(true);
+	}
+
+	public override bool TryInteract(
+		IInteractor interactor,
+		Vector3 actorPosition,
+		bool interactionTakesPriority,
+		InteractionPosition assignedPosition,
+		out int interactorValue)
+	{
+		interactorValue = -1;
+
+		if (m_itemData == null)
+			return false;
+
+		// Add the item to the interactors inventory
+		if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
+		{
+			if (inventoryComponent.Inventory == null)
+				return false;
+
+			Transform[] itemTransform = { transform };
+			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, itemTransform);
+
+			if (isItemAdded)
+			{
+				if (!base.TryInteract(interactor, actorPosition, interactionTakesPriority, assignedPosition, out interactorValue))
+					return false;
+
+				interactor.OnInteractWithObject(this, interactionTakesPriority);
+
+				ItemPickedUp?.Invoke(transform);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public override void UpdateSpeed(int extra) { }
+
+	public override void StopInteractSpeed() { }
+
+	public override BehaviourTree GetBehaviourTree() => s_ItemBT;
+
+	private void ConstrainPhysics(bool isConstrained)
+	{
+		m_rb.constraints = isConstrained ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;
 	}
 }

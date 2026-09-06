@@ -125,7 +125,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
 
-			BTNodeBase jobTask = new AquireJobFromTargetTask();
+			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
 			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
 			BehaviourTree tree = new BehaviourTree();
@@ -145,7 +145,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			s_cachedBlueprintBT = tree;
 		}
 
-		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
+		public void SetSettlement(int settlementID, int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;

@@ -6954,7 +6954,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1121418079944000196, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: isWorldSpaceOffset
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9987,7 +9987,7 @@ GameObject:
   - component: {fileID: 435349307}
   - component: {fileID: 435349306}
   - component: {fileID: 435349309}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bomb (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10006,7 +10006,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.27, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 6}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1045439289}
   m_Father: {fileID: 1431175450}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &435349306
@@ -10096,10 +10097,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 435349304}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
-  m_canUpdatePosition: 1
+  m_EditorClassIdentifier: Interaction::CarryableInteractableObject
+  m_actorsNeeded: 10
+  m_maxActors: 20
+  m_interactOffset: {fileID: 1045439289}
+  m_formationRadius: 0.389
+  m_carryParent: {fileID: 0}
 --- !u!1001 &435641384
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25694,6 +25699,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1675931210}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1045439288
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1045439289}
+  m_Layer: 7
+  m_Name: InteractOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1045439289
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1045439288}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.3730001, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 435349305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1045679832
 PrefabInstance:
@@ -49741,6 +49777,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1963983131}
+  - component: {fileID: 1963983132}
   m_Layer: 7
   m_Name: InteractOffset
   m_TagString: Untagged
@@ -49757,12 +49794,25 @@ Transform:
   m_GameObject: {fileID: 1963983130}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.555, y: -0.373, z: 0}
+  m_LocalPosition: {x: 0, y: -0.373, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 341450413}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1963983132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963983130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  InteractionDistance: 0.5
 --- !u!1001 &1964303450
 PrefabInstance:
   m_ObjectHideFlags: 0

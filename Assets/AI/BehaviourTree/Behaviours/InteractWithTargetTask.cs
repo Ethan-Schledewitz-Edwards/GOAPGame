@@ -1,25 +1,37 @@
 using BehaviourTrees;
 using UnityEngine;
 
+/// <summary>
+/// A behavior tree node that attempts to perform a standard interaction with a target object without taking a job.
+/// </summary>
+/// <remarks>
+/// This node should always be decorated with a timeout node.
+/// </remarks>
 public class InteractWithTargetTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		if (executorTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		Vector3 executorPosition = executorTransform.position;
+		if (interactor == null)
+			return EBTNodeState.STATE_FAILURE;
 
-		// Try to interact with the target
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		if (targetTransform != null &&
-			targetTransform.TryGetComponent(out InteractableObjectBase iob))
-		{
-			if (iob.TryInteract(interactor, false))
-				return EBTNodeState.STATE_SUCSESS;
-			else return EBTNodeState.STATE_FAILURE;
-		}
+		if (targetTransform == null)
+			return EBTNodeState.STATE_RUNNING;
 
-		return EBTNodeState.STATE_RUNNING;
+		InteractableObjectBase iob = targetTransform.GetComponent<InteractableObjectBase>()
+								  ?? targetTransform.GetComponentInParent<InteractableObjectBase>();
+
+		if (iob == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		// Perform the interaction without acquiring a job
+		interactor.InteractWith(iob, false);
+		return EBTNodeState.STATE_SUCSESS;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context) {}

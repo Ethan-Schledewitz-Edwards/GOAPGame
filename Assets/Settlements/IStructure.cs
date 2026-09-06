@@ -10,6 +10,6 @@ namespace Settlements
 		public int SettlementStructureID { get; }
 		public GameObject Object { get; }
 
-		public void HandleAddedToSettlement(int settlementID, int settlementStructureID);
+		public void SetSettlement(int settlementID, int settlementStructureID);
 	}
 }

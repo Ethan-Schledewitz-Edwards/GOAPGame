@@ -70,7 +70,7 @@ namespace InventorySystem
 
 				if (transform.TryGetComponent(out IItemObject itemObject))
 				{
-					itemObject.HandleItemStored(parent);
+					itemObject.ItemStored(parent);
 				}
 
 				m_physicalItemObjects.Push(transform);
@@ -132,7 +132,7 @@ namespace InventorySystem
 						itemTransform = m_physicalItemObjects.Pop();
 						if (itemTransform.TryGetComponent(out IItemObject itemObject))
 						{
-							itemObject.HandleItemDropped(WorldDropPos);
+							itemObject.ItemDropped(WorldDropPos);
 						}
 					}
 					else

@@ -37,8 +37,6 @@ namespace Interaction.InteractableStructures
 		public int MaxCapacity => m_maxCapacity;
 		public int ActorsAssigned => m_actorsAssigned;
 
-		public override bool UseFormationRadius { get => false; }
-
 		private void Awake()
 		{
 			m_entity = GetComponent<Entity>();
@@ -46,37 +44,6 @@ namespace Interaction.InteractableStructures
 			InventoryComponent = GetComponent<InventoryComponent>();
 
 			InitializeBehaviourTree();
-		}
-
-		public void HandleAddedToSettlement(int settlementID, int settlementStructureID)
-		{
-			m_settlementID = settlementID;
-			m_settlementStructureID = settlementStructureID;
-		}
-
-		public override void UpdateSpeed(int extra) { }
-
-		public override BehaviourTree GetBehaviourTree() => s_takeItemBT;
-
-		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
-		{
-			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-			if (executor != null && executor.AIContext != null)
-			{
-				foreach (ItemTag tag in m_tagFilter)
-				{
-					executor.AIContext.SetData<int>(AIContextKeys.c_ItemTagPrefix + tag.TagID, tag.TagID);
-				}
-
-				interactor.OnInteractWithObject(this, interactionTakesPriority);
-
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
-
-				return true;
-			}
-
-			return false;
 		}
 
 		private void InitializeBehaviourTree()
@@ -91,7 +58,7 @@ namespace Interaction.InteractableStructures
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
 
-			BTNodeBase jobTask = new AquireJobFromTargetTask();
+			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
 			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
 			BehaviourTree tree = new BehaviourTree();
@@ -110,5 +77,51 @@ namespace Interaction.InteractableStructures
 			tree.SetTree(root);
 			s_takeItemBT = tree;
 		}
+
+		public void SetSettlement(int settlementID, int settlementStructureID)
+		{
+			m_settlementID = settlementID;
+			m_settlementStructureID = settlementStructureID;
+		}
+
+		public override bool TryInteract(IInteractor interactor,
+			Vector3 actorPosition,
+			bool interactionTakesPriority,
+			InteractionPosition assignedPosition,
+			out int interactorValue)
+		{
+			interactorValue = -1;
+
+			if (!base.TryInteract(interactor, actorPosition, interactionTakesPriority, assignedPosition, out interactorValue))
+				return false;
+
+			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
+			if (executor != null && executor.AIContext != null)
+			{
+				foreach (ItemTag tag in m_tagFilter)
+				{
+					executor.AIContext.SetData<int>(AIContextKeys.c_ItemTagPrefix + tag.TagID, tag.TagID);
+				}
+
+				interactor.OnInteractWithObject(this, interactionTakesPriority);
+
+				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
+				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
+
+				m_actorsAssigned = GetTotalActorsPresent();
+				return true;
+			}
+
+			// Rollback base assignment if component validation fails
+			base.StopInteract(interactor, assignedPosition);
+			interactorValue = -1;
+			return false;
+		}
+
+		public override void UpdateSpeed(int extra) { }
+
+		public override void StopInteractSpeed() { }
+
+		public override BehaviourTree GetBehaviourTree() => s_takeItemBT;
 	}
 }
