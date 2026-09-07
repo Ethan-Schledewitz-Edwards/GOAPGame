@@ -86,13 +86,10 @@ namespace Interaction.InteractableStructures
 
 		public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			bool interactionTakesPriority,
-			InteractionPosition assignedPosition,
+			out InteractionPosition assignedPosition,
 			out int interactorValue)
 		{
-			interactorValue = -1;
-
-			if (!base.TryInteract(interactor, actorPosition, interactionTakesPriority, assignedPosition, out interactorValue))
+			if (!base.TryInteract(interactor, actorPosition, out assignedPosition, out interactorValue))
 				return false;
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
@@ -103,8 +100,6 @@ namespace Interaction.InteractableStructures
 					executor.AIContext.SetData<int>(AIContextKeys.c_ItemTagPrefix + tag.TagID, tag.TagID);
 				}
 
-				interactor.OnInteractWithObject(this, interactionTakesPriority);
-
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
 
@@ -112,7 +107,6 @@ namespace Interaction.InteractableStructures
 				return true;
 			}
 
-			// Rollback base assignment if component validation fails
 			base.StopInteract(interactor, assignedPosition);
 			interactorValue = -1;
 			return false;

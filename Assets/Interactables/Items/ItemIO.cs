@@ -111,36 +111,33 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	public override bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		bool interactionTakesPriority,
-		InteractionPosition assignedPosition,
+		out InteractionPosition assignedPosition,
 		out int interactorValue)
 	{
-		interactorValue = -1;
-
-		if (m_itemData == null)
+		if (!base.TryInteract(interactor, actorPosition, out assignedPosition, out interactorValue))
 			return false;
 
-		// Add the item to the interactors inventory
-		if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent))
+		if (m_itemData == null)
 		{
-			if (inventoryComponent.Inventory == null)
-				return false;
+			base.StopInteract(interactor, assignedPosition);
+			return false;
+		}
 
+		// Try to add the item to the interactor's inventory
+		if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) && inventoryComponent.Inventory != null)
+		{
 			Transform[] itemTransform = { transform };
 			bool isItemAdded = inventoryComponent.TryAddItem(m_itemData, StackSize, itemTransform);
 
 			if (isItemAdded)
 			{
-				if (!base.TryInteract(interactor, actorPosition, interactionTakesPriority, assignedPosition, out interactorValue))
-					return false;
-
-				interactor.OnInteractWithObject(this, interactionTakesPriority);
-
 				ItemPickedUp?.Invoke(transform);
 				return true;
 			}
 		}
 
+		// Rollback if the inventory is full or missing
+		base.StopInteract(interactor, assignedPosition);
 		return false;
 	}
 

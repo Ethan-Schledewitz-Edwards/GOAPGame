@@ -33,22 +33,34 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		if (targetItemTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
-		// Get the items interaction offset
 		Vector3 destination = targetItemTransform.position;
-		if (targetItemTransform != null && targetItemTransform.TryGetComponent(out InteractableObjectBase interactableObjectBase))
+
+		if (targetItemTransform.TryGetComponent(out InteractableObjectBase interactable))
 		{
-			destination = interactableObjectBase.GetInteractionPositon();
+			Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+
+			if (executorTransform != null && executorTransform.TryGetComponent(out IInteractor interactor))
+			{
+				// Attempt to reserve the closest valid position for this actor
+				if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPos))
+				{
+					if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 specificPos))
+					{
+						destination = specificPos;
+					}
+				}
+				else
+				{
+					// The item/storage is at capacity and cannot be reserved. 
+					return EBTNodeState.STATE_FAILURE;
+				}
+			}
 		}
 
-		if (targetItemTransform != null)
-		{
-			context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
-			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, destination);
+		context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
+		context.SetData<Vector3>(AIContextKeys.c_TargetDestination, destination);
 
-			return EBTNodeState.STATE_SUCSESS;
-		}
-
-		return EBTNodeState.STATE_RUNNING;
+		return EBTNodeState.STATE_SUCSESS;
 	}
 
 	private Transform FindItemOfID(AIContext context)

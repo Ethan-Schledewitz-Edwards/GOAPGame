@@ -55,6 +55,11 @@ public class FindUseForItemTask : BTNodeBase
 		Settlement closestSettlement, 
 		AIContext context)
 	{
+
+		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
+		if (interactor == null)
+			return false;
+
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
 		if (closestStructure != null)
 		{
@@ -73,7 +78,15 @@ public class FindUseForItemTask : BTNodeBase
 						if (passesFilter)
 						{
 							context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
-							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, interactable.GetInteractionPositon());
+
+							InteractionPosition assignedPosition = null;
+							Vector3 validDestination = Vector3.zero;
+							if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out assignedPosition))
+							{
+								if (assignedPosition != null)
+									assignedPosition.TryGetInteractionPosition(interactor, out validDestination);
+							}
+							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 							return true;
 						}
 					}

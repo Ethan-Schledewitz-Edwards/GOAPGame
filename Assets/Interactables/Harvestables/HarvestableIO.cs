@@ -17,7 +17,7 @@ public class HarvestableIO : InteractableObjectBase
 			CheckForDestinationRangeTask checkDestinationTask2 = new CheckForDestinationRangeTask();
 			BTTimeoutNode timeoutDestination2 = new BTTimeoutNode(checkDestinationTask2, 2f);
 
-			SearchForInteractionTask searchForInteractionTask = new SearchForInteractionTask();
+			SearchForClosestJobTask searchForInteractionTask = new SearchForClosestJobTask();
 			BTTimeoutNode timeoutSearch = new BTTimeoutNode(searchForInteractionTask, 2f);
 
 			InteractWithTargetTask interactTask = new InteractWithTargetTask();
@@ -40,15 +40,12 @@ public class HarvestableIO : InteractableObjectBase
 	}
 
 	public override bool TryInteract(IInteractor interactor,
-		Vector3 actorPosition,
-		bool interactionTakesPriority,
-		InteractionPosition assignedPosition,
-		out int interactorValue)
+			Vector3 actorPosition,
+			out InteractionPosition assignedPosition,
+			out int interactorValue)
 	{
-		if (!base.TryInteract(interactor, actorPosition, interactionTakesPriority, assignedPosition, out interactorValue))
+		if (!base.TryInteract(interactor, actorPosition, out assignedPosition, out interactorValue))
 			return false;
-
-		interactor.OnInteractWithObject(this, interactionTakesPriority);
 
 		return true;
 	}

@@ -44,9 +44,6 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] protected ItemTag[] m_tagFilter;
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 
-		// Base
-		public override bool UseFormationRadius => false;
-
 		protected virtual void Awake()
 		{
 			InitializeBehaviourTree();
@@ -68,39 +65,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
 			}
-		}
-
-		public override void UpdateSpeed(int extra) { }
-
-		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
-
-		public override bool TryInteract(IInteractor interactor, bool interactionTakesPriority)
-		{
-			if (!base.TryInteract(interactor, interactionTakesPriority))
-				return false;
-
-			if (m_itemRequestComponent == null)
-				return false;
-
-			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-			if (executor != null && executor.AIContext != null)
-			{
-				interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent);
-
-				int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
-				if (requestedItemID > -1)
-				{
-					executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-					executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
-
-					interactor.OnInteractWithObject(this, interactionTakesPriority);
-					executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, requestedItemID);
-
-					return true;
-				}
-			}
-
-			return true;
 		}
 
 		private void InitializeBehaviourTree()
@@ -145,15 +109,60 @@ namespace Interaction.InteractableStructures.Blueprints
 			s_cachedBlueprintBT = tree;
 		}
 
+		public override bool TryInteract
+		(
+		IInteractor interactor,
+		Vector3 actorPosition,
+		out InteractionPosition assignedPosition,
+		out int interactorValue
+		)
+		{
+			if (!base.TryInteract(interactor, actorPosition, out assignedPosition, out interactorValue))
+				return false;
+
+			if (m_itemRequestComponent == null)
+			{
+				base.StopInteract(interactor, assignedPosition);
+				return false;
+			}
+
+			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
+			if (executor != null && executor.AIContext != null)
+			{
+				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) && inventoryComponent.Slots.Count > 0)
+				{
+					// Check if there's actually a requested item for this blueprint
+					int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+
+					if (requestedItemID > -1)
+					{
+						executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
+						executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+						executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, requestedItemID);
+
+						m_actorsAssigned = GetTotalActorsPresent();
+						return true;
+					}
+				}
+			}
+
+			base.StopInteract(interactor, assignedPosition);
+			return false;
+		}
+
 		public void SetSettlement(int settlementID, int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
 		}
 
+		public override void UpdateSpeed(int extra) { }
+
 		/// <summary>
 		/// Concrete implementations define what happens when all of the blueprints required items are gathered.
 		/// </summary>
 		public abstract void HandleBlueprintCompleted();
+
+		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
 	}
 }

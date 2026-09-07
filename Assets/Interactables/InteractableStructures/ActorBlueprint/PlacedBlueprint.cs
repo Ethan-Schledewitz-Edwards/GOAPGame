@@ -64,7 +64,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
 
 			SetBlueprintMesh(blueprintData.BlueprintMesh);
-			SetInteractionOffsetTransform(m_interactOffset, blueprintData.InteractionLocalOffset);
+			//SetInteractionOffsetTransform(m_interactOffset, blueprintData.InteractionLocalOffset);
 
 			transform.position = position;
 			transform.rotation = rotation;
@@ -114,6 +114,11 @@ namespace Interaction.InteractableStructures.Blueprints
 			Bounds meshBounds = blueprintMesh.bounds;
 			m_boxCollider.size = meshBounds.size;
 			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
+		}
+
+		public override void StopInteractSpeed()
+		{
+			
 		}
 	}
 }
