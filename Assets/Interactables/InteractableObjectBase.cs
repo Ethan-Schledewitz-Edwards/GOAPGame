@@ -70,30 +70,30 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// </summary>
 	public virtual bool TryInteract(IInteractor interactor,
 		Vector3 actorPosition,
-		out InteractionPosition assignedPosition,
+		InteractionPosition reservedPosition,
 		out int interactorValue)
 	{
 		interactorValue = -1;
-		assignedPosition = null;
+
+		if (reservedPosition == null)
+			return false;
 
 		// Validate distance to the assigned position
-		if (!assignedPosition.GetPositionInRange(actorPosition))
+		if (!reservedPosition.GetPositionInRange(interactor, actorPosition))
 		{
-			CancelReservation(interactor, assignedPosition);
-			assignedPosition = null;
+			CancelReservation(interactor, reservedPosition);
 			return false;
 		}
 
 		// Queue the interaction
-		if (assignedPosition.TryAddInteractor(interactor, out interactorValue))
+		if (reservedPosition.TryAddInteractor(interactor, out interactorValue))
 		{
 			HandleActorAssigned();
 			return true;
 		}
 
 		// Cleanup if adding the interactor fails
-		CancelReservation(interactor, assignedPosition);
-		assignedPosition = null;
+		CancelReservation(interactor, reservedPosition);
 		return false;
 	}
 

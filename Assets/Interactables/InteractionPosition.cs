@@ -6,13 +6,12 @@ public class InteractionPosition : MonoBehaviour
 	[Header("Settings")]
 	[field: SerializeField] public int MaxInteractors { get; private set; } = 1;
 	[field: SerializeField] public bool UseFormationRadius { get; private set; } = false;
+	[field: SerializeField] public float FormationRadius { get; private set; } = 1.5f;
+
 	[field: SerializeField, Tooltip("If false, this position does not require pre-allocation or locking, allowing multiple actors (like doors or storage access points) to share it.")]
 	public bool RequiresReservation { get; private set; } = true;
 	[field: SerializeField, Tooltip("Dictates how far from the center of the InteractionPosition the actor can be before they begin interacting.")]
 	public float InteractionDistance { get; private set; } = 0.5f;
-
-	// System
-	Vector3 WorldPosition => transform.position;
 
 	private List<IInteractor> m_interactorsPresent = new List<IInteractor>();
 	private List<IInteractor> m_reservedInteractors = new List<IInteractor>();
@@ -85,7 +84,7 @@ public class InteractionPosition : MonoBehaviour
 
 	/// <summary>
 	/// Attempts to get a valid, dynamically offset position for a specific interactor.
-	/// Automatically registers unreserved interactors on the fly.
+	/// Automatically registers unreserved interactors.
 	/// </summary>
 	public bool TryGetInteractionPosition(IInteractor interactor, out Vector3 position)
 	{
@@ -97,35 +96,32 @@ public class InteractionPosition : MonoBehaviour
 		if (RequiresReservation && !isPresent && !isReserved)
 			return false;
 
-		if (!RequiresReservation && !isPresent && !isReserved)
+		if (!RequiresReservation && !isPresent && !isReserved && m_interactorsPresent.Count >= MaxInteractors)
 		{
-			if (m_interactorsPresent.Count < MaxInteractors)
-			{
-				m_interactorsPresent.Add(interactor);
-			}
-			else if (MaxInteractors > 0)
-			{
-				position = transform.position;
-				return true;
-			}
+			return false;
 		}
 
 		if (UseFormationRadius)
 		{
 			int slotIndex = 0;
 
-			if (m_interactorsPresent.Contains(interactor))
+			if (isPresent)
 			{
 				slotIndex = m_interactorsPresent.IndexOf(interactor);
 			}
-			else if (m_reservedInteractors.Contains(interactor))
+			else if (isReserved)
 			{
 				slotIndex = m_interactorsPresent.Count + m_reservedInteractors.IndexOf(interactor);
 			}
+			else
+			{
+				// For unreserved walk-ins actors who are  checking where they would go
+				slotIndex = m_interactorsPresent.Count;
+			}
 
 			float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, MaxInteractors);
-			float x = Mathf.Cos(angle) * InteractionDistance;
-			float z = Mathf.Sin(angle) * InteractionDistance;
+			float x = Mathf.Cos(angle) * FormationRadius;
+			float z = Mathf.Sin(angle) * FormationRadius;
 
 			position = transform.TransformPoint(new Vector3(x, 0, z));
 		}
@@ -135,11 +131,17 @@ public class InteractionPosition : MonoBehaviour
 
 	/// <summary>
 	/// Determines whether the specified world position is within the interaction range of the object.
+	/// Always validates against the dynamically assigned position so moving objects update correctly.
 	/// </summary>
-	public bool GetPositionInRange(Vector3 worldPosition)
+	public bool GetPositionInRange(IInteractor interactor, Vector3 worldPosition)
 	{
-		float distanceSquared = (worldPosition - transform.position).sqrMagnitude;
-		float interactionDistanceSquared = InteractionDistance * InteractionDistance;
-		return distanceSquared <= interactionDistanceSquared;
+		if (TryGetInteractionPosition(interactor, out Vector3 targetPos))
+		{
+			float tolerance = 1.0f;
+			float distanceSquared = (worldPosition - targetPos).sqrMagnitude;
+			return distanceSquared <= (tolerance * tolerance);
+		}
+
+		return false;
 	}
 }

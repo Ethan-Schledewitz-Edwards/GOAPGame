@@ -36,6 +36,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5460699229547225427}
+  - {fileID: 7852497346048671584}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1403681809950730677
@@ -71,10 +72,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
   m_maxActors: 12
-  m_interactOffset: {fileID: 0}
-  m_formationRadius: 0.8
+  m_interactPositions:
+  - {fileID: 2991755269999351807}
 --- !u!114 &1914341159798471732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,3 +329,51 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8628909942174876533
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7852497346048671584}
+  - component: {fileID: 2991755269999351807}
+  m_Layer: 7
+  m_Name: InteractionPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7852497346048671584
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8628909942174876533}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2071504800197458935}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2991755269999351807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8628909942174876533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 12
+  <UseFormationRadius>k__BackingField: 1
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.1

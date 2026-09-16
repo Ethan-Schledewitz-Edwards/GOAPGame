@@ -41,10 +41,10 @@ public class HarvestableIO : InteractableObjectBase
 
 	public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			out InteractionPosition assignedPosition,
+			InteractionPosition reservedPosition,
 			out int interactorValue)
 	{
-		if (!base.TryInteract(interactor, actorPosition, out assignedPosition, out interactorValue))
+		if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
 			return false;
 
 		return true;

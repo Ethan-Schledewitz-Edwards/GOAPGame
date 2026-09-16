@@ -123,6 +123,14 @@ private void OnDisable()
 					if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 					{
 						Pathing.SetDestination(validPos);
+
+						//float distanceRemaining = Pathing.PathDistRemaining();
+						//if (distanceRemaining <= m_interactionDistance)
+						float distToTarget = Vector3.Distance(transform.position, validPos);
+						if (distToTarget <= m_interactionDistance)
+						{
+							InteractWith(m_targetInteractable, true);
+						}
 					}
 					else // Reservation became null or unauthorized
 					{
@@ -130,10 +138,6 @@ private void OnDisable()
 						return;
 					}
 				}
-
-				float distanceRemaining = Pathing.PathDistRemaining();
-				if (distanceRemaining <= m_interactionDistance)
-					InteractWith(m_targetInteractable, true);
 			}
 		}
 		else
@@ -250,7 +254,7 @@ private void OnDisable()
 		(
 			this,
 			transform.position,
-			out InteractionPosition interactionPosition,
+			m_assignedInteractionPosition,
 			out int interactorValue
 		);
 
@@ -260,7 +264,6 @@ private void OnDisable()
 			return;
 		}
 
-		m_assignedInteractionPosition = interactionPosition;
 		if (willReplaceJob)
 		{
 			m_targetTransform = actorInteractableObjectBase.transform;
@@ -404,6 +407,9 @@ private void OnDisable()
 	/// <returns>The transform of the nearest interactable object if found; otherwise, null.</returns>
 	private void FindClosestJob(float t)
 	{
+		if (m_assignedInteractionPosition != null)
+			return;
+
 		bool canSearchForJob = true;
 
 		// Only allow travelling actors to job search when close to their destination

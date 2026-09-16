@@ -7282,10 +7282,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c0014b8502befe4286055e9a110fbf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
   m_maxActors: 1
-  m_interactOffset: {fileID: 1963983131}
-  m_formationRadius: 2
+  m_interactPositions: []
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
@@ -10100,11 +10100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableInteractableObject
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 10
   m_maxActors: 20
-  m_interactOffset: {fileID: 1045439289}
-  m_formationRadius: 0.389
-  m_carryParent: {fileID: 0}
+  m_interactPositions: []
 --- !u!1001 &435641384
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34631,10 +34630,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c0014b8502befe4286055e9a110fbf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
   m_maxActors: 1
-  m_interactOffset: {fileID: 1779457726}
-  m_formationRadius: 2
+  m_interactPositions: []
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
@@ -49812,7 +49811,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
-  InteractionDistance: 0.5
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 1
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.4
 --- !u!1001 &1964303450
 PrefabInstance:
   m_ObjectHideFlags: 0
