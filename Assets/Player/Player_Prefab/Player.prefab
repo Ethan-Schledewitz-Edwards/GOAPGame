@@ -816,25 +816,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9044187b1cd834785466bf405beb9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraRig
-  defaultOffset: {x: 0, y: 8, z: -7}
-  isCenteredOnStart: 1
-  isWorldSpaceOffset: 1
-  isPositionFollowEnabled: 1
-  isPosSmoothingEnabled: 1
-  positionSmoothSpeed: 12
-  isXPosSmoothed: 1
-  isYPosSmoothed: 1
-  isZPosSmoothed: 1
-  isRotationFollowEnabled: 1
-  isRotSmoothingEnabled: 1
-  rotationSmoothSpeed: 4
-  isXRotEnabled: 1
-  isYRotEnabled: 0
-  isZRotEnabled: 0
-  isXRotSmoothed: 1
-  isYRotSmoothed: 0
-  isZRotSmoothed: 0
-  m_CameraTargets:
+  m_defaultOffset: {x: 0, y: 0.5, z: 12}
+  m_defaultRotation: {x: 0.42261827, y: 0, z: 0, w: 0.90630776}
+  m_zoomPerExtraTarget: 2
+  m_maxZoomOut: 15
+  m_cameraTargets:
   - {fileID: 6207448997049218469}
 --- !u!1 &9018910126613221978
 GameObject:

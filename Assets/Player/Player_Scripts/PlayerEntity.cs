@@ -7,7 +7,7 @@ namespace Player.Core
 	[RequireComponent(typeof(PlayerController), typeof(PlayerHealthComponent))]
 	public class PlayerEntity : Entity
 	{
-		[field: SerializeField] public CameraRig PlayerCamera { get; private set; }
+		[field: SerializeField] public PlayerCamera PlayerCamera { get; private set; }
 		[field: SerializeField] public Transform PlayerMesh { get; private set; }
 		public PlayerController PlayerController { get; private set; }
 		public PlayerHealthComponent PlayerHealthComponent { get; private set; }
