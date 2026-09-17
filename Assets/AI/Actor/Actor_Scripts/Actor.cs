@@ -49,7 +49,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public int WorkstationID { get; private set; } = 0; // Structure ID actor resides in
 
 	// Internal State
-	private EActorState m_logicExecutorState = default;
+	public EActorState LogicExecutorState { get; private set; }  = default;
 	private float m_interactionDistance;
 	private int m_jobAssignmentID = 0;
 	private float m_timeFindingJob;
@@ -85,7 +85,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 	}
 
-private void OnDisable()
+	private void OnDisable()
 	{
 		if (GOAPAgentComp != null)
 		{
@@ -102,6 +102,7 @@ private void OnDisable()
 			return;
 
 		ActorHealth?.TickStats(t);
+
 		Pathing?.TickAIPathing();
 
 		// Tick search cooldown timer
@@ -142,7 +143,7 @@ private void OnDisable()
 		}
 		else
 		{
-			switch (m_logicExecutorState)
+			switch (LogicExecutorState)
 			{
 				case EActorState.STATE_OffDuty:
 					GOAPAgentComp.TickGoapPlanner(t);
@@ -153,9 +154,22 @@ private void OnDisable()
 					break;
 
 				case EActorState.STATE_Working:
-					if (m_behaviourTreeExecutor != null &&
-						m_behaviourTreeExecutor.CurrentBehaviourTree != null)
+					if (m_behaviourTreeExecutor != null && m_behaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
+						// Sync reserved position from BT context
+						InteractionPosition contextPos = m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+						if (contextPos != m_assignedInteractionPosition)
+						{
+							// Release previous interaction position before accepting a new one
+							if (m_assignedInteractionPosition != null)
+							{
+								m_assignedInteractionPosition.ReleaseReservation(this);
+								m_assignedInteractionPosition.TryRemoveInteractor(this);
+							}
+
+							m_assignedInteractionPosition = contextPos;
+						}
+
 						if (m_assignedInteractionPosition != null)
 						{
 							if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
@@ -207,7 +221,7 @@ private void OnDisable()
 	/// </summary>
 	public void SetLogicExecutorState(EActorState state)
 	{
-		m_logicExecutorState = state;
+		LogicExecutorState = state;
 
 		switch (state)
 		{
@@ -226,7 +240,7 @@ private void OnDisable()
 		float newStoppingDistance = state == EActorState.STATE_Follow ? c_followDist : c_workingDist;
 		Pathing.SetStoppingDistance(newStoppingDistance);
 
-		Debug.Log($"{transform.name}'s state: {m_logicExecutorState}");
+		Debug.Log($"{transform.name}'s state: {LogicExecutorState}");
 	}
 
 	public void FollowPlayer(Transform Player)
@@ -264,6 +278,13 @@ private void OnDisable()
 			return;
 		}
 
+		// If the interaction was a one-shot and it released our spot,
+		// link the tether prevent abortion while working.
+		if (m_assignedInteractionPosition != null && !m_assignedInteractionPosition.TryGetInteractionPosition(this, out _))
+		{
+			m_assignedInteractionPosition = null;
+		}
+
 		if (willReplaceJob)
 		{
 			m_targetTransform = actorInteractableObjectBase.transform;
@@ -289,6 +310,7 @@ private void OnDisable()
 		}
 
 		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetDestination);
+		m_behaviourTreeExecutor.AIContext.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, m_assignedInteractionPosition);
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
@@ -362,10 +384,10 @@ private void OnDisable()
 	/// </summary>
 	private bool IsJobNeeded()
 	{
-		bool isJobFinished = (m_logicExecutorState == EActorState.STATE_Working &&
+		bool isJobFinished = (LogicExecutorState == EActorState.STATE_Working &&
 			m_behaviourTreeExecutor.CurrentBehaviourTree == null);
 
-		return m_logicExecutorState == EActorState.STATE_SearchingForWork || isJobFinished;
+		return LogicExecutorState == EActorState.STATE_SearchingForWork || isJobFinished;
 	}
 
 	/// <summary>
@@ -413,7 +435,7 @@ private void OnDisable()
 		bool canSearchForJob = true;
 
 		// Only allow travelling actors to job search when close to their destination
-		if (Pathing.HasPath)
+		if (Pathing.CurrentDestination != Vector3.zero)
 		{
 			float distanceRemaining = Pathing.PathDistRemaining();
 			if (distanceRemaining > c_searchForJobStoppingDistance)
@@ -453,8 +475,8 @@ private void OnDisable()
 	{
 		return new ActorSaveData
 		{
-			LogicState = m_logicExecutorState,
-			IsFollowingPlayer = (m_logicExecutorState == EActorState.STATE_Follow),
+			LogicState = LogicExecutorState,
+			IsFollowingPlayer = (LogicExecutorState == EActorState.STATE_Follow),
 			SettlementID = this.SettlementID,
 			WorkstationID = this.WorkstationID
 		};
@@ -465,7 +487,9 @@ private void OnDisable()
 		if (data is ActorSaveData actorData)
 		{
 			if (actorData.IsFollowingPlayer)
+			{
 				FollowPlayer(GameManager.Instance.PlayerObject.transform);
+			}
 		}
 	}
 

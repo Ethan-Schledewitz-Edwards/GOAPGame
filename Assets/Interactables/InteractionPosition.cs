@@ -174,4 +174,56 @@ public class InteractionPosition : MonoBehaviour
 
 		return false;
 	}
+
+#if UNITY_EDITOR
+
+	private void OnDrawGizmos()
+	{
+		// Interaction distance and center
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawWireSphere(transform.position, 0.2f);
+
+		Gizmos.color = new Color(0, 1, 1, 0.2f);
+		Gizmos.DrawWireSphere(transform.position, InteractionDistance);
+
+		// Formation radius if it is enabled
+		if (UseFormationRadius)
+		{
+			Gizmos.color = new Color(1, 1, 0, 0.2f);
+			Gizmos.DrawWireSphere(transform.position, FormationRadius);
+		}
+
+		// Label with current capacity stats
+		string label = $"Present: {ActorsPresent}\nReserved: {m_reservedInteractors.Count}\nMax: {MaxInteractors}";
+		UnityEditor.Handles.Label(transform.position + Vector3.up * 1.0f, label);
+
+		// Green lines to all actively present actors
+		if (m_interactorsPresent != null)
+		{
+			Gizmos.color = Color.green;
+			foreach (var interactor in m_interactorsPresent)
+			{
+				if (interactor != null && interactor is Component comp)
+				{
+					Gizmos.DrawLine(transform.position, comp.transform.position);
+					Gizmos.DrawWireCube(comp.transform.position + Vector3.up, Vector3.one * 0.3f);
+				}
+			}
+		}
+
+		// Yellow lines to all actors holding a reservation
+		if (m_reservedInteractors != null)
+		{
+			Gizmos.color = Color.yellow;
+			foreach (var interactor in m_reservedInteractors)
+			{
+				if (interactor != null && interactor is Component comp)
+				{
+					Gizmos.DrawLine(transform.position, comp.transform.position);
+					Gizmos.DrawWireSphere(comp.transform.position + Vector3.up, 0.3f);
+				}
+			}
+		}
+	}
+#endif
 }

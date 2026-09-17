@@ -139,6 +139,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			if (isItemAdded)
 			{
 				ItemPickedUp?.Invoke(transform);
+				base.StopInteract(interactor, reservedPosition);
 				return true;
 			}
 		}

@@ -51,6 +51,18 @@ public class SearchForClosestJobTask : BTNodeBase
 			{
 				context.SetData<Transform>(AIContextKeys.c_TargetTransform, assignedPosition != null ? assignedPosition.transform : closestInteractable.transform);
 				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+				context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+				// Cleanup delegate in case the behavior tree aborts
+				System.Action cleanup = () =>
+				{
+					if (closestInteractable != null && interactor != null && assignedPosition != null)
+					{
+						closestInteractable.CancelReservation(interactor, assignedPosition);
+					}
+				};
+				context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+
 				return EBTNodeState.STATE_SUCSESS;
 			}
 		}

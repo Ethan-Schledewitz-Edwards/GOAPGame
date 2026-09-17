@@ -37,6 +37,19 @@ public class ReturnToStructureTask : BTNodeBase
 							context.SetData<Transform>(AIContextKeys.c_TargetTransform, assignedPosition.transform);
 							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 
+							// Store the reserved position in the AI context so interaction nodes can retrieve it
+							context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+							// Cleanup delegate in case the behavior tree aborts
+							System.Action cleanup = () =>
+							{
+								if (interactableObject != null && interactor != null && assignedPosition != null)
+								{
+									interactableObject.CancelReservation(interactor, assignedPosition);
+								}
+							};
+							context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+
 							return EBTNodeState.STATE_SUCSESS;
 						}
 					}

@@ -12,7 +12,7 @@ public class AIPathing : MonoBehaviour
 	private const float c_distantRange = 36.0f;
 	private const float c_distantRangeSqrt = c_distantRange * c_distantRange;
 
-	private const float c_rotSpeed = 32.0f;
+	private const float c_rotSpeed = 16.0f;
 	#endregion
 
 	// Components
@@ -20,11 +20,11 @@ public class AIPathing : MonoBehaviour
 	[field: SerializeField] public GameObject Mesh { get; private set; }
 
 	[Header("Simulation & Navigation")]
+	public Vector3 CurrentDestination { get; private set; }
 	private EPathingSimFidelity m_simFidelity;
-	private Vector3 m_destination;
 	private Vector3[] m_pathCorners;
 	private int m_cornersPassed;// Used in non-realtime simulations
-	public NavMeshPath CurrentPath { get; private set; }
+	private NavMeshPath m_currentPath;
 	private Coroutine m_destinationCoroutine;
 
 	// System
@@ -39,7 +39,7 @@ public class AIPathing : MonoBehaviour
 
 	#region Simulation Fidelity
 
-	private void TrySetActorSimFidelity(EPathingSimFidelity fidelity)
+	public void TrySetActorSimFidelity(EPathingSimFidelity fidelity)
 	{
 		if (m_simFidelity == fidelity)
 			return;
@@ -50,7 +50,7 @@ public class AIPathing : MonoBehaviour
 		m_navAgent.enabled = (m_simFidelity == EPathingSimFidelity.Realtime);
 
 		// Swap preexisting path to the method used for the new simulation fidelity
-		if (m_destination != Vector3.zero)
+		if (CurrentDestination != Vector3.zero)
 			ApplyPathingByFidelity();
 	}
 
@@ -81,11 +81,11 @@ public class AIPathing : MonoBehaviour
 			return;
 		}
 
-		// Ignore recalculating the path if it never changed
-		if (destinationPos == m_destination)
+		// Check if the delta between the new destination and previous is significant
+		if ((destinationPos - CurrentDestination).sqrMagnitude < 1.0f)
 			return;
 
-		m_destination = destinationPos;
+		CurrentDestination = destinationPos;
 
 		ApplyPathingByFidelity();
 	}
@@ -95,7 +95,7 @@ public class AIPathing : MonoBehaviour
 		if (m_navAgent.isActiveAndEnabled)
 			m_navAgent.ResetPath();
 
-		m_destination = Vector3.zero;
+		CurrentDestination = Vector3.zero;
 		m_pathCorners = new Vector3[0];
 		m_cornersPassed = 0;
 
@@ -124,8 +124,8 @@ public class AIPathing : MonoBehaviour
 		}
 		else
 		{
-			HasPath = (m_destination != Vector3.zero && m_pathCorners.Length > 0);
-			IsMoving = (m_destination != Vector3.zero && m_destinationCoroutine != null);
+			HasPath = (CurrentDestination != Vector3.zero && m_pathCorners.Length > 0);
+			IsMoving = (CurrentDestination != Vector3.zero && m_destinationCoroutine != null);
 		}
 	}
 
@@ -150,30 +150,30 @@ public class AIPathing : MonoBehaviour
 		switch (m_simFidelity)
 		{
 			case EPathingSimFidelity.Realtime:
-				if (m_navAgent.SetDestination(m_destination))
+				if (m_navAgent.SetDestination(CurrentDestination))
 				{
-					CurrentPath = m_navAgent.path;
-					m_pathCorners = CurrentPath.corners;
+					m_currentPath = m_navAgent.path;
+					m_pathCorners = m_currentPath.corners;
 				}
 				break;
 
 			case EPathingSimFidelity.Near:
 				NavMeshPath nearPath = new NavMeshPath();
-				if (NavMesh.CalculatePath(transform.position, m_destination, NavMesh.AllAreas, nearPath))
+				if (NavMesh.CalculatePath(transform.position, CurrentDestination, NavMesh.AllAreas, nearPath))
 				{
-					CurrentPath = nearPath;
-					m_pathCorners = CurrentPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, m_navAgent.speed, true));
+					m_currentPath = nearPath;
+					m_pathCorners = m_currentPath.corners;
+					m_destinationCoroutine = StartCoroutine(FollowPath(m_currentPath.corners, m_navAgent.speed, true));
 				}
 				break;
 
 			case EPathingSimFidelity.Distant:
 				NavMeshPath distantPath = new NavMeshPath();
-				if (NavMesh.CalculatePath(transform.position, m_destination, NavMesh.AllAreas, distantPath))
+				if (NavMesh.CalculatePath(transform.position, CurrentDestination, NavMesh.AllAreas, distantPath))
 				{
-					CurrentPath = distantPath;
-					m_pathCorners = CurrentPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(CurrentPath.corners, m_navAgent.speed, false));
+					m_currentPath = distantPath;
+					m_pathCorners = m_currentPath.corners;
+					m_destinationCoroutine = StartCoroutine(FollowPath(m_currentPath.corners, m_navAgent.speed, false));
 				}
 				break;
 		}
@@ -244,8 +244,8 @@ public class AIPathing : MonoBehaviour
 			}
 		}
 
-		m_destination = Vector3.zero;
-		CurrentPath = null;
+		CurrentDestination = Vector3.zero;
+		m_currentPath = null;
 		m_pathCorners = new Vector3[0];
 		m_cornersPassed = 0;
 
@@ -258,7 +258,7 @@ public class AIPathing : MonoBehaviour
 	/// </summary>
 	public float PathDistRemaining()
 	{
-		if (CurrentPath == null)
+		if (m_currentPath == null)
 			return 0.0f;
 
 		// Wait for high-fidelty path to calculate
@@ -266,7 +266,7 @@ public class AIPathing : MonoBehaviour
 			return m_navAgent.pathPending ? float.MaxValue : m_navAgent.remainingDistance;
 
 		// Wait for path corners to calculate
-		if (m_destination != Vector3.zero && (m_pathCorners == null || m_pathCorners.Length == 0))
+		if (CurrentDestination != Vector3.zero && (m_pathCorners == null || m_pathCorners.Length == 0))
 			return float.MaxValue;
 
 		// Use high-fidelty path distance for real time Actors
@@ -307,7 +307,7 @@ public class AIPathing : MonoBehaviour
 		{
 			return true;
 		}
-		else if (m_destination != Vector3.zero && (m_pathCorners == null || m_pathCorners.Length == 0))
+		else if (CurrentDestination != Vector3.zero && (m_pathCorners == null || m_pathCorners.Length == 0))
 		{
 			return true;
 		}

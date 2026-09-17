@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WorldManagement.AuthoredTiles;
 using WorldManagement.Core;
 
 namespace Entities.Savable
@@ -35,7 +36,8 @@ namespace Entities.Savable
 
 		private bool m_useGravityByDefault;
 		private bool m_isKinematicByDefault;
-		private bool m_isPlacing;
+		private bool m_isPhysicsEnabled;
+		private bool m_isInitializedFromSave;
 
 		private Collider m_collider;
 		private Rigidbody m_rigidbody;
@@ -68,16 +70,14 @@ namespace Entities.Savable
 			m_entity.EntityPositionChanged += OnEntityMoved;
 
 			m_collider = GetComponent<Collider>();
-
 			m_rigidbody = GetComponent<Rigidbody>();
 			if (m_rigidbody != null)
 			{
 				m_useGravityByDefault = m_rigidbody.useGravity;
-				m_rigidbody.useGravity = false;
-
 				m_isKinematicByDefault = m_rigidbody.isKinematic;
-				m_rigidbody.isKinematic = true;
 			}
+
+			DisablePhysicsAndCollision();
 
 			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
@@ -89,13 +89,11 @@ namespace Entities.Savable
 		{
 			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
 
-			// Disable active physics initially
-			if (m_collider != null)
-				m_collider.enabled = false;
-		}
+			if (!m_isInitializedFromSave && !IsManuallyAuthored)
+				InitializeRuntimeEntity();
+			else if (IsManuallyAuthored)
+				EnablePhysicsAndCollision();
 
-		private void OnEnable()
-		{
 			RegisterToClosestChunk();
 		}
 
@@ -106,6 +104,16 @@ namespace Entities.Savable
 
 			UnregisterFromCurrentChunk();
 			StopAllCoroutines();
+		}
+
+		private void InitializeRuntimeEntity()
+		{
+			if (string.IsNullOrEmpty(m_guid) || m_guid == System.Guid.Empty.ToString())
+			{
+				m_guid = System.Guid.NewGuid().ToString();
+			}
+
+			EnablePhysicsAndCollision();
 		}
 
 		private void OnEntityMoved()
@@ -133,9 +141,19 @@ namespace Entities.Savable
 				if (terrainChunk != null)
 					terrainChunk.RegisterEntity(gameObject);
 
-				if (WorldManager.s_ActiveChunks.TryGetValue(entityChunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
+				if (!IsManuallyAuthored)
 				{
-					transform.parent = activeChunkTuple.gameObject.transform;
+					if (WorldManager.s_ActiveChunks.TryGetValue(entityChunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
+					{
+						transform.parent = activeChunkTuple.gameObject.transform;
+					}
+				}
+				else
+				{
+					if(AuthoredTileLoader.s_AuthoredChunks.TryGetValue(m_chunkXZ, out GameObject chunkObject))
+					{
+						transform.parent = chunkObject.transform;
+					}
 				}
 			}
 		}
@@ -160,7 +178,23 @@ namespace Entities.Savable
 			{
 				m_rigidbody.useGravity = m_useGravityByDefault;
 				m_rigidbody.isKinematic = m_isKinematicByDefault;
+
+				m_isPhysicsEnabled = true;
 			}
+		}
+
+		private void DisablePhysicsAndCollision()
+		{
+			if (m_collider != null)
+				m_collider.enabled = false;
+
+			if (m_rigidbody != null)
+			{
+				m_rigidbody.useGravity = false;
+				m_rigidbody.isKinematic = true;
+			}
+
+			m_isPhysicsEnabled = false;
 		}
 
 		/// <summary>
@@ -201,6 +235,7 @@ namespace Entities.Savable
 		/// </summary>
 		public void RestoreFromSaveData(SerializableEntityData data)
 		{
+			m_isInitializedFromSave = true;
 			this.m_guid = data.GUID;
 
 			// Restore the entities transform

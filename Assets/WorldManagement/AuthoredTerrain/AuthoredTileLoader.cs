@@ -13,7 +13,7 @@ namespace WorldManagement.AuthoredTiles
 
 		private TerrainChunkManager m_chunkManager;
 
-		private Dictionary<Vector2Int, GameObject> m_loadedAuthoredChunks = new Dictionary<Vector2Int, GameObject>();
+		public static Dictionary<Vector2Int, GameObject> s_AuthoredChunks = new Dictionary<Vector2Int, GameObject>();
 
 		private void Awake()
 		{
@@ -24,7 +24,7 @@ namespace WorldManagement.AuthoredTiles
 				if (chunkObj != null)
 				{
 					Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(chunkObj.transform.position);
-					m_loadedAuthoredChunks[chunkXZ] = chunkObj;
+					s_AuthoredChunks[chunkXZ] = chunkObj;
 					chunkObj.SetActive(false);
 				}
 			}
@@ -56,7 +56,7 @@ namespace WorldManagement.AuthoredTiles
 			)
 		{
 			// Ignore aut of bounds requests
-			if(!m_loadedAuthoredChunks.TryGetValue(chunkXZ, out GameObject chunkObject))
+			if(!s_AuthoredChunks.TryGetValue(chunkXZ, out GameObject chunkObject))
 				yield break;
 
 			requestedChunks.Add(chunkXZ);

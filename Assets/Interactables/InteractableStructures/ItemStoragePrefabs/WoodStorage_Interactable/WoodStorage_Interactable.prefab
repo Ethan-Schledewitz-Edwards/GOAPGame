@@ -36,6 +36,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7982803710779404447}
+  - {fileID: 4323496990770222128}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5407044494198378554
@@ -66,7 +67,8 @@ MonoBehaviour:
   <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
   m_maxActors: 1
-  m_interactPositions: []
+  m_interactPositions:
+  - {fileID: 1408738811852108652}
   m_tagFilter:
   - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
   m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
@@ -121,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
-  m_canUpdatePosition: 1
+  m_canUpdatePosition: 0
 --- !u!114 &1319984024103182560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,6 +139,55 @@ MonoBehaviour:
   m_savablePrefabData: {fileID: 0}
   m_guid: 3f5e23aa-6010-4625-977b-28fdf42e7293
   <IsManuallyAuthored>k__BackingField: 0
+--- !u!1 &1415920243083721482
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4323496990770222128}
+  - component: {fileID: 1408738811852108652}
+  m_Layer: 7
+  m_Name: InteractionPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4323496990770222128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415920243083721482}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6238034480829995257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1408738811852108652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415920243083721482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 0
+  <RequiresReservation>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!1 &9060549702506707196
 GameObject:
   m_ObjectHideFlags: 0

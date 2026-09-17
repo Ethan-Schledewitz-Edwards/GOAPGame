@@ -42,27 +42,6 @@ public class ActorManager : MonoBehaviour
 		double clampedSeconds = Math.Min(offlineSeconds, 86400); // 24h cap
 
 		Debug.Log($"There were {offlineSeconds} between save and load");
-
-		/*
-		// Update World First
-		foreach (var resource in allResources)
-		{
-			resource.FastForward(clampedSeconds);
-		}
-
-		// Update Actors
-		foreach (var actor in allActors)
-		{
-			actor.ResolveOfflineTime(clampedSeconds);
-
-			// After skipping, ensure they are on the NavMesh
-			NavMeshHit hit;
-			if (NavMesh.SamplePosition(actor.transform.position, out hit, 2.0f, NavMesh.AllAreas))
-			{
-				actor.transform.position = hit.position;
-			}
-		}
-		*/
 	}
 
 	public void AddActor(Actor actor)
@@ -85,8 +64,15 @@ public class ActorManager : MonoBehaviour
 			{
 				if (actor != null)
 				{
-					float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
-					actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
+					if(actor.LogicExecutorState == EActorState.STATE_Follow)
+					{
+						actor.Pathing.TrySetActorSimFidelity(EPathingSimFidelity.Realtime);
+					}
+					else
+					{
+						float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
+						actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
+					}
 
 					actor.TickBehaviour(k_tpsThreshold);
 				}

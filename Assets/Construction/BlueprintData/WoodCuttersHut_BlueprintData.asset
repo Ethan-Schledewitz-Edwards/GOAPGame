@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
   m_Name: WoodCuttersHut_BlueprintData
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
-  <BlueprintDataID>k__BackingField: 5
+  <BlueprintDataID>k__BackingField: 0
   <DisplayName>k__BackingField: Wood Cutters Hut
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:
@@ -21,4 +21,4 @@ MonoBehaviour:
   <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 4d2f1e7ab8ce7b64eac7db7ab614b81a, type: 2}
   <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: 28c4449d10bdd3b439b33fa1766fc1ca, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
-  <InteractionLocalOffset>k__BackingField: {x: 0, y: 0, z: 2}
+  <InteractionPositions>k__BackingField: []

@@ -61,33 +61,47 @@ public class FindUseForItemTask : BTNodeBase
 			return false;
 
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
+		Debug.Log($"[FindUseForItemTask] Searching for tag {structureTag.name}. Closest found: {(closestStructure != null ? closestStructure.Object.name : "NONE")}");
+
 		if (closestStructure != null)
 		{
 			GameObject structureObject = closestStructure.Object;
 			if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
 			{
-				if(interactable.TryGetComponent(out IItemFiltered itemFiltered))
+				if (interactable.TryGetComponent(out IItemFiltered itemFiltered))
 				{
 					ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
 					int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
 
 					if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
 					{
-						// Check if the structures tags include the held items tags
 						bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
+						Debug.Log($"[FindUseForItemTask] Item filter match for {structureObject.name}: {passesFilter}");
+
 						if (passesFilter)
 						{
-							context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
-
-							InteractionPosition assignedPosition = null;
-							Vector3 validDestination = Vector3.zero;
-							if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out assignedPosition))
+							// Only proceed if we successfully reserve a slot at the storage building
+							if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPosition))
 							{
-								if (assignedPosition != null)
-									assignedPosition.TryGetInteractionPosition(interactor, out validDestination);
+								if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
+								{
+									context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
+									context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+									context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+									// Cleanup delegate in case the behavior tree aborts
+									System.Action cleanup = () =>
+									{
+										if (interactable != null && interactor != null && assignedPosition != null)
+										{
+											interactable.CancelReservation(interactor, assignedPosition);
+										}
+									};
+									context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+
+									return true;
+								}
 							}
-							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
-							return true;
 						}
 					}
 				}

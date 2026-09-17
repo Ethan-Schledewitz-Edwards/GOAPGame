@@ -43,6 +43,12 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 
 	public virtual void ResetContext()
 	{
-		AIContext.ClearAllData();
+		if (AIContext != null)
+		{
+			System.Action cleanupAction = AIContext.GetData<System.Action>(AIContextKeys.c_ReservationCleanup);
+			cleanupAction?.Invoke();
+
+			AIContext.ClearAllData();
+		}
 	}
 }

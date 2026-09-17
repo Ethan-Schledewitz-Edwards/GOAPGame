@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
   m_Name: WoodStorage_BlueprintData
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
-  <BlueprintDataID>k__BackingField: 6
+  <BlueprintDataID>k__BackingField: 1
   <DisplayName>k__BackingField: Wood Storage
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:
@@ -27,4 +27,4 @@ MonoBehaviour:
     <UseFormationRadius>k__BackingField: 0
     <FormationRadius>k__BackingField: 0
     <RequiresReservation>k__BackingField: 0
-    <InteractionDistance>k__BackingField: 0.4
+    <InteractionDistance>k__BackingField: 0.3
