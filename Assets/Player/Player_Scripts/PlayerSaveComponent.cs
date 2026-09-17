@@ -87,7 +87,7 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 
 		if (m_playerController != null)
 		{
-			//m_playerController.enabled = true;
+			m_playerController.enabled = true;
 			m_playerController.Teleport(position);
 			transform.rotation = rotation;
 		}

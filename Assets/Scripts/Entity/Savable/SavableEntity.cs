@@ -68,7 +68,16 @@ namespace Entities.Savable
 			m_entity.EntityPositionChanged += OnEntityMoved;
 
 			m_collider = GetComponent<Collider>();
+
 			m_rigidbody = GetComponent<Rigidbody>();
+			if (m_rigidbody != null)
+			{
+				m_useGravityByDefault = m_rigidbody.useGravity;
+				m_rigidbody.useGravity = false;
+
+				m_isKinematicByDefault = m_rigidbody.isKinematic;
+				m_rigidbody.isKinematic = true;
+			}
 
 			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
@@ -83,15 +92,6 @@ namespace Entities.Savable
 			// Disable active physics initially
 			if (m_collider != null)
 				m_collider.enabled = false;
-
-			if (m_rigidbody != null)
-			{
-				m_useGravityByDefault = m_rigidbody.useGravity;
-				m_rigidbody.useGravity = false;
-
-				m_isKinematicByDefault = m_rigidbody.isKinematic;
-				m_rigidbody.isKinematic = true;
-			}
 		}
 
 		private void OnEnable()
@@ -219,8 +219,8 @@ namespace Entities.Savable
 				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
 					component.RestoreComponentData(savedComponentData);
 			}
-
 			DataRestored?.Invoke();
+
 			EnablePhysicsAndCollision();
 		}
 
