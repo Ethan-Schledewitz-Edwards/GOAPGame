@@ -17,7 +17,7 @@ namespace Construction
 		[Header("Blueprint World Properties")]
 		[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
 		[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 0.2f;
-		[field: SerializeField] public Vector3 InteractionLocalOffset { get; private set; }
+		[field: SerializeField] public InteractionPositionConfig[] InteractionPositions { get; private set; }
 
 #if UNITY_EDITOR
 		public void SetID(int newID)

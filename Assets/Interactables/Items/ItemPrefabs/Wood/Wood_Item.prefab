@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8278289620774005518}
   - component: {fileID: 7127764349435618702}
   - component: {fileID: 616264086070131962}
+  - component: {fileID: 7382144750042955738}
   m_Layer: 7
   m_Name: Wood_Item
   m_TagString: Untagged
@@ -97,13 +98,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
-  m_interactOffset: {fileID: 0}
-  m_formationRadius: 2
-  m_blueprintStructureTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_storageStructureTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
+  m_maxActors: 1
+  m_interactPositions: []
   m_itemData: {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}
-  <m_stackSize>k__BackingField: 1
+  m_stackSize: 1
 --- !u!114 &7127764349435618702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,7 +117,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}
-  m_guid: 
+  m_guid: 105517ab-35f4-4f5a-8f78-3726796ff995
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &616264086070131962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,6 +131,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entity::Entity
+  m_canUpdatePosition: 1
+--- !u!114 &7382144750042955738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1874837442947906605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 0
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.2
 --- !u!1 &8544084039396719212
 GameObject:
   m_ObjectHideFlags: 0

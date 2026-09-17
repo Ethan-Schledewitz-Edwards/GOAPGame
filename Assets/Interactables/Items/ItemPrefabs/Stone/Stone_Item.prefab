@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 5557249503198524681}
   - component: {fileID: 3453584726676022345}
   - component: {fileID: 6964265578082175806}
+  - component: {fileID: 8089288841027459147}
   m_Layer: 7
   m_Name: Stone_Item
   m_TagString: Untagged
@@ -187,13 +188,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
-  m_interactOffset: {fileID: 0}
-  m_formationRadius: 2
-  m_blueprintStructureTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_storageStructureTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
+  m_maxActors: 1
+  m_interactPositions: []
   m_itemData: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-  <m_stackSize>k__BackingField: 1
+  m_stackSize: 1
 --- !u!114 &3453584726676022345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +207,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}
-  m_guid: 
+  m_guid: 4dee9df8-b9f5-44e4-ac1a-df2cbfeb23b1
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &6964265578082175806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,3 +221,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entity::Entity
+  m_canUpdatePosition: 1
+--- !u!114 &8089288841027459147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 1.5
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.2

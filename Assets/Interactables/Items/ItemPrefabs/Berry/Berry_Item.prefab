@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5214229006767308727}
   - component: {fileID: 8515664754511149306}
   - component: {fileID: 2645263737258509412}
+  - component: {fileID: 5647513525238414111}
   m_Layer: 7
   m_Name: Berry_Item
   m_TagString: Untagged
@@ -70,13 +71,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
-  m_interactOffset: {fileID: 0}
-  m_formationRadius: 2
-  m_blueprintStructureTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_storageStructureTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
+  m_maxActors: 1
+  m_interactPositions: []
   m_itemData: {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
-  <m_stackSize>k__BackingField: 1
+  m_stackSize: 1
 --- !u!114 &5214229006767308727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,7 +90,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 2d9dc667733c7d24b9ed64cc77ef59bb, type: 2}
-  m_guid: 
+  m_guid: 32b9485c-7ea0-452e-9f76-16c312a42b7c
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &8515664754511149306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,6 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entity::Entity
+  m_canUpdatePosition: 1
 --- !u!54 &2645263737258509412
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -130,6 +132,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5647513525238414111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5367155534341536093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 1.5
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.2
 --- !u!1 &7200475858740685651
 GameObject:
   m_ObjectHideFlags: 0

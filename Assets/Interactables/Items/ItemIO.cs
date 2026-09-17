@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(Entity))]
+[RequireComponent(typeof(Rigidbody), typeof(Entity), typeof(InteractionPosition))]
 public class ItemIO : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
@@ -16,6 +16,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	// Components
 	private Entity m_entity;
 	private Rigidbody m_rb;
+	private InteractionPosition m_interactionPosition;
 
 	[Header("Item Data")]
 	[SerializeField] private ItemData m_itemData;
@@ -37,6 +38,12 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	{
 		m_entity = GetComponent<Entity>();
 		m_rb = GetComponent<Rigidbody>();
+
+		m_interactionPosition = GetComponent<InteractionPosition>();
+		m_interactionPosition.ConfigureInteractionPosition(1, false, 0f, true, 0.2f);
+
+		if (m_interactPositions == null || m_interactPositions.Length == 0)
+			m_interactPositions = new InteractionPosition[] { m_interactionPosition };
 
 		InitializeBehaviourTree();
 	}

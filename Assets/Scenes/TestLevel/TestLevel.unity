@@ -48556,6 +48556,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1138054492}
     m_Modifications:
+    - target: {fileID: 1914341159798471732, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
+      propertyPath: m_itemTable
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914341159798471732, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
+      propertyPath: <MaxHealth>k__BackingField
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1914341159798471732, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
+      propertyPath: <IsDestroyedOnDeath>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2071504800197458935, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
       propertyPath: m_LocalPosition.x
       value: -158.51704
@@ -49813,6 +49825,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction::InteractionPosition
   <MaxInteractors>k__BackingField: 1
   <UseFormationRadius>k__BackingField: 1
+  <FormationRadius>k__BackingField: 1.5
   <RequiresReservation>k__BackingField: 1
   <InteractionDistance>k__BackingField: 0.4
 --- !u!1001 &1964303450

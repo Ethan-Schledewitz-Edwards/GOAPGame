@@ -64,7 +64,26 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
 
 			SetBlueprintMesh(blueprintData.BlueprintMesh);
-			//SetInteractionOffsetTransform(m_interactOffset, blueprintData.InteractionLocalOffset);
+			for (int i = 0; i < blueprintData.InteractionPositions.Length; i++)
+			{
+				InteractionPositionConfig config = blueprintData.InteractionPositions[i];
+
+				GameObject interactionObj = new GameObject($"InteractionPosition_{i}");
+				interactionObj.transform.SetParent(transform, false);
+				interactionObj.transform.localPosition = config.LocalOffset;
+				interactionObj.transform.localRotation = Quaternion.identity;
+
+				// Configure the position using the values from the struct
+				InteractionPosition interactionComp = interactionObj.AddComponent<InteractionPosition>();
+				interactionComp.ConfigureInteractionPosition
+				(
+					config.MaxInteractors,
+					config.UseFormationRadius,
+					config.FormationRadius,
+					config.RequiresReservation,
+					config.InteractionDistance
+				);
+			}
 
 			transform.position = position;
 			transform.rotation = rotation;

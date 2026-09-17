@@ -59,6 +59,14 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
+		private void Start()
+		{
+			if (m_interactPositions == null || m_interactPositions.Length == 0)
+			{
+				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
+			}
+		}
+
 		protected virtual void OnDestroy()
 		{
 			if (m_itemRequestComponent != null)
@@ -109,8 +117,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			s_cachedBlueprintBT = tree;
 		}
 
-		public override bool TryInteract
-		(
+		public override bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
 		InteractionPosition reservedPosition,
@@ -131,9 +138,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) && inventoryComponent.Slots.Count > 0)
 				{
-					// Check if there's actually a requested item for this blueprint
 					int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
-
 					if (requestedItemID > -1)
 					{
 						executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);

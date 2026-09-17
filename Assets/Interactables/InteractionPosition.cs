@@ -27,6 +27,36 @@ public class InteractionPosition : MonoBehaviour
 		m_reservedInteractors = new List<IInteractor>(MaxInteractors);
 	}
 
+	/// <summary>
+	/// Dynamically configures the parameters for this interaction position at runtime.
+	/// </summary>
+	public void ConfigureInteractionPosition(
+		int maxInteractors,
+		bool useFormationRadius = false,
+		float formationRadius = 1.5f,
+		bool requiresReservation = true,
+		float interactionDistance = 0.5f
+		)
+	{
+		MaxInteractors = Mathf.Max(1, maxInteractors);
+		UseFormationRadius = useFormationRadius;
+		FormationRadius = formationRadius;
+		RequiresReservation = requiresReservation;
+		InteractionDistance = interactionDistance;
+
+		// Re-initialize capacities
+		if (m_interactorsPresent == null)
+		{
+			m_interactorsPresent = new List<IInteractor>(MaxInteractors);
+			m_reservedInteractors = new List<IInteractor>(MaxInteractors);
+		}
+		else
+		{
+			m_interactorsPresent.Capacity = Mathf.Max(m_interactorsPresent.Count, MaxInteractors);
+			m_reservedInteractors.Capacity = Mathf.Max(m_reservedInteractors.Count, MaxInteractors);
+		}
+	}
+
 	public bool TryReserve(IInteractor interactor)
 	{
 		if (!RequiresReservation)
