@@ -1,6 +1,7 @@
 using SaveLoad.Core;
 using System.Collections;
 using UnityEngine;
+using Entities.Core;
 
 public class ActorHealthComponent : HealthComponent, ISaveableComponent
 {
@@ -9,25 +10,44 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	private const float c_tirednessDegredation = 0.2f;
 	private const float c_baseHealthDegredation = 2f;
 
+	[Header("Settings")]
+	[field: SerializeField] public int MaxHunger { get; private set; } = 100;
+	[field: SerializeField] public int MaxRest { get; private set; } = 100;
+	[field: SerializeField] public int MaxHapiness { get; private set; } = 100;
+
+	// Components
 	private Actor m_actor;
 
-	private float m_healthInterval;
+	// System
+	private float m_healthDegredationInterval;
 
-	[field: SerializeField] public int MaxHunger { get; private set; } = 100;
 	[field: SerializeField] public int Hunger { get; private set; } = 100;
-	private float m_hungerInterval;
+	private float m_hungerDegredationInterval;
 
-	[field: SerializeField] public int MaxRest { get; private set; } = 100;
 	[field: SerializeField] public int Rest { get; private set; } = 100;
-	private float m_restInterval;
+	private float m_restDegredationInterval;
 
-	[field: SerializeField] public int MaxHapiness { get; private set; } = 100;
 	[field: SerializeField] public int Hapiness { get; private set; } = 100;
 
 	protected override void Awake()
 	{
 		base.Awake();
 		m_actor = GetComponent<Actor>();
+
+		if (GetComponent<ISavableEntity>() != null)
+			GetComponent<ISavableEntity>().TransformRestored += HandleSpawned;
+	}
+
+	private void OnDestroy()
+	{
+		if (GetComponent<ISavableEntity>() != null)
+			GetComponent<ISavableEntity>().TransformRestored -= HandleSpawned;
+	}
+
+	private void HandleSpawned(Vector3 savedPosition, Quaternion savedRotation)
+	{
+		ActorManager.Instance.AddActor(m_actor);
+		m_actor.Pathing.SetPosition(savedPosition);
 	}
 
 	private void SetHunger(int newHungerValue)
@@ -60,19 +80,19 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	public void TickStats(float t)
 	{
 		// Degrade hunger while perserving overflow
-		m_hungerInterval += t * c_hungerDegredation;
-		while (m_hungerInterval >= 1f)
+		m_hungerDegredationInterval += t * c_hungerDegredation;
+		while (m_hungerDegredationInterval >= 1f)
 		{
 			RemoveHunger(1);
-			m_hungerInterval -= 1f;
+			m_hungerDegredationInterval -= 1f;
 		}
 
 		// Degrade tiredness while perserving overflow
-		m_restInterval += t * c_tirednessDegredation;
-		while (m_restInterval >= 1f)
+		m_restDegredationInterval += t * c_tirednessDegredation;
+		while (m_restDegredationInterval >= 1f)
 		{
 			RemoveTiredness(1);
-			m_restInterval -= 1f;
+			m_restDegredationInterval -= 1f;
 		}
 
 		// Calculate health degredation
@@ -86,19 +106,13 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 		// Degrade health if too tired or hungry
 		if (healthDegredation > 0)
 		{
-			m_healthInterval += t * (c_baseHealthDegredation * (1 + healthDegredation));
-			while (m_healthInterval >= 1f)
+			m_healthDegredationInterval += t * (c_baseHealthDegredation * (1 + healthDegredation));
+			while (m_healthDegredationInterval >= 1f)
 			{
 				RemoveHealth(1);
-				m_healthInterval -= 1f;
+				m_healthDegredationInterval -= 1f;
 			}
 		}
-	}
-
-	protected override IEnumerator TrySpawn()
-	{
-		ActorManager.Instance.AddActor(m_actor);
-		return base.TrySpawn();
 	}
 
 	protected override void OnDie()

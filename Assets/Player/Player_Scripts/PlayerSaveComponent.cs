@@ -5,11 +5,18 @@ using SaveLoad.Data;
 using System;
 using UnityEngine;
 
-public class PlayerSaveHandler : MonoBehaviour
+public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 {
 	private const string c_GUID = "Player";
 
 	private PlayerController m_playerController;
+
+	// ISavableEntity properties
+	public bool SavedByChunks => false;
+
+	// Events
+	public event Action DataRestored;
+	public event Action<Vector3, Quaternion> TransformRestored;
 
 	private void Awake()
 	{
@@ -21,17 +28,22 @@ public class PlayerSaveHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveEvents.PlayerDataRequested += ProvidePlayerData;
+		SaveEvents.PlayerEntityDataRequested += ProvidePlayerData;
 		SaveEvents.GameLoaded += ApplyLoadedData;
 	}
 
 	private void OnDestroy()
 	{
-		SaveEvents.PlayerDataRequested -= ProvidePlayerData;
+		SaveEvents.PlayerEntityDataRequested -= ProvidePlayerData;
 		SaveEvents.GameLoaded -= ApplyLoadedData;
 	}
 
 	private SerializablePlayerData ProvidePlayerData()
+	{
+		return new SerializablePlayerData(DateTime.Now, GenerateSaveData());
+	}
+
+	public SerializableEntityData GenerateSaveData()
 	{
 		Vector3 playerRotation = transform.eulerAngles;
 
@@ -53,7 +65,7 @@ public class PlayerSaveHandler : MonoBehaviour
 			data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
 		}
 
-		return new SerializablePlayerData(DateTime.Now, data);
+		return data;
 	}
 
 	private void ApplyLoadedData(SerializablePlayerData saveFile)
@@ -69,9 +81,16 @@ public class PlayerSaveHandler : MonoBehaviour
 		SerializableEntityData data = saveFile.PlayerData;
 
 		// Restore Position and Rotation
-		Vector3 spawnPosition = new Vector3(data.PosX, data.PosY, data.PosZ);
-		m_playerController.Teleport(spawnPosition);
-		transform.rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
+		Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
+		Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
+		TransformRestored?.Invoke(position, rotation);
+
+		if (m_playerController != null)
+		{
+			//m_playerController.enabled = true;
+			m_playerController.Teleport(position);
+			transform.rotation = rotation;
+		}
 
 		// Restore component data
 		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
@@ -82,9 +101,7 @@ public class PlayerSaveHandler : MonoBehaviour
 			if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
 				component.RestoreComponentData(savedComponentData);
 		}
-
-		if (m_playerController != null)
-			m_playerController.enabled = true;
+		DataRestored?.Invoke();
 
 		Debug.Log("Player state and components restored successfully!");
 	}

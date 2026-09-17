@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-[RequireComponent(typeof(AudioSource), typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class HealthComponent : MonoBehaviour
 {
 	// Components
 	protected AudioSource m_audioSource;
-	protected Rigidbody m_rb;
 
-	[field: Header("Properties")]
+	[field: Header("Settings")]
 	[field: SerializeField] public int MaxHealth { get; private set; } = 100;
 	[field: SerializeField] public bool IsDestroyedOnDeath { get; private set; } = false;
 
@@ -23,32 +22,15 @@ public class HealthComponent : MonoBehaviour
 	[SerializeField] private AudioClip[] m_dieSounds;
 
 	// System vars
-	protected bool m_isSpawning;
 	public int Health { get; private set; }
 	public bool IsDead { get; private set; }
-	protected LayerMask m_collisionLayerMask;
-
-	#region Initialization Methods
 
 	protected virtual void Awake()
 	{
 		m_audioSource = GetComponent<AudioSource>();
 
-		m_rb = GetComponent<Rigidbody>();
-		m_rb.isKinematic = true;
-
 		SetHealth(MaxHealth);
 	}
-
-	protected virtual void Start()
-	{
-		m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
-
-		StartCoroutine(TrySpawn());
-	}
-	#endregion
-
-	#region Health State Methods
 
 	public void SetHealth(int newHealthValue)
 	{
@@ -128,27 +110,4 @@ public class HealthComponent : MonoBehaviour
 	}
 
 	protected virtual void OnRevive() { Debug.Log($"{gameObject.name} is alive."); }
-
-	/// <summary>
-	/// Attempts to place an entity down
-	/// </summary>
-	protected virtual IEnumerator TrySpawn()
-	{
-		m_isSpawning = true;
-
-		float startHeight = 1f;
-		float rayLength = 3f;
-		Vector3 rayStart = transform.position + (Vector3.up * startHeight);
-		RaycastHit hit;
-
-		// Raycast down to find the highest possible point
-		while(!Physics.Raycast(rayStart, Vector3.down * rayLength, out hit, rayLength, m_collisionLayerMask, QueryTriggerInteraction.Ignore) && m_isSpawning)
-			yield return null;
-
-		transform.position = hit.point;
-
-		m_isSpawning = false;
-	}
-
-	#endregion
 }

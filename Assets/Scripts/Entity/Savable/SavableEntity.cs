@@ -1,11 +1,12 @@
-using GenericIndex;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 using Entities.Core;
-using WorldManagement.Core;
+using GenericIndex;
 using SaveLoad.Core;
 using SaveLoad.Data;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using WorldManagement.Core;
 
 namespace Entities.Savable
 {
@@ -20,6 +21,9 @@ namespace Entities.Savable
 		[field: SerializeField, Tooltip("Should be true when an object is not spawned at run-time.")] 
 		public bool IsManuallyAuthored { get; private set; } = false;
 
+		// ISavableEntity properties
+		public bool SavedByChunks => true;
+
 		// Events
 		public event Action DataRestored;
 		public event Action<Vector3, Quaternion> TransformRestored;
@@ -27,6 +31,14 @@ namespace Entities.Savable
 		// System
 		private Entity m_entity;
 		private Vector2Int m_chunkXZ = default;
+		private LayerMask m_collisionLayerMask;
+
+		private bool m_useGravityByDefault;
+		private bool m_isKinematicByDefault;
+		private bool m_isPlacing;
+
+		private Collider m_collider;
+		private Rigidbody m_rigidbody;
 
 #if UNITY_EDITOR
 		private void OnValidate()
@@ -55,9 +67,30 @@ namespace Entities.Savable
 			m_entity = GetComponent<Entity>();
 			m_entity.EntityPositionChanged += OnEntityMoved;
 
+			m_collider = GetComponent<Collider>();
+			m_rigidbody = GetComponent<Rigidbody>();
+
 			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
 				m_guid = System.Guid.NewGuid().ToString();
+			}
+		}
+
+		private void Start()
+		{
+			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
+
+			// Disable active physics initially
+			if (m_collider != null)
+				m_collider.enabled = false;
+
+			if (m_rigidbody != null)
+			{
+				m_useGravityByDefault = m_rigidbody.useGravity;
+				m_rigidbody.useGravity = false;
+
+				m_isKinematicByDefault = m_rigidbody.isKinematic;
+				m_rigidbody.isKinematic = true;
 			}
 		}
 
@@ -72,6 +105,7 @@ namespace Entities.Savable
 				m_entity.EntityPositionChanged -= OnEntityMoved;
 
 			UnregisterFromCurrentChunk();
+			StopAllCoroutines();
 		}
 
 		private void OnEntityMoved()
@@ -117,6 +151,18 @@ namespace Entities.Savable
 			m_chunkXZ = default;
 		}
 
+		private void EnablePhysicsAndCollision()
+		{
+			if (m_collider != null)
+				m_collider.enabled = true;
+
+			if (m_rigidbody != null)
+			{
+				m_rigidbody.useGravity = m_useGravityByDefault;
+				m_rigidbody.isKinematic = m_isKinematicByDefault;
+			}
+		}
+
 		/// <summary>
 		/// Gathers data from all ISaveableComponent scripts on this GameObject
 		/// </summary>
@@ -160,17 +206,8 @@ namespace Entities.Savable
 			// Restore the entities transform
 			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 			Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
-			if (TryGetComponent<UnityEngine.AI.NavMeshAgent>(out var navAgent))
-			{
-				navAgent.Warp(position);
-				transform.rotation = rotation;
-			}
-			else
-			{
-				transform.position = position;
-				transform.rotation = rotation;
-			}
-
+			transform.position = position;
+			transform.rotation = rotation;
 			TransformRestored?.Invoke(position, rotation);
 
 			// Restore component data
@@ -182,7 +219,9 @@ namespace Entities.Savable
 				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
 					component.RestoreComponentData(savedComponentData);
 			}
+
 			DataRestored?.Invoke();
+			EnablePhysicsAndCollision();
 		}
 
 		private int GetPrefabID()

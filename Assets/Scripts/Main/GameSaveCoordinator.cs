@@ -33,7 +33,7 @@ namespace Main.Core
 			SaveEvents.SavingBegan?.Invoke();
 
 			// Get the players data
-			SerializablePlayerData playerSaveData = SaveEvents.PlayerDataRequested?.Invoke();
+			SerializablePlayerData playerSaveData = SaveEvents.PlayerEntityDataRequested?.Invoke();
 
 			// Write to the disk
 			if (playerSaveData != null)

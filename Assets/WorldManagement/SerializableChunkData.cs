@@ -28,6 +28,9 @@ namespace WorldManagement.Core
 			{
 				if (entityObj != null && entityObj.TryGetComponent(out ISavableEntity saveableEntity))
 				{
+					if (!saveableEntity.SavedByChunks)
+						continue;
+
 					SerializableEntityData data = saveableEntity.GenerateSaveData();
 					if (data == null)
 						continue;

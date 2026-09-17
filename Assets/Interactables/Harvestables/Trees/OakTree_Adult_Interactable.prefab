@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction::InteractionPosition
   <MaxInteractors>k__BackingField: 12
   <UseFormationRadius>k__BackingField: 1
+  <FormationRadius>k__BackingField: 1.5
   <RequiresReservation>k__BackingField: 1
   <InteractionDistance>k__BackingField: 0.2
 --- !u!1 &3778585277737840742
@@ -62,7 +63,8 @@ GameObject:
   - component: {fileID: 1914341159798471732}
   - component: {fileID: 6518718037148992619}
   - component: {fileID: 1005846120864118715}
-  - component: {fileID: 2952778721549717865}
+  - component: {fileID: 2482520739071125332}
+  - component: {fileID: -6808830740253480358}
   m_Layer: 7
   m_Name: OakTree_Adult_Interactable
   m_TagString: Untagged
@@ -260,33 +262,34 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1.5, z: 0}
   m_TimeToStationary: 0.5
---- !u!54 &2952778721549717865
-Rigidbody:
+--- !u!114 &2482520739071125332
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3778585277737840742}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
+  m_canUpdatePosition: 1
+--- !u!114 &-6808830740253480358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778585277737840742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
+  m_savablePrefabData: {fileID: 0}
+  m_guid: 
+  <IsManuallyAuthored>k__BackingField: 1
 --- !u!1 &5690636445853032114
 GameObject:
   m_ObjectHideFlags: 0

@@ -541,7 +541,7 @@ namespace Player.Core
 		public void Teleport(Vector3 position)
 		{
 			this.m_position = position;
-			transform.position = this.m_position;
+			m_rb.position = position;
 		}
 
 		public void Stop()

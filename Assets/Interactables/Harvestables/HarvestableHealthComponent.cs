@@ -7,23 +7,19 @@ using UnityEngine;
 
 public class HarvestableHealthComponent : HealthComponent
 {
-	// Constants
-	private const float c_assignRange = 5.0f;
-
 	[Header("Loot")]
 	[SerializeField] private ItemTable m_itemTable;
 	[SerializeField] private int m_minTableRollsOnDeath = 2;
 	[SerializeField] private int m_maxtableRollsOnDeath = 4;
 
+	// Components
+	private MeshRenderer m_meshRenderer;
+
 	// System
 	public bool IsDamagable => m_isDamagable;
 	[SerializeField] private bool m_isDamagable = true;
 
-	private MeshRenderer m_meshRenderer;
-
 	private int m_consecutiveHits;
-
-	private int m_actorLayerMask;
 
 	protected override void Awake()
 	{
@@ -32,14 +28,7 @@ public class HarvestableHealthComponent : HealthComponent
 		m_meshRenderer = GetComponent<MeshRenderer>();
 		if(m_meshRenderer == null )
 			m_meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-		m_actorLayerMask = 1 << LayerMask.NameToLayer("Actor");
-
-		m_rb.useGravity = false;
-		m_rb.isKinematic = true;
 	}
-
-	protected override void Start(){}
 
 	protected override void OnTakeDamage()
 	{

@@ -19,6 +19,6 @@ namespace SaveLoad.Core
 		/// <summary>
 		/// Should be used to request player data from the the player save handler.
 		/// </summary>
-		public static Func<SerializablePlayerData> PlayerDataRequested;
+		public static Func<SerializablePlayerData> PlayerEntityDataRequested;
 	}
 }

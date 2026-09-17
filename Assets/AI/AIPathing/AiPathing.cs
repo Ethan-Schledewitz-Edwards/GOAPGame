@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIPathing : MonoBehaviour
@@ -72,19 +73,6 @@ public class AIPathing : MonoBehaviour
 
 	#region Actor Pathing
 
-	public void ClearDestination()
-	{
-		if (m_navAgent.isActiveAndEnabled)
-			m_navAgent.ResetPath();
-
-		m_destination = Vector3.zero;
-		m_pathCorners = new Vector3[0];
-		m_cornersPassed = 0;
-
-		if (m_destinationCoroutine != null)
-			StopCoroutine(m_destinationCoroutine);
-	}
-
 	public void SetDestination(Vector3 destinationPos)
 	{
 		if (destinationPos == Vector3.zero)
@@ -100,6 +88,31 @@ public class AIPathing : MonoBehaviour
 		m_destination = destinationPos;
 
 		ApplyPathingByFidelity();
+	}
+
+	public void ClearDestination()
+	{
+		if (m_navAgent.isActiveAndEnabled)
+			m_navAgent.ResetPath();
+
+		m_destination = Vector3.zero;
+		m_pathCorners = new Vector3[0];
+		m_cornersPassed = 0;
+
+		if (m_destinationCoroutine != null)
+			StopCoroutine(m_destinationCoroutine);
+	}
+
+	public void SetPosition(Vector3 worldPosition)
+	{
+		if(m_navAgent != null)
+		{
+			m_navAgent.Warp(worldPosition);
+		}
+		else
+		{
+			transform.position = worldPosition;
+		}
 	}
 
 	public void TickAIPathing()

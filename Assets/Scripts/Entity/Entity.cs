@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using WorldManagement.Core;
 
@@ -13,18 +14,21 @@ namespace Entities.Core
 		public event Action EntityPositionChanged;
 
 		// System
+		private bool m_isSpawning;
 		protected Vector3 m_position { get; private set; }
 		private Vector2Int m_currentChunkXZ;
 		[SerializeField] private bool m_canUpdatePosition = true;
 
+
 		private void OnDestroy()
 		{
 			EntityPositionChanged = null;
+			StopAllCoroutines();
 		}
 
 		private void FixedUpdate()
 		{
-			if (m_canUpdatePosition)
+			if (!m_isSpawning && m_canUpdatePosition)
 				UpdatePosition();
 		}
 

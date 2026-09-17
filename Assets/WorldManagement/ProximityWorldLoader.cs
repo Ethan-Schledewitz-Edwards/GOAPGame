@@ -12,6 +12,8 @@ namespace WorldManagement.Core
 		[SerializeField] private Transform m_player;
 		[SerializeField] private int m_renderDist = 4;
 
+		private ISavableEntity m_playerSaveEntity;
+
 		private WorldManager m_worldBuilder;
 		private readonly HashSet<Vector2Int> m_chunksToUnload = new HashSet<Vector2Int>();
 		private readonly List<Vector2Int> m_chunksToLoad = new List<Vector2Int>();
@@ -25,21 +27,26 @@ namespace WorldManagement.Core
 		private void Awake()
 		{
 			m_worldBuilder = GetComponent<WorldManager>();
+
+			if(m_player != null)
+			{
+				m_playerSaveEntity = m_player.GetComponent<ISavableEntity>();
+				m_playerSaveEntity.TransformRestored += HandleGameLoaded;
+			}
+			else
+			{
+				Debug.LogWarning("No player transform was assigned to the ProximityWorldLoader. Assign one in the editor before entering play mode.", this);
+				enabled = false;
+			}
 		}
 
-		private void Start()
-		{
-			LoadBatchOfChunks();
-		}
 
-		private void OnEnable()
+		private void OnDestroy()
 		{
-			SaveEvents.GameLoaded += HandleGameLoaded;
-		}
-
-		private void OnDisable()
-		{
-			SaveEvents.GameLoaded -= HandleGameLoaded;
+			if(m_playerSaveEntity != null)
+			{
+				m_playerSaveEntity.TransformRestored -= HandleGameLoaded;
+			}
 		}
 
 		private void Update()
@@ -47,9 +54,7 @@ namespace WorldManagement.Core
 			if (m_isProcessing || m_player == null)
 				return;
 
-			int currentChunkX = Mathf.FloorToInt(m_player.position.x / WorldManager.s_ChunkSize.x);
-			int currentChunkZ = Mathf.FloorToInt(m_player.position.z / WorldManager.s_ChunkSize.z);
-			Vector2Int currentChunk = new Vector2Int(currentChunkX, currentChunkZ);
+			Vector2Int currentChunk = GetPlayerChunk(m_player.transform.position);
 
 			// Only recalculate when the player moves across a chunk boundary
 			if (currentChunk != m_lastPlayerChunk)
@@ -99,9 +104,9 @@ namespace WorldManagement.Core
 			}
 		}
 
-		private void HandleGameLoaded(SerializablePlayerData data)
+		private void HandleGameLoaded(Vector3 position, Quaternion rotation)
 		{
-			if (data == null) 
+			if (position != null) 
 				return;
 
 			StopAllCoroutines();
@@ -111,8 +116,9 @@ namespace WorldManagement.Core
 			m_chunksToUnload.Clear();
 			m_chunksToLoad.Clear();
 
-			m_lastPlayerChunk = new Vector2Int(int.MinValue, int.MinValue);
+			m_lastPlayerChunk = GetPlayerChunk(position);
 		}
+
 		private IEnumerator LoadProcess(Vector2Int[] chunks)
 		{
 			m_isProcessing = true;
@@ -131,6 +137,13 @@ namespace WorldManagement.Core
 				m_lastPlayerChunk = currentChunk;
 				LoadBatchOfChunks();
 			}
+		}
+
+		private Vector2Int GetPlayerChunk(Vector3 playerPosition)
+		{
+			int currentChunkX = Mathf.FloorToInt(playerPosition.x / WorldManager.s_ChunkSize.x);
+			int currentChunkZ = Mathf.FloorToInt(playerPosition.z / WorldManager.s_ChunkSize.z);
+			return new Vector2Int(currentChunkX, currentChunkZ);
 		}
 	}
 }

@@ -52,9 +52,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634ce75a9a241cf408ab4e803dec9534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.PlacedBlueprint
+  <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
-  m_interactOffset: {fileID: 4299432510428715485}
-  m_formationRadius: 2
+  m_maxActors: 1
+  m_interactPositions: []
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_actorsAssigned: 0
@@ -104,7 +105,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
@@ -123,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
   m_guid: 1c529a71-adb8-465e-9378-361df44766bf
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &6019955960294120562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entity::Entity
+  m_canUpdatePosition: 1
 --- !u!1 &735586703964466302
 GameObject:
   m_ObjectHideFlags: 0
