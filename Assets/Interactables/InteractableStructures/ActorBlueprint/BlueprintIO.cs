@@ -37,8 +37,6 @@ namespace Interaction.InteractableStructures.Blueprints
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
-		public int MaxCapacity => m_maxCapacity;
-		public int ActorsAssigned => m_actorsAssigned;
 
 		// IItemFiltered Properties
 		[SerializeField] protected ItemTag[] m_tagFilter;

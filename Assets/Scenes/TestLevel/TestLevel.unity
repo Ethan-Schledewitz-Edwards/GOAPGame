@@ -50549,7 +50549,7 @@ MonoBehaviour:
   <UseFormationRadius>k__BackingField: 1
   <FormationRadius>k__BackingField: 1.5
   <RequiresReservation>k__BackingField: 1
-  <InteractionDistance>k__BackingField: 0.4
+  m_interactionDistance: 0.3
 --- !u!1001 &1964303450
 PrefabInstance:
   m_ObjectHideFlags: 0

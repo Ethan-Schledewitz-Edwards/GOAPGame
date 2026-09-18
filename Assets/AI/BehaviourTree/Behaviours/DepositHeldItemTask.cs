@@ -11,18 +11,12 @@ using UnityEngine;
 /// </remarks>
 public class DepositHeldItemTask : BTNodeBase
 {
-	private const string c_doneDepositingKey = "DoneDepositing";
+	private const string c_isDepositingKey = "IsDepositing";
 	private const string c_depositCooldownKey = "DepositCooldownTimer";
-	private const string c_isInteractingKey = "IsInteracting";
 	private const float c_depositCooldown = 0.5f;
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		if (context.GetData<bool>(c_doneDepositingKey))
-		{
-			return EBTNodeState.STATE_SUCSESS;
-		}
-
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
@@ -41,9 +35,8 @@ public class DepositHeldItemTask : BTNodeBase
 			targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent) &&
 			targetTransform.TryGetComponent(out InteractableObjectBase iob))
 		{
-			bool isInteracting = context.GetData<bool>(c_isInteractingKey);
+			bool isInteracting = context.GetData<bool>(c_isDepositingKey);
 
-			// 1. Establish the formal interaction if we haven't already
 			if (!isInteracting)
 			{
 				if (!iob.TryInteract(interactor, executorTransform.position, assignedPos, out int interactorValue))
@@ -53,7 +46,7 @@ public class DepositHeldItemTask : BTNodeBase
 					return EBTNodeState.STATE_FAILURE;
 				}
 
-				context.SetData<bool>(c_isInteractingKey, true);
+				context.SetData<bool>(c_isDepositingKey, true);
 				context.ClearData(AIContextKeys.c_ReservationCleanup); // Consumed the reservation successfully
 			}
 
@@ -110,25 +103,23 @@ public class DepositHeldItemTask : BTNodeBase
 
 	private EBTNodeState FinishAndSucceed(AIContext context, InteractableObjectBase iob, IInteractor interactor, InteractionPosition assignedPos)
 	{
-		context.SetData<bool>(c_doneDepositingKey, true);
-
 		iob.StopInteract(interactor, assignedPos);
 		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
+		context.ClearData(c_isDepositingKey);
 
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		context.SetData<bool>(c_doneDepositingKey, false);
-		context.SetData<bool>(c_isInteractingKey, false);
-		context.SetData<float>(c_depositCooldownKey, c_depositCooldown);
+		context.SetData<bool>(c_isDepositingKey, false);
+		context.SetData<float>(c_depositCooldownKey, 0f);
 	}
 
 	protected override void OnNodeExited(AIContext context)
 	{
 		// If the node is aborted via timeout, release the interaction
-		bool isInteracting = context.GetData<bool>(c_isInteractingKey);
+		bool isInteracting = context.GetData<bool>(c_isDepositingKey);
 		if (isInteracting)
 		{
 			Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
@@ -150,15 +141,13 @@ public class DepositHeldItemTask : BTNodeBase
 		context.ClearData(AIContextKeys.c_ReservationCleanup);
 
 		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-		context.ClearData(c_doneDepositingKey);
 		context.ClearData(c_depositCooldownKey);
-		context.ClearData(c_isInteractingKey);
+		context.ClearData(c_isDepositingKey);
 	}
 
 	protected override void OnNodeReset(AIContext context)
 	{
-		context.ClearData(c_doneDepositingKey);
 		context.ClearData(c_depositCooldownKey);
-		context.ClearData(c_isInteractingKey);
+		context.ClearData(c_isDepositingKey);
 	}
 }

@@ -25,14 +25,16 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	// Events
 	public event Action<Transform> ItemPickedUp;
 
-	// System
-	private bool m_isItemStored;
-
 	// IItemObject properties
 	public ItemData ItemData => m_itemData;
 	public int StackSize => m_stackSize;
 	public Transform Transform => transform;
 	public bool IsItemStored => m_isItemStored;
+
+	// System
+	private bool m_isItemStored;
+	private IInteractor m_holder;
+
 
 	public void Awake()
 	{
@@ -78,7 +80,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		s_ItemBT = tree;
 	}
 
-	public void SetAmount(int amount)
+	public void SetStackSize(int amount)
 	{
 		m_stackSize = amount;
 
@@ -105,7 +107,8 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	{
 		m_isItemStored = false;
 		ConstrainPhysics(false);
-		ReleaseActor();
+
+		//StopInteract();
 
 		transform.parent = null;
 		if (dropPosition != Vector3.zero)

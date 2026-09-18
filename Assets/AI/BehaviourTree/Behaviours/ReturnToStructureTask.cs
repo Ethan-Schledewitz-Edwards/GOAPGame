@@ -26,10 +26,10 @@ public class ReturnToStructureTask : BTNodeBase
 			if (structure != null && structure.Object != null)
 			{
 				GameObject structureObject = structure.Object;
-				if (structureObject.TryGetComponent(out InteractableObjectBase interactableObject))
+				if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
 				{
 					// Try to reserve the closest position on the structure's interactable component
-					if (interactableObject.TryReserveClosestPosition(interactor, executorPosition, out InteractionPosition assignedPosition))
+					if (interactable.TryReserveClosestPosition(interactor, executorPosition, out InteractionPosition assignedPosition))
 					{
 						if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
 						{
@@ -43,9 +43,9 @@ public class ReturnToStructureTask : BTNodeBase
 							// Cleanup delegate in case the behavior tree aborts
 							System.Action cleanup = () =>
 							{
-								if (interactableObject != null && interactor != null && assignedPosition != null)
+								if (interactable != null && interactor != null && assignedPosition != null)
 								{
-									interactableObject.CancelReservation(interactor, assignedPosition);
+									interactable.CancelReservation(interactor, assignedPosition);
 								}
 							};
 							context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);

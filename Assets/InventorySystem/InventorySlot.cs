@@ -17,7 +17,7 @@ namespace InventorySystem
 		public Action<InventorySlot> SlotUpdated;
 
 		// System
-		[SerializeField] private Stack<Transform> m_physicalItemObjects = new Stack<Transform>();
+		private Stack<Transform> m_physicalItemObjects = new Stack<Transform>();
 
 		#region Constructors
 

@@ -84,7 +84,7 @@ public class SearchForClosestJobTask : BTNodeBase
 		InteractableObjectBase closestTask = null;
 
 		Vector3 pos = executorPosition;
-		float interactionRadius = context.GetData<float>(AIContextKeys.c_InteractionDistance, 3.0f);
+		float interactionRadius = context.GetData<float>(AIContextKeys.c_JobSearchRange, 3.0f);
 		int interactionLayers = context.GetData<int>(AIContextKeys.c_InteractionLayer);
 
 		Collider[] hitColliders = Physics.OverlapSphere(pos, interactionRadius, interactionLayers, QueryTriggerInteraction.Collide);

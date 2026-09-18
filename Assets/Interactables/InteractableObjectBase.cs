@@ -103,7 +103,11 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		{
 			assignedPosition.TryRemoveInteractor(interactor);
 		}
-		ReleaseActor();
+
+		int totalActors = GetTotalActorsPresent();
+
+		if (totalActors < m_actorsNeeded)
+			StopInteractSpeed();
 	}
 
 	public abstract BehaviourTree GetBehaviourTree();
@@ -120,15 +124,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		if (totalActors >= m_maxActors)
 			InteractableBecameInvalid?.Invoke();
 	}
-
-	protected void ReleaseActor()
-	{
-		int totalActors = GetTotalActorsPresent();
-
-		if (totalActors < m_actorsNeeded)
-			StopInteractSpeed();
-	}
-
 	#endregion
 
 	/// <summary>

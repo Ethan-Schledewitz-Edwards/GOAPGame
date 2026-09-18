@@ -23,7 +23,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	private const float c_searchForJobRange = 3.0f;
 	private const float c_searchForJobStoppingDistance = 0.25f;
 	private const float c_jobSearchCooldownDuration = 2.0f;
-	private const float c_baseInteractionDistance = 0.8f;
+	private const float c_interactionDistance = 0.3f;
 
 	[Header("Parameters")]
 	[field: SerializeField] public EFaction ActorFaction { get; private set; }
@@ -41,16 +41,15 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	// Events
 	public event Action<int> OnSettlementUpdated;
-	public event Action<float> InteractionDistanceChanged;
 
 	// System Properties
-	public float InteractionDistance => m_interactionDistance;
+	public float JobSearchRange => c_searchForJobRange;
+	public float InteractionDistanceSqrt { get; private set; }
 	public int SettlementID { get; private set; } = 0; // Settlement ID actor inhabits
 	public int WorkstationID { get; private set; } = 0; // Structure ID actor resides in
 
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; }  = default;
-	private float m_interactionDistance;
 	private int m_jobAssignmentID = 0;
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
@@ -68,12 +67,12 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutorBase>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
 		Pathing = GetComponent<AIPathing>();
+		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
 	private void Start()
 	{
 		SetLogicExecutorState(EActorState.STATE_OffDuty);
-		SetInteractionDistance(c_baseInteractionDistance);
 	}
 
 	private void OnEnable()
@@ -118,17 +117,19 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 			if (m_targetInteractable != null && m_assignedInteractionPosition != null)
 			{
-				// Dynamically update pathing
+				// Path to the assigned interaction position
 				if (Pathing.HasPath)
 				{
 					if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 					{
 						Pathing.SetDestination(validPos);
 
-						//float distanceRemaining = Pathing.PathDistRemaining();
-						//if (distanceRemaining <= m_interactionDistance)
-						float distToTarget = Vector3.Distance(transform.position, validPos);
-						if (distToTarget <= m_interactionDistance)
+						Vector3 actorPosFlat = new Vector3(transform.position.x, 0, transform.position.z);
+						Vector3 targetPosFlat = new Vector3(validPos.x, 0, validPos.z);
+
+						float distToTarget = (actorPosFlat - targetPosFlat).sqrMagnitude;
+						float interactRangeSqrt = Mathf.Max(InteractionDistanceSqrt, m_assignedInteractionPosition.InteractionDistanceSqrt);
+						if (distToTarget <= interactRangeSqrt)
 						{
 							InteractWith(m_targetInteractable, true);
 						}
@@ -188,15 +189,12 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						int jobAssignmentBeforeTick = m_jobAssignmentID;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
-						// Reset if the tree finished and we are still on the same job
-						if (m_jobAssignmentID == jobAssignmentBeforeTick)
+						// Reset only if the tree finished and a new job wasn't assigned during the tick
+						if (m_jobAssignmentID == jobAssignmentBeforeTick &&
+							(treeState == EBTNodeState.STATE_SUCSESS || treeState == EBTNodeState.STATE_FAILURE))
 						{
-							if (treeState == EBTNodeState.STATE_SUCSESS ||
-								treeState == EBTNodeState.STATE_FAILURE)
-							{
-								ClearJob();
-								DropHeldItem();
-							}
+							ClearJob();
+							DropHeldItem();
 						}
 					}
 					break;
@@ -205,12 +203,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		if (m_targetTransform != null && !Pathing.IsMoving)
 			Pathing.FaceTarget(m_targetTransform.position);
-	}
-
-	public void SetInteractionDistance(float interactionDistance)
-	{
-		m_interactionDistance = interactionDistance;
-		InteractionDistanceChanged?.Invoke(interactionDistance);
 	}
 
 	/// <summary>
@@ -264,6 +256,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
 	{
+		m_targetTransform = actorInteractableObjectBase.transform;
+
 		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
 		(
 			this,
@@ -403,14 +397,15 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)
 		{
-			if (i == null) continue;
+			if (i == null) 
+				continue;
 
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
 				if (aio.IsAtActorCapacity())
 					continue;
 
-				float dist = Vector3.Distance(pos, aio.transform.position);
+				float dist = (pos - aio.transform.position).sqrMagnitude;
 				if (dist < closestDist)
 				{
 					closestTask = aio;
@@ -455,10 +450,9 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 				return;
 			}
 
+			// Try to reserve an interaction position, then move to it
 			InteractableObjectBase foundTask = SearchForTask();
 			SetTargetInteractable(foundTask);
-
-			// Try to reserve an interaction position, then move to it
 			if (m_targetInteractable != null)
 			{
 				if (m_targetInteractable.TryReserveClosestPosition(this, transform.position, out m_assignedInteractionPosition))

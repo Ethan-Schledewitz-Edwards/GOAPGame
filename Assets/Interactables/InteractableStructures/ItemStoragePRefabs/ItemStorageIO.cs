@@ -34,8 +34,7 @@ namespace Interaction.InteractableStructures
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
-		public int MaxCapacity => m_maxCapacity;
-		public int ActorsAssigned => m_actorsAssigned;
+
 
 		private void Awake()
 		{
