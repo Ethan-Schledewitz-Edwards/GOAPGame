@@ -42,7 +42,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		m_rb = GetComponent<Rigidbody>();
 
 		m_interactionPosition = GetComponent<InteractionPosition>();
-		m_interactionPosition.ConfigureInteractionPosition(1, false, 0f, true, 0.2f);
+		m_interactionPosition.ConfigureInteractionPosition(1, false, 0f, true, 0.5f);
 
 		if (m_interactPositions == null || m_interactPositions.Length == 0)
 			m_interactPositions = new InteractionPosition[] { m_interactionPosition };

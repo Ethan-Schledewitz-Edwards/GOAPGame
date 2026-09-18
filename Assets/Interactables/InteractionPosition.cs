@@ -18,7 +18,6 @@ public class InteractionPosition : MonoBehaviour
 	private List<IInteractor> m_reservedInteractors = new List<IInteractor>();
 
 	public int ActorsPresent => m_interactorsPresent.Count;
-
 	public int TotalOccupiedOrReserved => m_interactorsPresent.Count + m_reservedInteractors.Count;
 	public bool HasAvailableCapacity => !RequiresReservation || (TotalOccupiedOrReserved < MaxInteractors);
 
@@ -75,7 +74,9 @@ public class InteractionPosition : MonoBehaviour
 
 	public void ReleaseReservation(IInteractor interactor)
 	{
-		if (!RequiresReservation) return;
+		if (!RequiresReservation) 
+			return;
+
 		m_reservedInteractors.Remove(interactor);
 	}
 
@@ -149,7 +150,7 @@ public class InteractionPosition : MonoBehaviour
 			}
 			else
 			{
-				// For unreserved walk-ins actors who are  checking where they would go
+				// For unreserved walk-ins actors who are checking where they would go
 				slotIndex = m_interactorsPresent.Count;
 			}
 

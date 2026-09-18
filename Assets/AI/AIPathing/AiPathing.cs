@@ -82,7 +82,7 @@ public class AIPathing : MonoBehaviour
 		}
 
 		// Check if the delta between the new destination and previous is significant
-		if ((destinationPos - CurrentDestination).sqrMagnitude < 1.0f)
+		if ((destinationPos - CurrentDestination).sqrMagnitude < 0.01f)
 			return;
 
 		CurrentDestination = destinationPos;

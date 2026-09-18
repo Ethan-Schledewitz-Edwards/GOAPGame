@@ -6,7 +6,7 @@ public class CheckForDestinationRangeTask : BTNodeBase
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		float interactionDistanceSqrt = context.GetData<float>(AIContextKeys.c_InteractionDistanceSqrt, 0.4f);
+		float interactionDistanceSqrt = context.GetData<float>(AIContextKeys.c_InteractionDistanceSqrt);
 		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
 		// Check if the destination is within square range

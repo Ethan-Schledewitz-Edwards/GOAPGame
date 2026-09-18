@@ -106,9 +106,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		// Tick search cooldown timer
 		if (m_jobSearchCooldown > 0f)
-		{
 			m_jobSearchCooldown -= t;
-		}
 
 		if (IsJobNeeded())
 		{
@@ -117,28 +115,22 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 			if (m_targetInteractable != null && m_assignedInteractionPosition != null)
 			{
-				// Path to the assigned interaction position
-				if (Pathing.HasPath)
+				if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+					Pathing.SetDestination(validPos);
+				else
 				{
-					if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
-					{
-						Pathing.SetDestination(validPos);
+					HandleFailedInteraction();
+					return;
+				}
 
-						Vector3 actorPosFlat = new Vector3(transform.position.x, 0, transform.position.z);
-						Vector3 targetPosFlat = new Vector3(validPos.x, 0, validPos.z);
+				Vector3 actorPosFlat = new Vector3(transform.position.x, 0, transform.position.z);
+				Vector3 targetPosFlat = new Vector3(validPos.x, 0, validPos.z);
 
-						float distToTarget = (actorPosFlat - targetPosFlat).sqrMagnitude;
-						float interactRangeSqrt = Mathf.Max(InteractionDistanceSqrt, m_assignedInteractionPosition.InteractionDistanceSqrt);
-						if (distToTarget <= interactRangeSqrt)
-						{
-							InteractWith(m_targetInteractable, true);
-						}
-					}
-					else // Reservation became null or unauthorized
-					{
-						HandleFailedInteraction();
-						return;
-					}
+				float distToTarget = (actorPosFlat - targetPosFlat).sqrMagnitude;
+				float interactRangeSqrt = Mathf.Max(InteractionDistanceSqrt, m_assignedInteractionPosition.InteractionDistanceSqrt);
+				if (distToTarget <= interactRangeSqrt)
+				{
+					InteractWith(m_targetInteractable, true);
 				}
 			}
 		}
@@ -350,6 +342,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	private void HandleFailedInteraction()
 	{
+		Debug.Log("Interaction failed", this);
+
 		if (m_assignedInteractionPosition != null)
 		{
 			m_assignedInteractionPosition.ReleaseReservation(this);
@@ -427,15 +421,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (m_assignedInteractionPosition != null)
 			return;
 
-		bool canSearchForJob = true;
-
-		// Only allow travelling actors to job search when close to their destination
-		if (Pathing.CurrentDestination != Vector3.zero)
-		{
-			float distanceRemaining = Pathing.PathDistRemaining();
-			if (distanceRemaining > c_searchForJobStoppingDistance)
-				canSearchForJob = false;
-		}
+		bool canSearchForJob = !Pathing.IsMoving || 
+			Pathing.PathDistRemaining() <= c_searchForJobStoppingDistance;
 
 		if (canSearchForJob)
 		{
@@ -456,7 +443,10 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			if (m_targetInteractable != null)
 			{
 				if (m_targetInteractable.TryReserveClosestPosition(this, transform.position, out m_assignedInteractionPosition))
+				{
 					m_timeFindingJob = 0;
+					Debug.Log($"Found Job: {m_targetInteractable} \n Interaction Position {m_assignedInteractionPosition}.", this);
+				}
 			}
 		}
 	}
