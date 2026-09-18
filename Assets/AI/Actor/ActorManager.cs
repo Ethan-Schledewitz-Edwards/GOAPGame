@@ -20,6 +20,8 @@ public class ActorManager : MonoBehaviour
 	[SerializeField] private Actor m_actorPrefab;
 
 	private HashSet<Actor> m_actors = new HashSet<Actor>();
+	private List<Actor> m_pendingRemovals = new List<Actor>();
+	private bool m_isTicking = false;
 
 	double m_accumulatedTime = 0f;
 	private Vector3 m_playerPosition;
@@ -51,7 +53,18 @@ public class ActorManager : MonoBehaviour
 
 	public void RemoveActor(Actor actor)
 	{
-		m_actors.Remove(actor);
+		if (m_isTicking)
+		{
+			// Queue actor for removal later
+			if (!m_pendingRemovals.Contains(actor))
+			{
+				m_pendingRemovals.Add(actor);
+			}
+		}
+		else
+		{
+			m_actors.Remove(actor);
+		}
 	}
 
 	private void TickActors(float t)
@@ -60,22 +73,35 @@ public class ActorManager : MonoBehaviour
 
 		while (m_accumulatedTime >= k_tpsThreshold)
 		{
+			m_isTicking = true;
 			foreach (Actor actor in m_actors)
 			{
-				if (actor != null)
-				{
-					if(actor.LogicExecutorState == EActorState.STATE_Follow)
-					{
-						actor.Pathing.TrySetActorSimFidelity(EPathingSimFidelity.Realtime);
-					}
-					else
-					{
-						float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
-						actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
-					}
+				if (actor == null)
+					continue;
 
-					actor.TickBehaviour(k_tpsThreshold);
+				if (actor.LogicExecutorState == EActorState.STATE_Follow)
+				{
+					actor.Pathing.TrySetActorSimFidelity(EPathingSimFidelity.Realtime);
 				}
+				else
+				{
+					float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
+					actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
+				}
+
+				actor.TickBehaviour(k_tpsThreshold);
+			}
+
+			m_isTicking = false;
+
+			// Process all deaths that occurred during this tick
+			if (m_pendingRemovals.Count > 0)
+			{
+				foreach (Actor actor in m_pendingRemovals)
+				{
+					m_actors.Remove(actor);
+				}
+				m_pendingRemovals.Clear();
 			}
 
 			m_accumulatedTime -= k_tpsThreshold;
