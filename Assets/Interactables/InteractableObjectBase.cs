@@ -12,9 +12,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPosition[] m_interactPositions;
 
-	// Event
-	public event Action InteractableBecameInvalid;
-
 	/// <summary>
 	/// Attempts to find the closest available interaction position and reserves it for the interactor.
 	/// </summary>
@@ -120,9 +117,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 		if (totalActors > m_actorsNeeded)
 			UpdateSpeed(totalActors - m_actorsNeeded);
-
-		if (totalActors >= m_maxActors)
-			InteractableBecameInvalid?.Invoke();
 	}
 	#endregion
 

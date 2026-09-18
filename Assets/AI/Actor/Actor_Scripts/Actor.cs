@@ -223,8 +223,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		float newStoppingDistance = state == EActorState.STATE_Follow ? c_followDist : c_workingDist;
 		Pathing.SetStoppingDistance(newStoppingDistance);
-
-		Debug.Log($"{transform.name}'s state: {LogicExecutorState}");
 	}
 
 	public void FollowPlayer(Transform Player)
@@ -249,7 +247,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
 	{
 		m_targetTransform = actorInteractableObjectBase.transform;
-
 		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
 		(
 			this,
@@ -260,21 +257,16 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		if (!isInteractionSuccessful)
 		{
+			Debug.Log($"{transform} interacted with {m_targetTransform} but was unsuccsessful.", this);
 			HandleFailedInteraction();
 			return;
-		}
-
-		// If the interaction was a one-shot and it released our spot,
-		// link the tether prevent abortion while working.
-		if (m_assignedInteractionPosition != null && !m_assignedInteractionPosition.TryGetInteractionPosition(this, out _))
-		{
-			m_assignedInteractionPosition = null;
 		}
 
 		if (willReplaceJob)
 		{
 			m_targetTransform = actorInteractableObjectBase.transform;
 			TrySetActorJob(actorInteractableObjectBase.GetBehaviourTree());
+			Debug.Log($"{transform} interacted with {m_targetTransform} and was succsessful.", this);
 		}
 	}
 
@@ -301,26 +293,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
 
-	private void SetTargetInteractable(InteractableObjectBase newTarget)
-	{
-		if (m_targetInteractable == newTarget)
-			return;
-
-		// Unsubscribe from the old target
-		if (m_targetInteractable != null)
-		{
-			m_targetInteractable.InteractableBecameInvalid -= ClearJob;
-		}
-
-		m_targetInteractable = newTarget;
-
-		// Subscribe to the new target
-		if (m_targetInteractable != null)
-		{
-			m_targetInteractable.InteractableBecameInvalid += ClearJob;
-		}
-	}
-
 	private void ClearJob()
 	{
 		if (m_assignedInteractionPosition != null)
@@ -329,7 +301,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			m_assignedInteractionPosition.TryRemoveInteractor(this);
 		}
 
-		SetTargetInteractable(null);
+		m_targetInteractable = null;
 		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
 
@@ -350,7 +322,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			m_assignedInteractionPosition.TryRemoveInteractor(this);
 		}
 
-		SetTargetInteractable(null);
+		m_targetInteractable = null;
 		m_assignedInteractionPosition = null;
 		Pathing.ClearDestination();
 
@@ -438,8 +410,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			}
 
 			// Try to reserve an interaction position, then move to it
-			InteractableObjectBase foundTask = SearchForTask();
-			SetTargetInteractable(foundTask);
+			m_targetInteractable = SearchForTask();
 			if (m_targetInteractable != null)
 			{
 				if (m_targetInteractable.TryReserveClosestPosition(this, transform.position, out m_assignedInteractionPosition))

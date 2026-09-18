@@ -108,7 +108,8 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		m_isItemStored = false;
 		ConstrainPhysics(false);
 
-		//StopInteract();
+		if (m_holder != null)
+			m_interactionPosition.TryRemoveInteractor(m_holder);
 
 		transform.parent = null;
 		if (dropPosition != Vector3.zero)
@@ -142,7 +143,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			if (isItemAdded)
 			{
 				ItemPickedUp?.Invoke(transform);
-				base.StopInteract(interactor, reservedPosition);
+				m_holder = interactor;
 				return true;
 			}
 		}
