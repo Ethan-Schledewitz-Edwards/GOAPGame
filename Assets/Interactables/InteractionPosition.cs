@@ -193,16 +193,13 @@ public class InteractionPosition : MonoBehaviour
 			Gizmos.DrawWireSphere(transform.position, FormationRadius);
 		}
 
-		// Label with current capacity stats
-		string label = $"Present: {ActorsPresent}\nReserved: {m_reservedInteractors.Count}\nMax: {MaxInteractors}";
-		UnityEditor.Handles.Label(transform.position + Vector3.up * 1.0f, label);
-
 		// Green lines to all actively present actors
 		if (m_interactorsPresent != null)
 		{
 			Gizmos.color = Color.green;
-			foreach (var interactor in m_interactorsPresent)
+			for (int i = 0; i < m_interactorsPresent.Count; i++)
 			{
+				var interactor = m_interactorsPresent[i];
 				if (interactor != null && interactor is Component comp)
 				{
 					Gizmos.DrawLine(transform.position, comp.transform.position);
@@ -215,8 +212,9 @@ public class InteractionPosition : MonoBehaviour
 		if (m_reservedInteractors != null)
 		{
 			Gizmos.color = Color.yellow;
-			foreach (var interactor in m_reservedInteractors)
+			for (int i = 0; i < m_reservedInteractors.Count; i++)
 			{
+				var interactor = m_reservedInteractors[i];
 				if (interactor != null && interactor is Component comp)
 				{
 					Gizmos.DrawLine(transform.position, comp.transform.position);
@@ -225,5 +223,6 @@ public class InteractionPosition : MonoBehaviour
 			}
 		}
 	}
+
 #endif
 }

@@ -137,7 +137,6 @@ namespace Player.Core
 			m_inputDir = context.ReadValue<Vector2>();
 		}
 
-
 		public void Subscribe()
 		{
 			InputManager.Controls.Player.Movement.performed += OnMoveInput;
