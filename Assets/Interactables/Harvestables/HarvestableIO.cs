@@ -32,7 +32,7 @@ public class HarvestableIO : InteractableObjectBase
 				timeoutSearch,
 				new MoveToTargetDataTask(),
 				timeoutDestination2,
-				interactTimeout
+				interactTimeout,
 			});
 			tree.SetTree(root);
 			m_HarvestBT = tree;

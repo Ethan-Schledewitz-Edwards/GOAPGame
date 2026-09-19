@@ -65,33 +65,35 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// Called by the Interactor. Evaluates the request, attempts to reserve a position, 
 	/// and returns the success state back to the Interactor.
 	/// </summary>
-	public virtual bool TryInteract(IInteractor interactor,
-		Vector3 actorPosition,
-		InteractionPosition reservedPosition,
-		out int interactorValue)
+	public bool TryBeginInteraction(IInteractor interactor,
+	Vector3 actorPosition,
+	InteractionPosition reservedPosition,
+	out int interactorValue)
 	{
 		interactorValue = -1;
 
 		if (reservedPosition == null)
 			return false;
 
-		// Validate distance to the assigned position. Being slightly early is
-		// not a failed reservation: the reservation exists specifically so the
-		// actor can approach this position without another actor taking it.
-		// The caller can release the reservation when it abandons the job.
 		if (!reservedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		// Queue the interaction
 		if (reservedPosition.TryAddInteractor(interactor, out interactorValue))
 		{
 			HandleActorAssigned();
 			return true;
 		}
 
-		// Cleanup if adding the interactor fails
 		CancelReservation(interactor, reservedPosition);
 		return false;
+	}
+
+	public virtual bool TryInteract(IInteractor interactor,
+		Vector3 actorPosition,
+		InteractionPosition reservedPosition,
+		out int interactorValue)
+	{
+		return TryBeginInteraction(interactor, actorPosition, reservedPosition, out interactorValue);
 	}
 
 	public virtual void StopInteract(IInteractor interactor, InteractionPosition assignedPosition)

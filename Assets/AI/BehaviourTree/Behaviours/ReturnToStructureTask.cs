@@ -34,7 +34,7 @@ public class ReturnToStructureTask : BTNodeBase
 						if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
 						{
 							Debug.Log($"An Actor set their target to StructureID:{structureID} in SettlementID:{settlementID}.");
-							context.SetData<Transform>(AIContextKeys.c_TargetTransform, assignedPosition.transform);
+							context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
 							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 
 							// Store the reserved position in the AI context so interaction nodes can retrieve it
