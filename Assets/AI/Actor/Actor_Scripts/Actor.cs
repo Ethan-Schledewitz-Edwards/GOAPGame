@@ -49,10 +49,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public int WorkstationID { get; private set; } = 0; // Structure ID actor resides in
 
 	// Internal State
-	public EActorState LogicExecutorState { get; private set; }  = default;
+	public EActorState LogicExecutorState { get; private set; } = default;
 	private int m_jobAssignmentID = 0;
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
+	private bool m_isInvestigating;
 
 	private Transform m_targetTransform;
 	private InteractableObjectBase m_targetInteractable;
@@ -104,6 +105,22 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		Pathing?.TickAIPathing();
 
+		// Investigation is an explicit move-to-location order. Do not allow
+		// job acquisition until the investigation destination has actually
+		// been reached. Velocity can temporarily be zero while a path is still
+		// pending or while the NavMeshAgent is resolving its destination.
+		if (m_isInvestigating)
+		{
+			// Investigation is only complete once the actor is physically at the
+			// investigation destination. Do not use velocity as the arrival test.
+			if (!Pathing.HasReachedDestination(c_searchForJobStoppingDistance))
+				return;
+
+			// The investigation is complete; resume normal job searching.
+			m_isInvestigating = false;
+			Pathing.ClearDestination();
+		}
+
 		// Tick search cooldown timer
 		if (m_jobSearchCooldown > 0f)
 			m_jobSearchCooldown -= t;
@@ -123,12 +140,13 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 					return;
 				}
 
-				Vector3 actorPosFlat = new Vector3(transform.position.x, 0, transform.position.z);
-				Vector3 targetPosFlat = new Vector3(validPos.x, 0, validPos.z);
+				// AIPathing owns the actual flat-distance calculation used by
+				// behaviour-tree movement and Actor. Use the exact interaction
+				// position returned above rather than relying on CurrentDestination.
+				float interactionDistance =
+					Mathf.Sqrt(m_assignedInteractionPosition.InteractionDistanceSqrt);
 
-				float distToTarget = (actorPosFlat - targetPosFlat).sqrMagnitude;
-				float interactRangeSqrt = Mathf.Max(InteractionDistanceSqrt, m_assignedInteractionPosition.InteractionDistanceSqrt);
-				if (distToTarget <= interactRangeSqrt)
+				if (Pathing.IsWithinDistance(validPos, interactionDistance))
 				{
 					InteractWith(m_targetInteractable, true);
 				}
@@ -149,27 +167,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 				case EActorState.STATE_Working:
 					if (m_behaviourTreeExecutor != null && m_behaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
-						// Sync reserved position from BT context
-						InteractionPosition contextPos = m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
-						if (contextPos != m_assignedInteractionPosition)
-						{
-							// Release previous interaction position before accepting a new one
-							if (m_assignedInteractionPosition != null)
-							{
-								m_assignedInteractionPosition.ReleaseReservation(this);
-								m_assignedInteractionPosition.TryRemoveInteractor(this);
-							}
-
-							m_assignedInteractionPosition = contextPos;
-						}
+						SyncAssignedInteractionPositionFromContext();
 
 						if (m_assignedInteractionPosition != null)
 						{
-							if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
-							{
-								Pathing.SetDestination(validPos);
-							}
-							else
+							if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out _))
 							{
 								ClearJob(); // Lost spot, abandon job
 								DropHeldItem();
@@ -180,6 +182,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						// Tick the behaviour tree
 						int jobAssignmentBeforeTick = m_jobAssignmentID;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
+
+						// A BT task can reserve or release a different interaction position
+						// during this tick. Synchronize after evaluation as well so a
+						// completed/failed tree always cleans up the position it actually owns.
+						SyncAssignedInteractionPositionFromContext();
 
 						// Reset only if the tree finished and a new job wasn't assigned during the tick
 						if (m_jobAssignmentID == jobAssignmentBeforeTick &&
@@ -239,13 +246,29 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void InvestigatePosition(Vector3 destination)
 	{
-		SetLogicExecutorState(EActorState.STATE_SearchingForWork);
+		m_isInvestigating = true;
 		m_targetTransform = null;
+		SetLogicExecutorState(EActorState.STATE_SearchingForWork);
 		Pathing.SetDestination(destination);
 	}
 
 	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
 	{
+		// Actor only attempts interaction after AIPathing reports that the actor
+		// is physically within the assigned interaction range. Recalculate the
+		// interaction position here in case it moved between ticks.
+		if (m_assignedInteractionPosition != null)
+		{
+			if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+				return;
+
+			float interactionDistance =
+				Mathf.Sqrt(m_assignedInteractionPosition.InteractionDistanceSqrt);
+
+			if (!Pathing.IsWithinDistance(validPos, interactionDistance))
+				return;
+		}
+
 		m_targetTransform = actorInteractableObjectBase.transform;
 		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
 		(
@@ -272,17 +295,38 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	private void TrySetActorJob(BehaviourTree behaviourTree)
 	{
+		// A successful interaction converts the reservation into an active
+		// interactor. If there is no behaviour tree, release that position now.
 		if (behaviourTree == null)
+		{
+			ReleaseInteractionPosition(m_assignedInteractionPosition);
+			m_assignedInteractionPosition = null;
+			m_targetInteractable = null;
+			m_targetTransform = null;
+			Pathing.ClearDestination();
+			m_jobSearchCooldown = c_jobSearchCooldownDuration;
 			return;
+		}
 
-		if (m_behaviourTreeExecutor.CurrentBehaviourTree != null)
-			ClearJob();
+		// A new job can be acquired from inside an existing behaviour tree
+		// (AquireNewBehaviourFromTargetTask). Never call ClearJob() here: it would
+		// erase the newly successful target/position before the new tree receives it.
+		// Instead release only the position owned by the previous tree when the
+		// new interaction uses a different position.
+		InteractionPosition previousPosition =
+			m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>(
+				AIContextKeys.c_AssignedInteractionPosition);
+
+		if (previousPosition != null && previousPosition != m_assignedInteractionPosition)
+			ReleaseInteractionPosition(previousPosition);
 
 		m_jobAssignmentID++;
 
 		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
+
 		Vector3 targetDestination = m_targetTransform.position;
-		if (m_assignedInteractionPosition != null && m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+		if (m_assignedInteractionPosition != null &&
+			m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 		{
 			targetDestination = validPos;
 		}
@@ -293,17 +337,35 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		SetLogicExecutorState(EActorState.STATE_Working);
 	}
 
+	private void ReleaseInteractionPosition(InteractionPosition position)
+	{
+		if (position == null)
+			return;
+
+		position.ReleaseReservation(this);
+		position.TryRemoveInteractor(this);
+	}
+
+	private void SyncAssignedInteractionPositionFromContext()
+	{
+		InteractionPosition contextPos = m_behaviourTreeExecutor.AIContext
+			.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
+		if (contextPos == m_assignedInteractionPosition)
+			return;
+
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
+		m_assignedInteractionPosition = contextPos;
+	}
+
 	private void ClearJob()
 	{
-		if (m_assignedInteractionPosition != null)
-		{
-			m_assignedInteractionPosition.ReleaseReservation(this);
-			m_assignedInteractionPosition.TryRemoveInteractor(this);
-		}
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
 
 		m_targetInteractable = null;
 		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
+		m_isInvestigating = false;
 
 		m_timeFindingJob = 0;
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
@@ -316,13 +378,10 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	{
 		Debug.Log("Interaction failed", this);
 
-		if (m_assignedInteractionPosition != null)
-		{
-			m_assignedInteractionPosition.ReleaseReservation(this);
-			m_assignedInteractionPosition.TryRemoveInteractor(this);
-		}
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
 
 		m_targetInteractable = null;
+		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
 		Pathing.ClearDestination();
 
@@ -337,6 +396,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
 		if (amountToDrop > 0)
 			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
+
+		Debug.Log("DRop HELD ITEMS");
 	}
 
 	/// <summary>
@@ -363,7 +424,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)
 		{
-			if (i == null) 
+			if (i == null)
 				continue;
 
 			if (i.TryGetComponent(out InteractableObjectBase aio))
@@ -393,8 +454,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (m_assignedInteractionPosition != null)
 			return;
 
-		bool canSearchForJob = !Pathing.IsMoving || 
-			Pathing.PathDistRemaining() <= c_searchForJobStoppingDistance;
+		// IsMoving is velocity-based and can be false for a frame while a
+		// destination is still pending/resolving. Search only after navigation
+		// reports that the current destination has actually been reached.
+		bool canSearchForJob =
+			Pathing.HasReachedDestination(c_searchForJobStoppingDistance);
 
 		if (canSearchForJob)
 		{

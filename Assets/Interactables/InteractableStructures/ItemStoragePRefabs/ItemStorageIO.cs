@@ -21,20 +21,16 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_maxCapacity = 4;
 		[SerializeField] private int m_actorsAssigned = 0;
 
-		// Components
 		private Entity m_entity;
 		public InventoryComponent InventoryComponent { get; private set; }
 
-		// System
 		private int m_settlementID;
 		private int m_settlementStructureID;
 
-		// IStructure Properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
-
 
 		private void Awake()
 		{
@@ -45,45 +41,58 @@ namespace Interaction.InteractableStructures
 			InitializeBehaviourTree();
 		}
 
+		private void Start()
+		{
+			if (m_interactPositions == null || m_interactPositions.Length == 0)
+				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
+		}
+
 		private void InitializeBehaviourTree()
 		{
 			if (s_takeItemBT != null)
 				return;
 
-			// Create the find item task sequence
 			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
 
+			BTNodeBase reserveItemPositionTask = new ReserveInteractionPositionTask();
+			BTTimeoutNode timeoutReserveItemPosition = new BTTimeoutNode(reserveItemPositionTask, 2f);
+
 			BTNodeBase depositTask = new DepositHeldItemTask();
-			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
+			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 60f);
 
 			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
 			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
-			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-				{
-					timeoutFind,
-					new MoveToTargetDataTask(),
-					new CheckForDestinationRangeTask(),
-					new InteractWithTargetTask(),
-					new ReturnToStructureTask(),
-					new MoveToTargetDataTask(),
-					new CheckForDestinationRangeTask(),
-					depositTask,
-					timeoutJobSearch // Try to loop item search
-				});
+			{
+				timeoutFind,
+				timeoutReserveItemPosition,
+				new MoveToTargetDataTask(),
+				new CheckForDestinationRangeTask(),
+				new InteractWithTargetTask(),
+				new ReturnToStructureTask(),
+				new MoveToTargetDataTask(),
+				new CheckForDestinationRangeTask(),
+				timeoutDeposit,
+				timeoutJobSearch
+			});
+
+			BehaviourTree tree = new BehaviourTree();
 			tree.SetTree(root);
 			s_takeItemBT = tree;
 		}
 
-		public void SetSettlement(int settlementID, int settlementStructureID)
+		public void SetSettlement(
+			int settlementID,
+			int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
 		}
 
-		public override bool TryInteract(IInteractor interactor,
+		public override bool TryInteract(
+			IInteractor interactor,
 			Vector3 actorPosition,
 			InteractionPosition reservedPosition,
 			out int interactorValue)
@@ -100,13 +109,13 @@ namespace Interaction.InteractableStructures
 				}
 
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, SettlementStructureID);
-
+				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
 				m_actorsAssigned = GetTotalActorsPresent();
 				return true;
 			}
 
 			base.StopInteract(interactor, reservedPosition);
+
 			interactorValue = -1;
 			return false;
 		}

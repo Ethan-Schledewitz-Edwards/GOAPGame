@@ -4,11 +4,12 @@ using InventorySystem.Items;
 using UnityEngine;
 
 /// <summary>
-/// A behavior tree node that attempts to move an item from the executors inventory to their targets inventory.
+/// Moves items from the executor's inventory to the target inventory.
+///
+/// The actor must already have the target's interaction position reserved.
+/// This node converts that reservation into an interaction and then
+/// transfers any held items.
 /// </summary>
-/// <remarks>
-/// This node should always be decorated with a timeout node.
-/// </remarks>
 public class DepositHeldItemTask : BTNodeBase
 {
 	private const string c_isDepositingKey = "IsDepositing";
@@ -28,82 +29,154 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPosition assignedPos =context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
+		if (executorTransform == null ||
+			targetTransform == null ||
+			assignedPos == null)
+		{
+			return EBTNodeState.STATE_FAILURE;
+		}
+
+		if (!executorTransform.TryGetComponent(out InventoryComponent executorInventoryComponent))
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent) ||
+			targetInventoryComponent.Inventory == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+			return EBTNodeState.STATE_FAILURE;
+
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 
-		if (executorTransform.TryGetComponent(out InventoryComponent executorInventoryComponent) &&
-			targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent) &&
-			targetTransform.TryGetComponent(out InteractableObjectBase iob))
+		if (interactor == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		// InteractionPosition is authoritative for the final interaction range.
+		if (!assignedPos.GetPositionInRange(interactor, executorTransform.position))
 		{
-			bool isInteracting = context.GetData<bool>(c_isDepositingKey);
+			return EBTNodeState.STATE_RUNNING;
+		}
 
-			if (!isInteracting)
+		bool isInteracting = context.GetData<bool>(c_isDepositingKey);
+		if (!isInteracting)
+		{
+			if (!interactable.TryInteract(interactor, executorTransform.position, assignedPos, out _))
 			{
-				if (!iob.TryInteract(interactor, executorTransform.position, assignedPos, out int interactorValue))
-				{
-					// Actor was out of range or lost the reservation
-					context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-					return EBTNodeState.STATE_FAILURE;
-				}
-
-				context.SetData<bool>(c_isDepositingKey, true);
-				context.ClearData(AIContextKeys.c_ReservationCleanup); // Consumed the reservation successfully
+				// Do not release the reservation just because this particular
+				// frame did not successfully convert it to an interaction.
+				return EBTNodeState.STATE_RUNNING;
 			}
 
-			// Deposit loop
-			float currentCooldown = context.GetData<float>(c_depositCooldownKey) - t;
-			if (currentCooldown <= 0f)
-			{
-				context.SetData<float>(c_depositCooldownKey, c_depositCooldown); // Reset timer
+			context.SetData<bool>(c_isDepositingKey, true);
+			context.ClearData(AIContextKeys.c_ReservationCleanup);
+		}
 
-				Inventory executorInventory = executorInventoryComponent.Inventory;
-				Inventory containerInventory = targetInventoryComponent.Inventory;
+		float currentCooldown = context.GetData<float>(c_depositCooldownKey) - t;
+		if (currentCooldown > 0f)
+		{
+			context.SetData<float>(c_depositCooldownKey, currentCooldown);
+			return EBTNodeState.STATE_RUNNING;
+		}
 
-				InventorySlot heldItemSlot = executorInventory.Slots[0];
-				ItemData heldItemData = heldItemSlot.SlotsItem;
+		context.SetData<float>(c_depositCooldownKey, c_depositCooldown);
 
-				if (heldItemData == null || heldItemSlot.AmountInSlot <= 0)
-				{
-					return FinishAndSucceed(context, iob, interactor, assignedPos);
-				}
+		Inventory executorInventory = executorInventoryComponent.Inventory;
+		Inventory containerInventory = targetInventoryComponent.Inventory;
 
-				if (containerInventory.TryFindRoomForItem(heldItemData, 1, out InventorySlot firstSlot, out int roomAvailable))
-				{
-					heldItemSlot.RemoveFromStack(1, out Transform[] droppedItems, true);
+		if (executorInventory == null ||
+			executorInventory.Slots == null ||
+			executorInventory.Slots.Count == 0)
+		{
+			return FinishAndSucceed(
+				context,
+				interactable,
+				interactor,
+				assignedPos);
+		}
 
-					// Transfer an item from the held item stack
-					if (targetInventoryComponent.TryAddItem(heldItemData, 1, droppedItems))
-					{
-						Debug.Log($"Transferred item of ID: {heldItemData.ItemID} from {executorTransform.name} to {targetTransform.name}.");
-					}
+		InventorySlot heldItemSlot =
+			executorInventory.Slots[0];
 
-					// Did the executor run out of items or is the container completely full?
-					if (heldItemSlot.AmountInSlot <= 0 || !containerInventory.TryFindRoomForItem(heldItemData, 1, out _, out _))
-					{
-						return FinishAndSucceed(context, iob, interactor, assignedPos);
-					}
+		ItemData heldItemData =
+			heldItemSlot.SlotsItem;
 
-					return EBTNodeState.STATE_RUNNING;
-				}
-				else // No room at all
-				{
-					return FinishAndSucceed(context, iob, interactor, assignedPos);
-				}
-			}
-			else
-			{
-				context.SetData<float>(c_depositCooldownKey, currentCooldown);
-			}
+		if (heldItemData == null ||
+			heldItemSlot.AmountInSlot <= 0)
+		{
+			return FinishAndSucceed(
+				context,
+				interactable,
+				interactor,
+				assignedPos);
+		}
+
+		if (!containerInventory.TryFindRoomForItem(
+				heldItemData,
+				1,
+				out _,
+				out _))
+		{
+			return FinishAndSucceed(
+				context,
+				interactable,
+				interactor,
+				assignedPos);
+		}
+
+		// TryTransferFrom now performs a transactional inventory transfer.
+		// It does not call ItemDropped() on the physical object before the
+		// destination inventory accepts it.
+		if (!targetInventoryComponent.TryTransferFrom(
+				heldItemSlot,
+				1,
+				out int itemsTransferred) ||
+			itemsTransferred <= 0)
+		{
+			Debug.LogWarning(
+				$"Deposit transfer failed for item ID: {heldItemData.ItemID} " +
+				$"from {executorTransform.name} to {targetTransform.name}. " +
+				$"The source item remains in the actor inventory.",
+				executorTransform);
 
 			return EBTNodeState.STATE_RUNNING;
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		Debug.Log(
+			$"Transferred item of ID: {heldItemData.ItemID} " +
+			$"from {executorTransform.name} to {targetTransform.name}.",
+			executorTransform);
+
+		// Continue until the actor has no more items or the destination
+		// cannot accept another item.
+		if (heldItemSlot.AmountInSlot <= 0 ||
+			!containerInventory.TryFindRoomForItem(
+				heldItemData,
+				1,
+				out _,
+				out _))
+		{
+			return FinishAndSucceed(
+				context,
+				interactable,
+				interactor,
+				assignedPos);
+		}
+
+		return EBTNodeState.STATE_RUNNING;
 	}
 
-	private EBTNodeState FinishAndSucceed(AIContext context, InteractableObjectBase iob, IInteractor interactor, InteractionPosition assignedPos)
+	private EBTNodeState FinishAndSucceed(
+		AIContext context,
+		InteractableObjectBase interactable,
+		IInteractor interactor,
+		InteractionPosition assignedPos)
 	{
-		iob.StopInteract(interactor, assignedPos);
+		interactable.StopInteract(
+			interactor,
+			assignedPos);
+
 		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
 		context.ClearData(c_isDepositingKey);
 
@@ -118,28 +191,29 @@ public class DepositHeldItemTask : BTNodeBase
 
 	protected override void OnNodeExited(AIContext context)
 	{
-		// If the node is aborted via timeout, release the interaction
 		bool isInteracting = context.GetData<bool>(c_isDepositingKey);
 		if (isInteracting)
 		{
-			Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+			Transform executorTransform = context.GetData<Transform>( AIContextKeys.c_ExecutorTransform);
 			Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-			InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+			InteractionPosition assignedPos = context.GetData<InteractionPosition>( AIContextKeys.c_AssignedInteractionPosition);
 
-			if (targetTransform != null && executorTransform != null && assignedPos != null)
+			if (targetTransform != null &&
+				executorTransform != null &&
+				assignedPos != null &&
+				targetTransform.TryGetComponent(out InteractableObjectBase interactable))
 			{
-				if (targetTransform.TryGetComponent(out InteractableObjectBase iob))
-				{
-					IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-					iob.StopInteract(interactor, assignedPos);
-				}
+				IInteractor interactor = executorTransform.GetComponent<IInteractor>();
+
+				if (interactor != null)
+					interactable.StopInteract(interactor, assignedPos);
 			}
 		}
 
-		// Cleanup for reservations that never converted to interactions
-		context.GetData<System.Action>(AIContextKeys.c_ReservationCleanup)?.Invoke();
-		context.ClearData(AIContextKeys.c_ReservationCleanup);
+		System.Action cleanup = context.GetData<System.Action>(AIContextKeys.c_ReservationCleanup);
 
+		cleanup?.Invoke();
+		context.ClearData(AIContextKeys.c_ReservationCleanup);
 		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
 		context.ClearData(c_depositCooldownKey);
 		context.ClearData(c_isDepositingKey);

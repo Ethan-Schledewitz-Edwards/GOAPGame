@@ -44,9 +44,10 @@ public class FindItemEntityOfIDTask : BTNodeBase
 				// Attempt to reserve the closest valid position for this actor
 				if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPos))
 				{
-					if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 specificPos))
+					if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 position))
 					{
-						destination = specificPos;
+						destination = position;
+						context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPos);
 					}
 				}
 				else

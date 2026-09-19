@@ -19,8 +19,8 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	{
 		assignedPosition = null;
 
-		if (GetTotalOccupiedOrReserved() >= m_maxActors || 
-			m_interactPositions == null || 
+		if (GetTotalOccupiedOrReserved() >= m_maxActors ||
+			m_interactPositions == null ||
 			m_interactPositions.Length == 0)
 			return false;
 
@@ -75,12 +75,12 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		if (reservedPosition == null)
 			return false;
 
-		// Validate distance to the assigned position
+		// Validate distance to the assigned position. Being slightly early is
+		// not a failed reservation: the reservation exists specifically so the
+		// actor can approach this position without another actor taking it.
+		// The caller can release the reservation when it abandons the job.
 		if (!reservedPosition.GetPositionInRange(interactor, actorPosition))
-		{
-			CancelReservation(interactor, reservedPosition);
 			return false;
-		}
 
 		// Queue the interaction
 		if (reservedPosition.TryAddInteractor(interactor, out interactorValue))
@@ -163,4 +163,18 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	public abstract void StopInteractSpeed();
 
 	public bool IsAtActorCapacity() => GetTotalActorsPresent() >= m_maxActors;
+
+	/// <summary>
+	/// Returns true when the supplied interaction position belongs to this
+	/// interactable. Used by behaviour-tree tasks to distinguish a position
+	/// inherited from a previous target from a position belonging to the
+	/// current target.
+	/// </summary>
+	public bool HasInteractionPosition(InteractionPosition position)
+	{
+		if (position == null || m_interactPositions == null)
+			return false;
+
+		return Array.IndexOf(m_interactPositions, position) >= 0;
+	}
 }

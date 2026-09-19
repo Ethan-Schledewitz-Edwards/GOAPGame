@@ -8,60 +8,74 @@ public class TryPickupItemTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		InventoryComponent actorInventory = executorTransform.GetComponent<InventoryComponent>();
-		Vector3 executorPosition = executorTransform.position;
+		Transform executorTransform =
+			context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 
+		if (executorTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!executorTransform.TryGetComponent(out IInteractor interactor))
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!executorTransform.TryGetComponent(out InventoryComponent actorInventory))
+			return EBTNodeState.STATE_FAILURE;
+
+		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
 		int itemID = context.GetData<int>(AIContextKeys.c_ItemToFindID);
 
-		if (actorInventory != null)
+		if (targetTransform == null || assignedPos == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!assignedPos.GetPositionInRange(interactor, executorTransform.position))
+			return EBTNodeState.STATE_RUNNING;
+
+		if (!targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+			return EBTNodeState.STATE_FAILURE;
+
+		// ItemIO.TryInteract() moves a standalone item into the actor's inventory.
+		if (interactable.TryGetComponent(out IItemObject itemObject) && !itemObject.IsItemStored)
 		{
-			Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-			if (targetTransform != null && targetTransform.TryGetComponent(out InteractableObjectBase iob))
+			if (itemObject.ItemData == null || itemObject.ItemData.ItemID != itemID)
+				return EBTNodeState.STATE_FAILURE;
+
+			if (!interactable.TryInteract(
+					interactor,
+					executorTransform.position,
+					assignedPos,
+					out _))
 			{
-				// Convert the reservation into an active interaction
-				if (iob.TryInteract(interactor, executorPosition, assignedPos, out int interactorValue))
-				{
-					// Clear the abort delegate since we successfully consumed the reservation
-					context.ClearData(AIContextKeys.c_ReservationCleanup);
+				return EBTNodeState.STATE_FAILURE;
+			}
 
-					// Pickup the standalone item
-					if (iob.TryGetComponent(out IItemObject itemObject) &&
-						!itemObject.IsItemStored &&
-						itemObject.ItemData.ItemID == itemID)
-					{
-						actorInventory.TryAddItem(itemObject.ItemData, itemObject.StackSize, new Transform[] { targetTransform });
-						Debug.Log($"{executorTransform}: Picked up item of ID:{itemID}.");
+			Debug.Log($"{executorTransform}: Picked up item of ID:{itemID}.");
 
-						context.ClearData(AIContextKeys.c_ItemToFindID);
-						iob.StopInteract(interactor, assignedPos);
-						context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
+			// Pickup is complete, release the reservation immediately.
+			interactable.StopInteract(interactor, assignedPos);
 
-						return EBTNodeState.STATE_SUCSESS;
-					}
+			context.ClearData(AIContextKeys.c_ItemToFindID);
+			context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
+			return EBTNodeState.STATE_SUCSESS;
+		}
 
-					// Take the item from a storage unit
-					if (iob.TryGetComponent(out InventoryComponent storageInventory) &&
-						storageInventory.Inventory.ContainsItem(itemID, out List<InventorySlot> inventorySlots))
-					{
-						actorInventory.TryTransferFrom(inventorySlots[0], 1, out int itemsTransfered);
-						Debug.Log($"{executorTransform}: Took {itemsTransfered} items of ID:{itemID} from {targetTransform}'s inventory.");
+		// Take items from the inventory
+		if (interactable.TryGetComponent(out InventoryComponent storageInventory) &&
+			storageInventory.Inventory != null &&
+			storageInventory.Inventory.ContainsItem(itemID, out List<InventorySlot> inventorySlots) &&
+			inventorySlots.Count > 0)
+		{
+			if (actorInventory.TryTransferFrom(inventorySlots[0], 1, out int itemsTransferred) && itemsTransferred > 0)
+			{
+				Debug.Log($"{executorTransform}: Took {itemsTransferred} items of ID:{itemID} from {targetTransform}'s inventory.");
 
-						context.ClearData(AIContextKeys.c_ItemToFindID);
-						iob.StopInteract(interactor, assignedPos);
-						context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-
-						return EBTNodeState.STATE_SUCSESS;
-					}
-
-					iob.StopInteract(interactor, assignedPos);
-					context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-				}
+				context.ClearData(AIContextKeys.c_ItemToFindID);
+				interactable.StopInteract(interactor, assignedPos);
+				context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
+				return EBTNodeState.STATE_SUCSESS;
 			}
 		}
 
+		interactable.StopInteract(interactor, assignedPos);
 		return EBTNodeState.STATE_FAILURE;
 	}
 

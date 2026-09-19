@@ -7,7 +7,6 @@ using ObjectTags;
 using Settlements;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
@@ -20,25 +19,20 @@ namespace Interaction.InteractableStructures.Blueprints
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 		[SerializeField] private int m_maxCapacity = 4;
-		[SerializeField] private int m_actorsAssigned = 0;
 
-		// Components
 		private Entity m_entity;
 		protected BlueprintCancelation m_cancelBlueprint;
 		protected ItemRequestComponent m_itemRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
 
-		// System
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
 
-		// IStructure Properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
 
-		// IItemFiltered Properties
 		[SerializeField] protected ItemTag[] m_tagFilter;
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 
@@ -50,7 +44,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_entity.EnableDynamicPositionUpdates(false);
 
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
-
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
@@ -60,17 +53,13 @@ namespace Interaction.InteractableStructures.Blueprints
 		private void Start()
 		{
 			if (m_interactPositions == null || m_interactPositions.Length == 0)
-			{
 				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
-			}
 		}
 
 		protected virtual void OnDestroy()
 		{
 			if (m_itemRequestComponent != null)
-			{
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
-			}
 		}
 
 		private void InitializeBehaviourTree()
@@ -78,10 +67,13 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (s_cachedBlueprintBT != null)
 				return;
 
-			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
+			StructureTag storageTag =
+				IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
 
 			BTNodeBase findUseTask = new FindItemEntityOfIDTask(storageTag);
 			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
+
+			BTNodeBase reserveItemPositionTask = new ReserveInteractionPositionTask();
 
 			BTNodeBase checkDestination1 = new CheckForDestinationRangeTask();
 			BTTimeoutNode timeoutCheckDestination1 = new BTTimeoutNode(checkDestination1, 2f);
@@ -98,10 +90,10 @@ namespace Interaction.InteractableStructures.Blueprints
 			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
 			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
 
-			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				timeoutFind,
+				reserveItemPositionTask,
 				new MoveToTargetDataTask(),
 				timeoutCheckDestination1,
 				timeoutPickup,
@@ -109,19 +101,21 @@ namespace Interaction.InteractableStructures.Blueprints
 				new MoveToTargetDataTask(),
 				timeoutCheckDestination2,
 				timeoutDeposit,
-				timeoutJobSearch // Try to loop item search
+				timeoutJobSearch
 			});
+
+			BehaviourTree tree = new BehaviourTree();
 			tree.SetTree(root);
 			s_cachedBlueprintBT = tree;
 		}
 
 		public override bool TryInteract(
-		IInteractor interactor,
-		Vector3 actorPosition,
-		InteractionPosition reservedPosition,
-		out int interactorValue
-		)
+			IInteractor interactor,
+			Vector3 actorPosition,
+			InteractionPosition reservedPosition,
+			out int interactorValue)
 		{
+			// Get the behaviour tree through base interaction
 			if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
 				return false;
 
@@ -131,19 +125,21 @@ namespace Interaction.InteractableStructures.Blueprints
 				return false;
 			}
 
+			// Tell the actor which items to find (Its behaviour tree will use the context to find the item)
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
 			if (executor != null && executor.AIContext != null)
 			{
-				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) && inventoryComponent.Slots.Count > 0)
+				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) &&
+					inventoryComponent.Slots.Count > 0)
 				{
-					int requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+					int requestedItemID =
+						m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+
 					if (requestedItemID > -1)
 					{
 						executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
 						executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
 						executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, requestedItemID);
-
-						m_actorsAssigned = GetTotalActorsPresent();
 						return true;
 					}
 				}
@@ -161,9 +157,6 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override void UpdateSpeed(int extra) { }
 
-		/// <summary>
-		/// Concrete implementations define what happens when all of the blueprints required items are gathered.
-		/// </summary>
 		public abstract void HandleBlueprintCompleted();
 
 		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;

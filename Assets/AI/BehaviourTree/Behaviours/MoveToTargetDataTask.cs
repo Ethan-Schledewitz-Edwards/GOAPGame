@@ -1,6 +1,5 @@
 using BehaviourTrees;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class MoveToTargetDataTask : BTNodeBase
 {
@@ -9,19 +8,21 @@ public class MoveToTargetDataTask : BTNodeBase
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
-		if (executorTransform.TryGetComponent(out AIPathing pathing))
+		if (executorTransform == null || !executorTransform.TryGetComponent(out AIPathing pathing))
+			return EBTNodeState.STATE_FAILURE;
+
+		float arrivalDistance = Mathf.Max(pathing.StoppingDistance, 0.05f);
+		if (pathing.IsWithinDistance(targetDestination, arrivalDistance))
 		{
-			bool hasArrived = pathing.PathDistRemaining() < pathing.StoppingDistance;
-
-			if (hasArrived && !pathing.IsMoving)
-				return EBTNodeState.STATE_SUCSESS;
-
-			// We are still walking.
-			pathing.SetDestination(targetDestination);
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.STATE_SUCSESS;
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		// If navigation has definitively failed, don't keep the behaviour tree
+		if (pathing.IsDestinationInvalid())
+			return EBTNodeState.STATE_FAILURE;
+
+		pathing.SetDestination(targetDestination);
+		return EBTNodeState.STATE_RUNNING;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context)
@@ -29,7 +30,8 @@ public class MoveToTargetDataTask : BTNodeBase
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
-		if (executorTransform.TryGetComponent(out AIPathing pathing))
+		if (executorTransform != null &&
+			executorTransform.TryGetComponent(out AIPathing pathing))
 		{
 			pathing.SetDestination(targetDestination);
 		}
