@@ -20,7 +20,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	private const float c_followSpeed = 6.2f;
 	private const float c_workingSpeed = 4.5f;
 	private const float c_offDutySpeed = 2f;
-	private const float c_searchForJobRange = 3.0f;
+	private const float c_searchForJobRange = 1.5f;
 	private const float c_searchForJobStoppingDistance = 0.25f;
 	private const float c_jobSearchCooldownDuration = 2.0f;
 	private const float c_interactionDistance = 0.3f;
