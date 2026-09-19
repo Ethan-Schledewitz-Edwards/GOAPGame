@@ -11,8 +11,7 @@ public class InteractionPosition : MonoBehaviour
 	[field: SerializeField, Tooltip("If false, this position does not require pre-allocation or locking, allowing multiple actors (like doors or storage access points) to share it.")]
 	public bool RequiresReservation { get; private set; } = true;
 	[field: SerializeField, Tooltip("Dictates how far from the center of the InteractionPosition the actor can be before they begin interacting.")]
-	private float m_interactionDistance = 0.3f;
-	public float InteractionDistanceSqrt { get; private set; }
+	public float InteractionDistance { get; private set; } = 0.3f;
 
 	private List<IInteractor> m_interactorsPresent = new List<IInteractor>();
 	private List<IInteractor> m_reservedInteractors = new List<IInteractor>();
@@ -25,8 +24,6 @@ public class InteractionPosition : MonoBehaviour
 	{
 		m_interactorsPresent = new List<IInteractor>(MaxInteractors);
 		m_reservedInteractors = new List<IInteractor>(MaxInteractors);
-
-		InteractionDistanceSqrt = m_interactionDistance * m_interactionDistance;
 	}
 
 	/// <summary>
@@ -37,15 +34,14 @@ public class InteractionPosition : MonoBehaviour
 		bool useFormationRadius = false,
 		float formationRadius = 1.5f,
 		bool requiresReservation = true,
-		float interactionDistance = 0.5f
+		float interactionDistance = 0.3f
 		)
 	{
 		MaxInteractors = Mathf.Max(1, maxInteractors);
 		UseFormationRadius = useFormationRadius;
 		FormationRadius = formationRadius;
 		RequiresReservation = requiresReservation;
-		m_interactionDistance = interactionDistance;
-		InteractionDistanceSqrt = interactionDistance * interactionDistance;
+		InteractionDistance = interactionDistance;
 
 		// Re-initialize capacities
 		if (m_interactorsPresent == null)
@@ -176,7 +172,7 @@ public class InteractionPosition : MonoBehaviour
 			Vector3 targetPosFlat = new Vector3(targetPos.x, 0, targetPos.z);
 
 			float distanceSquared = (worldPosFlat - targetPosFlat).sqrMagnitude;
-			return distanceSquared <= InteractionDistanceSqrt;
+			return distanceSquared <= InteractionDistance * InteractionDistance;
 		}
 
 		return false;
@@ -191,7 +187,7 @@ public class InteractionPosition : MonoBehaviour
 		Gizmos.DrawWireSphere(transform.position, 0.2f);
 
 		Gizmos.color = new Color(0, 1, 1, 0.2f);
-		Gizmos.DrawWireSphere(transform.position, m_interactionDistance);
+		Gizmos.DrawWireSphere(transform.position, InteractionDistance);
 
 		// Formation radius if it is enabled
 		if (UseFormationRadius)

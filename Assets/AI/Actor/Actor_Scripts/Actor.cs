@@ -105,18 +105,13 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		Pathing?.TickAIPathing();
 
-		// Investigation is an explicit move-to-location order. Do not allow
-		// job acquisition until the investigation destination has actually
-		// been reached. Velocity can temporarily be zero while a path is still
-		// pending or while the NavMeshAgent is resolving its destination.
+		// Prevent job acquisition until the investigation destination has been reached.
 		if (m_isInvestigating)
 		{
-			// Investigation is only complete once the actor is physically at the
-			// investigation destination. Do not use velocity as the arrival test.
 			if (!Pathing.HasReachedDestination(c_searchForJobStoppingDistance))
 				return;
 
-			// The investigation is complete; resume normal job searching.
+			// Resume job searching
 			m_isInvestigating = false;
 			Pathing.ClearDestination();
 		}
@@ -132,20 +127,19 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 			if (m_targetInteractable != null && m_assignedInteractionPosition != null)
 			{
+				// Move to the reserved position
 				if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+				{
 					Pathing.SetDestination(validPos);
+				}
 				else
 				{
 					HandleFailedInteraction();
 					return;
 				}
 
-				// AIPathing owns the actual flat-distance calculation used by
-				// behaviour-tree movement and Actor. Use the exact interaction
-				// position returned above rather than relying on CurrentDestination.
-				float interactionDistance =
-					Mathf.Sqrt(m_assignedInteractionPosition.InteractionDistanceSqrt);
-
+				// Interact when close to the interaction position
+				float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
 				if (Pathing.IsWithinDistance(validPos, interactionDistance))
 				{
 					InteractWith(m_targetInteractable, true);
@@ -183,9 +177,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						int jobAssignmentBeforeTick = m_jobAssignmentID;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
-						// A BT task can reserve or release a different interaction position
-						// during this tick. Synchronize after evaluation as well so a
-						// completed/failed tree always cleans up the position it actually owns.
+						// Synchronize after evaluation as well so a completed/failed tree always cleans up the position it owns.
 						SyncAssignedInteractionPositionFromContext();
 
 						// Reset only if the tree finished and a new job wasn't assigned during the tick
@@ -254,17 +246,13 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
 	{
-		// Actor only attempts interaction after AIPathing reports that the actor
-		// is physically within the assigned interaction range. Recalculate the
-		// interaction position here in case it moved between ticks.
+		// Recalculate the interaction position in case it moved between ticks.
 		if (m_assignedInteractionPosition != null)
 		{
 			if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 				return;
 
-			float interactionDistance =
-				Mathf.Sqrt(m_assignedInteractionPosition.InteractionDistanceSqrt);
-
+			float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
 			if (!Pathing.IsWithinDistance(validPos, interactionDistance))
 				return;
 		}
@@ -309,14 +297,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 
 		// A new job can be acquired from inside an existing behaviour tree
-		// (AquireNewBehaviourFromTargetTask). Never call ClearJob() here: it would
-		// erase the newly successful target/position before the new tree receives it.
-		// Instead release only the position owned by the previous tree when the
-		// new interaction uses a different position.
-		InteractionPosition previousPosition =
-			m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>(
-				AIContextKeys.c_AssignedInteractionPosition);
-
+		InteractionPosition previousPosition = m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>( AIContextKeys.c_AssignedInteractionPosition);
 		if (previousPosition != null && previousPosition != m_assignedInteractionPosition)
 			ReleaseInteractionPosition(previousPosition);
 
@@ -454,12 +435,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (m_assignedInteractionPosition != null)
 			return;
 
-		// IsMoving is velocity-based and can be false for a frame while a
-		// destination is still pending/resolving. Search only after navigation
-		// reports that the current destination has actually been reached.
-		bool canSearchForJob =
-			Pathing.HasReachedDestination(c_searchForJobStoppingDistance);
-
+		// Allow job search when within range of the target destination
+		bool canSearchForJob = Pathing.HasReachedDestination(c_searchForJobStoppingDistance);
 		if (canSearchForJob)
 		{
 			m_timeFindingJob += t;
