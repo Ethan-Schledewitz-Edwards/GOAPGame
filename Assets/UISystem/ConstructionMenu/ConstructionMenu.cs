@@ -39,8 +39,6 @@ public class ConstructionMenu : Menu, IInputHandler
 
 	private void OnToggleInput(InputAction.CallbackContext ctx)
 	{
-		Debug.Log("WTF BRO!!");
-
 		if (MenuManager.MenuCount == 1 || MenuManager.IsMenuOpen(this))
 		{
 			MenuManager.ToggleMenu(this);

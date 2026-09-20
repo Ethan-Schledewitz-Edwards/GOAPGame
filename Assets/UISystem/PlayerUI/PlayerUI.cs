@@ -19,10 +19,7 @@ public class PlayerUI : MonoBehaviour
 		Assert.IsNotNull(PauseMenu);
 		Assert.IsNotNull(HUD);
 		Assert.IsNotNull(BuildMenu);
-	}
 
-	protected void Start()
-	{
 		MenuManager.OpenMenu(HUD);
 	}
 }

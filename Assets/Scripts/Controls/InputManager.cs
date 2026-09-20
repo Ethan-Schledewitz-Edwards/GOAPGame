@@ -13,9 +13,15 @@ public static class InputManager
 	}
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-	static void Initialize()
+	static void ClearStatics()
 	{
 		ControlMode = ControlType.Player;
+		Controls = null;
+	}
+
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+	static void Initialize()
+	{
 		Controls = new Controls();
 		Controls.Enable();
 		Controls.Permanents.Enable();

@@ -30,10 +30,10 @@ public class HUD : Menu
 
 	protected new void OnDestroy()
 	{
-		base.OnDestroy();
-
 		MenuManager.HUDSetActive -= ShowHUD;
 		MenuManager.HUDSetHidden -= HideHUD;
+
+		base.OnDestroy();
 	}
 
 	void HideHUD()
