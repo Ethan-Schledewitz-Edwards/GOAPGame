@@ -2851,7 +2851,7 @@ namespace ArchieAndrews.PrefabBrush
             if (newTab == PB_ActiveTab.PrefabErase)
             {
 #if UNITY_6000_0_OR_NEWER
-                hierarchy = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+                hierarchy = FindObjectsByType<GameObject>();
 #else
                 hierarchy = (GameObject[])FindObjectsOfType(typeof(GameObject));
 #endif

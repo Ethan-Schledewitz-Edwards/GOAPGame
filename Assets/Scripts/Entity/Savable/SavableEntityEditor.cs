@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.SceneManagement;using System.IO;
+using System.IO;
 
 namespace Entities.Savable
 {
 #if UNITY_EDITOR
+
+	using UnityEditor.SceneManagement;
+
 	[CustomEditor(typeof(SaveableEntity))]
 	public class SaveableEntityEditor : UnityEditor.Editor
 	{

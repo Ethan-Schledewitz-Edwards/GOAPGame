@@ -35,8 +35,8 @@ namespace WorldManagement.Core
 			{
 				TerrainChunk chunk = new TerrainChunk(
 					chunkXZ,
-					chunkData.TileData,
-					chunkData.BiomeMap
+					chunkData.GetReconstructedTileData(),
+					chunkData.GetReconstructedBiomeMap()
 				);
 				chunk.SetGenerationState(chunkData.GenerationState);
 

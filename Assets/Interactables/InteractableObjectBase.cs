@@ -122,6 +122,11 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	}
 	#endregion
 
+	public virtual bool HasAvailableWork(IInteractor interactor)
+	{
+		return !IsAtActorCapacity();
+	}
+
 	/// <summary>
 	/// Returns the total number of actors present across all interaction positions.
 	/// </summary>

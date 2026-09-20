@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SaveLoad.Data
 {
@@ -10,6 +11,6 @@ namespace SaveLoad.Data
 		public float PosX, PosY, PosZ;
 		public float RotX, RotY, RotZ;
 
-		public Dictionary<string, object> ComponentData = new Dictionary<string, object>();
+		[SerializeField] public Dictionary<string, object> ComponentData = new Dictionary<string, object>();
 	}
 }

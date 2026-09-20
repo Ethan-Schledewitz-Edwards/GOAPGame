@@ -7,8 +7,6 @@ public class PlayerUI : MonoBehaviour
 	// Signleton
 	public static PlayerUI Instance { get; private set; }
 
-	public static bool PauseMenuActive { get; private set; }
-
 	[field: Header("UI Elements")]
 	[field: SerializeField] public HUD HUD { get; private set; }
 	[field: SerializeField] public PauseMenu PauseMenu { get; private set; }
@@ -26,13 +24,5 @@ public class PlayerUI : MonoBehaviour
 	protected void Start()
 	{
 		MenuManager.OpenMenu(HUD);
-
-		//Player.Health.OnGameStateChange += ShowPlayerStateScreen;
-	}
-
-	private void OnDestroy()
-	{
-		//Player.Health.OnGameStateChange -= ShowPlayerStateScreen;
 	}
 }
-

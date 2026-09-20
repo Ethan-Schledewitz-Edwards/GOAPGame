@@ -10,10 +10,9 @@ public class ClockElement : UIElement
 
 	[SerializeField] private TextMeshProUGUI m_clockText;
 
-
 	private void Start()
 	{
-		m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+		m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include)
 				.OfType<IGameClock>()
 				.FirstOrDefault();
 

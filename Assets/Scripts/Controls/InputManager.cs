@@ -18,6 +18,7 @@ public static class InputManager
 		ControlMode = ControlType.Player;
 		Controls = new Controls();
 		Controls.Enable();
+		Controls.Permanents.Enable();
 	}
 
 	/// <summary>

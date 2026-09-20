@@ -52,22 +52,22 @@ namespace Interaction.InteractableStructures
 			if (s_takeItemBT != null)
 				return;
 
-			BTNodeBase findUseTask = new FindItemEntityOfTagTask();
-			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
-
-			BTNodeBase reserveItemPositionTask = new ReserveInteractionPositionTask();
-			BTTimeoutNode timeoutReserveItemPosition = new BTTimeoutNode(reserveItemPositionTask, 2f);
+			BTNodeBase findItemTimeoutSequence = new BTTimeoutNode(new BTSequenceNode(new List<BTNodeBase>
+			{
+				new FindItemEntityOfTagTask(),
+				new ReserveInteractionPositionTask()
+			}),
+			2.0f);
 
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 60f);
 
 			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
-			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
+			BTTimeoutNode findItemTimeout = new BTTimeoutNode(jobTask, 2f);
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				timeoutFind,
-				timeoutReserveItemPosition,
+				findItemTimeoutSequence,
 				new MoveToTargetDataTask(),
 				new CheckForDestinationRangeTask(),
 				new InteractWithTargetTask(),
@@ -75,7 +75,7 @@ namespace Interaction.InteractableStructures
 				new MoveToTargetDataTask(),
 				new CheckForDestinationRangeTask(),
 				timeoutDeposit,
-				timeoutJobSearch
+				findItemTimeout
 			});
 
 			BehaviourTree tree = new BehaviourTree();

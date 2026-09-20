@@ -7,7 +7,12 @@ public class PauseMenu : Menu
 		base.Awake();
 
 		MenuManager.PauseMenu = this;
+	}
+
+	protected override void Start()
+	{
 		SetMenuActive(false);
+		base.Start();
 	}
 
 	public void QuitButton()

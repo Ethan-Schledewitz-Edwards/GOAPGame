@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace GenericIndex
 {
+#if UNITY_EDITOR
 	[CustomEditor(typeof(ScriptableObject), true)]
 	public class GenericIndexEditor : Editor
 	{
@@ -81,4 +82,5 @@ namespace GenericIndex
 			return false;
 		}
 	}
+#endif
 }

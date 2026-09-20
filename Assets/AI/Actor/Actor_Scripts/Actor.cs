@@ -419,7 +419,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
-				if (aio.IsAtActorCapacity())
+				if (!aio.HasAvailableWork(this))
 					continue;
 
 				float dist = (pos - aio.transform.position).sqrMagnitude;

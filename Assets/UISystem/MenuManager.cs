@@ -25,7 +25,6 @@ public static class MenuManager
 	static void ClearStatics()
 	{
 		s_openMenus.Clear();
-		InputManager.Controls.Permanents.Pause.performed += OnPausePressed;
 	}
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -35,6 +34,23 @@ public static class MenuManager
 		UnityEngine.Object.DontDestroyOnLoad(menuAudio);
 		AudioSource = menuAudio.GetComponent<AudioSource>();
 		AudioSource.spatialBlend = 0;
+
+		if (InputManager.Controls != null)
+		{
+			InputManager.Controls.Permanents.Pause.performed -= OnPausePressed;
+			InputManager.Controls.Permanents.Pause.performed += OnPausePressed;
+		}
+
+		Application.quitting -= OnApplicationQuit;
+		Application.quitting += OnApplicationQuit;
+	}
+
+	static void OnApplicationQuit()
+	{
+		if (InputManager.Controls != null)
+		{
+			InputManager.Controls.Permanents.Pause.performed -= OnPausePressed;
+		}
 	}
 
 	static void OnPausePressed(InputAction.CallbackContext ctx)
@@ -73,7 +89,7 @@ public static class MenuManager
 
 		if (IsMenuOpen(PauseMenu) && !menu.IsSubPauseMenu)
 		{
-			Debug.LogError("Tried to open a non sub-pause menu while the pause menu is active.");
+			Debug.LogWarning("Tried to open a non sub-pause menu while the pause menu is active.");
 			return;
 		}
 

@@ -157,6 +157,14 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public override void StopInteractSpeed() { }
 
+	public override bool HasAvailableWork(IInteractor interactor)
+	{
+		if (m_isItemStored)
+			return false;
+
+		return base.HasAvailableWork(interactor);
+	}
+
 	public override BehaviourTree GetBehaviourTree() => s_ItemBT;
 
 	private void ConstrainPhysics(bool isConstrained)
