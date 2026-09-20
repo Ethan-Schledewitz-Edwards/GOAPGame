@@ -167,7 +167,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						{
 							if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out _))
 							{
-								ClearJob(); // Lost spot, abandon job
+								BeginOffDuty(); // Lost spot, abandon job
 								DropHeldItem();
 								return;
 							}
@@ -184,8 +184,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						if (m_jobAssignmentID == jobAssignmentBeforeTick &&
 							(treeState == EBTNodeState.STATE_SUCSESS || treeState == EBTNodeState.STATE_FAILURE))
 						{
-							ClearJob();
-							DropHeldItem();
+							BeginJobSearch();
 						}
 					}
 					break;
@@ -227,7 +226,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear state
-		ClearJob();
+		BeginOffDuty();
 		DropHeldItem();
 		m_behaviourTreeExecutor.ResetContext();
 
@@ -240,7 +239,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	{
 		m_isInvestigating = true;
 		m_targetTransform = null;
-		SetLogicExecutorState(EActorState.STATE_SearchingForWork);
+		BeginJobSearch();
 		Pathing.SetDestination(destination);
 	}
 
@@ -339,20 +338,30 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		m_assignedInteractionPosition = contextPos;
 	}
 
-	private void ClearJob()
-	{
-		ReleaseInteractionPosition(m_assignedInteractionPosition);
+	private void ClearJobState() 
+	{ 
+		ReleaseInteractionPosition(m_assignedInteractionPosition); 
+		m_targetInteractable = null; 
+		m_targetTransform = null; 
+		m_assignedInteractionPosition = null; 
+		m_isInvestigating = false; 
+		m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_AssignedInteractionPosition); 
+		m_timeFindingJob = 0; 
+		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null); 
+		Pathing.ClearDestination(); 
+	}
 
-		m_targetInteractable = null;
-		m_targetTransform = null;
-		m_assignedInteractionPosition = null;
-		m_isInvestigating = false;
+	private void BeginJobSearch() 
+	{ 
+		ClearJobState(); 
+		SetLogicExecutorState(EActorState.STATE_SearchingForWork); 
+	}
 
-		m_timeFindingJob = 0;
-		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
-		SetLogicExecutorState(EActorState.STATE_OffDuty);
-		Pathing.SetStoppingDistance(c_workingDist);
-		Pathing.ClearDestination();
+	private void BeginOffDuty() 
+	{ 
+		ClearJobState(); 
+		SetLogicExecutorState(EActorState.STATE_OffDuty); 
+		Pathing.SetStoppingDistance(c_workingDist); 
 	}
 
 	private void HandleFailedInteraction()
@@ -444,7 +453,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			// Stop the job search if its been too long
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
-				ClearJob();
+				BeginOffDuty();
 				DropHeldItem();
 				m_behaviourTreeExecutor.ResetContext();
 				return;
