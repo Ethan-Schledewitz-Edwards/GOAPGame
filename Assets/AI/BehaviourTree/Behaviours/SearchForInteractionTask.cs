@@ -21,7 +21,7 @@ public class SearchForClosestJobTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		Vector3 executorPosition = executorTransform.position;
-		InteractableObjectBase closestInteractable = SearchForTask(executorPosition, context);
+		InteractableObjectBase closestInteractable = SearchForTask(interactor, executorPosition, context);
 		if (closestInteractable != null)
 		{
 			InteractionPosition assignedPosition = null;
@@ -92,15 +92,20 @@ public class SearchForClosestJobTask : BTNodeBase
 	/// <summary>
 	/// Searches for an actor interactable object within a radius.
 	/// </summary>
-	private InteractableObjectBase SearchForTask(Vector3 executorPosition, AIContext context)
+	private InteractableObjectBase SearchForTask(IInteractor interactor, Vector3 executorPosition, AIContext context)
 	{
 		InteractableObjectBase closestTask = null;
 
-		Vector3 pos = executorPosition;
 		float interactionRadius = context.GetData<float>(AIContextKeys.c_JobSearchRange, 1.5f);
 		int interactionLayers = context.GetData<int>(AIContextKeys.c_InteractionLayer);
 
-		Collider[] hitColliders = Physics.OverlapSphere(pos, interactionRadius, interactionLayers, QueryTriggerInteraction.Collide);
+		Collider[] hitColliders = Physics.OverlapSphere
+		(
+			executorPosition, 
+			interactionRadius, 
+			interactionLayers, 
+			QueryTriggerInteraction.Collide
+		);
 
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)
@@ -110,11 +115,10 @@ public class SearchForClosestJobTask : BTNodeBase
 
 			if (i.TryGetComponent(out InteractableObjectBase aio))
 			{
-				// Skip targets that are already at capacity
-				if (aio.IsAtActorCapacity())
+				if (!aio.HasAvailableWork(interactor))
 					continue;
 
-				float dist = Vector3.Distance(pos, aio.transform.position);
+				float dist = Vector3.Distance(executorPosition, aio.transform.position);
 				if (dist < closestDist)
 				{
 					closestTask = aio;

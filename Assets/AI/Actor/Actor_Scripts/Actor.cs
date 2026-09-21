@@ -53,6 +53,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
 	private bool m_isInvestigating;
+	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
 	private InteractableObjectBase m_targetInteractable;
@@ -126,22 +127,21 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 			if (m_targetInteractable != null && m_assignedInteractionPosition != null)
 			{
-				// Move to the reserved position
 				if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 				{
 					Pathing.SetDestination(validPos);
+
+					// Check distance and attempt interaction directly
+					float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
+					if (Pathing.IsWithinDistance(validPos, interactionDistance))
+					{
+						InteractWith(m_targetInteractable, true);
+					}
 				}
 				else
 				{
 					HandleFailedInteraction();
 					return;
-				}
-
-				// Interact when close to the interaction position
-				float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
-				if (Pathing.IsWithinDistance(validPos, interactionDistance))
-				{
-					InteractWith(m_targetInteractable, true);
 				}
 			}
 		}
@@ -162,21 +162,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 					{
 						SyncJobStateFromContext();
 
-						if (m_assignedInteractionPosition != null)
-						{
-							if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out _))
-							{
-								BeginOffDuty(); // Lost spot, abandon job
-								DropHeldItem();
-								return;
-							}
-						}
-
-						BehaviourTree treeBeforeTick = m_behaviourTreeExecutor.CurrentBehaviourTree;
+						m_jobAssignedThisTick = false;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
-						// Only clear the job if this exact tree finished.
-						if (m_behaviourTreeExecutor.CurrentBehaviourTree == treeBeforeTick &&
+						// Clear if the behaviour tree completed and was not replaced this frame.
+						if (!m_jobAssignedThisTick && 
 							(treeState == EBTNodeState.STATE_SUCSESS ||
 							 treeState == EBTNodeState.STATE_FAILURE))
 						{
@@ -266,7 +256,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 
 		m_targetTransform = actorInteractableObjectBase.transform;
-
 		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
 		(
 			this,
@@ -322,6 +311,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		m_behaviourTreeExecutor.AIContext.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, m_assignedInteractionPosition);
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
 		SetLogicExecutorState(EActorState.STATE_Working);
+		m_jobAssignedThisTick = true;
 	}
 
 	private void ReleaseInteractionPosition(InteractionPosition position)

@@ -12,6 +12,7 @@ namespace Entities.Core
 
 		// Events
 		public event Action EntityPositionChanged;
+		public event Action<Vector2Int> EntityChunkChanged;
 
 		// System
 		private bool m_isSpawning;
@@ -19,10 +20,16 @@ namespace Entities.Core
 		private Vector2Int m_currentChunkXZ;
 		[SerializeField] private bool m_canUpdatePosition = true;
 
+		private void Start()
+		{
+			m_position = transform.position;
+			m_currentChunkXZ = CoordinateUtility.WorldToChunkXZ(m_position);
+		}
 
 		private void OnDestroy()
 		{
 			EntityPositionChanged = null;
+			EntityChunkChanged = null;
 			StopAllCoroutines();
 		}
 
@@ -45,6 +52,7 @@ namespace Entities.Core
 				if (chunkXZ != m_currentChunkXZ)
 				{
 					m_currentChunkXZ = chunkXZ;
+					EntityChunkChanged?.Invoke(chunkXZ);
 				}
 			}
 		}

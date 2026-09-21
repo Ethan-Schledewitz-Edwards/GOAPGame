@@ -54,6 +54,17 @@ public class ReserveInteractionPositionTask : BTNodeBase
 		}
 
 		context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+		// Cleanup delegate in case the behavior tree aborts
+		System.Action cleanup = () =>
+		{
+			if (interactable != null && interactor != null && assignedPosition != null)
+			{
+				interactable.CancelReservation(interactor, assignedPosition);
+			}
+		};
+		context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+
 		context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 
 		return EBTNodeState.STATE_SUCSESS;

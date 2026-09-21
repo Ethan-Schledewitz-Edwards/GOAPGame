@@ -52,7 +52,8 @@ public class FindItemEntityOfTagTask : BTNodeBase
 			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
 		Transform nearest = null;
-		float minDistanceSqr = float.MaxValue;
+
+		// Check all neighbiour chunks for entities
 		foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
 		{
 			TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
@@ -67,14 +68,21 @@ public class FindItemEntityOfTagTask : BTNodeBase
 					itemObject.ItemData is ITaggable<ItemTag> taggable)
 
 				{
-					// Check if the items tags match the actors current search filters
-					if (itemTags.Any(tag => taggable.HasTag(tag)))
+					// Check if the item has work
+					IInteractor interactor = entity.GetComponent<IInteractor>();
+					if(entity.TryGetComponent(out InteractableObjectBase interactable) &&
+						interactable.HasAvailableWork(interactor))
 					{
-						float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
-						if (distSqr < minDistanceSqr)
+						// Check if the items tags match the actors current search filters
+						if (itemTags.Any(tag => taggable.HasTag(tag)))
 						{
-							minDistanceSqr = distSqr;
-							nearest = entity.transform;
+							float minDistanceSqr = float.MaxValue;
+							float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
+							if (distSqr < minDistanceSqr)
+							{
+								minDistanceSqr = distSqr;
+								nearest = entity.transform;
+							}
 						}
 					}
 				}

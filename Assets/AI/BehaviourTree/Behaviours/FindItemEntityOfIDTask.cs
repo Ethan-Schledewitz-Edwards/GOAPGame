@@ -27,34 +27,51 @@ public class FindItemEntityOfIDTask : BTNodeBase
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		// Find the closest item
-		Transform targetItemTransform = FindItemOfID(context);
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		if (executorTransform == null)
+			return EBTNodeState.STATE_FAILURE;
+
+		if (!executorTransform.TryGetComponent(out IInteractor interactor))
+			return EBTNodeState.STATE_FAILURE;
+
+		// Find the closest item or storage structure
+		int idOfItemToFind = context.GetData<int>(AIContextKeys.c_ItemToFindID);
+		Transform targetItemTransform = SearchForItem
+		(
+			idOfItemToFind, 
+			executorTransform, 
+			interactor, 
+			context
+		);
 
 		if (targetItemTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
 		Vector3 destination = targetItemTransform.position;
-
 		if (targetItemTransform.TryGetComponent(out InteractableObjectBase interactable))
 		{
-			Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-
-			if (executorTransform != null && executorTransform.TryGetComponent(out IInteractor interactor))
+			if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPosition))
 			{
-				// Attempt to reserve the closest valid position for this actor
-				if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPos))
+				if (assignedPosition.TryGetInteractionPosition(interactor, out Vector3 position))
 				{
-					if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 position))
+					destination = position;
+					context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+					// Cleanup delegate in case the behavior tree aborts
+					System.Action cleanup = () =>
 					{
-						destination = position;
-						context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPos);
-					}
+						if (interactable != null && interactor != null && assignedPosition != null)
+						{
+							interactable.CancelReservation(interactor, assignedPosition);
+						}
+					};
+					context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
 				}
-				else
-				{
-					// The item/storage is at capacity and cannot be reserved. 
-					return EBTNodeState.STATE_FAILURE;
-				}
+			}
+			else
+			{
+				// Reservation fails
+				return EBTNodeState.STATE_FAILURE;
 			}
 		}
 
@@ -64,43 +81,39 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform FindItemOfID(AIContext context)
-	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-
-		int idOfItemToFind = context.GetData<int>(AIContextKeys.c_ItemToFindID);
-
-		Transform candidate = SearchForItem(idOfItemToFind, executorTransform, context);
-		
-		return candidate;
-	}
-
-	private Transform SearchForItem(int itemID, Transform executorTransform, AIContext context)
+	private Transform SearchForItem(int itemID, Transform executorTransform, IInteractor interactor, AIContext context)
 	{
 		Vector3 executorPosition = executorTransform.position;
+		Vector2Int[] neighbourChunkCoordinates = ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
-		Vector2Int[] neighbourChunkCoordinates
-			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
-
-		// Track the nearest structure
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;
-		float distSqr = 0;
 
 		// Try to find the nearest item on the ground
 		foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
 		{
 			TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
+			if (terrainChunk == null || terrainChunk.ResidentEntities == null)
+				continue;
+
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
 				if (entity == null)
 					continue;
 
+				// Check if the entity is an item
 				if (entity.TryGetComponent(out IItemObject itemObject) &&
 					!itemObject.IsItemStored &&
 					itemObject.ItemData.ItemID == itemID)
 				{
-					distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
+					// Check if the item has work
+					if (entity.TryGetComponent(out InteractableObjectBase interactable))
+					{
+						if (!interactable.HasAvailableWork(interactor))
+							continue;
+					}
+
+					float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
 					if (distSqr < minDistanceSqr)
 					{
 						minDistanceSqr = distSqr;
@@ -111,14 +124,13 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		}
 
 		// Try to find the nearest friendly storage structure
-		Transform nearestStorageStructure = FindStorageStructure(itemID, executorTransform, context);
-		if(nearestStorageStructure != null)
+		minDistanceSqr = float.MaxValue;
+		Transform nearestStorageStructure = FindStorageStructure(itemID, executorTransform, interactor, context);
+		if (nearestStorageStructure != null)
 		{
-			Vector3 structurePosition = nearestStorageStructure.position;
-			distSqr = (structurePosition - executorPosition).sqrMagnitude;
+			float distSqr = (nearestStorageStructure.position - executorPosition).sqrMagnitude;
 			if (distSqr < minDistanceSqr)
 			{
-				minDistanceSqr = distSqr;
 				nearest = nearestStorageStructure;
 			}
 		}
@@ -127,16 +139,11 @@ public class FindItemEntityOfIDTask : BTNodeBase
 	}
 
 	/// <summary>
-	/// Finds the nearest storage structure that matches the specified item's tag.
+	/// Finds the nearest available storage structure that contains the requested item.
 	/// </summary>
-	/// <param name="itemID">The item identifier used to filter storage structures by their tags.</param>
-	/// <param name="executorTransform">The transform representing the executor's position and orientation.</param>
-	/// <param name="context">The AI context for the search operation.</param>
-	/// <returns>The transform of the nearest matching storage structure, or null if none is found.</returns>
-	private Transform FindStorageStructure(int itemID, Transform executorTransform, AIContext context)
+	private Transform FindStorageStructure(int itemID, Transform executorTransform, IInteractor interactor, AIContext context)
 	{
 		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
-
 		Settlement closestFactionSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
 		if (closestFactionSettlement != null)
 		{
@@ -146,16 +153,19 @@ public class FindItemEntityOfIDTask : BTNodeBase
 				GameObject structureObject = closestStructure.Object;
 				if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
 				{
-					if (interactable.TryGetComponent(out IItemFiltered itemFiltered))
+					// Check if the storage has work
+					if (!interactable.HasAvailableWork(interactor))
+						return null;
+
+					// Validate item filters and inventory counts
+					if (structureObject.TryGetComponent(out IItemFiltered itemFiltered))
 					{
 						ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
 						if (itemIndex?.GetIndexedAsset(itemID) is ITaggable<ItemTag> itemTaggable)
 						{
-							// Check if the structures tags include the held items tags
 							bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
 							if (passesFilter)
 							{
-								// Check if the storage unit contains the desired item ID
 								if (structureObject.TryGetComponent(out InventoryComponent inventory))
 								{
 									if (inventory.Inventory.GetTotalOfItem(itemID) > 0)

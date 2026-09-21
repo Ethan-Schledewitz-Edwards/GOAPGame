@@ -67,7 +67,7 @@ namespace Entities.Savable
 		private void Awake()
 		{
 			m_entity = GetComponent<Entity>();
-			m_entity.EntityPositionChanged += OnEntityMoved;
+			m_entity.EntityChunkChanged += RegisterToClosestChunk;
 
 			m_collider = GetComponent<Collider>();
 			m_rigidbody = GetComponent<Rigidbody>();
@@ -94,13 +94,14 @@ namespace Entities.Savable
 			else if (IsManuallyAuthored)
 				EnablePhysicsAndCollision();
 
-			RegisterToClosestChunk();
+			Vector2Int entityChunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+			RegisterToClosestChunk(entityChunkXZ);
 		}
 
 		private void OnDestroy()
 		{
 			if (m_entity != null)
-				m_entity.EntityPositionChanged -= OnEntityMoved;
+				m_entity.EntityChunkChanged -= RegisterToClosestChunk;
 
 			UnregisterFromCurrentChunk();
 			StopAllCoroutines();
@@ -116,15 +117,9 @@ namespace Entities.Savable
 			EnablePhysicsAndCollision();
 		}
 
-		private void OnEntityMoved()
+		private void RegisterToClosestChunk(Vector2Int chunkXZ)
 		{
-			RegisterToClosestChunk();
-		}
-
-		private void RegisterToClosestChunk()
-		{
-			Vector2Int entityChunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
-			if (entityChunkXZ != m_chunkXZ || m_chunkXZ == default)
+			if (chunkXZ != m_chunkXZ || m_chunkXZ == default)
 			{
 				// Unregister this entity from its previous chunk
 				if (m_chunkXZ != default)
@@ -135,7 +130,7 @@ namespace Entities.Savable
 				}
 
 				// Register this entity to the chunk it overlaps with
-				m_chunkXZ = entityChunkXZ;
+				m_chunkXZ = chunkXZ;
 				TerrainChunk terrainChunk = WorldManager.GetChunkData(m_chunkXZ);
 
 				if (terrainChunk != null)
@@ -143,7 +138,7 @@ namespace Entities.Savable
 
 				if (!IsManuallyAuthored)
 				{
-					if (WorldManager.s_ActiveChunks.TryGetValue(entityChunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
+					if (WorldManager.s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
 					{
 						transform.parent = activeChunkTuple.gameObject.transform;
 					}

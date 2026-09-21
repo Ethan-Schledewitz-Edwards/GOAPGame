@@ -7,7 +7,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	[Header("Settings")]
 	[field: SerializeField] public bool RequiresReservation { get; private set; } = true;
 	[SerializeField] private int m_actorsNeeded = 1;
-	[SerializeField] private int m_maxActors = 1;
 
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPosition[] m_interactPositions;
@@ -19,16 +18,16 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	{
 		assignedPosition = null;
 
-		if (GetTotalOccupiedOrReserved() >= m_maxActors ||
-			m_interactPositions == null ||
-			m_interactPositions.Length == 0)
+		if (IsAtActorCapacity() || m_interactPositions == null || m_interactPositions.Length == 0)
 			return false;
 
 		InteractionPosition closestPosition = null;
 		float minDistanceSqr = float.MaxValue;
 
-		foreach (var pos in m_interactPositions)
+		// Find the closest position that has open capacity
+		for (int i = 0; i < m_interactPositions.Length; i++)
 		{
+			var pos = m_interactPositions[i];
 			if (pos == null || !pos.HasAvailableCapacity)
 				continue;
 
@@ -124,7 +123,17 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 	public virtual bool HasAvailableWork(IInteractor interactor)
 	{
-		return !IsAtActorCapacity();
+		if (IsAtActorCapacity() || m_interactPositions == null)
+			return false;
+
+		for (int i = 0; i < m_interactPositions.Length; i++)
+		{
+			var pos = m_interactPositions[i];
+			if (pos != null && pos.HasAvailableCapacity)
+				return true;
+		}
+
+		return false;
 	}
 
 	/// <summary>
@@ -169,8 +178,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 	public abstract void StopInteractSpeed();
 
-	public bool IsAtActorCapacity() => GetTotalActorsPresent() >= m_maxActors;
-
 	/// <summary>
 	/// Returns true when the supplied interaction position belongs to this
 	/// interactable. Used by behaviour-tree tasks to distinguish a position
@@ -183,5 +190,27 @@ public abstract class InteractableObjectBase : MonoBehaviour
 			return false;
 
 		return Array.IndexOf(m_interactPositions, position) >= 0;
+	}
+
+	public bool IsAtActorCapacity() => GetTotalOccupiedOrReserved() >= GetTotalMaxCapacity();
+
+	/// <summary>
+	/// Calculates the absolute maximum number of actors this object can support 
+	/// by summing the capacities of all its interaction positions.
+	/// </summary>
+	private int GetTotalMaxCapacity()
+	{
+		if (m_interactPositions == null || m_interactPositions.Length == 0)
+			return 0;
+
+		int total = 0;
+		foreach (var pos in m_interactPositions)
+		{
+			if (pos != null)
+			{
+				total += pos.MaxInteractors;
+			}
+		}
+		return total;
 	}
 }

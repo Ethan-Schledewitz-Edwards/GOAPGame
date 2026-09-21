@@ -24,9 +24,6 @@ namespace BehaviourTrees
 
 			if (timeElapsed >= m_duration)
 			{
-				// Timeout!
-				m_childNodes[0].ResetNode(context);
-
 				return EBTNodeState.STATE_FAILURE;
 			}
 
@@ -42,6 +39,11 @@ namespace BehaviourTrees
 		protected override void OnNodeExited(AIContext context) 
 		{
 			context.ClearData(m_timeoutKey);
+
+			foreach (BTNodeBase child in m_childNodes)
+			{
+				child.ExitNode(context);
+			}
 		}
 
 		protected override void OnNodeReset(AIContext context)

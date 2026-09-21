@@ -83,9 +83,7 @@ namespace Interaction.InteractableStructures
 			s_takeItemBT = tree;
 		}
 
-		public void SetSettlement(
-			int settlementID,
-			int settlementStructureID)
+		public void SetSettlement(int settlementID, int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;

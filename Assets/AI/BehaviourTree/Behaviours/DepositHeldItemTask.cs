@@ -5,151 +5,75 @@ using UnityEngine;
 
 /// <summary>
 /// Moves items from the executor's inventory to the target inventory.
-/// The actor must already have the target's interaction position reserved.
-/// This node converts that reservation into an interaction and then
-/// transfers any held items.
+/// Converts an existing reservation into an active interaction during deposit,
+/// and handles proper cleanup on exit.
 /// </summary>
 public class DepositHeldItemTask : BTNodeBase
 {
-	private const string c_interactionStartedKey = "DepositInteractionStarted";
+	private const string c_InteractionStartedKey = "DepositInteractionStarted";
+
+	private struct DepositData
+	{
+		public Transform ExecutorTransform;
+		public Transform TargetTransform;
+		public InteractionPosition AssignedPos;
+		public InventoryComponent ExecutorInventory;
+		public InventoryComponent TargetInventory;
+		public InteractableObjectBase Interactable;
+		public IInteractor Interactor;
+	}
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		context.SetData<bool>(c_interactionStartedKey, false);
+		context.SetData(c_InteractionStartedKey, false);
 	}
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
-
-		if (executorTransform == null ||
-			targetTransform == null ||
-			assignedPos == null)
-		{
-			Debug.LogError("[DepositHeldItemTask] Missing executor, target, or " +
-				"assigned interaction position.",
-				executorTransform);
-
+		if (!TryGetDepositData(context, out DepositData data))
 			return EBTNodeState.STATE_FAILURE;
-		}
 
-		if (!executorTransform.TryGetComponent(out InventoryComponent executorInventoryComponent) ||
-			executorInventoryComponent.Inventory == null)
-		{
-			Debug.LogError("[DepositHeldItemTask] Executor has no valid inventory.",
-				executorTransform);
-
-			return EBTNodeState.STATE_FAILURE;
-		}
-
-		if (!targetTransform.TryGetComponent(out InventoryComponent targetInventoryComponent) ||
-			targetInventoryComponent.Inventory == null)
-		{
-			Debug.LogError($"[DepositHeldItemTask] Target '{targetTransform.name}' " +
-				"has no valid InventoryComponent.",
-				targetTransform);
-
-			return EBTNodeState.STATE_FAILURE;
-		}
-
-		if (!targetTransform.TryGetComponent(out InteractableObjectBase interactable))
-		{
-			Debug.LogError($"[DepositHeldItemTask] Target '{targetTransform.name}' " +
-				"has no InteractableObjectBase.",
-				targetTransform);
-
-			return EBTNodeState.STATE_FAILURE;
-		}
-
-		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		if (interactor == null)
-		{
-			Debug.LogError("[DepositHeldItemTask] Executor has no IInteractor.",
-				executorTransform);
-
-			return EBTNodeState.STATE_FAILURE;
-		}
-
-		// The actor must actually be at the assigned interaction position.
-		if (!assignedPos.GetPositionInRange(interactor,executorTransform.position))
+		// Distance check
+		if (!data.AssignedPos.GetPositionInRange(data.Interactor, data.ExecutorTransform.position))
 			return EBTNodeState.STATE_RUNNING;
 
-		InventorySlot heldItemSlot = executorInventoryComponent.Inventory.Slots[0];
-		ItemData heldItemData = heldItemSlot.SlotsItem;
-		int heldAmount = heldItemSlot.AmountInSlot;
+		InventorySlot heldSlot = data.ExecutorInventory.Inventory.Slots[0];
+		ItemData heldItemData = heldSlot.SlotsItem;
+		int heldAmount = heldSlot.AmountInSlot;
 
-		// Empty slot means the entire stack has already been deposited.
+		// Check if stack is already deposited
 		if (heldItemData == null || heldAmount <= 0)
-		{
-			Debug.Log("[DepositHeldItemTask] Entire held stack deposited.",
-				executorTransform);
-
 			return EBTNodeState.STATE_SUCSESS;
-		}
 
-		// Convert the reservation into an active interaction exactly once.
-		bool interactionStarted = context.GetData<bool>(c_interactionStartedKey);
+		// Begin interaction (convert reservation)
+		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
 		if (!interactionStarted)
 		{
-			if (!interactable.TryBeginInteraction(interactor, executorTransform.position, assignedPos, out _))
+			if (!data.Interactable.TryBeginInteraction(data.Interactor, 
+				data.ExecutorTransform.position, 
+				data.AssignedPos, 
+				out _))
 			{
-				Debug.LogError($"[DepositHeldItemTask] Failed to interact with " +
-					$"'{targetTransform.name}' while in range.",
-					executorTransform);
-
+				Debug.LogError($"[DepositHeldItemTask] Failed to begin interaction with '{data.TargetTransform.name}'.", data.ExecutorTransform);
 				return EBTNodeState.STATE_FAILURE;
 			}
 
-			context.SetData<bool>(c_interactionStartedKey, true);
-
-			// The reservation has now become an active interaction.
-			context.ClearData(AIContextKeys.c_ReservationCleanup);
+			context.SetData(c_InteractionStartedKey, true);
 		}
 
-		Inventory targetInventory = targetInventoryComponent.Inventory;
-
-		// Find room for the whole stack
+		// Validate space and execute transfer
+		Inventory targetInventory = data.TargetInventory.Inventory;
 		if (!targetInventory.TryFindRoomForItem(heldItemData, heldAmount, out _, out _))
 		{
-			Debug.LogError($"[DepositHeldItemTask] Target '{targetTransform.name}' " +
-				$"cannot accept the entire stack of {heldAmount} " +
-				$"item(s) ID {heldItemData.ItemID}.",
-				executorTransform);
-
+			Debug.LogError($"[DepositHeldItemTask] '{data.TargetTransform.name}' lacks capacity for {heldAmount}x {heldItemData.ItemID}.", data.ExecutorTransform);
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		// Transfer the entire stack in one operation.
-		if (!targetInventoryComponent.TryTransferFrom(heldItemSlot, heldAmount, out int transferredAmount))
+		if (!data.TargetInventory.TryTransferFrom(heldSlot, heldAmount, out int transferredAmount) || transferredAmount != heldAmount)
 		{
-			Debug.LogError($"[DepositHeldItemTask] Failed to transfer the full stack " +
-				$"of {heldAmount} item(s) ID {heldItemData.ItemID} " +
-				$"from '{executorTransform.name}' to " +
-				$"'{targetTransform.name}'.",
-				executorTransform);
-
+			Debug.LogError($"[DepositHeldItemTask] Transfer failure or partial transfer with '{data.TargetTransform.name}'.", data.ExecutorTransform);
 			return EBTNodeState.STATE_FAILURE;
 		}
-
-		// The transfer must have been complete.
-		if (transferredAmount != heldAmount ||
-			heldItemSlot.AmountInSlot > 0)
-		{
-			Debug.LogError($"[DepositHeldItemTask] Partial deposit detected. " +
-				$"Expected {heldAmount}, transferred {transferredAmount}, " +
-				$"remaining {heldItemSlot.AmountInSlot}.",
-				executorTransform);
-
-			return EBTNodeState.STATE_FAILURE;
-		}
-
-		Debug.Log(
-			$"[DepositHeldItemTask] Deposited entire stack of " +
-			$"{transferredAmount} item(s) ID {heldItemData.ItemID} " +
-			$"into '{targetTransform.name}'.",
-			executorTransform);
 
 		return EBTNodeState.STATE_SUCSESS;
 	}
@@ -159,29 +83,68 @@ public class DepositHeldItemTask : BTNodeBase
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
 
-		if (executorTransform != null &&
-			targetTransform != null &&
-			assignedPos != null &&
-			targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+		if (executorTransform != null && targetTransform != null && assignedPos != null)
 		{
-			IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-
-			if (interactor != null)
-				interactable.StopInteract(interactor, assignedPos);
+			if (executorTransform.TryGetComponent(out IInteractor interactor) &&
+				targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+			{
+				if (interactionStarted)
+				{
+					Debug.Log("[DepositHeldItemTask] Stopping interaction.");
+					interactable.StopInteract(interactor, assignedPos);
+				}
+				else
+				{
+					Debug.Log("[DepositHeldItemTask] Cancelling reservation.");
+					interactable.CancelReservation(interactor, assignedPos);
+				}
+			}
+		}
+		else
+		{
+			Debug.LogWarning("[DepositHeldItemTask] OnNodeExited called but context data was already missing/cleared!");
 		}
 
-		System.Action cleanup = context.GetData<System.Action>(AIContextKeys.c_ReservationCleanup);
-		cleanup?.Invoke();
-
+		// Context cleanup
 		context.ClearData(AIContextKeys.c_ReservationCleanup);
 		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-		context.ClearData(c_interactionStartedKey);
+		context.ClearData(c_InteractionStartedKey);
 	}
 
 	protected override void OnNodeReset(AIContext context)
 	{
-		context.ClearData(
-			c_interactionStartedKey);
+		context.ClearData(c_InteractionStartedKey);
 	}
+
+	#region Helper Methods
+
+	private bool TryGetDepositData(AIContext context, out DepositData data)
+	{
+		data = default;
+
+		data.ExecutorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		data.TargetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		data.AssignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
+		if (data.ExecutorTransform == null || data.TargetTransform == null || data.AssignedPos == null)
+			return false;
+
+		if (!data.ExecutorTransform.TryGetComponent(out data.ExecutorInventory) || data.ExecutorInventory.Inventory == null)
+			return false;
+
+		if (!data.TargetTransform.TryGetComponent(out data.TargetInventory) || data.TargetInventory.Inventory == null)
+			return false;
+
+		if (!data.TargetTransform.TryGetComponent(out data.Interactable))
+			return false;
+
+		if (!data.ExecutorTransform.TryGetComponent(out data.Interactor))
+			return false;
+
+		return true;
+	}
+
+	#endregion
 }
