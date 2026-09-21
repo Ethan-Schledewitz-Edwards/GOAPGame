@@ -73,9 +73,9 @@ public class AIPathing : MonoBehaviour
 
 	#region Actor Pathing
 
-	public void SetDestination(Vector3 destinationPos)
+	public void SetDestination(Vector3 destinationPosition)
 	{
-		if (destinationPos == Vector3.zero)
+		if (destinationPosition == Vector3.zero)
 		{
 			ClearDestination();
 			return;
@@ -83,7 +83,7 @@ public class AIPathing : MonoBehaviour
 
 		// Only rebuild the path if the difference between
 		// the new and previous destinations is significant
-		if ((destinationPos - CurrentDestination).sqrMagnitude < 0.01f)
+		if ((destinationPosition - CurrentDestination).sqrMagnitude < 0.01f)
 		{
 			if (m_simFidelity == EPathingSimFidelity.Realtime &&
 				m_navAgent.isActiveAndEnabled &&
@@ -95,7 +95,7 @@ public class AIPathing : MonoBehaviour
 				return;
 		}
 
-		CurrentDestination = destinationPos;
+		CurrentDestination = destinationPosition;
 
 		ApplyPathingByFidelity();
 	}
@@ -170,8 +170,9 @@ public class AIPathing : MonoBehaviour
 		{
 			case EPathingSimFidelity.Realtime:
 				m_navAgent.SetDestination(CurrentDestination);
-				m_currentPath = m_navAgent.path;
-				m_pathCorners = m_currentPath != null ? m_currentPath.corners : new Vector3[0];
+
+				m_currentPath = null;
+				m_pathCorners = new Vector3[0];
 				break;
 
 			case EPathingSimFidelity.Near:

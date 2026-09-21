@@ -71,7 +71,7 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
 			timeoutSearch,
-			new MoveToTargetDataTask(),
+			new MoveToInteractionPositionTask(),
 			new CheckForDestinationRangeTask(),
 			timeoutDeposit,
 			timeoutJobSearch

@@ -68,11 +68,11 @@ namespace Interaction.InteractableStructures
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
 				findItemTimeoutSequence,
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				new CheckForDestinationRangeTask(),
 				new InteractWithTargetTask(),
 				new ReturnToStructureTask(),
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				new CheckForDestinationRangeTask(),
 				timeoutDeposit,
 				findItemTimeout

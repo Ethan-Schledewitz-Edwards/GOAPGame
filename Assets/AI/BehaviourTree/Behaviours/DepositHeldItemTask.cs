@@ -22,7 +22,7 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition assignedPos = context.GetData<InteractionPosition>( AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
 
 		if (executorTransform == null ||
 			targetTransform == null ||

@@ -30,7 +30,7 @@ public class AttackTask : BTNodeBase
 			if (currentTimer >= c_timeBetweenAttacks)
 			{
 				context.SetData<float>(m_cooldownKey, 0f);
-				Debug.Log($"Actor:{executorTransform} attacked target:{targetTransform}.", targetTransform);
+				//Debug.Log($"Actor:{executorTransform} attacked target:{targetTransform}.", targetTransform);
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
 				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
 			}
@@ -49,10 +49,7 @@ public class AttackTask : BTNodeBase
 		return EBTNodeState.STATE_FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
-	{
-		Debug.Log("Engaging Target!");
-	}
+	protected override void OnFirstEvaluate(AIContext context) { }
 
 	protected override void OnNodeExited(AIContext context) 
 	{

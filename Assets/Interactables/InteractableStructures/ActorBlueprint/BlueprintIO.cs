@@ -94,11 +94,11 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				timeoutFind,
 				reserveItemPositionTask,
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				timeoutCheckDestination1,
 				timeoutPickup,
 				new ReturnToStructureTask(),
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				timeoutCheckDestination2,
 				timeoutDeposit,
 				timeoutJobSearch

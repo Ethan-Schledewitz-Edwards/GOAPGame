@@ -26,11 +26,11 @@ public class HarvestableIO : InteractableObjectBase
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				timeoutDestination1,
 				new AttackTask(),
 				timeoutSearch,
-				new MoveToTargetDataTask(),
+				new MoveToInteractionPositionTask(),
 				timeoutDestination2,
 				interactTimeout,
 			});

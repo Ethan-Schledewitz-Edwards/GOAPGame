@@ -21,7 +21,6 @@ public class SearchForClosestJobTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		Vector3 executorPosition = executorTransform.position;
-
 		InteractableObjectBase closestInteractable = SearchForTask(executorPosition, context);
 		if (closestInteractable != null)
 		{
@@ -60,9 +59,23 @@ public class SearchForClosestJobTask : BTNodeBase
 				}
 			}
 
+			Debug.Log($"{executorTransform} found an object to interact with", executorTransform);
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestInteractable.transform);
 			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+
+			// Store the reserved position in the AI context so interaction nodes can retrieve it
 			context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+
+			// Cleanup delegate in case the behavior tree aborts
+			System.Action cleanup = () =>
+			{
+				if (closestInteractable != null && interactor != null && assignedPosition != null)
+				{
+					closestInteractable.CancelReservation(interactor, assignedPosition);
+				}
+			};
+			context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+
 
 			return EBTNodeState.STATE_SUCSESS;
 		}

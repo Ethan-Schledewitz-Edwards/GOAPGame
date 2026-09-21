@@ -175,8 +175,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 						BehaviourTree treeBeforeTick = m_behaviourTreeExecutor.CurrentBehaviourTree;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
-						SyncJobStateFromContext();
-
 						// Only clear the job if this exact tree finished.
 						if (m_behaviourTreeExecutor.CurrentBehaviourTree == treeBeforeTick &&
 							(treeState == EBTNodeState.STATE_SUCSESS ||
