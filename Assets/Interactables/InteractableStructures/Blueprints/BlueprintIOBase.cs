@@ -18,7 +18,6 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
-		[SerializeField] private int m_maxCapacity = 4;
 
 		private Entity m_entity;
 		protected BlueprintCancelation m_cancelBlueprint;

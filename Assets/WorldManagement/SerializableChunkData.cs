@@ -31,35 +31,42 @@ namespace WorldManagement.Core
 			GenerationState = chunk.ChunkGenerationState;
 
 			// Extract dimensions assuming 3D array
-			SizeX = chunk.TileData.GetLength(0);
-			SizeY = chunk.TileData.GetLength(1);
-			SizeZ = chunk.TileData.GetLength(2);
-
-			// Flatten TileData
-			TileData = new int[SizeX * SizeY * SizeZ];
-			for (int x = 0; x < SizeX; x++)
+			if(chunk.TileData != null && chunk.TileData.Length > 0)
 			{
-				for (int y = 0; y < SizeY; y++)
+				SizeX = chunk.TileData.GetLength(0);
+				SizeY = chunk.TileData.GetLength(1);
+				SizeZ = chunk.TileData.GetLength(2);
+
+				// Flatten TileData
+				TileData = new int[SizeX * SizeY * SizeZ];
+				for (int x = 0; x < SizeX; x++)
 				{
-					for (int z = 0; z < SizeZ; z++)
+					for (int y = 0; y < SizeY; y++)
 					{
-						int flatIndex = x + SizeX * (y + SizeY * z);
-						TileData[flatIndex] = chunk.TileData[x, y, z];
+						for (int z = 0; z < SizeZ; z++)
+						{
+							int flatIndex = x + SizeX * (y + SizeY * z);
+							TileData[flatIndex] = chunk.TileData[x, y, z];
+						}
 					}
 				}
 			}
 
 			// Flatten BiomeMap
-			BiomeSizeX = chunk.BiomeMap.GetLength(0);
-			BiomeSizeZ = chunk.BiomeMap.GetLength(1);
-			BiomeMap = new int[BiomeSizeX * BiomeSizeZ];
-			for (int x = 0; x < BiomeSizeX; x++)
+			if (chunk.BiomeMap != null && chunk.BiomeMap.Length > 0)
 			{
-				for (int z = 0; z < BiomeSizeZ; z++)
+				BiomeSizeX = chunk.BiomeMap.GetLength(0);
+				BiomeSizeZ = chunk.BiomeMap.GetLength(1);
+				BiomeMap = new int[BiomeSizeX * BiomeSizeZ];
+				for (int x = 0; x < BiomeSizeX; x++)
 				{
-					BiomeMap[x + BiomeSizeX * z] = chunk.BiomeMap[x, z];
+					for (int z = 0; z < BiomeSizeZ; z++)
+					{
+						BiomeMap[x + BiomeSizeX * z] = chunk.BiomeMap[x, z];
+					}
 				}
 			}
+
 
 			// Populate SavableEntities
 			foreach (GameObject entityObj in chunk.ResidentEntities)
