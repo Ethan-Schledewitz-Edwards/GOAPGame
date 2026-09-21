@@ -9,9 +9,9 @@ public class CheckForDestinationRangeTask : BTNodeBase
 		float interactionDistanceSqrt = context.GetData<float>(AIContextKeys.c_InteractionDistanceSqrt);
 		Vector3 targetDestination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
-		// Check if the destination is within square range
-		float distSqrt = (targetDestination - executorTransform.position).sqrMagnitude;
-		if (distSqrt <= interactionDistanceSqrt)
+		Vector3 delta = targetDestination - executorTransform.position;
+		delta.y = 0f;
+		if (delta.sqrMagnitude <= interactionDistanceSqrt)
 			return EBTNodeState.STATE_SUCSESS;
 
 		return EBTNodeState.STATE_RUNNING;

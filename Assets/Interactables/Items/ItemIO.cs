@@ -69,13 +69,13 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 		BehaviourTree tree = new BehaviourTree();
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-			{
-				timeoutSearch,
-				new MoveToTargetDataTask(),
-				new CheckForDestinationRangeTask(),
-				timeoutDeposit,
-				timeoutJobSearch
-			});
+		{
+			timeoutSearch,
+			new MoveToTargetDataTask(),
+			new CheckForDestinationRangeTask(),
+			timeoutDeposit,
+			timeoutJobSearch
+		});
 		tree.SetTree(root);
 		s_ItemBT = tree;
 	}

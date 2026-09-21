@@ -24,8 +24,9 @@ public class AquireNewBehaviourFromTargetTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
-		InteractableObjectBase iob = targetTransform.GetComponent<InteractableObjectBase>()
-								  ?? targetTransform.GetComponentInParent<InteractableObjectBase>();
+		InteractableObjectBase iob =
+			targetTransform.GetComponent<InteractableObjectBase>() ??
+			targetTransform.GetComponentInParent<InteractableObjectBase>();
 
 		if (iob == null)
 			return EBTNodeState.STATE_FAILURE;
@@ -34,7 +35,7 @@ public class AquireNewBehaviourFromTargetTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context){}
+	protected override void OnFirstEvaluate(AIContext context) {}
 
 	protected override void OnNodeExited(AIContext context) {}
 

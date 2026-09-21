@@ -50,7 +50,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; } = default;
-	private int m_jobAssignmentID = 0;
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
 	private bool m_isInvestigating;
@@ -161,7 +160,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 				case EActorState.STATE_Working:
 					if (m_behaviourTreeExecutor != null && m_behaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
-						SyncAssignedInteractionPositionFromContext();
+						SyncJobStateFromContext();
 
 						if (m_assignedInteractionPosition != null)
 						{
@@ -173,18 +172,17 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 							}
 						}
 
-						// Tick the behaviour tree
-						int jobAssignmentBeforeTick = m_jobAssignmentID;
+						BehaviourTree treeBeforeTick = m_behaviourTreeExecutor.CurrentBehaviourTree;
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
-						// Synchronize after evaluation as well so a completed/failed tree always cleans up the position it owns.
-						SyncAssignedInteractionPositionFromContext();
+						SyncJobStateFromContext();
 
-						// Reset only if the tree finished and a new job wasn't assigned during the tick
-						if (m_jobAssignmentID == jobAssignmentBeforeTick &&
-							(treeState == EBTNodeState.STATE_SUCSESS || treeState == EBTNodeState.STATE_FAILURE))
+						// Only clear the job if this exact tree finished.
+						if (m_behaviourTreeExecutor.CurrentBehaviourTree == treeBeforeTick &&
+							(treeState == EBTNodeState.STATE_SUCSESS ||
+							 treeState == EBTNodeState.STATE_FAILURE))
 						{
-							BeginJobSearch();
+							BeginOffDuty();
 						}
 					}
 					break;
@@ -245,6 +243,18 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
 	{
+		if (m_behaviourTreeExecutor != null)
+		{
+			InteractionPosition contextPosition = m_behaviourTreeExecutor.AIContext
+				.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
+			if (contextPosition != null && contextPosition != m_assignedInteractionPosition)
+			{
+				ReleaseInteractionPosition(m_assignedInteractionPosition);
+				m_assignedInteractionPosition = contextPosition;
+			}
+		}
+
 		// Recalculate the interaction position in case it moved between ticks.
 		if (m_assignedInteractionPosition != null)
 		{
@@ -257,6 +267,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 
 		m_targetTransform = actorInteractableObjectBase.transform;
+
 		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
 		(
 			this,
@@ -267,7 +278,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 		if (!isInteractionSuccessful)
 		{
-			Debug.Log($"{transform} interacted with {m_targetTransform} but was unsuccsessful.", this);
 			HandleFailedInteraction();
 			return;
 		}
@@ -300,8 +310,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (previousPosition != null && previousPosition != m_assignedInteractionPosition)
 			ReleaseInteractionPosition(previousPosition);
 
-		m_jobAssignmentID++;
-
 		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
 
 		Vector3 targetDestination = m_targetTransform.position;
@@ -326,16 +334,28 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		position.TryRemoveInteractor(this);
 	}
 
-	private void SyncAssignedInteractionPositionFromContext()
+	private void SyncJobStateFromContext()
 	{
-		InteractionPosition contextPos = m_behaviourTreeExecutor.AIContext
-			.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		AIContext context = m_behaviourTreeExecutor.AIContext;
 
-		if (contextPos == m_assignedInteractionPosition)
-			return;
+		Transform contextTarget = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		InteractionPosition contextPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		if (contextTarget != m_targetTransform)
+		{
+			m_targetTransform = contextTarget;
 
-		ReleaseInteractionPosition(m_assignedInteractionPosition);
-		m_assignedInteractionPosition = contextPos;
+			if (contextTarget != null)
+				m_targetInteractable = contextTarget.GetComponent<InteractableObjectBase>() ??
+					contextTarget.GetComponentInParent<InteractableObjectBase>();
+			else
+				m_targetInteractable = null;
+		}
+
+		if (contextPosition != m_assignedInteractionPosition)
+		{
+			ReleaseInteractionPosition(m_assignedInteractionPosition);
+			m_assignedInteractionPosition = contextPosition;
+		}
 	}
 
 	private void ClearJobState() 
@@ -366,8 +386,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	private void HandleFailedInteraction()
 	{
-		Debug.Log("Interaction failed", this);
-
+		Debug.Log($"{transform} has failed an interaction with {m_targetTransform}.", this);
 		ReleaseInteractionPosition(m_assignedInteractionPosition);
 
 		m_targetInteractable = null;
@@ -387,7 +406,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (amountToDrop > 0)
 			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 
-		Debug.Log("DRop HELD ITEMS");
+		Debug.Log($"{transform} has dropped their items.", this);
 	}
 
 	/// <summary>

@@ -21,7 +21,7 @@ public class InteractWithTargetTask : BTNodeBase
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		if (targetTransform == null)
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.STATE_FAILURE;
 
 		InteractableObjectBase iob = targetTransform.GetComponent<InteractableObjectBase>()
 								  ?? targetTransform.GetComponentInParent<InteractableObjectBase>();
@@ -29,7 +29,6 @@ public class InteractWithTargetTask : BTNodeBase
 		if (iob == null)
 			return EBTNodeState.STATE_FAILURE;
 
-		// Perform the interaction without acquiring a job
 		interactor.InteractWith(iob, false);
 		return EBTNodeState.STATE_SUCSESS;
 	}

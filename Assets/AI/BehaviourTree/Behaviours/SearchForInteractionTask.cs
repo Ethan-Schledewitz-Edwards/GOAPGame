@@ -31,40 +31,40 @@ public class SearchForClosestJobTask : BTNodeBase
 			// Check if this interactable requires reservations
 			if (closestInteractable.RequiresReservation)
 			{
-				if (closestInteractable.TryReserveClosestPosition(interactor, executorPosition, out assignedPosition))
+				if (!closestInteractable.TryReserveClosestPosition(interactor, executorPosition, out assignedPosition))
+				{
+					return EBTNodeState.STATE_FAILURE;
+				}
+
+				if (assignedPosition == null ||
+					!assignedPosition.TryGetInteractionPosition(interactor, out validDestination))
 				{
 					if (assignedPosition != null)
-						assignedPosition.TryGetInteractionPosition(interactor, out validDestination);
+						assignedPosition.ReleaseReservation(interactor);
+
+					return EBTNodeState.STATE_FAILURE;
 				}
 			}
 			else
 			{
 				validDestination = closestInteractable.transform.position;
+
 				if (closestInteractable.TryGetComponent(out InteractionPosition sharedPos))
 				{
 					assignedPosition = sharedPos;
-					sharedPos.TryGetInteractionPosition(interactor, out validDestination);
+
+					if (!sharedPos.TryGetInteractionPosition(interactor, out validDestination))
+					{
+						return EBTNodeState.STATE_FAILURE;
+					}
 				}
 			}
 
-			if (validDestination != Vector3.zero)
-			{
-				context.SetData<Transform>(AIContextKeys.c_TargetTransform, assignedPosition != null ? assignedPosition.transform : closestInteractable.transform);
-				context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
-				context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+			context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestInteractable.transform);
+			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+			context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
 
-				// Cleanup delegate in case the behavior tree aborts
-				System.Action cleanup = () =>
-				{
-					if (closestInteractable != null && interactor != null && assignedPosition != null)
-					{
-						closestInteractable.CancelReservation(interactor, assignedPosition);
-					}
-				};
-				context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
-
-				return EBTNodeState.STATE_SUCSESS;
-			}
+			return EBTNodeState.STATE_SUCSESS;
 		}
 
 		return EBTNodeState.STATE_RUNNING;

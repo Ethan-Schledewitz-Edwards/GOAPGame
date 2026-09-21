@@ -20,8 +20,8 @@ public class HarvestableIO : InteractableObjectBase
 			SearchForClosestJobTask searchForInteractionTask = new SearchForClosestJobTask();
 			BTTimeoutNode timeoutSearch = new BTTimeoutNode(searchForInteractionTask, 2f);
 
-			InteractWithTargetTask interactTask = new InteractWithTargetTask();
-			BTTimeoutNode interactTimeout = new BTTimeoutNode(interactTask, 2f);
+			AquireNewBehaviourFromTargetTask aquireNewBehaviour = new AquireNewBehaviourFromTargetTask();
+			BTTimeoutNode interactTimeout = new BTTimeoutNode(aquireNewBehaviour, 2f);
 
 			BehaviourTree tree = new BehaviourTree();
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
