@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Interaction.InteractableStructures.Blueprints
 {
 	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation), typeof(ItemRequestComponent))]
-	public abstract class BlueprintIO : InteractableObjectBase, IStructure, IItemFiltered
+	public abstract class BlueprintIOBase : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
 

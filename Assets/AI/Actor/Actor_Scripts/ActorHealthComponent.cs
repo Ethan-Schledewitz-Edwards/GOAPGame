@@ -38,6 +38,12 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 			GetComponent<ISavableEntity>().TransformRestored += HandleSpawned;
 	}
 
+	private void Start()
+	{
+		// Try to add the actor if they werent loaded (created at runtime)
+		ActorManager.Instance.TryAddActor(m_actor);
+	}
+
 	private void OnDestroy()
 	{
 		if (GetComponent<ISavableEntity>() != null)
@@ -46,7 +52,7 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 
 	private void HandleSpawned(Vector3 savedPosition, Quaternion savedRotation)
 	{
-		ActorManager.Instance.AddActor(m_actor);
+		ActorManager.Instance.TryAddActor(m_actor);
 		m_actor.Pathing.SetPosition(savedPosition);
 	}
 

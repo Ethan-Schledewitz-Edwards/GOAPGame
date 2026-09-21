@@ -46,24 +46,28 @@ public class ActorManager : MonoBehaviour
 		Debug.Log($"There were {offlineSeconds} between save and load");
 	}
 
-	public void AddActor(Actor actor)
+	public void TryAddActor(Actor actor)
 	{
-		m_actors.Add(actor);
+		if (!m_actors.Contains(actor))
+			m_actors.Add(actor);
 	}
 
 	public void RemoveActor(Actor actor)
 	{
-		if (m_isTicking)
+		if (m_actors.Contains(actor))
 		{
-			// Queue actor for removal later
-			if (!m_pendingRemovals.Contains(actor))
+			if (m_isTicking)
 			{
-				m_pendingRemovals.Add(actor);
+				// Queue actor for removal later
+				if (!m_pendingRemovals.Contains(actor))
+				{
+					m_pendingRemovals.Add(actor);
+				}
 			}
-		}
-		else
-		{
-			m_actors.Remove(actor);
+			else
+			{
+				m_actors.Remove(actor);
+			}
 		}
 	}
 

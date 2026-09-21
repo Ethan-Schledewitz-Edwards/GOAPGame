@@ -35118,13 +35118,14 @@ MonoBehaviour:
   <RequiresReservation>k__BackingField: 1
   m_actorsNeeded: 1
   m_maxActors: 1
-  m_interactPositions: []
+  m_interactPositions:
+  - {fileID: 1779457727}
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_maxCapacity: 4
   m_tagFilter: []
   m_requiredItems:
   - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
-    amount: 1
+    amount: 3
   m_blueprintSettlementID: 0
   m_blueprintToSpawnOnCompletion: {fileID: 0}
   m_objectEnabledOnCompletion: {fileID: 432301702}
@@ -46073,6 +46074,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1779457726}
+  - component: {fileID: 1779457727}
   m_Layer: 7
   m_Name: InteractOffset
   m_TagString: Untagged
@@ -46095,6 +46097,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1399096433}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1779457727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779457725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 1.5
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!1001 &1784053914
 PrefabInstance:
   m_ObjectHideFlags: 0

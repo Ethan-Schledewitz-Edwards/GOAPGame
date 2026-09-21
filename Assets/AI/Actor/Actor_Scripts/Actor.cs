@@ -181,6 +181,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 							 treeState == EBTNodeState.STATE_FAILURE))
 						{
 							BeginOffDuty();
+							DropHeldItem();
 						}
 					}
 					break;
