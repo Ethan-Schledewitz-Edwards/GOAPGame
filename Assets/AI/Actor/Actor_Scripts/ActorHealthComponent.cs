@@ -6,8 +6,8 @@ using Entities.Core;
 public class ActorHealthComponent : HealthComponent, ISaveableComponent
 {
 	// Constants
-	private const float c_hungerDegredation = 0.2f;
-	private const float c_tirednessDegredation = 0.2f;
+	private const float c_hungerDegredation = 0.15f;
+	private const float c_tirednessDegredation = 0.15f;
 	private const float c_baseHealthDegredation = 2f;
 
 	[Header("Settings")]
@@ -109,7 +109,7 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 			m_healthDegredationInterval += t * (c_baseHealthDegredation * (1 + healthDegredation));
 			while (m_healthDegredationInterval >= 1f)
 			{
-				RemoveHealth(1);
+				//RemoveHealth(1);
 				m_healthDegredationInterval -= 1f;
 			}
 		}
