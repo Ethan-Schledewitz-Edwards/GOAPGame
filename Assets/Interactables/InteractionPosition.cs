@@ -56,7 +56,10 @@ public class InteractionPosition : MonoBehaviour
 		}
 	}
 
-	public bool TryReserve(IInteractor interactor)
+	/// <summary>
+	/// Attempts to reserve a position for the specified interactor if reservation is required and capacity is available.
+	/// </summary>
+	public bool TryReservePosition(IInteractor interactor)
 	{
 		if (!RequiresReservation)
 			return true;
@@ -84,33 +87,37 @@ public class InteractionPosition : MonoBehaviour
 	/// <param name="interactorValue">The index assigned to the interactor if 
 	/// the addition is successful. Otherwise, -1.</param>
 	/// <returns>true if the interactor was added successfully; otherwise, false.</returns>
-	public bool TryAddInteractor(IInteractor interactor, out int interactorValue)
+	public bool TryConvertReservationToActiveInteractor(IInteractor interactor, out int interactorValue)
 	{
-		m_reservedInteractors.Remove(interactor);
-
-		if (!RequiresReservation)
+		if (m_reservedInteractors.Contains(interactor))
 		{
-			if (!m_interactorsPresent.Contains(interactor))
+			m_reservedInteractors.Remove(interactor);
+
+			if (!RequiresReservation)
+			{
+				if (!m_interactorsPresent.Contains(interactor))
+					m_interactorsPresent.Add(interactor);
+
+				interactorValue = m_interactorsPresent.IndexOf(interactor) + 1;
+				return true;
+			}
+
+			if (m_interactorsPresent.Count < MaxInteractors && !m_interactorsPresent.Contains(interactor))
+			{
 				m_interactorsPresent.Add(interactor);
-
-			interactorValue = m_interactorsPresent.IndexOf(interactor) + 1;
-			return true;
+				interactorValue = m_interactorsPresent.Count;
+				return true;
+			}
 		}
-
-		if (m_interactorsPresent.Count < MaxInteractors && !m_interactorsPresent.Contains(interactor))
-		{
-			m_interactorsPresent.Add(interactor);
-			interactorValue = m_interactorsPresent.Count;
-			return true;
-		}
-
+	
 		interactorValue = -1;
 		return false;
 	}
 
 	public void TryRemoveInteractor(IInteractor interactor)
 	{
-		m_interactorsPresent.Remove(interactor);
+		if (m_interactorsPresent.Contains(interactor))
+			m_interactorsPresent.Remove(interactor);
 	}
 
 	/// <summary>

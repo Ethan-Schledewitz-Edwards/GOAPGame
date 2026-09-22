@@ -40,7 +40,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		}
 
 		// Reserve the closest interaction position for the interactor
-		if (closestPosition != null && closestPosition.TryReserve(interactor))
+		if (closestPosition != null && closestPosition.TryReservePosition(interactor))
 		{
 			assignedPosition = closestPosition;
 			return true;
@@ -77,7 +77,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		if (!reservedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		if (reservedPosition.TryAddInteractor(interactor, out interactorValue))
+		if (reservedPosition.TryConvertReservationToActiveInteractor(interactor, out interactorValue))
 		{
 			HandleActorAssigned();
 			return true;
