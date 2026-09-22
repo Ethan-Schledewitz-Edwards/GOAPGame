@@ -12,14 +12,17 @@ public class PlayerUI : MonoBehaviour
 	[field: SerializeField] public PauseMenu PauseMenu { get; private set; }
 	[field: SerializeField] public ConstructionMenu BuildMenu { get; private set; }
 
-	protected void Awake()
+	private void Awake()
 	{
 		Instance = this;
 
 		Assert.IsNotNull(PauseMenu);
 		Assert.IsNotNull(HUD);
 		Assert.IsNotNull(BuildMenu);
+	}
 
+	protected void Start()
+	{
 		MenuManager.OpenMenu(HUD);
 	}
 }

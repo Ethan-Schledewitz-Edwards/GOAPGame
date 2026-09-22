@@ -83,19 +83,19 @@ public static class MenuManager
 	{
 		if (menu == null)
 		{
-			Debug.LogError("Null menu");
+			Debug.LogError("Tried to open a null menu.");
 			return;
 		}
 
 		if (IsMenuOpen(PauseMenu) && !menu.IsSubPauseMenu)
 		{
-			Debug.LogWarning("Tried to open a non sub-pause menu while the pause menu is active.");
+			Debug.LogWarning("Tried to open a non sub-pause menu while the pause menu is active.", menu);
 			return;
 		}
 
 		if (IsMenuOpen(menu))
 		{
-			Debug.LogWarning($"Trying to double add menu {menu.GetType().Name}");
+			Debug.LogWarning($"Trying to double add menu", menu);
 			return;
 		}
 
