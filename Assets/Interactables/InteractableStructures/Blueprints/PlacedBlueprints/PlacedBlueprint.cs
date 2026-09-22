@@ -135,9 +135,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
 		}
 
-		public override void StopInteractSpeed()
-		{
-			
-		}
+		public override void StopInteractSpeed() { }
 	}
 }

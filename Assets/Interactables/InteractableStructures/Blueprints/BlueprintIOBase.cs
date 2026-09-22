@@ -66,45 +66,25 @@ namespace Interaction.InteractableStructures.Blueprints
 			if (s_cachedBlueprintBT != null)
 				return;
 
-			StructureTag storageTag =
-				IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
-
-			BTNodeBase findUseTask = new FindItemEntityOfIDTask(storageTag);
-			BTTimeoutNode timeoutFind = new BTTimeoutNode(findUseTask, 2f);
-
-			BTNodeBase reserveItemPositionTask = new ReserveInteractionPositionTask();
-
-			BTNodeBase checkDestination1 = new CheckForDestinationRangeTask();
-			BTTimeoutNode timeoutCheckDestination1 = new BTTimeoutNode(checkDestination1, 2f);
-
-			BTNodeBase checkDestination2 = new CheckForDestinationRangeTask();
-			BTTimeoutNode timeoutCheckDestination2 = new BTTimeoutNode(checkDestination2, 2f);
-
-			BTNodeBase pickupTask = new TryPickupItemTask();
-			BTTimeoutNode timeoutPickup = new BTTimeoutNode(pickupTask, 2f);
-
-			BTNodeBase depositTask = new DepositHeldItemTask();
-			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
-
-			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
-			BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
+			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				timeoutFind,
-				reserveItemPositionTask,
+				new BTTimeoutNode(new FindItemEntityOfIDTask(storageTag), 2f),
+				new ReserveInteractionPositionTask(),
 				new MoveToInteractionPositionTask(),
-				timeoutCheckDestination1,
-				timeoutPickup,
+				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new BTTimeoutNode(new TryPickupItemTask(), 2f),
 				new ReturnToStructureTask(),
 				new MoveToInteractionPositionTask(),
-				timeoutCheckDestination2,
-				timeoutDeposit,
-				timeoutJobSearch
+				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new BTTimeoutNode(new DepositHeldItemTask(), 2f),
+				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 			});
 
 			BehaviourTree tree = new BehaviourTree();
 			tree.SetTree(root);
+
 			s_cachedBlueprintBT = tree;
 		}
 

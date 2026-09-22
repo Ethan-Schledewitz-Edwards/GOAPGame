@@ -18,12 +18,11 @@ namespace Player.Core
 		private const float c_friction = 3.8f;
 		private const float c_acceleration = 8.5f;
 		private const float c_maxSpeed = 8f;
-
 		private const float c_stepHeight = 0.7f;
 
 		// Normals with Y greater than this are walkable
 		private const float c_maxWalkableAngle = 30;
-		private static float s_minWalkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
+		private static float s_walkableNormalY = Mathf.Cos(Mathf.Deg2Rad * c_maxWalkableAngle);
 
 		// Air Movement Values
 		private const float c_airSpeed = .5f;
@@ -120,7 +119,7 @@ namespace Player.Core
 			}
 			else
 			{
-				Debug.LogError("Position is NaN, skipping MovePosition.");
+				Debug.LogError("Position is NaN, skipping MovePosition.", transform);
 				m_velocity = Vector3.zero;
 			}
 
@@ -211,11 +210,11 @@ namespace Player.Core
 			{
 				++m_framesStuck;
 
-				Debug.LogWarning("Player stuck!");
+				Debug.LogWarning("The player is stuck", transform);
 
 				if (m_framesStuck > 5)
 				{
-					Debug.Log("Wow, you're REALLY stuck.");
+					Debug.Log("WOAH, the player is really stuck.", transform);
 					m_velocity = Vector3.zero;
 					m_position += Vector3.up * 0.5f;
 				}
@@ -296,7 +295,7 @@ namespace Player.Core
 
 					if (planeCount >= c_MaxConcurrentPlanes)
 					{
-						Debug.LogWarning("Colliding with too many planes at once");
+						Debug.LogWarning("Colliding with too many planes at once", transform);
 						velocity = Vector3.zero;
 						break;
 					}
@@ -331,7 +330,6 @@ namespace Player.Core
 						if (!conflictingPlanes) break;// Use the first good plane
 					}
 
-					// No good planes
 					if (conflictingPlanes)
 					{
 						if (planeCount == 2)
@@ -373,7 +371,7 @@ namespace Player.Core
 
 			if (bounceCount >= c_MaxBounces)
 			{
-				Debug.LogWarning("Bounces exceeded");
+				Debug.LogWarning("Too many bounces!!!", transform);
 			}
 		}
 		#endregion
@@ -579,12 +577,6 @@ namespace Player.Core
 			return c_verticalSize;
 		}
 
-		private IEnumerator AnimWait(float animTime)
-		{
-			yield return new WaitForSeconds(animTime);
-			movementMode = EMovementMode.Standard;
-		}
-
 		private bool GroundCheck(Vector3 position, out GameObject surfaceObject)
 		{
 			surfaceObject = null;
@@ -592,7 +584,7 @@ namespace Player.Core
 
 			if (CastHull(position, Vector3.down, c_GroundCheckDist, out RaycastHit hit))
 			{
-				if (hit.normal.y > s_minWalkableNormalY)
+				if (hit.normal.y > s_walkableNormalY)
 				{
 					surfaceObject = hit.collider.gameObject;
 					return true;
@@ -603,19 +595,18 @@ namespace Player.Core
 				return false;
 			}
 
-			// If we're on a slope, check if any point on the player is on the ground
-			// Source uses 4 box checks, but I'm really lazy so I'll just do a raycast.
+			// Check if the player is touching the ground when on slopes
 			if (Physics.Raycast(position,
 				Vector3.down,
-				out RaycastHit hit2,
+				out RaycastHit slopeHit,
 				c_GroundCheckDist * 2,
 				m_collisionLayerMask,
 				QueryTriggerInteraction.Ignore
 			))
 			{
-				if (hit2.normal.y > s_minWalkableNormalY)
+				if (slopeHit.normal.y > s_walkableNormalY)
 				{
-					surfaceObject = hit2.collider.gameObject;
+					surfaceObject = slopeHit.collider.gameObject;
 					return true;
 				}
 			}

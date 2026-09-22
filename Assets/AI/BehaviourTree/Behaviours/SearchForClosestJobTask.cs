@@ -6,7 +6,8 @@ using UnityEngine;
 /// reserves its closest interaction position, and sets it as the target destination.
 /// </summary>
 /// <remarks>
-/// This node should always be decorated with a timeout node.
+/// This node should be decorated with a <see cref="BTTimeoutNode"/> 
+/// and must be followed by a <see cref="ReserveInteractionPositionTask"/> node to reserve the target.
 /// </remarks>
 public class SearchForClosestJobTask : BTNodeBase
 {
@@ -24,58 +25,8 @@ public class SearchForClosestJobTask : BTNodeBase
 		InteractableObjectBase closestInteractable = SearchForTask(interactor, executorPosition, context);
 		if (closestInteractable != null)
 		{
-			InteractionPosition assignedPosition = null;
-			Vector3 validDestination = Vector3.zero;
-
-			// Check if this interactable requires reservations
-			if (closestInteractable.RequiresReservation)
-			{
-				if (!closestInteractable.TryReserveClosestPosition(interactor, executorPosition, out assignedPosition))
-				{
-					return EBTNodeState.STATE_FAILURE;
-				}
-
-				if (assignedPosition == null ||
-					!assignedPosition.TryGetInteractionPosition(interactor, out validDestination))
-				{
-					if (assignedPosition != null)
-						assignedPosition.ReleaseReservation(interactor);
-
-					return EBTNodeState.STATE_FAILURE;
-				}
-			}
-			else
-			{
-				validDestination = closestInteractable.transform.position;
-
-				if (closestInteractable.TryGetComponent(out InteractionPosition sharedPos))
-				{
-					assignedPosition = sharedPos;
-
-					if (!sharedPos.TryGetInteractionPosition(interactor, out validDestination))
-					{
-						return EBTNodeState.STATE_FAILURE;
-					}
-				}
-			}
-
-			Debug.Log($"{executorTransform} found an object to interact with", executorTransform);
+			Debug.Log($"[SearchForClosestJobTask]: {executorTransform} found an object to interact with", executorTransform);
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestInteractable.transform);
-			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
-
-			// Store the reserved position in the AI context so interaction nodes can retrieve it
-			context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
-
-			// Cleanup delegate in case the behavior tree aborts
-			System.Action cleanup = () =>
-			{
-				if (closestInteractable != null && interactor != null && assignedPosition != null)
-				{
-					closestInteractable.CancelReservation(interactor, assignedPosition);
-				}
-			};
-			context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
-
 
 			return EBTNodeState.STATE_SUCSESS;
 		}

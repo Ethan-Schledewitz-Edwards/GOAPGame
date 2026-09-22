@@ -9,15 +9,16 @@ using WorldManagement.Core;
 using UnityEngine;
 
 /// <summary>
-/// A behavior tree node that searches for the nearest item with a specific tag.
+/// Searches for the nearest item with a specific tag then adds its data to
+/// the behaviour trees context.
 /// </summary>
 /// <remarks>
-/// This node should always be decorated with a timeout node.
+/// This node should be decorated with a <see cref="BTTimeoutNode"/> 
+/// and must be followed by a <see cref="ReserveInteractionPositionTask"/> node to reserve the target.
 /// </remarks>
 public class FindItemEntityOfTagTask : BTNodeBase
 {
 	private const int c_chunkSearchRadius = 2;
-
 	private const string c_ItemTagsKey = "FindItemEntityOfTagTask_ItemTags";
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
@@ -27,13 +28,19 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		if (itemTags == null || itemTags.Count == 0)
 			return EBTNodeState.STATE_FAILURE;
 
-		Transform targetItemTransform = FindItemOfTags(context, itemTags.ToArray());
+		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		if (executorTransform == null || !executorTransform.TryGetComponent(out IInteractor interactor))
+			return EBTNodeState.STATE_FAILURE;
+
+		Transform targetItemTransform = FindItemOfTags(executorTransform, interactor, itemTags.ToArray());
+
 		if (targetItemTransform == null)
 			return EBTNodeState.STATE_RUNNING;
 
+		// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
 		context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
-		context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetItemTransform.position);
 
+		// Clean up temporary context data on success
 		foreach (ItemTag tag in itemTags)
 		{
 			context.ClearData(AIContextKeys.c_ItemTagPrefix + tag.TagID);
@@ -43,47 +50,44 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform FindItemOfTags(AIContext context, ItemTag[] itemTags)
+	private Transform FindItemOfTags(Transform executorTransform, IInteractor interactor, ItemTag[] itemTags)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Vector3 executorPosition = executorTransform.position;
-
-		Vector2Int[] neighbourChunkCoordinates
-			= ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
+		Vector2Int[] neighbourChunkCoordinates = ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
 		Transform nearest = null;
-
-		// Check all neighbiour chunks for entities
+		float minDistanceSqr = float.MaxValue;
 		foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
 		{
 			TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
+			if (terrainChunk?.ResidentEntities == null)
+				continue;
+
 			foreach (GameObject entity in terrainChunk.ResidentEntities)
 			{
 				if (entity == null)
 					continue;
 
-				// Check if the entity is an item
-				if (entity.TryGetComponent(out IItemObject itemObject) &&
-					!itemObject.IsItemStored &&
-					itemObject.ItemData is ITaggable<ItemTag> taggable)
-
+				if (!entity.TryGetComponent(out IItemObject itemObject) ||
+					itemObject.IsItemStored ||
+					!(itemObject.ItemData is ITaggable<ItemTag> taggable))
 				{
-					// Check if the item has work
-					IInteractor interactor = entity.GetComponent<IInteractor>();
-					if(entity.TryGetComponent(out InteractableObjectBase interactable) &&
-						interactable.HasAvailableWork(interactor))
+					continue;
+				}
+
+				if (entity.TryGetComponent(out InteractableObjectBase interactable) &&
+					!interactable.HasAvailableWork(interactor))
+				{
+					continue;
+				}
+
+				if (itemTags.Any(tag => taggable.HasTag(tag)))
+				{
+					float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
+					if (distSqr < minDistanceSqr)
 					{
-						// Check if the items tags match the actors current search filters
-						if (itemTags.Any(tag => taggable.HasTag(tag)))
-						{
-							float minDistanceSqr = float.MaxValue;
-							float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
-							if (distSqr < minDistanceSqr)
-							{
-								minDistanceSqr = distSqr;
-								nearest = entity.transform;
-							}
-						}
+						minDistanceSqr = distSqr;
+						nearest = entity.transform;
 					}
 				}
 			}
@@ -92,17 +96,18 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		return nearest;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) 
+	/// <summary>
+	/// Extracts item tags from the AI context data set and stores them in the context.
+	/// </summary>
+	protected override void OnFirstEvaluate(AIContext context)
 	{
 		List<ItemTag> itemTags = new List<ItemTag>();
-
 		foreach (string key in context.GetDataSet().Keys)
 		{
 			if (!key.StartsWith(AIContextKeys.c_ItemTagPrefix))
 				continue;
 
-			string idString = key.Substring(
-				AIContextKeys.c_ItemTagPrefix.Length);
+			string idString = key.Substring(AIContextKeys.c_ItemTagPrefix.Length);
 
 			if (!int.TryParse(idString, out int tagID))
 				continue;
@@ -115,12 +120,12 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		context.SetData<List<ItemTag>>(c_ItemTagsKey, itemTags);
 	}
 
-	protected override void OnNodeExited(AIContext context) 
+	protected override void OnNodeExited(AIContext context)
 	{
 		context.ClearData(c_ItemTagsKey);
 	}
 
-	protected override void OnNodeReset(AIContext context) 
+	protected override void OnNodeReset(AIContext context)
 	{
 		context.ClearData(c_ItemTagsKey);
 	}

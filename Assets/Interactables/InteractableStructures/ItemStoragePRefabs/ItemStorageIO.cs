@@ -62,7 +62,7 @@ namespace Interaction.InteractableStructures
 			BTNodeBase depositTask = new DepositHeldItemTask();
 			BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 60f);
 
-			BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
+			BTNodeBase jobTask = new AquireNewBehaviourTreeFromTargetTask();
 			BTTimeoutNode findItemTimeout = new BTTimeoutNode(jobTask, 2f);
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>

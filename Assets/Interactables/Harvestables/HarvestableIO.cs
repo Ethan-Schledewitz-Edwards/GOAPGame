@@ -5,38 +5,28 @@ using UnityEngine;
 [RequireComponent(typeof(HarvestableHealthComponent))]
 public class HarvestableIO : InteractableObjectBase
 {
-	private static BehaviourTree m_HarvestBT;
+	private static BehaviourTree m_harvestBT;
 
 	private void Awake()
 	{
-		if(m_HarvestBT == null)
+		if (m_harvestBT != null)
+			return;
+
+		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			CheckForDestinationRangeTask checkDestinationTask1 = new CheckForDestinationRangeTask();
-			BTTimeoutNode timeoutDestination1 = new BTTimeoutNode(checkDestinationTask1, 2f);
+			new MoveToInteractionPositionTask(),
+			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+			new AttackTask(),
+			new BTTimeoutNode(new SearchForClosestJobTask(), 2f),
+			new MoveToInteractionPositionTask(),
+			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+			new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
+		});
 
-			CheckForDestinationRangeTask checkDestinationTask2 = new CheckForDestinationRangeTask();
-			BTTimeoutNode timeoutDestination2 = new BTTimeoutNode(checkDestinationTask2, 2f);
+		BehaviourTree tree = new BehaviourTree();
+		tree.SetTree(root);
 
-			SearchForClosestJobTask searchForInteractionTask = new SearchForClosestJobTask();
-			BTTimeoutNode timeoutSearch = new BTTimeoutNode(searchForInteractionTask, 2f);
-
-			AquireNewBehaviourFromTargetTask aquireNewBehaviour = new AquireNewBehaviourFromTargetTask();
-			BTTimeoutNode interactTimeout = new BTTimeoutNode(aquireNewBehaviour, 2f);
-
-			BehaviourTree tree = new BehaviourTree();
-			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-			{
-				new MoveToInteractionPositionTask(),
-				timeoutDestination1,
-				new AttackTask(),
-				timeoutSearch,
-				new MoveToInteractionPositionTask(),
-				timeoutDestination2,
-				interactTimeout,
-			});
-			tree.SetTree(root);
-			m_HarvestBT = tree;
-		}
+		m_harvestBT = tree;
 	}
 
 	public override bool TryInteract(IInteractor interactor,
@@ -54,5 +44,5 @@ public class HarvestableIO : InteractableObjectBase
 
 	public override void StopInteractSpeed() { }
 
-	public override BehaviourTree GetBehaviourTree() => m_HarvestBT;
+	public override BehaviourTree GetBehaviourTree() => m_harvestBT;
 }

@@ -12,8 +12,7 @@ public class MoveToInteractionPositionTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		// Recalculate the destination every  so the actor always
-		// moves toward the currently assigned interaction position.
+		// Recalculate the destination 
 		if (!TryGetDynamicDestination(context, executorTransform, out Vector3 targetDestination))
 		{
 			Debug.Log($"{executorTransform} could not resolve its interaction destination.", executorTransform);
@@ -25,7 +24,7 @@ public class MoveToInteractionPositionTask : BTNodeBase
 
 		float arrivalDistance = Mathf.Max(pathing.StoppingDistance, 0.05f);
 
-		// Proximity to the destination is close enough
+		// Proximity to the destination is close enough.
 		if (pathing.IsWithinDistance(targetDestination, arrivalDistance))
 		{
 			pathing.ClearDestination();
@@ -60,7 +59,6 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		destination = Vector3.zero;
 
 		InteractionPosition assignedPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
-
 		if (assignedPosition != null)
 		{
 			IInteractor interactor = executorTransform.GetComponent<IInteractor>();
@@ -73,7 +71,7 @@ public class MoveToInteractionPositionTask : BTNodeBase
 			return true;
 		}
 
-		// Fall back to the static destination stored in context.
+		// Fallback to the static destination stored in context.
 		destination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
 
 		return true;

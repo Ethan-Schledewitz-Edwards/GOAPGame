@@ -58,25 +58,19 @@ public class ItemIO : InteractableObjectBase, IItemObject
 		StructureTag blueprintTag = IndexRegistry.GetAsset<StructureTag>("Blueprint_StructureTag");
 		StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
 
-		BTNodeBase findUseTask = new FindUseForItemTask(blueprintTag, storageTag);
-		BTTimeoutNode timeoutSearch = new BTTimeoutNode(findUseTask, 2f);
-
-		BTNodeBase depositTask = new DepositHeldItemTask();
-		BTTimeoutNode timeoutDeposit = new BTTimeoutNode(depositTask, 2f);
-
-		BTNodeBase jobTask = new AquireNewBehaviourFromTargetTask();
-		BTTimeoutNode timeoutJobSearch = new BTTimeoutNode(jobTask, 2f);
-
-		BehaviourTree tree = new BehaviourTree();
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			timeoutSearch,
+			new BTTimeoutNode(new FindUseForItemTask(blueprintTag, storageTag), 2f),
+			new ReserveInteractionPositionTask(),
 			new MoveToInteractionPositionTask(),
 			new CheckForDestinationRangeTask(),
-			timeoutDeposit,
-			timeoutJobSearch
+			new BTTimeoutNode(new DepositHeldItemTask(), 2f),
+			new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 		});
+
+		BehaviourTree tree = new BehaviourTree();
 		tree.SetTree(root);
+
 		s_ItemBT = tree;
 	}
 

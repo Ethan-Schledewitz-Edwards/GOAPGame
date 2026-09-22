@@ -9,6 +9,15 @@ using System.Linq;
 using UnityEngine;
 using Factions.Core;
 
+/// <summary>
+/// Locates a suitable structure for an item in the nearest settlement. 
+/// Evaluates proximity to structures matching the specified blueprint or storage tags 
+/// and verifies item compatibility against structure filters.
+/// </summary>
+/// <remarks>
+/// This node should be decorated with a <see cref="BTTimeoutNode"/> 
+/// and must be followed by a <see cref="ReserveInteractionPositionTask"/> node to reserve the target.
+/// </remarks>
 public class FindUseForItemTask : BTNodeBase
 {
 	private readonly StructureTag m_blueprintTag;
@@ -40,72 +49,48 @@ public class FindUseForItemTask : BTNodeBase
 		return EBTNodeState.STATE_FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
-	{
-		Debug.Log("Trying to find a resource deposit.");
-	}
+	protected override void OnFirstEvaluate(AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) {}
+	protected override void OnNodeExited(AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) {}
+	protected override void OnNodeReset(AIContext context) { }
 
-	private bool TryFindStructureOfTag(StructureTag structureTag, 
-		Transform executorTransform, 
-		Settlement closestSettlement, 
+	private bool TryFindStructureOfTag(StructureTag structureTag,
+		Transform executorTransform,
+		Settlement closestSettlement,
 		AIContext context)
 	{
-
-		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		if (interactor == null)
-			return false;
-
 		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
 		Debug.Log($"[FindUseForItemTask] Searching for tag {structureTag.name}. Closest found: {(closestStructure != null ? closestStructure.Object.name : "NONE")}");
 
-		if (closestStructure != null)
+		if (closestStructure == null)
+			return false;
+
+		GameObject structureObject = closestStructure.Object;
+
+		// Ensure the structure is interactable and can filter items
+		if (!structureObject.TryGetComponent(out InteractableObjectBase interactable) ||
+			!structureObject.TryGetComponent(out IItemFiltered itemFiltered))
 		{
-			GameObject structureObject = closestStructure.Object;
-			if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
+			return false;
+		}
+
+		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
+		int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
+
+		if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
+		{
+			bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
+			Debug.Log($"[FindUseForItemTask] Item filter match for {structureObject.name}: {passesFilter}");
+
+			if (passesFilter)
 			{
-				if (interactable.TryGetComponent(out IItemFiltered itemFiltered))
-				{
-					ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-					int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
-
-					if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
-					{
-						bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
-						Debug.Log($"[FindUseForItemTask] Item filter match for {structureObject.name}: {passesFilter}");
-
-						if (passesFilter)
-						{
-							// Only proceed if we successfully reserve a slot at the storage building
-							if (interactable.TryReserveClosestPosition(interactor, executorTransform.position, out InteractionPosition assignedPosition))
-							{
-								if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
-								{
-									context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
-									context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
-									context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
-
-									// Cleanup delegate in case the behavior tree aborts
-									System.Action cleanup = () =>
-									{
-										if (interactable != null && interactor != null && assignedPosition != null)
-										{
-											interactable.CancelReservation(interactor, assignedPosition);
-										}
-									};
-									context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
-
-									return true;
-								}
-							}
-						}
-					}
-				}
+				// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
+				context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
+				return true;
 			}
 		}
+
 		return false;
 	}
 }

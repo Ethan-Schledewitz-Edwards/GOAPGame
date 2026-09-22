@@ -22,7 +22,7 @@ public static class MenuManager
 	public static int MenuCount => s_openMenus.Count;
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-	static void ClearStatics()
+	static void ClearMenus()
 	{
 		s_openMenus.Clear();
 	}
@@ -159,14 +159,14 @@ public static class MenuManager
 
 	static void UpdateControlMode()
 	{
-		Menu topSolid = null;
+		Menu topHUD = null;
 		foreach (var menu in s_openMenus)
 		{
 			if (!menu.IsHUD)
-				topSolid = menu;
+				topHUD = menu;
 		}
 
-		if (topSolid != null)
+		if (topHUD != null)
 		{
 			InputManager.SetControlMode(InputManager.ControlType.UI);
 		}

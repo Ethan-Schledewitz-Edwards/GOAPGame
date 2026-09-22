@@ -5,8 +5,7 @@ using UnityEngine;
 public abstract class InteractableObjectBase : MonoBehaviour
 {
 	[Header("Settings")]
-	[field: SerializeField] public bool RequiresReservation { get; private set; } = true;
-	[SerializeField] private int m_actorsNeeded = 1;
+	[SerializeField] private int m_minActorsNeededToOperate = 1;
 
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPosition[] m_interactPositions;
@@ -104,7 +103,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 		int totalActors = GetTotalActorsPresent();
 
-		if (totalActors < m_actorsNeeded)
+		if (totalActors < m_minActorsNeededToOperate)
 			StopInteractSpeed();
 	}
 
@@ -116,8 +115,8 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	{
 		int totalActors = GetTotalActorsPresent();
 
-		if (totalActors > m_actorsNeeded)
-			UpdateSpeed(totalActors - m_actorsNeeded);
+		if (totalActors > m_minActorsNeededToOperate)
+			UpdateSpeed(totalActors - m_minActorsNeededToOperate);
 	}
 	#endregion
 

@@ -6,9 +6,9 @@ using UnityEngine;
 /// executors current behaviour tree to the one defined by their target.
 /// </summary>
 /// <remarks>
-/// This node should always be decorated with a timeout node.
+/// This node should be decorated with a <see cref="BTTimeoutNode"/>
 /// </remarks>
-public class AquireNewBehaviourFromTargetTask : BTNodeBase
+public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
@@ -42,30 +42,6 @@ public class AquireNewBehaviourFromTargetTask : BTNodeBase
 			Debug.LogWarning($"[AquireTask] Failed: No InteractableObjectBase on '{targetTransform.name}'.");
 			return EBTNodeState.STATE_FAILURE;
 		}
-
-		InteractionPosition assignedPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
-
-		// Attempt to get a new reservation if none were reserved previously.
-		if (assignedPosition == null && interactable.RequiresReservation)
-		{
-			if (!interactable.TryReserveClosestPosition(interactor, executorTransform.position, out assignedPosition))
-			{
-				Debug.LogWarning($"[AquireTask]: Could not reserve position on '{targetTransform.name}'.");
-				return EBTNodeState.STATE_RUNNING;
-			}
-
-			context.SetData(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
-		}
-
-		// Cleanup delegate in case the behavior tree aborts
-		System.Action cleanup = () =>
-		{
-			if (interactable != null && interactor != null && assignedPosition != null)
-			{
-				interactable.CancelReservation(interactor, assignedPosition);
-			}
-		};
-		context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
 
 		interactor.InteractWith(interactable, true);
 		return EBTNodeState.STATE_SUCSESS;
