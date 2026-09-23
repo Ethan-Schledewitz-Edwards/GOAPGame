@@ -15,21 +15,24 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		if (executorTransform == null)
 		{
-			Debug.LogWarning("[AquireTask] Failed: executorTransform is null.");
+			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
+				"executorTransform is null.");
 			return EBTNodeState.STATE_FAILURE;
 		}
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
 		{
-			Debug.LogWarning("[AquireTask] Failed: interactor is null.");
+			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
+				"interactor is null.");
 			return EBTNodeState.STATE_FAILURE;
 		}
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		if (targetTransform == null)
 		{
-			Debug.LogWarning("[AquireTask] Failed: targetTransform is null.");
+			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
+				"targetTransform is null.");
 			return EBTNodeState.STATE_FAILURE;
 		}
 
@@ -39,7 +42,8 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 
 		if (interactable == null)
 		{
-			Debug.LogWarning($"[AquireTask] Failed: No InteractableObjectBase on '{targetTransform.name}'.");
+			Debug.LogWarning($"[AquireNewBehaviourTreeFromTargetTask] Failed: " +
+				$"No InteractableObjectBase on '{targetTransform.name}'.");
 			return EBTNodeState.STATE_FAILURE;
 		}
 
@@ -50,7 +54,8 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 	protected override void OnFirstEvaluate(AIContext context) 
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Debug.Log($"{executorTransform} is looking for a new behaviour tree.", executorTransform);
+		Debug.Log($"[AquireNewBehaviourTreeFromTargetTask]: " +
+			$"{executorTransform} is looking for a new behaviour tree.", executorTransform);
 	}
 
 	protected override void OnNodeExited(AIContext context) {}

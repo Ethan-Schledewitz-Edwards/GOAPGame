@@ -60,9 +60,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	/// <summary>
 	/// Cancels a pending reservation.
 	/// </summary>
-	public virtual void CancelReservation(
-		IInteractor interactor,
-		InteractionPosition assignedPosition)
+	public virtual void CancelReservation(IInteractor interactor, InteractionPosition assignedPosition)
 	{
 		assignedPosition?.ReleaseReservation(interactor);
 	}
@@ -86,9 +84,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		if (!assignedPosition.TryBeginInteraction(
-			interactor,
-			out interactorValue))
+		if (!assignedPosition.TryBeginInteraction(interactor, out interactorValue))
 		{
 			CancelReservation(interactor, assignedPosition);
 			return false;
@@ -104,16 +100,16 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		InteractionPosition assignedPosition,
 		out int interactorValue)
 	{
-		return TryBeginInteraction(
-			interactor,
-			actorPosition,
-			assignedPosition,
-			out interactorValue);
+		return TryBeginInteraction
+			(
+				interactor,
+				actorPosition,
+				assignedPosition,
+				out interactorValue
+			);
 	}
 
-	public virtual void StopInteract(
-		IInteractor interactor,
-		InteractionPosition assignedPosition)
+	public virtual void StopInteract(IInteractor interactor, InteractionPosition assignedPosition)
 	{
 		if (assignedPosition != null)
 			assignedPosition.TryRemoveInteractor(interactor);
@@ -142,19 +138,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 	public virtual bool HasAvailableWork(IInteractor interactor)
 	{
-		if (m_interactPositions == null ||
-			m_interactPositions.Length == 0)
-			return false;
-
-		for (int i = 0; i < m_interactPositions.Length; i++)
-		{
-			InteractionPosition position = m_interactPositions[i];
-
-			if (position != null && position.HasAvailableCapacity)
-				return true;
-		}
-
-		return false;
+		return !IsAtActorCapacity();
 	}
 
 	/// <summary>
@@ -193,24 +177,6 @@ public abstract class InteractableObjectBase : MonoBehaviour
 
 		return total;
 	}
-
-	public int GetTotalOccupiedOrReserved()
-	{
-		if (m_interactPositions == null ||
-			m_interactPositions.Length == 0)
-			return 0;
-
-		int total = 0;
-
-		foreach (InteractionPosition position in m_interactPositions)
-		{
-			if (position != null)
-				total += position.TotalOccupiedOrReserved;
-		}
-
-		return total;
-	}
-
 	#endregion
 
 	public bool HasInteractionPosition(InteractionPosition position)

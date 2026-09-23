@@ -129,7 +129,6 @@ public class InteractionPosition : MonoBehaviour
 		if (interactor == null)
 			return false;
 
-		// Already interacting is idempotent.
 		int existingIndex = m_interactorsPresent.IndexOf(interactor);
 		if (existingIndex >= 0)
 		{
@@ -145,7 +144,6 @@ public class InteractionPosition : MonoBehaviour
 			if (reservationIndex < 0)
 				return false;
 
-			// Reservation -> active.
 			m_reservedInteractors.RemoveAt(reservationIndex);
 		}
 
@@ -177,7 +175,7 @@ public class InteractionPosition : MonoBehaviour
 	/// <remarks>
 	/// A reserved position requires either a reservation or an existing
 	/// active interaction. A non-reserved position is always valid.
-	/// </remarks>>
+	/// </remarks>
 	public bool TryGetInteractionPosition(
 		IInteractor interactor,
 		out Vector3 position)
