@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: ObjectTags::ObjectTags.StructureTagIndex
   <assets>k__BackingField:
   - {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  - {fileID: 11400000, guid: 21c548dc20a63124db98e8b9d3e0c029, type: 2}
   - {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}

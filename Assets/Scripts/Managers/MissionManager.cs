@@ -25,7 +25,7 @@ namespace Managers
 
 		public void StartMission()
 		{
-			m_clock.StartClock(1);
+			m_clock.StartClock(1, 6);
 		}
 
 		public void EndMission(bool isSucsess)

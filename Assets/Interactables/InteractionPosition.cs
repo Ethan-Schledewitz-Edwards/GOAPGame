@@ -3,22 +3,40 @@ using UnityEngine;
 
 public class InteractionPosition : MonoBehaviour
 {
+	#region Settings
+
 	[Header("Settings")]
 	[field: SerializeField] public int MaxInteractors { get; private set; } = 1;
 	[field: SerializeField] public bool UseFormationRadius { get; private set; } = false;
 	[field: SerializeField] public float FormationRadius { get; private set; } = 1.5f;
 
-	[field: SerializeField, Tooltip("If false, this position does not require pre-allocation or locking, allowing multiple actors (like doors or storage access points) to share it.")]
+	[field: SerializeField]
+	[Tooltip("If false, actors may interact without reserving this position first.")]
 	public bool RequiresReservation { get; private set; } = true;
-	[field: SerializeField, Tooltip("Dictates how far from the center of the InteractionPosition the actor can be before they begin interacting.")]
+
+	[field: SerializeField]
+	[Tooltip("Maximum horizontal distance from the assigned interaction position.")]
 	public float InteractionDistance { get; private set; } = 0.3f;
 
-	private List<IInteractor> m_interactorsPresent = new List<IInteractor>();
-	private List<IInteractor> m_reservedInteractors = new List<IInteractor>();
+	#endregion
+
+	private List<IInteractor> m_interactorsPresent;
+	private List<IInteractor> m_reservedInteractors;
 
 	public int ActorsPresent => m_interactorsPresent.Count;
-	public int TotalOccupiedOrReserved => m_interactorsPresent.Count + m_reservedInteractors.Count;
-	public bool HasAvailableCapacity => !RequiresReservation || (TotalOccupiedOrReserved < MaxInteractors);
+
+	public int ReservedInteractors => m_reservedInteractors.Count;
+
+	public int TotalOccupiedOrReserved =>
+		m_interactorsPresent.Count + m_reservedInteractors.Count;
+
+	/// <summary>
+	/// For non-reserved positions there is never a capacity restriction.
+	/// For reserved positions, capacity includes both active and reserved actors.
+	/// </summary>
+	public bool HasAvailableCapacity =>
+		!RequiresReservation ||
+		TotalOccupiedOrReserved < MaxInteractors;
 
 	private void Awake()
 	{
@@ -26,16 +44,12 @@ public class InteractionPosition : MonoBehaviour
 		m_reservedInteractors = new List<IInteractor>(MaxInteractors);
 	}
 
-	/// <summary>
-	/// Dynamically configures the parameters for this interaction position at runtime.
-	/// </summary>
 	public void ConfigureInteractionPosition(
 		int maxInteractors,
 		bool useFormationRadius = false,
 		float formationRadius = 1.5f,
 		bool requiresReservation = true,
-		float interactionDistance = 0.3f
-		)
+		float interactionDistance = 0.3f)
 	{
 		MaxInteractors = Mathf.Max(1, maxInteractors);
 		UseFormationRadius = useFormationRadius;
@@ -43,7 +57,6 @@ public class InteractionPosition : MonoBehaviour
 		RequiresReservation = requiresReservation;
 		InteractionDistance = interactionDistance;
 
-		// Re-initialize capacities
 		if (m_interactorsPresent == null)
 		{
 			m_interactorsPresent = new List<IInteractor>(MaxInteractors);
@@ -51,20 +64,39 @@ public class InteractionPosition : MonoBehaviour
 		}
 		else
 		{
-			m_interactorsPresent.Capacity = Mathf.Max(m_interactorsPresent.Count, MaxInteractors);
-			m_reservedInteractors.Capacity = Mathf.Max(m_reservedInteractors.Count, MaxInteractors);
+			m_interactorsPresent.Capacity = Mathf.Max(
+				m_interactorsPresent.Count,
+				MaxInteractors);
+
+			m_reservedInteractors.Capacity = Mathf.Max(
+				m_reservedInteractors.Count,
+				MaxInteractors);
 		}
 	}
 
+	#region Reservation
+
 	/// <summary>
-	/// Attempts to reserve a position for the specified interactor if reservation is required and capacity is available.
+	/// Attempts to assign this position to an interactor.
+	///
+	/// Reserved positions create a reservation.
+	/// Non-reserved positions require no bookkeeping at assignment time.
 	/// </summary>
 	public bool TryReservePosition(IInteractor interactor)
 	{
+		if (interactor == null)
+			return false;
+
+		// Non-reserved positions do not need pre-allocation.
 		if (!RequiresReservation)
 			return true;
 
-		if (!HasAvailableCapacity || m_interactorsPresent.Contains(interactor) || m_reservedInteractors.Contains(interactor))
+		// Already active or already reserved is a valid assignment.
+		if (m_interactorsPresent.Contains(interactor) ||
+			m_reservedInteractors.Contains(interactor))
+			return true;
+
+		if (!HasAvailableCapacity)
 			return false;
 
 		m_reservedInteractors.Add(interactor);
@@ -73,45 +105,60 @@ public class InteractionPosition : MonoBehaviour
 
 	public void ReleaseReservation(IInteractor interactor)
 	{
-		if (!RequiresReservation) 
+		if (interactor == null)
 			return;
 
 		m_reservedInteractors.Remove(interactor);
 	}
 
+	#endregion
+
+	#region Interaction
+
 	/// <summary>
-	/// Adds an interactor to the collection if the number of interactors 
-	/// present falls below the maximum allowed number.
+	/// Begins interaction at this position. Non-reserved interactors 
+	/// are added directly to the active list. Reserved interactor must already hold a reservation, 
+	/// which is then converted into an active interaction.
 	/// </summary>
-	/// <param name="interactor">The interactor to add.</param>
-	/// <param name="interactorValue">The index assigned to the interactor if 
-	/// the addition is successful. Otherwise, -1.</param>
-	/// <returns>true if the interactor was added successfully; otherwise, false.</returns>
-	public bool TryConvertReservationToActiveInteractor(IInteractor interactor, out int interactorValue)
+	public bool TryBeginInteraction(
+		IInteractor interactor,
+		out int interactorValue)
 	{
-		if (m_reservedInteractors.Contains(interactor))
-		{
-			m_reservedInteractors.Remove(interactor);
-
-			if (!RequiresReservation)
-			{
-				if (!m_interactorsPresent.Contains(interactor))
-					m_interactorsPresent.Add(interactor);
-
-				interactorValue = m_interactorsPresent.IndexOf(interactor) + 1;
-				return true;
-			}
-
-			if (m_interactorsPresent.Count < MaxInteractors && !m_interactorsPresent.Contains(interactor))
-			{
-				m_interactorsPresent.Add(interactor);
-				interactorValue = m_interactorsPresent.Count;
-				return true;
-			}
-		}
-	
 		interactorValue = -1;
-		return false;
+
+		if (interactor == null)
+			return false;
+
+		// Already interacting is idempotent.
+		int existingIndex = m_interactorsPresent.IndexOf(interactor);
+		if (existingIndex >= 0)
+		{
+			interactorValue = existingIndex + 1;
+			return true;
+		}
+
+		if (RequiresReservation)
+		{
+			// Reserved positions require pre-allocation.
+			int reservationIndex = m_reservedInteractors.IndexOf(interactor);
+
+			if (reservationIndex < 0)
+				return false;
+
+			// Reservation -> active.
+			m_reservedInteractors.RemoveAt(reservationIndex);
+		}
+
+		// Non-reserved positions arrive here directly.
+		m_interactorsPresent.Add(interactor);
+		interactorValue = m_interactorsPresent.Count;
+
+		return true;
+	}
+
+	public void StopInteract(IInteractor interactor)
+	{
+		TryRemoveInteractor(interactor);
 	}
 
 	public void TryRemoveInteractor(IInteractor interactor)
@@ -120,11 +167,20 @@ public class InteractionPosition : MonoBehaviour
 			m_interactorsPresent.Remove(interactor);
 	}
 
+	#endregion
+
+	#region Position
+
 	/// <summary>
-	/// Attempts to get a valid, dynamically offset position for a specific interactor.
-	/// Automatically registers unreserved interactors.
+	/// Gets the world-space position this interactor should use.
 	/// </summary>
-	public bool TryGetInteractionPosition(IInteractor interactor, out Vector3 position)
+	/// <remarks>
+	/// A reserved position requires either a reservation or an existing
+	/// active interaction. A non-reserved position is always valid.
+	/// </remarks>>
+	public bool TryGetInteractionPosition(
+		IInteractor interactor,
+		out Vector3 position)
 	{
 		position = transform.position;
 
@@ -134,35 +190,32 @@ public class InteractionPosition : MonoBehaviour
 		if (RequiresReservation && !isPresent && !isReserved)
 			return false;
 
-		if (!RequiresReservation && !isPresent && !isReserved && m_interactorsPresent.Count >= MaxInteractors)
+		if (!UseFormationRadius)
+			return true;
+
+		int slotIndex;
+
+		if (isPresent)
 		{
-			return false;
+			slotIndex = m_interactorsPresent.IndexOf(interactor);
+		}
+		else if (isReserved)
+		{
+			slotIndex =
+				m_interactorsPresent.Count +
+				m_reservedInteractors.IndexOf(interactor);
+		}
+		else
+		{
+			// Non-reserved actor checking where it would stand.
+			slotIndex = m_interactorsPresent.Count;
 		}
 
-		if (UseFormationRadius)
-		{
-			int slotIndex = 0;
+		float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, MaxInteractors);
+		float x = Mathf.Cos(angle) * FormationRadius;
+		float z = Mathf.Sin(angle) * FormationRadius;
 
-			if (isPresent)
-			{
-				slotIndex = m_interactorsPresent.IndexOf(interactor);
-			}
-			else if (isReserved)
-			{
-				slotIndex = m_interactorsPresent.Count + m_reservedInteractors.IndexOf(interactor);
-			}
-			else
-			{
-				// For unreserved walk-ins actors who are checking where they would go
-				slotIndex = m_interactorsPresent.Count;
-			}
-
-			float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, MaxInteractors);
-			float x = Mathf.Cos(angle) * FormationRadius;
-			float z = Mathf.Sin(angle) * FormationRadius;
-
-			position = transform.TransformPoint(new Vector3(x, 0, z));
-		}
+		position = transform.TransformPoint(new Vector3(x, 0, z));
 
 		return true;
 	}
@@ -175,15 +228,17 @@ public class InteractionPosition : MonoBehaviour
 	{
 		if (TryGetInteractionPosition(interactor, out Vector3 targetPos))
 		{
-			Vector3 worldPosFlat = new Vector3(worldPosition.x, 0, worldPosition.z);
-			Vector3 targetPosFlat = new Vector3(targetPos.x, 0, targetPos.z);
+			Vector3 interactorPositionFlat = new Vector3(worldPosition.x, 0, worldPosition.z);
+			Vector3 targetPositionFlat = new Vector3(targetPos.x, 0, targetPos.z);
 
-			float distanceSquared = (worldPosFlat - targetPosFlat).sqrMagnitude;
+			float distanceSquared = (interactorPositionFlat - targetPositionFlat).sqrMagnitude;
 			return distanceSquared <= InteractionDistance * InteractionDistance;
 		}
 
 		return false;
 	}
+
+	#endregion
 
 #if UNITY_EDITOR
 

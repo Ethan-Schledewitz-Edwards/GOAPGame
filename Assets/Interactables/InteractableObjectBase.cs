@@ -11,95 +11,112 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	[SerializeField] protected InteractionPosition[] m_interactPositions;
 
 	/// <summary>
-	/// Attempts to find the closest available interaction position and reserves it for the interactor.
+	/// Finds the closest position this interactor can be assigned to.
+	/// For reserved positions, assignment creates a reservation.
+	/// For non-reserved positions, assignment is a position selection.
 	/// </summary>
-	public bool TryReserveClosestPosition(IInteractor interactor, Vector3 actorPosition, out InteractionPosition assignedPosition)
+	public bool TryReserveClosestPosition(
+		IInteractor interactor,
+		Vector3 actorPosition,
+		out InteractionPosition assignedPosition)
 	{
 		assignedPosition = null;
 
-		if (IsAtActorCapacity() || m_interactPositions == null || m_interactPositions.Length == 0)
+		if (interactor == null ||
+			m_interactPositions == null ||
+			m_interactPositions.Length == 0)
 			return false;
 
 		InteractionPosition closestPosition = null;
-		float minDistanceSqr = float.MaxValue;
+		float closestDistanceSqr = float.MaxValue;
 
-		// Find the closest position that has open capacity
 		for (int i = 0; i < m_interactPositions.Length; i++)
 		{
-			var pos = m_interactPositions[i];
-			if (pos == null || !pos.HasAvailableCapacity)
+			InteractionPosition position = m_interactPositions[i];
+
+			if (position == null || !position.HasAvailableCapacity)
 				continue;
 
-			float distanceSqr = (pos.transform.position - actorPosition).sqrMagnitude;
-			if (distanceSqr < minDistanceSqr)
+			float distanceSqr =
+				(position.transform.position - actorPosition).sqrMagnitude;
+
+			if (distanceSqr < closestDistanceSqr)
 			{
-				minDistanceSqr = distanceSqr;
-				closestPosition = pos;
+				closestDistanceSqr = distanceSqr;
+				closestPosition = position;
 			}
 		}
 
-		// Reserve the closest interaction position for the interactor
-		if (closestPosition != null && closestPosition.TryReservePosition(interactor))
-		{
-			assignedPosition = closestPosition;
-			return true;
-		}
+		if (closestPosition == null)
+			return false;
 
-		return false;
+		if (!closestPosition.TryReservePosition(interactor))
+			return false;
+
+		assignedPosition = closestPosition;
+		return true;
 	}
 
 	/// <summary>
-	/// Cancels a pending reservation on an interaction position.
+	/// Cancels a pending reservation.
 	/// </summary>
-	public virtual void CancelReservation(IInteractor interactor, InteractionPosition assignedPosition)
+	public virtual void CancelReservation(
+		IInteractor interactor,
+		InteractionPosition assignedPosition)
 	{
-		if (assignedPosition != null)
-		{
-			assignedPosition.ReleaseReservation(interactor);
-		}
+		assignedPosition?.ReleaseReservation(interactor);
 	}
 
 	/// <summary>
-	/// Called by the Interactor. Evaluates the request, attempts to reserve a position, 
-	/// and returns the success state back to the Interactor.
+	/// Begins an interaction using the previously assigned position.
 	/// </summary>
-	public bool TryBeginInteraction(IInteractor interactor,
-	Vector3 actorPosition,
-	InteractionPosition reservedPosition,
-	out int interactorValue)
+	public virtual bool TryBeginInteraction(
+		IInteractor interactor,
+		Vector3 actorPosition,
+		InteractionPosition assignedPosition,
+		out int interactorValue)
 	{
 		interactorValue = -1;
 
-		if (reservedPosition == null)
+		if (interactor == null ||
+			assignedPosition == null ||
+			!HasInteractionPosition(assignedPosition))
 			return false;
 
-		if (!reservedPosition.GetPositionInRange(interactor, actorPosition))
+		if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		if (reservedPosition.TryConvertReservationToActiveInteractor(interactor, out interactorValue))
+		if (!assignedPosition.TryBeginInteraction(
+			interactor,
+			out interactorValue))
 		{
-			HandleActorAssigned();
-			return true;
+			CancelReservation(interactor, assignedPosition);
+			return false;
 		}
 
-		CancelReservation(interactor, reservedPosition);
-		return false;
+		HandleActorAssigned();
+		return true;
 	}
 
-	public virtual bool TryInteract(IInteractor interactor,
+	public virtual bool TryInteract(
+		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPosition reservedPosition,
+		InteractionPosition assignedPosition,
 		out int interactorValue)
 	{
-		return TryBeginInteraction(interactor, actorPosition, reservedPosition, out interactorValue);
+		return TryBeginInteraction(
+			interactor,
+			actorPosition,
+			assignedPosition,
+			out interactorValue);
 	}
 
-	public virtual void StopInteract(IInteractor interactor, InteractionPosition assignedPosition)
+	public virtual void StopInteract(
+		IInteractor interactor,
+		InteractionPosition assignedPosition)
 	{
 		if (assignedPosition != null)
-		{
 			assignedPosition.TryRemoveInteractor(interactor);
-		}
 
 		int totalActors = GetTotalActorsPresent();
 
@@ -118,17 +135,22 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		if (totalActors > m_minActorsNeededToOperate)
 			UpdateSpeed(totalActors - m_minActorsNeededToOperate);
 	}
+
 	#endregion
+
+	#region Availability
 
 	public virtual bool HasAvailableWork(IInteractor interactor)
 	{
-		if (IsAtActorCapacity() || m_interactPositions == null)
+		if (m_interactPositions == null ||
+			m_interactPositions.Length == 0)
 			return false;
 
 		for (int i = 0; i < m_interactPositions.Length; i++)
 		{
-			var pos = m_interactPositions[i];
-			if (pos != null && pos.HasAvailableCapacity)
+			InteractionPosition position = m_interactPositions[i];
+
+			if (position != null && position.HasAvailableCapacity)
 				return true;
 		}
 
@@ -136,53 +158,61 @@ public abstract class InteractableObjectBase : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Returns the total number of actors present across all interaction positions.
+	/// Returns true when every interaction position is unavailable.
 	/// </summary>
+	public bool IsAtActorCapacity()
+	{
+		if (m_interactPositions == null ||
+			m_interactPositions.Length == 0)
+			return true;
+
+		for (int i = 0; i < m_interactPositions.Length; i++)
+		{
+			InteractionPosition position = m_interactPositions[i];
+
+			if (position != null && position.HasAvailableCapacity)
+				return false;
+		}
+
+		return true;
+	}
+
 	public int GetTotalActorsPresent()
 	{
-		if (m_interactPositions == null || m_interactPositions.Length == 0)
+		if (m_interactPositions == null ||
+			m_interactPositions.Length == 0)
 			return 0;
 
 		int total = 0;
-		foreach (var pos in m_interactPositions)
+
+		foreach (InteractionPosition position in m_interactPositions)
 		{
-			if (pos != null)
-			{
-				total += pos.ActorsPresent;
-			}
+			if (position != null)
+				total += position.ActorsPresent;
 		}
+
 		return total;
 	}
 
-	/// <summary>
-	/// Returns total actors present plus incoming reservations.
-	/// </summary>
 	public int GetTotalOccupiedOrReserved()
 	{
-		if (m_interactPositions == null || m_interactPositions.Length == 0)
+		if (m_interactPositions == null ||
+			m_interactPositions.Length == 0)
 			return 0;
 
 		int total = 0;
-		foreach (var pos in m_interactPositions)
+
+		foreach (InteractionPosition position in m_interactPositions)
 		{
-			if (pos != null)
-			{
-				total += pos.TotalOccupiedOrReserved;
-			}
+			if (position != null)
+				total += position.TotalOccupiedOrReserved;
 		}
+
 		return total;
 	}
 
-	public abstract void UpdateSpeed(int extra);
+	#endregion
 
-	public abstract void StopInteractSpeed();
-
-	/// <summary>
-	/// Returns true when the supplied interaction position belongs to this
-	/// interactable. Used by behaviour-tree tasks to distinguish a position
-	/// inherited from a previous target from a position belonging to the
-	/// current target.
-	/// </summary>
 	public bool HasInteractionPosition(InteractionPosition position)
 	{
 		if (position == null || m_interactPositions == null)
@@ -191,25 +221,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		return Array.IndexOf(m_interactPositions, position) >= 0;
 	}
 
-	public bool IsAtActorCapacity() => GetTotalOccupiedOrReserved() >= GetTotalMaxCapacity();
+	public abstract void UpdateSpeed(int extra);
 
-	/// <summary>
-	/// Calculates the absolute maximum number of actors this object can support 
-	/// by summing the capacities of all its interaction positions.
-	/// </summary>
-	private int GetTotalMaxCapacity()
-	{
-		if (m_interactPositions == null || m_interactPositions.Length == 0)
-			return 0;
-
-		int total = 0;
-		foreach (var pos in m_interactPositions)
-		{
-			if (pos != null)
-			{
-				total += pos.MaxInteractors;
-			}
-		}
-		return total;
-	}
+	public abstract void StopInteractSpeed();
 }

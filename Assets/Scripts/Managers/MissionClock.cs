@@ -34,6 +34,13 @@ namespace Managers
 		private int m_previousHour = -1;
 		private bool m_isDaytime;
 
+		private void Update()
+		{
+			if (m_isClockActive)
+			{
+				IncrementTime();
+			}
+		}
 
 		public (int, int) GetTimeOfDay()
 		{
@@ -49,26 +56,19 @@ namespace Managers
 			return Mathf.Clamp01(m_time);
 		}
 
-		private void Update()
-		{
-			if (m_isClockActive)
-			{
-				IncrementTime();
-			}
-		}
-
-		/// <summary>
-		/// Initializes the mission clock then begins counting up
-		/// </summary>
-		public void StartClock(int daysInMission)
+		public void StartClock(int daysInMission, int startingHour = 0, int startingMinutes = 0)
 		{
 			m_daysInMission = daysInMission;
 			m_day = 0;
-			m_time = 0f;
 
-			m_previousMinute = -1;
-			m_previousHour = -1;
+			int totalStartingMinutes = (startingHour * c_minInHour) + startingMinutes;
+			m_time = (float)totalStartingMinutes / c_totalMinutesInDay;
 
+			var (hour, minute) = GetTimeOfDay();
+			m_previousHour = hour;
+			m_previousMinute = minute;
+
+			m_isDaytime = hour >= m_sunriseHour && hour < m_sunsetHour;
 			m_isClockActive = true;
 		}
 
@@ -128,7 +128,7 @@ namespace Managers
 			// Check for day roll-over
 			if (m_time >= 1.0f)
 			{
-				m_time -= 1.0f; // Preserve overflow fractional precision
+				m_time -= 1.0f; // Preserve overflow
 				m_day++;
 
 				if (m_day >= m_daysInMission)
@@ -153,22 +153,6 @@ namespace Managers
 				m_isDaytime = false;
 				SunHasSet?.Invoke();
 			}
-		}
-
-		public int GetRemainingHoursInDay()
-		{
-			var (hour, _) = GetTimeOfDay();
-			return c_hourInDay - hour;
-		}
-
-		public int GetHoursInDay()
-		{
-			return c_hourInDay;
-		}
-
-		public int GetMinInHour()
-		{
-			return c_minInHour;
 		}
 	}
 }
