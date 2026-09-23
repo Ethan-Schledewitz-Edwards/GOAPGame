@@ -18,6 +18,7 @@ public class HarvestableIO : InteractableObjectBase
 			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
 			new AttackTask(),
 			new BTTimeoutNode(new SearchForClosestJobTask(), 2f),
+			new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
 			new MoveToInteractionPositionTask(),
 			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
 			new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
