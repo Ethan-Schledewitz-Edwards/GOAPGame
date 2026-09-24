@@ -7406,8 +7406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c0014b8502befe4286055e9a110fbf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
-  <RequiresReservation>k__BackingField: 1
-  m_actorsNeeded: 1
+  m_minActorsNeededToOperate: 1
   m_interactPositions: []
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
   m_tagFilter: []
@@ -10137,8 +10136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableInteractableObject
-  <RequiresReservation>k__BackingField: 1
-  m_actorsNeeded: 10
+  m_minActorsNeededToOperate: 1
   m_interactPositions: []
 --- !u!1001 &435641384
 PrefabInstance:

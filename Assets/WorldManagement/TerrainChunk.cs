@@ -44,33 +44,12 @@ namespace WorldManagement.Core
 			OnChunkUpdate?.Invoke(ChunkXZ);
 		}
 
-		public void SetTilesID(Vector3Int localPos, int newID)
-		{
-			TileData[localPos.x, localPos.y, localPos.z] = newID;
-			UpdateChunk();
-
-			//// Update neighbour chunks if the updated tile was on a boarder
-			//Vector3Int[] intercadinalDirs = WorldPropertyUtility.CardinalIntercardinalDirections3D;
-
-			//for (int i = 0; i < intercadinalDirs.Length; i++)
-			//{
-			//	if (!TerrainQueryUtility.IsNeighborTileInChunk(ChunkXZ, TileData, localPos, intercadinalDirs[i], out Vector2Int neighbourXZ))
-			//	{
-			//		if (WorldGenerator.s_ActiveChunks.TryGetValue(neighbourXZ, out var neighbour))
-			//		{
-			//			neighbour.chunkData.UpdateChunk();
-			//		}
-			//	}
-			//}
-		}
-
 		public void RegisterEntity(GameObject entity)
 		{
 			if (entity == null)
 				return;
 
 			ResidentEntities.Add(entity);
-			Debug.Log(entity.name + " Entered chunk");
 		}
 
 		public void UnregisterEntity(GameObject entity)

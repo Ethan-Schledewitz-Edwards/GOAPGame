@@ -19,7 +19,11 @@ public class ActorManager : MonoBehaviour
 	[SerializeField] private Transform m_spawnoffset;
 	[SerializeField] private Actor m_actorPrefab;
 
-	private HashSet<Actor> m_actors = new HashSet<Actor>();
+	// Events
+	public event Action<Actor> FollowingActorLoaded;
+
+	// System
+	public static HashSet<Actor> s_Actors = new HashSet<Actor>();
 	private List<Actor> m_pendingRemovals = new List<Actor>();
 	private bool m_isTicking = false;
 
@@ -46,15 +50,25 @@ public class ActorManager : MonoBehaviour
 		Debug.Log($"There were {offlineSeconds} between save and load");
 	}
 
-	public void TryAddActor(Actor actor)
+	public bool TryAddActor(Actor actor, bool loadedFromSaveFile)
 	{
-		if (!m_actors.Contains(actor))
-			m_actors.Add(actor);
+		if (!s_Actors.Contains(actor))
+		{
+			s_Actors.Add(actor);
+
+			if (loadedFromSaveFile &&
+				actor.LogicExecutorState == EActorState.STATE_Follow)
+				FollowingActorLoaded?.Invoke(actor);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public void RemoveActor(Actor actor)
 	{
-		if (m_actors.Contains(actor))
+		if (s_Actors.Contains(actor))
 		{
 			if (m_isTicking)
 			{
@@ -66,7 +80,7 @@ public class ActorManager : MonoBehaviour
 			}
 			else
 			{
-				m_actors.Remove(actor);
+				s_Actors.Remove(actor);
 			}
 		}
 	}
@@ -78,7 +92,7 @@ public class ActorManager : MonoBehaviour
 		while (m_accumulatedTime >= k_tpsThreshold)
 		{
 			m_isTicking = true;
-			foreach (Actor actor in m_actors)
+			foreach (Actor actor in s_Actors)
 			{
 				if (actor == null)
 					continue;
@@ -103,7 +117,7 @@ public class ActorManager : MonoBehaviour
 			{
 				foreach (Actor actor in m_pendingRemovals)
 				{
-					m_actors.Remove(actor);
+					s_Actors.Remove(actor);
 				}
 				m_pendingRemovals.Clear();
 			}

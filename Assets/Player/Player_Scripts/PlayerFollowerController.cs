@@ -1,18 +1,21 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Player.Core
 {
 	public class PlayerFollowerController : PlayerWorldControllerBase
 	{
 
+		private WaitForSeconds startDelay = new WaitForSeconds(0.2f);
+
 		private LayerMask m_actorLayers;
 
 		private bool m_isSummonHeld = false;
 
 		private Vector3 m_cursorWorldPosition;
-		private List<Actor> m_followers = new List<Actor>();
+		private List<Actor> m_activeFollowers = new List<Actor>();
 
 		protected override void Awake()
 		{
@@ -20,6 +23,18 @@ namespace Player.Core
 
 			if (m_actorLayers == 0)
 				m_actorLayers = LayerMask.GetMask("Actor");
+		}
+
+		private void Start()
+		{
+			if (ActorManager.Instance != null)
+				ActorManager.Instance.FollowingActorLoaded += AddFollower;
+		}
+
+		private void OnDestroy()
+		{
+			if (ActorManager.Instance != null)
+				ActorManager.Instance.FollowingActorLoaded -= AddFollower;
 		}
 
 		protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
@@ -72,19 +87,21 @@ namespace Player.Core
 
 		private void AddFollower(Actor newFollower)
 		{
-			if (m_followers.Contains(newFollower))
+			if (m_activeFollowers.Contains(newFollower))
 				return;
 
+			Debug.Log("Added Follower eh");
+
 			// Update systems to include new actor
-			m_followers.Add(newFollower);
+			m_activeFollowers.Add(newFollower);
 			newFollower.FollowPlayer(this.transform);
 		}
 
 		private void RemoveFollower(Actor actor)
 		{
-			if (m_followers.Contains(actor))
+			if (m_activeFollowers.Contains(actor))
 			{
-				m_followers.Remove(actor);
+				m_activeFollowers.Remove(actor);
 			}
 		}
 
@@ -97,7 +114,7 @@ namespace Player.Core
 			Actor closestFollower = null;
 
 			float closestDist = Mathf.Infinity;
-			foreach (Actor actor in m_followers)
+			foreach (Actor actor in m_activeFollowers)
 			{
 				if (actor == null) continue;
 

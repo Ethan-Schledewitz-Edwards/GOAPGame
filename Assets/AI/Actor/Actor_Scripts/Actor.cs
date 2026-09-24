@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using WorldManagement.Core;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor, ISaveableComponent
@@ -50,6 +51,9 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; } = default;
+	private bool m_isActorAddedToManager;
+	private bool m_saveDataRestored;
+
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
 	private bool m_isInvestigating;
@@ -71,9 +75,50 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
-	private void Start()
+	private IEnumerator Start()
 	{
-		SetLogicExecutorState(EActorState.STATE_OffDuty);
+		SaveableEntity saveableEntity = GetComponent<SaveableEntity>();
+		if (saveableEntity == null)
+		{
+			Debug.LogError($"[Actor] No {typeof(SaveableEntity)} component is present on an Actor." +
+				$"Aborting registration to the {typeof(ActorManager)}.", this);
+			yield break;
+		}
+		else
+		{
+			// Actors spawned at runtime are save to initialize immediately 
+			if (!saveableEntity.IsManuallyAuthored)
+			{
+				RegisterWithManager();
+				yield break;
+			}
+			else
+			{
+				// If the actor has called start, that means their chunk is loading.
+				// Wait for the actors chunk to load fully before registration.
+				Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+				while (!WorldManager.s_ActiveChunks.ContainsKey(chunkXZ))
+				{
+					yield return null;
+				}
+
+				yield return new WaitForEndOfFrame();
+				RegisterWithManager();
+			}
+		}
+	}
+
+	private void RegisterWithManager()
+	{
+		if (m_isActorAddedToManager)
+			return;
+
+		bool isFollower = m_saveDataRestored && (LogicExecutorState == EActorState.STATE_Follow);
+
+		if (ActorManager.Instance != null)
+		{
+			m_isActorAddedToManager = ActorManager.Instance.TryAddActor(this, isFollower);
+		}
 	}
 
 	private void OnEnable()
@@ -489,7 +534,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		return new ActorSaveData
 		{
 			LogicState = LogicExecutorState,
-			IsFollowingPlayer = (LogicExecutorState == EActorState.STATE_Follow),
 			SettlementID = this.SettlementID,
 			WorkstationID = this.WorkstationID
 		};
@@ -499,10 +543,12 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	{
 		if (data is ActorSaveData actorData)
 		{
-			if (actorData.IsFollowingPlayer)
-			{
-				FollowPlayer(GameManager.Instance.PlayerObject.transform);
-			}
+			LogicExecutorState = actorData.LogicState;
+			SettlementID = actorData.SettlementID;
+			WorkstationID = actorData.WorkstationID;
+
+			m_saveDataRestored = true;
+			RegisterWithManager();
 		}
 	}
 
@@ -510,7 +556,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public class ActorSaveData
 	{
 		public EActorState LogicState;
-		public bool IsFollowingPlayer;
 		public int SettlementID;
 		public int WorkstationID;
 	}
