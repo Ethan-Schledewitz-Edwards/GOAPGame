@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 namespace SaveLoad.Core
@@ -9,6 +10,12 @@ namespace SaveLoad.Core
 	public class SaveLoadManager : MonoBehaviour
 	{
 		public static SaveLoadManager Instance { get; private set; }
+
+		// Just got gemini to spit one out lol
+		private readonly byte[] m_encryptionKey = new byte[] {
+			0x43, 0x87, 0x23, 0x72, 0x11, 0x09, 0x54, 0x81,
+			0x19, 0x33, 0x56, 0x88, 0x99, 0x21, 0x64, 0x77
+		};
 
 		private void Awake()
 		{
@@ -19,50 +26,76 @@ namespace SaveLoad.Core
 		}
 
 		/// <summary>
-		/// Serializes and saves the specified data to a file at the given absolute path.
+		/// Serializes data to JSON and encrypts it using AES.
 		/// </summary>
 		public void SaveData<T>(string savePath, T data)
 		{
 			try
 			{
 				string directory = Path.GetDirectoryName(savePath);
-				if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+				if (!Directory.Exists(directory)) 
+					Directory.CreateDirectory(directory);
+
+				string json = JsonUtility.ToJson(data);
 
 				using (FileStream stream = new FileStream(savePath, FileMode.Create))
+				using (Aes aes = Aes.Create())
 				{
-					BinaryFormatter formatter = new BinaryFormatter();
-					formatter.Serialize(stream, data);
+					aes.Key = m_encryptionKey;
+
+					stream.Write(aes.IV, 0, aes.IV.Length);
+
+					// Encrypt the JSON string and write it to the file
+					using (CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+					using (StreamWriter writer = new StreamWriter(cryptoStream))
+					{
+						writer.Write(json);
+					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception error)
 			{
-				Debug.LogError($"Failed to save to {savePath}: {e.Message}");
+				Debug.LogError($"Failed to save to {savePath}: {error.Message}");
 			}
 		}
 
 		/// <summary>
-		/// Loads and deserializes an object of type T from the specified file path.
+		/// Decrypts the AES file and deserializes the JSON back into an object.
 		/// </summary>
-		public T LoadData<T>(string SavePath) where T : class
+		public T LoadData<T>(string savePath) where T : class
 		{
-			if (!File.Exists(SavePath)) 
+			if (!File.Exists(savePath))
 				return null;
 
 			try
 			{
-				using (FileStream stream = new FileStream(SavePath, FileMode.Open))
+				using (FileStream stream = new FileStream(savePath, FileMode.Open))
 				{
-					// Ignore empty files
-					if (stream.Length == 0) 
+					if (stream.Length == 0)
 						return null;
 
-					BinaryFormatter formatter = new BinaryFormatter();
-					return formatter.Deserialize(stream) as T;
+					using (Aes aes = Aes.Create())
+					{
+						aes.Key = m_encryptionKey;
+
+						byte[] iv = new byte[aes.IV.Length];
+						stream.Read(iv, 0, iv.Length);
+						aes.IV = iv;
+
+						using (CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+						using (StreamReader reader = new StreamReader(cryptoStream))
+						{
+							string json = reader.ReadToEnd();
+
+							// Deserialize into the requested type
+							return JsonUtility.FromJson<T>(json);
+						}
+					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception error)
 			{
-				Debug.LogError($"Failed to load from {SavePath}: {e.Message}");
+				Debug.LogError($"Failed to load from {savePath}: {error.Message}");
 				return null;
 			}
 		}
