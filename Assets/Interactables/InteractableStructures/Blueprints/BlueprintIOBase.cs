@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(BlueprintCancelation), typeof(ItemRequestComponent))]
+	[RequireComponent(typeof(InventoryComponent), typeof(ItemRequestComponent))]
 	public abstract class BlueprintIOBase : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -20,7 +20,6 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] private StructureTag m_structureTypeTag;
 
 		private Entity m_entity;
-		protected BlueprintCancelation m_cancelBlueprint;
 		protected ItemRequestComponent m_itemRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
 
@@ -42,7 +41,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_entity = GetComponent<Entity>();
 			m_entity.EnableDynamicPositionUpdates(false);
 
-			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
@@ -79,6 +77,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				new MoveToInteractionPositionTask(),
 				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
 				new BTTimeoutNode(new DepositHeldItemTask(), 2f),
+				new ReserveInteractionPositionTask(),
 				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 			});
 

@@ -380,7 +380,25 @@ public class AIPathing : MonoBehaviour
 
 		float arrivalDistance = Mathf.Max(StoppingDistance, additionalTolerance, 0.05f);
 
-		return IsWithinDistance(CurrentDestination, arrivalDistance);
+		// Check if the intended destination was reached
+		if (IsWithinDistance(CurrentDestination, arrivalDistance))
+			return true;
+
+		// Check if we reached the end of the calculated NavMesh path
+		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.isActiveAndEnabled)
+		{
+			if (!m_navAgent.pathPending && m_navAgent.hasPath)
+			{
+				if (m_navAgent.remainingDistance <= arrivalDistance)
+					return true;
+			}
+		}
+		else if (m_destinationCoroutine == null)
+		{
+			return true; // Low-fidelity simulation completed its path
+		}
+
+		return false;
 	}
 
 	/// <summary>
@@ -412,7 +430,6 @@ public class AIPathing : MonoBehaviour
 			m_pathCorners == null ||
 			m_pathCorners.Length == 0;
 	}
-
 	#endregion
 
 	public void SetStoppingDistance(float stoppingDistance) =>

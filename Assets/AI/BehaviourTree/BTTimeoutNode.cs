@@ -24,6 +24,10 @@ namespace BehaviourTrees
 
 			if (timeElapsed >= m_duration)
 			{
+				Transform executor = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+				if (executor != null)
+					Debug.Log($"{executor}'s task timed out", executor);
+
 				return EBTNodeState.STATE_FAILURE;
 			}
 

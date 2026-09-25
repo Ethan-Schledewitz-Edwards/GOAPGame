@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-	[RequireComponent(typeof(BoxCollider))]
+	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
 	public class PlacedBlueprint : BlueprintIOBase, IBlueprintObject
 	{
 		[Header("Settings & Visuals")]
@@ -19,6 +19,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] private MeshRenderer m_meshRenderer;
 
 		[Header("Components")]
+		private BlueprintCancelation m_cancelBlueprint;
 		private BoxCollider m_boxCollider;
 
 		public int m_blueprintDataID;
@@ -30,6 +31,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		{
 			base.Awake();
 
+			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_boxCollider = GetComponent<BoxCollider>();
 
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;

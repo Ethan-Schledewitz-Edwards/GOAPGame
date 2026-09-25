@@ -15,7 +15,7 @@ using WorldManagement.Core;
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
 public class Actor : Entity, IInteractor, ISaveableComponent
 {
-	private const float c_waitingForJobLimit = 5.0f;
+	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
 	private const float c_workingDist = 0.15f;
 	private const float c_followSpeed = 6.2f;
