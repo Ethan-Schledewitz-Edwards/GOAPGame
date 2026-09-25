@@ -76,8 +76,6 @@ namespace WorldManagement.Core
 			if (s_requestedChunks.Contains(chunkXZ))
 				s_requestedChunks.Remove(chunkXZ);
 
-			chunk.chunkData.OnChunkUpdate -= HandleChunkUpdated;
-
 			if (m_chunkBuilder.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Procedural && chunk.gameObject != null)
 			{
 				Destroy(chunk.gameObject);
@@ -87,10 +85,8 @@ namespace WorldManagement.Core
 				chunk.gameObject.SetActive(false);
 			}
 
-			if (shouldSave && chunk.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
-			{
+			if (shouldSave)
 				OnReleaseChunkData?.Invoke(chunk.chunkData);
-			}
 
 			s_ActiveChunks.Remove(chunkXZ);
 		}

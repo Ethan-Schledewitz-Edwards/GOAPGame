@@ -9,39 +9,13 @@ namespace WorldManagement.Core
 	public class TerrainChunk
 	{
 		public Vector2Int ChunkXZ { get; private set; }
-		public int[,,] TileData { get; private set; }
-		public int[,] BiomeMap { get; private set; }
 
 		public List<SerializableEntityData> PendingSavables;
 		public HashSet<GameObject> ResidentEntities { get; private set; } = new HashSet<GameObject>();
 
-		public EChunkGenerationState ChunkGenerationState { get; private set; }
-		public enum EChunkGenerationState
-		{
-			Empty,
-			BaseTerrain,
-			Decorated
-		}
-
-		public System.Action<Vector2Int> OnChunkUpdate;
-
-		public TerrainChunk(Vector2Int chunkXZ, int[,,] tileData, int[,] biomeMap)
+		public TerrainChunk(Vector2Int chunkXZ)
 		{
 			ChunkXZ = chunkXZ;
-			TileData = tileData;
-			BiomeMap = biomeMap;
-
-			ChunkGenerationState = EChunkGenerationState.Empty;
-		}
-
-		public void SetGenerationState(EChunkGenerationState newGenerationState)
-		{
-			ChunkGenerationState = newGenerationState;
-		}
-
-		public void UpdateChunk()
-		{
-			OnChunkUpdate?.Invoke(ChunkXZ);
 		}
 
 		public void RegisterEntity(GameObject entity)

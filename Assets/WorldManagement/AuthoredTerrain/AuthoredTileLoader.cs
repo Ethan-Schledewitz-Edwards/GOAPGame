@@ -65,11 +65,8 @@ namespace WorldManagement.AuthoredTiles
 
 			if (chunkData == null)
 			{
-				chunkData = new TerrainChunk(chunkXZ, null, null);
+				chunkData = new TerrainChunk(chunkXZ);
 			}
-
-			chunkData.SetGenerationState(TerrainChunk.EChunkGenerationState.Decorated);
-			chunkData.OnChunkUpdate += chunkUpdated;
 
 			// Add to active chunks
 			chunkFound?.Invoke(chunkData, chunkObject);

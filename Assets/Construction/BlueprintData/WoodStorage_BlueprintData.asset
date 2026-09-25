@@ -18,7 +18,7 @@ MonoBehaviour:
   <RequiredItems>k__BackingField:
   - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
     amount: 3
-  <BlueprintFeatureData>k__BackingField: {fileID: 11400000, guid: 73bea34b4f566ac4b883de86ec87a123, type: 2}
+  <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 162404230185621835, guid: cda47e29b34ca4c498b3c7702f62e3c0, type: 3}
   <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: c51a3dc80ebf6624aa05aa12e9cd2853, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
   <InteractionPositions>k__BackingField:

@@ -75,7 +75,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 				// Create the final structure
 				BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintToSpawnOnCompletion.BlueprintDataID);
-				GameObject prefab = blueprintData.BlueprintFeatureData.Prefab;
+				GameObject prefab = blueprintData.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
 
 				if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))

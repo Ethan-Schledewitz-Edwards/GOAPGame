@@ -33,12 +33,7 @@ namespace WorldManagement.Core
 				SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
 			if (chunkData != null)
 			{
-				TerrainChunk chunk = new TerrainChunk(
-					chunkXZ,
-					chunkData.GetReconstructedTileData(),
-					chunkData.GetReconstructedBiomeMap()
-				);
-				chunk.SetGenerationState(chunkData.GenerationState);
+				TerrainChunk chunk = new TerrainChunk(chunkXZ);
 
 				if (chunkData.SavableEntities != null && chunkData.SavableEntities.Count > 0)
 				{
@@ -66,10 +61,7 @@ namespace WorldManagement.Core
 			{
 				if (WorldManager.s_ActiveChunks.TryGetValue(kvp, out var activeChunkTuple))
 				{
-					if (activeChunkTuple.chunkData.ChunkGenerationState == TerrainChunk.EChunkGenerationState.Decorated)
-					{
-						SaveAndUnloadChunkData(activeChunkTuple.chunkData);
-					}
+					SaveAndUnloadChunkData(activeChunkTuple.chunkData);
 				}
 			}
 		}
