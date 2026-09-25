@@ -14,6 +14,10 @@ namespace Main.Core
 		private void Awake()
 		{
 			m_saveLoadManager = GetComponent<SaveLoadManager>();
+		}
+
+		private void Start()
+		{
 			LoadGame();
 		}
 

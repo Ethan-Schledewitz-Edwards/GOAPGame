@@ -51,13 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 634ce75a9a241cf408ab4e803dec9534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.PlacedBlueprint
-  <RequiresReservation>k__BackingField: 1
-  m_actorsNeeded: 1
-  m_maxActors: 1
+  m_minActorsNeededToOperate: 1
   m_interactPositions: []
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_maxCapacity: 4
-  m_actorsAssigned: 0
   m_tagFilter: []
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
   m_meshFilter: {fileID: 1086525549323106786}
@@ -122,7 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
-  m_guid: 1c529a71-adb8-465e-9378-361df44766bf
+  m_guid: 
   <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &6019955960294120562
 MonoBehaviour:

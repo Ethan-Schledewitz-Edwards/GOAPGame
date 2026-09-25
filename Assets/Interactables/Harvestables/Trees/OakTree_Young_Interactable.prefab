@@ -73,9 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
-  <RequiresReservation>k__BackingField: 1
-  m_actorsNeeded: 1
-  m_maxActors: 12
+  m_minActorsNeededToOperate: 1
   m_interactPositions:
   - {fileID: 2991755269999351807}
 --- !u!114 &1914341159798471732
@@ -239,7 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
   m_savablePrefabData: {fileID: 0}
-  m_guid: 14d54096-10ad-4b85-8b06-bb4a130193b5
+  m_guid: 
   <IsManuallyAuthored>k__BackingField: 1
 --- !u!1 &6670668404327998910
 GameObject:

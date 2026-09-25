@@ -62,7 +62,15 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 		foreach (var component in saveableComponents)
 		{
-			data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
+			object rawData = component.GenerateComponentData();
+			if (rawData is string dataString)
+			{
+				data.ComponentData.Add(new ComponentSaveData
+				{
+					K = component.GetComponentId(),
+					V = dataString
+				});
+			}
 		}
 
 		return data;
@@ -97,9 +105,11 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		foreach (var component in saveableComponents)
 		{
 			string compId = component.GetComponentId();
-
-			if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
-				component.RestoreComponentData(savedComponentData);
+			ComponentSaveData entry = data.ComponentData.Find(x => x.K == compId);
+			if (entry != null)
+			{
+				component.RestoreComponentData(entry.V);
+			}
 		}
 		DataRestored?.Invoke();
 

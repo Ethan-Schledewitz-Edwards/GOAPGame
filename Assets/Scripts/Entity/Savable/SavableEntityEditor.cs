@@ -8,6 +8,10 @@ namespace Entities.Savable
 
 	using UnityEditor.SceneManagement;
 
+	/// <summary>
+	/// AI generated editor tooling because IDGAF about learning how to make editor tools lmao... I proof read it at least.
+	/// Ethan
+	/// </summary>
 	[CustomEditor(typeof(SaveableEntity))]
 	public class SaveableEntityEditor : UnityEditor.Editor
 	{
@@ -29,8 +33,26 @@ namespace Entities.Savable
 		{
 			serializedObject.Update();
 
+			GUI.enabled = false;
+			EditorGUILayout.PropertyField(m_guidProp);
+			GUI.enabled = true;
+
 			EditorGUILayout.PropertyField(m_isManuallyAuthoredProp);
 			EditorGUILayout.PropertyField(m_savablePrefabDataProp);
+
+			// Correctly check if GUID string is empty
+			if (string.IsNullOrEmpty(m_guidProp.stringValue))
+			{
+				EditorGUILayout.Space();
+				EditorGUILayout.HelpBox("This entity is missing a GUID. Generate one before saving.", MessageType.Error);
+
+				if (GUILayout.Button("Generate GUID", GUILayout.Height(30)))
+				{
+					m_guidProp.stringValue = System.Guid.NewGuid().ToString();
+					serializedObject.ApplyModifiedProperties();
+					UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+				}
+			}
 
 			if (m_savablePrefabDataProp.objectReferenceValue == null)
 			{

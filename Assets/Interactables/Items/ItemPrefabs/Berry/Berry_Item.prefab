@@ -71,9 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  <RequiresReservation>k__BackingField: 1
-  m_actorsNeeded: 1
-  m_maxActors: 1
+  m_minActorsNeededToOperate: 1
   m_interactPositions: []
   m_itemData: {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
   m_stackSize: 1
@@ -90,7 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
   m_savablePrefabData: {fileID: 11400000, guid: 2d9dc667733c7d24b9ed64cc77ef59bb, type: 2}
-  m_guid: 32b9485c-7ea0-452e-9f76-16c312a42b7c
+  m_guid: 
   <IsManuallyAuthored>k__BackingField: 0
 --- !u!114 &8515664754511149306
 MonoBehaviour:

@@ -13,13 +13,11 @@ namespace Entities.Savable
 		private void OnEnable()
 		{
 			WorldManager.ChunkSpawnedEntities += HandleChunkLoadedEntities;
-			SaveEvents.GameLoaded += CleanUpDynamicEntities;
 		}
 
 		private void OnDestroy()
 		{
 			WorldManager.ChunkSpawnedEntities -= HandleChunkLoadedEntities;
-			SaveEvents.GameLoaded -= CleanUpDynamicEntities;
 		}
 
 		private void HandleChunkLoadedEntities(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
@@ -37,18 +35,6 @@ namespace Entities.Savable
 					TrySpawnSavableEntity(chunk, entityData);
 				}
 			}
-		}
-
-		private GameObject GetPrefabById(int prefabId)
-		{
-			foreach (SavableEntityPrefabData data in m_entityIndex.SavableEntityPrefabData)
-			{
-				if (data.PrefabID == prefabId)
-				{
-					return data.EntityPrefab;
-				}
-			}
-			return null;
 		}
 
 		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
@@ -71,10 +57,15 @@ namespace Entities.Savable
 			}
 		}
 
+		/// <summary>
+		/// Attempts to locate and restore a persistent savable entity in the specified terrain chunk using the provided
+		/// entity data, or spawns a new instance if not found.
+		/// </summary>
+		/// <param name="chunk">The terrain chunk in which to spawn or restore the entity.</param>
+		/// <param name="entityData">The serialized data containing information about the entity to be spawned or restored.</param>
 		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
 			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include);
-
 			foreach (SaveableEntity saveableEntity in allEntities)
 			{
 				if (saveableEntity.GetGUID() == entityData.GUID)
@@ -96,27 +87,6 @@ namespace Entities.Savable
 			Debug.LogWarning($"[SaveableEntitySpawner] Could not find a persistent SavableEntity with GUID {entityData.GUID} in the scene. " +
 				$"Spawning duplicate from Prefab ID {entityData.PrefabId}. Ensure Editor GUIDs are serialized if this entity is persistent!");
 			TrySpawnSavableEntity(chunk, entityData);
-		}
-
-		/// <summary>
-		/// Destroys all entities spawned at runtime.
-		/// </summary>
-		/// <summary>
-		/// Dynamic entities will respawn later if they actually belong in the save timeline.
-		/// </summary>
-		private void CleanUpDynamicEntities(SerializablePlayerData data)
-		{
-			if (data == null) 
-				return;
-
-			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include);
-			foreach (SaveableEntity entity in allEntities)
-			{
-				if (!entity.IsManuallyAuthored)
-				{
-					Destroy(entity.gameObject);
-				}
-			}
 		}
 	}
 }

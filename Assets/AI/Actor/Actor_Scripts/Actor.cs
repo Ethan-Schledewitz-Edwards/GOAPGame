@@ -89,7 +89,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 			// Actors spawned at runtime are save to initialize immediately 
 			if (!saveableEntity.IsManuallyAuthored)
 			{
-				RegisterWithManager();
+				RegisterToManager();
 				yield break;
 			}
 			else
@@ -103,21 +103,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 				}
 
 				yield return new WaitForEndOfFrame();
-				RegisterWithManager();
+				RegisterToManager();
 			}
-		}
-	}
-
-	private void RegisterWithManager()
-	{
-		if (m_isActorAddedToManager)
-			return;
-
-		bool isFollower = m_saveDataRestored && (LogicExecutorState == EActorState.STATE_Follow);
-
-		if (ActorManager.Instance != null)
-		{
-			m_isActorAddedToManager = ActorManager.Instance.TryAddActor(this, isFollower);
 		}
 	}
 
@@ -525,30 +512,49 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 	}
 
+	private void RegisterToManager()
+	{
+		if (m_isActorAddedToManager)
+			return;
+
+		bool isFollower = m_saveDataRestored && (LogicExecutorState == EActorState.STATE_Follow);
+
+		if (ActorManager.Instance != null)
+		{
+			m_isActorAddedToManager = ActorManager.Instance.TryAddActor(this, isFollower);
+		}
+	}
+
 	#region ISaveableComponent Implementation
 
 	public string GetComponentId() => "Actor";
 
 	public object GenerateComponentData()
 	{
-		return new ActorSaveData
+		ActorSaveData data = new ActorSaveData
 		{
 			LogicState = LogicExecutorState,
 			SettlementID = this.SettlementID,
 			WorkstationID = this.WorkstationID
 		};
+
+		return JsonUtility.ToJson(data);
 	}
 
 	public void RestoreComponentData(object data)
 	{
-		if (data is ActorSaveData actorData)
+		if (data is string actorSaveData)
 		{
-			LogicExecutorState = actorData.LogicState;
-			SettlementID = actorData.SettlementID;
-			WorkstationID = actorData.WorkstationID;
+			ActorSaveData actorData = JsonUtility.FromJson<ActorSaveData>(actorSaveData);
+			if (actorData != null)
+			{
+				LogicExecutorState = actorData.LogicState;
+				SettlementID = actorData.SettlementID;
+				WorkstationID = actorData.WorkstationID;
 
-			m_saveDataRestored = true;
-			RegisterWithManager();
+				m_saveDataRestored = true;
+				RegisterToManager();
+			}
 		}
 	}
 

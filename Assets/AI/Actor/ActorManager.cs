@@ -64,15 +64,6 @@ public class ActorManager : MonoBehaviour
 		TickActors(Time.deltaTime);
 	}
 
-	public void SyncSimulation(DateTime lastSave, DateTime now)
-	{
-		double offlineSeconds = (now - lastSave).TotalSeconds;
-		double clampedSeconds = Math.Min(offlineSeconds, 86400); // 24h cap
-
-		Debug.Log($"There were {offlineSeconds} between save and load");
-		Debug.Log($"There were {offlineSeconds} between save and load");
-	}
-
 	public bool TryAddActor(Actor actor, bool loadedFromSaveFile)
 	{
 		if (!s_Actors.Contains(actor))

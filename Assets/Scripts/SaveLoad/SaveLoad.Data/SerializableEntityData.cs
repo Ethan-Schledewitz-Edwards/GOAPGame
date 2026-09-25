@@ -11,6 +11,13 @@ namespace SaveLoad.Data
 		public float PosX, PosY, PosZ;
 		public float RotX, RotY, RotZ;
 
-		[SerializeField] public Dictionary<string, object> ComponentData = new Dictionary<string, object>();
+		[SerializeField] public List<ComponentSaveData> ComponentData = new List<ComponentSaveData>();
+	}
+
+	[System.Serializable]
+	public class ComponentSaveData
+	{
+		public string K;
+		public string V;
 	}
 }

@@ -45,22 +45,23 @@ namespace Entities.Savable
 #if UNITY_EDITOR
 		private void OnValidate()
 		{
+			if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
+			{
+				if (!string.IsNullOrEmpty(m_guid))
+				{
+					m_guid = string.Empty;
+					UnityEditor.EditorUtility.SetDirty(this);
+				}
+				return;
+			}
+
+			// Generate a unique GUID for scene instances if missing
 			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
 				m_guid = System.Guid.NewGuid().ToString();
 				UnityEditor.EditorUtility.SetDirty(this);
-				UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
 				UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
 			}
-		}
-
-		[ContextMenu("Force Generate GUID")]
-		private void ForceGenerateGUID()
-		{
-			m_guid = System.Guid.NewGuid().ToString();
-			UnityEditor.EditorUtility.SetDirty(this);
-			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
-			UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
 		}
 #endif
 
@@ -79,7 +80,12 @@ namespace Entities.Savable
 
 			DisablePhysicsAndCollision();
 
-			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
+			if (IsManuallyAuthored && string.IsNullOrEmpty(m_guid))
+			{
+				Debug.LogError($"[SaveableEntity] Authored entity '{gameObject.name}'" +
+					$" has no serialized GUID!!!", this);
+			}
+			else if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
 			{
 				m_guid = System.Guid.NewGuid().ToString();
 			}
@@ -219,7 +225,15 @@ namespace Entities.Savable
 			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 			foreach (var component in saveableComponents)
 			{
-				data.ComponentData[component.GetComponentId()] = component.GenerateComponentData();
+				object rawData = component.GenerateComponentData();
+				if (rawData is string dataString)
+				{
+					data.ComponentData.Add(new ComponentSaveData
+					{
+						K = component.GetComponentId(),
+						V = dataString
+					});
+				}
 			}
 
 			return data;
@@ -238,16 +252,19 @@ namespace Entities.Savable
 			Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
 			transform.position = position;
 			transform.rotation = rotation;
+
 			TransformRestored?.Invoke(position, rotation);
 
 			// Restore component data
 			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
 			foreach (var component in saveableComponents)
 			{
-				string compId = component.GetComponentId();
-
-				if (data.ComponentData.TryGetValue(compId, out object savedComponentData))
-					component.RestoreComponentData(savedComponentData);
+				string componentID = component.GetComponentId();
+				ComponentSaveData componentData = data.ComponentData.Find(x => x.K == componentID);
+				if (componentData != null)
+				{
+					component.RestoreComponentData(componentData.V);
+				}
 			}
 			DataRestored?.Invoke();
 

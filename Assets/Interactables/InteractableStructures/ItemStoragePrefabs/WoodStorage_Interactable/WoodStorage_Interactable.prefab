@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
   m_savablePrefabData: {fileID: 0}
-  m_guid: 3f5e23aa-6010-4625-977b-28fdf42e7293
+  m_guid: 
   <IsManuallyAuthored>k__BackingField: 0
 --- !u!1 &1415920243083721482
 GameObject:
