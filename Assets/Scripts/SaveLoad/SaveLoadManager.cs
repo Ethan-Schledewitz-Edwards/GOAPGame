@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 namespace SaveLoad.Core
@@ -17,12 +16,27 @@ namespace SaveLoad.Core
 			0x19, 0x33, 0x56, 0x88, 0x99, 0x21, 0x64, 0x77
 		};
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticData()
+		{
+			Instance = null;
+		}
+
 		private void Awake()
 		{
-			if (Instance == null) 
-				Instance = this;
-			else 
+			if (Instance != null && Instance != this)
+			{
 				Destroy(gameObject);
+				return;
+			}
+
+			Instance = this;
+		}
+
+		private void OnDestroy()
+		{
+			if (Instance == this)
+				Instance = null;
 		}
 
 		/// <summary>
@@ -33,7 +47,7 @@ namespace SaveLoad.Core
 			try
 			{
 				string directory = Path.GetDirectoryName(savePath);
-				if (!Directory.Exists(directory)) 
+				if (!Directory.Exists(directory))
 					Directory.CreateDirectory(directory);
 
 				string json = JsonUtility.ToJson(data);
@@ -42,7 +56,7 @@ namespace SaveLoad.Core
 				using (Aes aes = Aes.Create())
 				{
 					aes.Key = m_encryptionKey;
-
+					aes.GenerateIV();
 					stream.Write(aes.IV, 0, aes.IV.Length);
 
 					// Encrypt the JSON string and write it to the file
@@ -69,17 +83,25 @@ namespace SaveLoad.Core
 
 			try
 			{
-				using (FileStream stream = new FileStream(savePath, FileMode.Open))
+				using (FileStream stream = new FileStream(savePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					if (stream.Length == 0)
-						return null;
-
 					using (Aes aes = Aes.Create())
 					{
-						aes.Key = m_encryptionKey;
+						byte[] iv = new byte[aes.BlockSize / 8]; // 16 bytes for AES
 
-						byte[] iv = new byte[aes.IV.Length];
-						stream.Read(iv, 0, iv.Length);
+						if (stream.Length < iv.Length)
+						{
+							Debug.LogError($"Save file at {savePath} is corrupt or incomplete.");
+							return null;
+						}
+
+						if (!ReadExactly(stream, iv, 0, iv.Length))
+						{
+							Debug.LogError($"Failed to read full IV from save file: {savePath}");
+							return null;
+						}
+
+						aes.Key = m_encryptionKey;
 						aes.IV = iv;
 
 						using (CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
@@ -98,6 +120,20 @@ namespace SaveLoad.Core
 				Debug.LogError($"Failed to load from {savePath}: {error.Message}");
 				return null;
 			}
+		}
+
+		private static bool ReadExactly(Stream stream, byte[] buffer, int offset, int count)
+		{
+			int totalBytesRead = 0;
+			while (totalBytesRead < count)
+			{
+				int bytesRead = stream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
+				if (bytesRead == 0)
+					return false; // Reached End-of-Stream before reading full buffer
+
+				totalBytesRead += bytesRead;
+			}
+			return true;
 		}
 	}
 }

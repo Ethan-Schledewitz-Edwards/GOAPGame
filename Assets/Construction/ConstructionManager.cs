@@ -18,11 +18,29 @@ namespace Construction
 		// Events
 		public event Action<BlueprintData> NewDevelopmentAttempted;
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticData()
+		{
+			Instance = null;
+		}
+
 		private void Awake()
 		{
-			if (Instance == null)
-				Instance = this;
-			else Destroy(this);
+			if (Instance != null && Instance != this)
+			{
+				Destroy(gameObject);
+				return;
+			}
+
+			Instance = this;
+		}
+
+		private void OnDestroy()
+		{
+			if (Instance == this)
+			{
+				Instance = null;
+			}
 		}
 
 		public void HandleBlueprintButton(BlueprintData blueprintData)

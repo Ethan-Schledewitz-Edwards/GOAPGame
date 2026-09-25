@@ -5,8 +5,6 @@ using UnityEngine.AI;
 
 public class ActorManager : MonoBehaviour
 {
-	public static ActorManager Instance;
-
 	#region Constants
 
 	private const int k_tps = 20;
@@ -15,6 +13,8 @@ public class ActorManager : MonoBehaviour
 	private const int k_actorOnlineRange = 15;
 	private const int k_actorOnlineRangeSqrt = k_actorOnlineRange * k_actorOnlineRange;
 	#endregion
+
+	public static ActorManager Instance;
 
 	[SerializeField] private Transform m_spawnoffset;
 	[SerializeField] private Actor m_actorPrefab;
@@ -30,11 +30,33 @@ public class ActorManager : MonoBehaviour
 	double m_accumulatedTime = 0f;
 	private Vector3 m_playerPosition;
 
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	private static void ResetStaticData()
+	{
+		Instance = null;
+		s_Actors.Clear();
+	}
+
 	private void Awake()
 	{
-		if (Instance == null)
-			Instance = this;
-		else Destroy(Instance);
+		if (Instance != null && Instance != this)
+		{
+			Destroy(gameObject);
+			return;
+		}
+
+		Instance = this;
+
+		s_Actors.Clear();
+	}
+
+	private void OnDestroy()
+	{
+		if (Instance == this)
+		{
+			Instance = null;
+			s_Actors.Clear();
+		}
 	}
 
 	private void Update()
@@ -47,6 +69,7 @@ public class ActorManager : MonoBehaviour
 		double offlineSeconds = (now - lastSave).TotalSeconds;
 		double clampedSeconds = Math.Min(offlineSeconds, 86400); // 24h cap
 
+		Debug.Log($"There were {offlineSeconds} between save and load");
 		Debug.Log($"There were {offlineSeconds} between save and load");
 	}
 

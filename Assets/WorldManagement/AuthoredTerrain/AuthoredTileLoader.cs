@@ -15,10 +15,17 @@ namespace WorldManagement.AuthoredTiles
 
 		public static Dictionary<Vector2Int, GameObject> s_AuthoredChunks = new Dictionary<Vector2Int, GameObject>();
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticData()
+		{
+			s_AuthoredChunks.Clear();
+		}
+
 		private void Awake()
 		{
 			m_chunkManager = GetComponent<TerrainChunkManager>();
 
+			s_AuthoredChunks.Clear();
 			foreach (GameObject chunkObj in m_sceneChunks)
 			{
 				if (chunkObj != null)
@@ -32,18 +39,30 @@ namespace WorldManagement.AuthoredTiles
 
 		private void OnEnable()
 		{
-			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
-				return;
-
-			m_chunkManager.ProcessChunkSpawned += HandleSpawnedChunk;
+			if (m_chunkManager != null && 
+				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored)
+			{
+				m_chunkManager.ProcessChunkSpawned += HandleSpawnedChunk;
+			}
 		}
 
 		private void OnDisable()
+		{
+			if (m_chunkManager != null && 
+				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored)
+			{
+				m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
+			}
+		}
+
+		private void OnDestroy()
 		{
 			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
 				return;
 
 			m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
+
+			s_AuthoredChunks.Clear();
 		}
 
 		private IEnumerator HandleSpawnedChunk

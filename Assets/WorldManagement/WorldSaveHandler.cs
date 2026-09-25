@@ -17,7 +17,7 @@ namespace WorldManagement.Core
 			SaveEvents.SavingBegan += SaveAllActiveChunks;
 		}
 
-		private void OnDisable()
+		private void OnDestroy()
 		{
 			WorldManager.OnRequestChunkData -= FetchChunkData;
 			WorldManager.OnReleaseChunkData -= SaveAndUnloadChunkData;

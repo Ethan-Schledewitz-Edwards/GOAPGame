@@ -16,7 +16,7 @@ namespace Entities.Savable
 			SaveEvents.GameLoaded += CleanUpDynamicEntities;
 		}
 
-		private void OnDisable()
+		private void OnDestroy()
 		{
 			WorldManager.ChunkSpawnedEntities -= HandleChunkLoadedEntities;
 			SaveEvents.GameLoaded -= CleanUpDynamicEntities;

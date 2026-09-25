@@ -11,7 +11,6 @@ namespace WorldManagement.Core
 	{
 		// Signleton
 		public static WorldManager Instance { get; private set; }
-		public static readonly int s_Seed = 64;
 		public static readonly Vector3Int s_ChunkSize = new Vector3Int(32, 32, 32);
 
 		// Components
@@ -29,6 +28,13 @@ namespace WorldManagement.Core
 		private static readonly HashSet<Vector2Int> s_requestedChunks = new HashSet<Vector2Int>();
 		private static readonly HashSet<Vector2Int> s_pendingChunks = new HashSet<Vector2Int>();
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticData()
+		{
+			Instance = null;
+			ClearStaticState();
+		}
+
 		private void Awake()
 		{
 			if (Instance != null && Instance != this)
@@ -38,7 +44,17 @@ namespace WorldManagement.Core
 			}
 
 			Instance = this;
+			ClearStaticState();
 			m_chunkBuilder = GetComponent<TerrainChunkManager>();
+		}
+
+		private void OnDestroy()
+		{
+			if(Instance == this)
+			{
+				Instance = null;
+				ClearStaticState();
+			}
 		}
 
 		public IEnumerator LoadNewChunk(Vector2Int chunkXZ)
@@ -114,6 +130,17 @@ namespace WorldManagement.Core
 				return active.chunkData;
 
 			return OnRequestChunkData?.Invoke(chunkXZ);
+		}
+
+		private static void ClearStaticState()
+		{
+			s_ActiveChunks.Clear();
+			s_requestedChunks.Clear();
+			s_pendingChunks.Clear();
+
+			OnRequestChunkData = null;
+			OnReleaseChunkData = null;
+			ChunkSpawnedEntities = null;
 		}
 	}
 }

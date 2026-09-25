@@ -15,4 +15,9 @@ public class GameManager : MonoBehaviour
 
 		//SpawnPlayer();
 	}
+
+	private void OnDestroy()
+	{
+		Instance = null;
+	}
 }

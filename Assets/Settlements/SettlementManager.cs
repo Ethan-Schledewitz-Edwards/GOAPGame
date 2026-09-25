@@ -12,15 +12,35 @@ namespace Settlements
 
 		public static Dictionary<int, Settlement> s_WorldSettlements = new Dictionary<int, Settlement>();
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticData()
+		{
+			Instance = null;
+			s_WorldSettlements.Clear();
+		}
+
 		private void Awake()
 		{
-			if (Instance == null)
-				Instance = this;
-			else
-				Destroy(this);
+			if (Instance != null && Instance != this)
+			{
+				Destroy(gameObject);
+				return;
+			}
+
+			Instance = this;
+			s_WorldSettlements.Clear();
 
 			// Create the default settlement for nuetral structures to populate
 			CreateNewSettlement(Vector3.zero, EFaction.FACTION_WORLD, out _);
+		}
+
+		private void OnDestroy()
+		{
+			if (Instance == this)
+			{
+				Instance = null;
+				s_WorldSettlements.Clear();
+			}
 		}
 
 		public void CreateNewSettlement(Vector3 position, EFaction settlementFaction, out int id)

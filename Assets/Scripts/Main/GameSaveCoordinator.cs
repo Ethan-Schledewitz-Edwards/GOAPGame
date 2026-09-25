@@ -9,22 +9,11 @@ namespace Main.Core
 	[RequireComponent(typeof(SaveLoadManager))]
 	public class GameSaveCoordinator : MonoBehaviour
 	{
-		public static GameSaveCoordinator Instance { get; private set; }
-
 		private SaveLoadManager m_saveLoadManager;
 
 		private void Awake()
 		{
-			if (Instance == null) 
-				Instance = this;
-			else 
-				Destroy(gameObject);
-
 			m_saveLoadManager = GetComponent<SaveLoadManager>();
-		}
-
-		private void Start()
-		{
 			LoadGame();
 		}
 

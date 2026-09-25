@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Main.Core
 {
@@ -39,7 +40,8 @@ namespace Main.Core
 
 		private void OnQuickLoadInput(InputAction.CallbackContext context)
 		{
-			m_saveCoordinator?.LoadGame();
+			int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+			SceneManager.LoadScene(currentSceneIndex);
 		}
 	}
 }
