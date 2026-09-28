@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
-  m_Name: BridgeBlueprint_SaveableEntityPrefabData
+  m_Name: OakTree_Young_Interactable_SavableEntityPrefabData
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SavableEntityPrefabData
-  m_id: BridgeBlueprint_SaveableEntityPrefabData
-  <EntityPrefab>k__BackingField: {fileID: 3783632731105929815, guid: 24322c03d36ab154d87f81f18cfe7e47, type: 3}
+  m_id: OakTree_Young_Interactable_SavableEntityPrefabData
+  <EntityPrefab>k__BackingField: {fileID: 3778585277737840742, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}

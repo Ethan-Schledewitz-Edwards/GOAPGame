@@ -12,12 +12,11 @@ using WorldManagement.Core;
 namespace Entities.Savable
 {
 	[RequireComponent(typeof(Entities.Core.Entity))]
-	public class SaveableEntity : MonoBehaviour, ISavableEntity
+	public class SavableEntity : MonoBehaviour, ISavableEntity
 	{
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
 
 		[SerializeField] private string m_guid = "";
-		public string GetGUID() => m_guid;
 
 		[field: SerializeField, Tooltip("Should be true when an object is not spawned at run-time.")] 
 		public bool IsManuallyAuthored { get; private set; } = false;
@@ -49,7 +48,7 @@ namespace Entities.Savable
 
 		#region Static State
 
-		private static readonly Dictionary<string, SaveableEntity> s_entitiesByGuid = new();
+		private static readonly Dictionary<string, SavableEntity> s_entitiesByGuid = new();
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void ResetStaticState()
@@ -57,7 +56,7 @@ namespace Entities.Savable
 			s_entitiesByGuid.Clear();
 		}
 
-		public static bool TryGetByGuid(string guid, out SaveableEntity entity)
+		public static bool TryGetByGuid(string guid, out SavableEntity entity)
 		{
 			entity = null;
 
@@ -87,7 +86,7 @@ namespace Entities.Savable
 				return false;
 			}
 
-			if (s_entitiesByGuid.TryGetValue(guid, out SaveableEntity existing))
+			if (s_entitiesByGuid.TryGetValue(guid, out SavableEntity existing))
 			{
 				if (existing != null && existing != this)
 				{
@@ -114,7 +113,7 @@ namespace Entities.Savable
 				return;
 
 			if (s_entitiesByGuid.TryGetValue(m_guid,
-				out SaveableEntity registeredEntity) &&
+				out SavableEntity registeredEntity) &&
 				registeredEntity == this)
 			{
 				s_entitiesByGuid.Remove(m_guid);
@@ -384,10 +383,7 @@ namespace Entities.Savable
 				return false;
 			}
 
-			// The object may have received a temporary runtime GUID during Instantiate().
-			// Replace it with the persistent GUID.
 			UnregisterGuid();
-
 			if (!TryRegisterGuid(data.GUID))
 			{
 				Debug.LogError($"[SaveableEntity] Could not restore '{name}' " +

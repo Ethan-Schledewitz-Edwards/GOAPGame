@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
-  m_Name: Peon_SaveableEntityPrefabData
+  m_Name: OakTree_Adult_Interactable_SavableEntityPrefabData
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SavableEntityPrefabData
-  m_id: 
-  <EntityPrefab>k__BackingField: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+  m_id: OakTree_Adult_Interactable_SavableEntityPrefabData
+  <EntityPrefab>k__BackingField: {fileID: 3778585277737840742, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}

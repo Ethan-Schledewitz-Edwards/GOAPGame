@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
-  m_Name: OakTree_Adult_Interactable_SaveableEntityPrefabData
-  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SavableEntityPrefabData
-  m_id: OakTree_Adult_Interactable_SaveableEntityPrefabData
-  <EntityPrefab>k__BackingField: {fileID: 3778585277737840742, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
+  m_Name: Stone_Item_SavableEntityPrefabData
+  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
+  m_id: Stone_Item_SavableEntityPrefabData
+  <EntityPrefab>k__BackingField: {fileID: 6673996059420899831, guid: 3ad4e379c4f97e34aa810cacaed6ee78, type: 3}

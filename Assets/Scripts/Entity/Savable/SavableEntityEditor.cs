@@ -13,7 +13,7 @@ namespace Entities.Savable
 	/// I proof read it and modified it at least.
 	/// Ethan
 	/// </summary>
-	[CustomEditor(typeof(SaveableEntity))]
+	[CustomEditor(typeof(SavableEntity))]
 	public class SaveableEntityEditor : UnityEditor.Editor
 	{
 		private const string c_indexAssetPath =
@@ -87,7 +87,7 @@ namespace Entities.Savable
 
 		private void CreateAndAssignPrefabData()
 		{
-			SaveableEntity entity = (SaveableEntity)target;
+			SavableEntity entity = (SavableEntity)target;
 			GameObject prefabAsset = null;
 
 			PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
@@ -112,7 +112,7 @@ namespace Entities.Savable
 				Directory.CreateDirectory(c_prefabDataSaveFolderPath);
 			}
 
-			string assetName = $"{prefabAsset.name}_SaveableEntityPrefabData.asset";
+			string assetName = $"{prefabAsset.name}_SavableEntityPrefabData.asset";
 			string path = AssetDatabase.GenerateUniqueAssetPath(c_prefabDataSaveFolderPath + assetName);
 
 			SavableEntityPrefabData newData = ScriptableObject.CreateInstance<SavableEntityPrefabData>();

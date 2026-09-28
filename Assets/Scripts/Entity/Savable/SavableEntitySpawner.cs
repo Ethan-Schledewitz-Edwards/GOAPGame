@@ -47,7 +47,7 @@ namespace Entities.Savable
 		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
 			// Loading the same GUID twice must never create two entities.
-			if (SaveableEntity.TryGetByGuid(entityData.GUID, out SaveableEntity existing))
+			if (SavableEntity.TryGetByGuid(entityData.GUID, out SavableEntity existing))
 			{
 				Debug.LogWarning($"[SavableEntitySpawner] Entity GUID " +
 					$"'{entityData.GUID}' already exists as " +
@@ -78,7 +78,7 @@ namespace Entities.Savable
 			}
 
 			GameObject spawnedEntity = Instantiate(prefab);
-			if (!spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
+			if (!spawnedEntity.TryGetComponent(out SavableEntity saveableEntity))
 			{
 				Debug.LogError($"[SavableEntitySpawner] Prefab '{prefab.name}' " +
 					$"does not contain a SaveableEntity component.", spawnedEntity);
@@ -98,7 +98,7 @@ namespace Entities.Savable
 
 		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			if (SaveableEntity.TryGetByGuid(entityData.GUID, out SaveableEntity existing))
+			if (SavableEntity.TryGetByGuid(entityData.GUID, out SavableEntity existing))
 			{
 				existing.RestoreFromSaveData(entityData);
 				chunk.RegisterEntity(existing.gameObject);

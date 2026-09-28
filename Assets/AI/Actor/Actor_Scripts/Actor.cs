@@ -35,6 +35,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public AIPathing Pathing { get; private set; }
+	private SavableEntity m_savableEntity;
 
 	// Executors
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
@@ -71,32 +72,30 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutorBase>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
 		Pathing = GetComponent<AIPathing>();
+		m_savableEntity = GetComponent<SavableEntity>();
 		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
 	private IEnumerator Start()
 	{
-		SaveableEntity saveableEntity = GetComponent<SaveableEntity>();
+		SavableEntity saveableEntity = GetComponent<SavableEntity>();
 
 		if (saveableEntity == null)
 		{
-			Debug.LogError($"[Actor] No {typeof(SaveableEntity)} component is " +
+			Debug.LogError($"[Actor] No {typeof(SavableEntity)} component is " +
 				$"present on an Actor. Aborting registration.", this);
 
 			yield break;
 		}
-
-		Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
-		while (!WorldManager.TryGetActiveChunkData(chunkXZ, out _))
-			yield return null;
-
-		yield return new WaitForEndOfFrame();
-
-		RegisterToManager();
 	}
 
 	private void OnEnable()
 	{
+		if (m_savableEntity != null)
+		{
+			m_savableEntity.DataRestored += RegisterToManager;
+		}
+
 		if (GOAPAgentComp != null)
 		{
 			GOAPAgentComp.OnFoundDestination += Pathing.SetDestination;
@@ -106,6 +105,11 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	private void OnDisable()
 	{
+		if (m_savableEntity != null)
+		{
+			m_savableEntity.DataRestored -= RegisterToManager;
+		}
+
 		if (GOAPAgentComp != null)
 		{
 			GOAPAgentComp.OnFoundDestination -= Pathing.SetDestination;
@@ -117,7 +121,9 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void TickBehaviour(float t)
 	{
-		if (Pathing == null || m_behaviourTreeExecutor == null || GOAPAgentComp == null)
+		if (Pathing == null || 
+			m_behaviourTreeExecutor == null || 
+			GOAPAgentComp == null)
 			return;
 
 		ActorHealth?.TickStats(t);
@@ -499,18 +505,17 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 	}
 
-	private bool m_saveDataRestored;
-
 	private void RegisterToManager()
 	{
 		if (m_isActorAddedToManager)
 			return;
 
-		bool isFollower = m_saveDataRestored && (LogicExecutorState == EActorState.STATE_Follow);
-
 		if (ActorManager.Instance != null)
 		{
-			m_isActorAddedToManager = ActorManager.Instance.TryAddActor(this, isFollower);
+			bool isFollower = LogicExecutorState == EActorState.STATE_Follow;
+
+			m_isActorAddedToManager = 
+				ActorManager.Instance.TryAddActor(this, isFollower);
 		}
 	}
 
@@ -540,13 +545,10 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		if (actorData == null)
 			return;
 
-		LogicExecutorState = actorData.LogicState;
+		SetLogicExecutorState(actorData.LogicState);
+
 		SettlementID = actorData.SettlementID;
 		WorkstationID = actorData.WorkstationID;
-		m_saveDataRestored = true;
-
-		if (m_isActorAddedToManager)
-			RegisterToManager();
 	}
 
 	[System.Serializable]
