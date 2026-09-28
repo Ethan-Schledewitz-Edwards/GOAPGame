@@ -58,10 +58,10 @@ namespace Entities.Savable
 				return;
 			}
 
-			SavableEntityPrefabData prefabData = ResolvePrefabData(entityData);
+			SavableEntityPrefabData prefabData = FindPrefabData(entityData);
 			if (prefabData == null)
 			{
-				Debug.LogError($"[SavableEntitySpawner] Could not resolve prefab " +
+				Debug.LogError($"[SavableEntitySpawner] Could not find a prefab " +
 					$"for entity GUID '{entityData.GUID}', " +
 					$"PrefabKey '{entityData.PrefabKey}'.");
 
@@ -109,14 +109,12 @@ namespace Entities.Savable
 				return;
 			}
 
-			// The expected authored object was not found. (Fallback)
-			Debug.LogWarning($"[SavableEntitySpawner] Could not find persistent entity GUID '{entityData.GUID}'. " +
-				$"Spawning prefab '{entityData.PrefabKey}' instead.");
-
+			// The entity either has the wrong GUID or is not authored savable.
+			// Fallback by spawning the entity normally.
 			TrySpawnSavableEntity(chunk, entityData);
 		}
 
-		private SavableEntityPrefabData ResolvePrefabData(SerializableEntityData entityData)
+		private SavableEntityPrefabData FindPrefabData(SerializableEntityData entityData)
 		{
 			if (m_entityIndex == null)
 				return null;

@@ -3,20 +3,19 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace GenericIndex
+namespace AssetIndex.Core
 {
-
 	/// <summary>
 	/// AI generated editor script.
 	/// </summary>
 #if UNITY_EDITOR
 	[CustomEditor(typeof(ScriptableObject), true)]
-	public class GenericIndexEditor : Editor
+	public class AssetIndexBaseEditor : Editor
 	{
 		public override void OnInspectorGUI()
 		{
 			Type targetType = target.GetType();
-			bool isGenericIndex = IsSubclassOfGenericIndex(typeof(GenericIndexBase<>), targetType);
+			bool isGenericIndex = IsSubclassOfGenericIndex(typeof(AssetIndexBase<>), targetType);
 
 			if (!isGenericIndex)
 			{

@@ -2,7 +2,7 @@ using Settlements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using GenericIndex;
+using AssetIndex.Core;
 using Entities.Savable;
 using Entities.Core;
 

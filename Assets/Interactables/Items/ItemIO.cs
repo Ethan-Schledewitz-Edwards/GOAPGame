@@ -1,6 +1,6 @@
 using BehaviourTrees;
 using Entities.Core;
-using GenericIndex;
+using AssetIndex.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;

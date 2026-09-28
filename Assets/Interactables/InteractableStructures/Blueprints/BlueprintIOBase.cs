@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using Construction;
 using Entities.Core;
-using GenericIndex;
+using AssetIndex.Core;
 using InventorySystem;
 using ObjectTags;
 using Settlements;

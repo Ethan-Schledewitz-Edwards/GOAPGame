@@ -1,4 +1,4 @@
-using GenericIndex;
+using AssetIndex.Core;
 using UnityEngine;
 
 namespace ObjectTags

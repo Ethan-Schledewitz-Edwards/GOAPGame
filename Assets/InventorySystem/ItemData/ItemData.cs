@@ -1,4 +1,4 @@
-using GenericIndex;
+using AssetIndex.Core;
 using ObjectTags;
 using System.Collections.Generic;
 using UnityEngine;

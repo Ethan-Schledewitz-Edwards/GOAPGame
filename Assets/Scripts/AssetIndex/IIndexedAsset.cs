@@ -1,4 +1,4 @@
-namespace GenericIndex
+namespace AssetIndex.Core
 {
 	public interface IIndexedAsset
 	{

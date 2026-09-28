@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace GenericIndex
+namespace AssetIndex.Core
 {
-	public abstract class GenericIndexBase<T> : ScriptableObject, IRegistrableIndex where T : ScriptableObject, IIndexedAsset
+	public abstract class AssetIndexBase<T> : ScriptableObject, IRegistrableAssetIndex where T : ScriptableObject, IIndexedAsset
 	{
 		public int AssetsInIndex => assets.Length;
 		[field: SerializeField] protected T[] assets { get; private set; }

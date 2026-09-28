@@ -1,5 +1,5 @@
 using UnityEngine;
-using GenericIndex;
+using AssetIndex.Core;
 using InventorySystem.Items;
 
 namespace Construction

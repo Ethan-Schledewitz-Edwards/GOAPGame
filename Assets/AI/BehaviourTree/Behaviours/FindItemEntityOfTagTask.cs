@@ -1,5 +1,5 @@
 using BehaviourTrees;
-using GenericIndex;
+using AssetIndex.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;

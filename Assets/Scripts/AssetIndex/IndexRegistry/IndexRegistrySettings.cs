@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace GenericIndex
+namespace AssetIndex.Core
 {
 	[CreateAssetMenu(fileName = "IndexRegistrySettings", menuName = "Settings/Index Registry Settings")]
 	public class IndexRegistrySettings : ScriptableObject
@@ -19,6 +19,7 @@ namespace GenericIndex
 		}
 
 #if UNITY_EDITOR
+
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void EditorPlayModeRebind()
 		{

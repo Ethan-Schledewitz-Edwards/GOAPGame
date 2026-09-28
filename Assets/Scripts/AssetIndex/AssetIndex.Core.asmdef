@@ -1,6 +1,6 @@
 {
-    "name": "GenericIndex",
-    "rootNamespace": "GenericIndex",
+    "name": "AssetIndex.Core",
+    "rootNamespace": "AssetIndex.Core",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GenericIndex
+namespace AssetIndex.Core
 {
 	public static class IndexBootstrapper
 	{
@@ -19,7 +19,7 @@ namespace GenericIndex
 				if (index == null)
 					continue;
 
-				if (index is IRegistrableIndex registrableIndex)
+				if (index is IRegistrableAssetIndex registrableIndex)
 				{
 					registrableIndex.RegisterSelf();
 				}

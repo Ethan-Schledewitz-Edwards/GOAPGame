@@ -1,8 +1,8 @@
-using GenericIndex;
+using AssetIndex.Core;
 using UnityEngine;
 
 namespace InventorySystem.Items
 {
 	[CreateAssetMenu(fileName = "ItemIndex", menuName = "Items/ItemIndex")]
-	public class ItemIndex : GenericIndexBase<ItemData> { }
+	public class ItemIndex : AssetIndexBase<ItemData> { }
 }

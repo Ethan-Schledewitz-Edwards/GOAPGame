@@ -1,5 +1,5 @@
 using Entities.Core;
-using GenericIndex;
+using AssetIndex.Core;
 using SaveLoad.Core;
 using SaveLoad.Data;
 using System;

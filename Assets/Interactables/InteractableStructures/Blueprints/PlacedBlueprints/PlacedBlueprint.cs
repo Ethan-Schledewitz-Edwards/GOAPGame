@@ -1,5 +1,5 @@
 using Construction;
-using GenericIndex;
+using AssetIndex.Core;
 using InventorySystem;
 using ObjectTags;
 using Settlements;
