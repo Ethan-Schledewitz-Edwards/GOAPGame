@@ -14,6 +14,10 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 	// ISavableEntity properties
 	public bool SavedByChunks => false;
 
+	public Vector2Int ChunkXZ => throw new NotImplementedException();
+
+	public bool IsRegisteredToChunk => throw new NotImplementedException();
+
 	// Events
 	public event Action DataRestored;
 	public event Action<Vector3, Quaternion> TransformRestored;
@@ -50,7 +54,7 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		SerializableEntityData data = new SerializableEntityData
 		{
 			GUID = c_GUID,
-			PrefabId = -1,
+			PrefabKey = "",
 			PosX = transform.position.x,
 			PosY = transform.position.y,
 			PosZ = transform.position.z,
@@ -91,6 +95,8 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		// Restore Position and Rotation
 		Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 		Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
+
+		Debug.Log("Player transform restored successfully!");
 		TransformRestored?.Invoke(position, rotation);
 
 		if (m_playerController != null)
@@ -111,8 +117,8 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 				component.RestoreComponentData(entry.V);
 			}
 		}
-		DataRestored?.Invoke();
 
 		Debug.Log("Player state and components restored successfully!");
+		DataRestored?.Invoke();
 	}
 }

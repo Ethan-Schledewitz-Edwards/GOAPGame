@@ -76,7 +76,7 @@ public class FindUseForItemTask : BTNodeBase
 		}
 
 		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-		int heldItemID = context.GetData<int>(AIContextKeys.c_HeldItemID);
+		string heldItemID = context.GetData<string>(AIContextKeys.c_HeldItemID);
 
 		if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
 		{

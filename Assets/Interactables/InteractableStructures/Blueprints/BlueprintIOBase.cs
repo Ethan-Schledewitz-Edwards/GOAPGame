@@ -110,16 +110,15 @@ namespace Interaction.InteractableStructures.Blueprints
 				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) &&
 					inventoryComponent.Slots.Count > 0)
 				{
-					int requestedItemID =
-						m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+					string requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
 
-					if (requestedItemID > -1)
-					{
-						executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-						executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
-						executor.AIContext.SetData<int>(AIContextKeys.c_ItemToFindID, requestedItemID);
-						return true;
-					}
+					if (requestedItemID == "")
+						return false;
+
+					executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
+					executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+					executor.AIContext.SetData<string>(AIContextKeys.c_ItemToFindID, requestedItemID);
+					return true;
 				}
 			}
 

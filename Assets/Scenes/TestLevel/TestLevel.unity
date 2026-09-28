@@ -10004,7 +10004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: WorldManagement.Core::WorldManagement.Core.ProximityTerrainLoader
   m_player: {fileID: 333293984}
-  m_renderDist: 4
+  m_renderDist: 2
 --- !u!114 &421255485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15082,7 +15082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dcb6342fa0c1a44293fc76a1fa32a52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Managers::MissionClock
-  m_minutesPerSecond: 2
+  m_minutesPerSecond: 3
   m_sunriseHour: 6
   m_sunsetHour: 18
 --- !u!1001 &592297811
@@ -45363,8 +45363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e1ef4cedfd08648969ddceffcdc7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorManager
-  m_spawnoffset: {fileID: 1743628694}
-  m_actorPrefab: {fileID: 1045364547215510978, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+  m_player: {fileID: 333293984}
 --- !u!1 &1718464471
 GameObject:
   m_ObjectHideFlags: 0

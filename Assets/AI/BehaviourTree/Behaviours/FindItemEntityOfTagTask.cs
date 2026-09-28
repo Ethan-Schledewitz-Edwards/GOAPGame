@@ -43,7 +43,7 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		// Clean up temporary context data on success
 		foreach (ItemTag tag in itemTags)
 		{
-			context.ClearData(AIContextKeys.c_ItemTagPrefix + tag.TagID);
+			context.ClearData(AIContextKeys.c_ItemTagFilterPrefix + tag.ID);
 		}
 		context.ClearData(c_ItemTagsKey);
 
@@ -104,15 +104,13 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		List<ItemTag> itemTags = new List<ItemTag>();
 		foreach (string key in context.GetDataSet().Keys)
 		{
-			if (!key.StartsWith(AIContextKeys.c_ItemTagPrefix))
-				continue;
+			if(!key.StartsWith(AIContextKeys.c_ItemTagFilterPrefix))
+			continue;
 
-			string idString = key.Substring(AIContextKeys.c_ItemTagPrefix.Length);
+			// Extract the string remaining after the prefix
+			string tagKey = key.Substring(AIContextKeys.c_ItemTagFilterPrefix.Length);
 
-			if (!int.TryParse(idString, out int tagID))
-				continue;
-
-			ItemTag tag = IndexRegistry.GetAsset<ItemTag>(tagID);
+			ItemTag tag = IndexRegistry.GetAsset<ItemTag>(tagKey);
 			if (tag != null)
 				itemTags.Add(tag);
 		}

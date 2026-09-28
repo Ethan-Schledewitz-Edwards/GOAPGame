@@ -216,7 +216,7 @@ namespace Player.Core
 			ConstructionManager.Instance.CreateBlueprint
 			(
 				nearestSettlementID,
-				m_blueprintData.BlueprintDataID,
+				m_blueprintData.ID,
 				position,
 				rotation
 			);

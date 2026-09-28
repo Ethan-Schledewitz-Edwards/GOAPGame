@@ -13,7 +13,6 @@ namespace WorldManagement.Core
 		{
 			WorldManager.OnRequestChunkData += FetchChunkData;
 			WorldManager.OnReleaseChunkData += SaveAndUnloadChunkData;
-
 			SaveEvents.SavingBegan += SaveAllActiveChunks;
 		}
 
@@ -21,7 +20,6 @@ namespace WorldManagement.Core
 		{
 			WorldManager.OnRequestChunkData -= FetchChunkData;
 			WorldManager.OnReleaseChunkData -= SaveAndUnloadChunkData;
-
 			SaveEvents.SavingBegan -= SaveAllActiveChunks;
 		}
 
@@ -29,20 +27,20 @@ namespace WorldManagement.Core
 		{
 			string path = SaveUtility.GetChunkFilePath(chunkXZ);
 
-			SerializableChunkData chunkData = 
-				SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
-			if (chunkData != null)
-			{
-				TerrainChunk chunk = new TerrainChunk(chunkXZ);
+			SerializableChunkData chunkData = SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
 
-				if (chunkData.SavableEntities != null && chunkData.SavableEntities.Count > 0)
-				{
-					chunk.PendingSavables = chunkData.SavableEntities;
-				}
-				return chunk;
+			if (chunkData == null)
+				return null;
+
+			TerrainChunk chunk = new TerrainChunk(chunkXZ);
+			if (chunkData.SavableEntities != null &&
+				chunkData.SavableEntities.Count > 0)
+			{
+				chunk.PendingSavables =
+					chunkData.SavableEntities;
 			}
 
-			return null; // Generation fallback
+			return chunk;
 		}
 
 		private void SaveAndUnloadChunkData(TerrainChunk chunk)
@@ -57,12 +55,17 @@ namespace WorldManagement.Core
 
 		public void SaveAllActiveChunks()
 		{
-			foreach (var kvp in WorldManager.s_ActiveChunks.Keys)
+			TerrainChunk[] activeChunks = new TerrainChunk[WorldManager.s_ActiveChunks.Count];
+
+			int index = 0;
+			foreach (var pair in WorldManager.s_ActiveChunks)
 			{
-				if (WorldManager.s_ActiveChunks.TryGetValue(kvp, out var activeChunkTuple))
-				{
-					SaveAndUnloadChunkData(activeChunkTuple.chunkData);
-				}
+				activeChunks[index++] = pair.Value.chunkData;
+			}
+
+			foreach (TerrainChunk chunk in activeChunks)
+			{
+				SaveAndUnloadChunkData(chunk);
 			}
 		}
 	}

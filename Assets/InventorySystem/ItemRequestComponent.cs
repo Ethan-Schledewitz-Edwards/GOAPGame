@@ -13,7 +13,7 @@ namespace Interaction.InteractableStructures
 		private Inventory m_trackedInventory;
 		private ItemQuantity[] m_requiredItems;
 
-		private Dictionary<InventorySlot, int> m_trackedSlots = new Dictionary<InventorySlot, int>();
+		private Dictionary<InventorySlot, string> m_trackedSlots = new Dictionary<InventorySlot, string>();
 		private bool m_isAchieved = false;
 
 		private void OnDestroy()
@@ -37,22 +37,22 @@ namespace Interaction.InteractableStructures
 			m_isAchieved = false;
 		}
 
-		public int RequestItem(InventorySlot slotToTrack)
+		public string RequestItem(InventorySlot slotToTrack)
 		{
 			if (m_isAchieved) 
-				return -1;
+				return "";
 
 			foreach (ItemQuantity quantity in m_requiredItems)
 			{
-				int itemID = quantity.itemType.ItemID;
-				int amountFulfilled = m_trackedInventory.GetTotalOfItem(itemID);
+				string itemKey = quantity.itemType.ID;
+				int amountFulfilled = m_trackedInventory.GetTotalOfItem(itemKey);
 
 				if (amountFulfilled < quantity.amount)
 				{
 					int itemAmountCurrentlyRequested = 0;
 					foreach (var trackedSlot in m_trackedSlots)
 					{
-						if(itemID == trackedSlot.Value)
+						if(itemKey == trackedSlot.Value)
 							itemAmountCurrentlyRequested += trackedSlot.Key.AmountInSlot;
 					}
 
@@ -61,16 +61,16 @@ namespace Interaction.InteractableStructures
 						// Track the slot
 						if (!m_trackedSlots.ContainsKey(slotToTrack))
 						{
-							m_trackedSlots.Add(slotToTrack, itemID);
+							m_trackedSlots.Add(slotToTrack, itemKey);
 							slotToTrack.SlotUpdated += OnTrackedSlotUpdated;
 						}
 
-						return itemID;
+						return itemKey;
 					}
 				}
 			}
 
-			return -1;
+			return "";
 		}
 
 		private void OnTrackedSlotUpdated(InventorySlot trackedSlot)
@@ -84,7 +84,7 @@ namespace Interaction.InteractableStructures
 				return;
 			}
 
-			if (m_trackedSlots[trackedSlot] != trackedSlot.SlotsItem.ItemID)
+			if (m_trackedSlots[trackedSlot] != trackedSlot.SlotsItem.ID)
 				UnsubsrcribeFromSlot(trackedSlot);
 
 		}
@@ -102,8 +102,8 @@ namespace Interaction.InteractableStructures
 
 			foreach (ItemQuantity quantity in m_requiredItems)
 			{
-				int itemID = quantity.itemType.ItemID;
-				int amountFulfilled = m_trackedInventory.GetTotalOfItem(itemID);
+				string itemKey = quantity.itemType.ID;
+				int amountFulfilled = m_trackedInventory.GetTotalOfItem(itemKey);
 
 				if (amountFulfilled < quantity.amount)
 					return;

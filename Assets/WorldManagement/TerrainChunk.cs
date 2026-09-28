@@ -1,4 +1,3 @@
-using SaveLoad.Core;
 using SaveLoad.Data;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +9,8 @@ namespace WorldManagement.Core
 	{
 		public Vector2Int ChunkXZ { get; private set; }
 
-		public List<SerializableEntityData> PendingSavables;
+		public List<SerializableEntityData> PendingSavables { get; set; }
+
 		public HashSet<GameObject> ResidentEntities { get; private set; } = new HashSet<GameObject>();
 
 		public TerrainChunk(Vector2Int chunkXZ)

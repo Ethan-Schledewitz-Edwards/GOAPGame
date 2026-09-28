@@ -50,16 +50,34 @@ namespace WorldManagement.Core
 
 		private void OnDestroy()
 		{
-			if(Instance == this)
+			if (Instance == this)
 			{
 				Instance = null;
 				ClearStaticState();
 			}
 		}
 
+		public static bool TryGetActiveChunkData(Vector2Int chunkXZ, out TerrainChunk chunkData)
+		{
+			if (s_ActiveChunks.TryGetValue(
+				chunkXZ,
+				out var activeChunk) &&
+				activeChunk.chunkData != null)
+			{
+				chunkData = activeChunk.chunkData;
+				return true;
+			}
+
+			chunkData = null;
+			return false;
+		}
+
 		public IEnumerator LoadNewChunk(Vector2Int chunkXZ)
 		{
-			if ((s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null) || s_requestedChunks.Contains(chunkXZ))
+			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null)
+				yield break;
+
+			if (s_requestedChunks.Contains(chunkXZ))
 				yield break;
 
 			// Wait for the new chunk to load
@@ -68,10 +86,17 @@ namespace WorldManagement.Core
 			// Spawn and initialize any entities saved in the chunk after it has been completely loaded
 			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple))
 			{
-				if (activeChunkTuple.chunkData.PendingSavables != null && activeChunkTuple.chunkData.PendingSavables.Count > 0)
+				if (activeChunkTuple.gameObject != null)
+					activeChunkTuple.gameObject.SetActive(true);
+
+				TerrainChunk chunkData = activeChunkTuple.chunkData;
+
+				if (chunkData.PendingSavables != null &&
+					chunkData.PendingSavables.Count > 0)
 				{
-					ChunkSpawnedEntities?.Invoke(activeChunkTuple.chunkData, activeChunkTuple.chunkData.PendingSavables);
-					activeChunkTuple.chunkData.PendingSavables = null;
+					ChunkSpawnedEntities?.Invoke(chunkData, chunkData.PendingSavables);
+
+					chunkData.PendingSavables = null;
 				}
 			}
 		}
@@ -92,17 +117,20 @@ namespace WorldManagement.Core
 			if (s_requestedChunks.Contains(chunkXZ))
 				s_requestedChunks.Remove(chunkXZ);
 
-			if (m_chunkBuilder.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Procedural && chunk.gameObject != null)
-			{
-				Destroy(chunk.gameObject);
-			}
-			else if (chunk.gameObject != null)
-			{
-				chunk.gameObject.SetActive(false);
-			}
-
 			if (shouldSave)
 				OnReleaseChunkData?.Invoke(chunk.chunkData);
+
+			if (m_chunkBuilder.BuilderMethod ==
+				TerrainChunkManager.EChunkBuilderMethod.Procedural)
+			{
+				if (chunk.gameObject != null)
+					Destroy(chunk.gameObject);
+			}
+			else
+			{
+				if (chunk.gameObject != null)
+					chunk.gameObject.SetActive(false);
+			}
 
 			s_ActiveChunks.Remove(chunkXZ);
 		}
@@ -118,16 +146,22 @@ namespace WorldManagement.Core
 
 		public void HandleChunkUpdated(Vector2Int chunkXZ)
 		{
-			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null && !s_requestedChunks.Contains(chunkXZ))
+			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) &&
+				activeChunk.gameObject != null &&
+				!s_requestedChunks.Contains(chunkXZ))
 			{
-				m_chunkBuilder.RebuildChunkMesh(chunkXZ, activeChunk.chunkData, activeChunk.gameObject);
+				m_chunkBuilder.RebuildChunkMesh(chunkXZ,
+					activeChunk.chunkData,
+					activeChunk.gameObject);
 			}
 		}
 
 		public static TerrainChunk GetChunkData(Vector2Int chunkXZ)
 		{
-			if (s_ActiveChunks.TryGetValue(chunkXZ, out var active))
-				return active.chunkData;
+			if (TryGetActiveChunkData(chunkXZ, out TerrainChunk activeChunk))
+			{
+				return activeChunk;
+			}
 
 			return OnRequestChunkData?.Invoke(chunkXZ);
 		}

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: Actor_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabID>k__BackingField: 0
+  <PrefabKey>k__BackingField: Peon
   <EntityPrefab>k__BackingField: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}

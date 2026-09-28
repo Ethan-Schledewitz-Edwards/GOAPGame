@@ -34,9 +34,9 @@ public class ActorInventory : InventoryComponent
 			return false;
 
 		// Ignore picking up items of a different type
-		int newItemID = addedItemData.ItemID;
-		int heldItemID = HeldItemSlot.SlotsItem != null? HeldItemSlot.SlotsItem.ItemID : -1;
-		if (heldItemID != -1 && newItemID != heldItemID)
+		string newItemID = addedItemData.ID;
+		string heldItemID = HeldItemSlot.SlotsItem != null? HeldItemSlot.SlotsItem.ID : "";
+		if (heldItemID != "" && newItemID != heldItemID)
 			return false;
 
 		// Try to add the item
@@ -63,7 +63,7 @@ public class ActorInventory : InventoryComponent
 	private void OnSlotChanged(InventorySlot slot)
 	{
 		if (slot.AmountInSlot > 0)
-			m_behaviourTreeExecutor.AIContext.SetData<int>(AIContextKeys.c_HeldItemID, slot.SlotsItem.ItemID);
+			m_behaviourTreeExecutor.AIContext.SetData<string>(AIContextKeys.c_HeldItemID, slot.SlotsItem.ID);
 		else
 			m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_HeldItemID);
 	}

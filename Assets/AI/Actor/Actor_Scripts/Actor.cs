@@ -52,7 +52,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; } = default;
 	private bool m_isActorAddedToManager;
-	private bool m_saveDataRestored;
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
@@ -78,34 +77,22 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	private IEnumerator Start()
 	{
 		SaveableEntity saveableEntity = GetComponent<SaveableEntity>();
+
 		if (saveableEntity == null)
 		{
-			Debug.LogError($"[Actor] No {typeof(SaveableEntity)} component is present on an Actor." +
-				$"Aborting registration to the {typeof(ActorManager)}.", this);
+			Debug.LogError($"[Actor] No {typeof(SaveableEntity)} component is " +
+				$"present on an Actor. Aborting registration.", this);
+
 			yield break;
 		}
-		else
-		{
-			// Actors spawned at runtime are save to initialize immediately 
-			if (!saveableEntity.IsManuallyAuthored)
-			{
-				RegisterToManager();
-				yield break;
-			}
-			else
-			{
-				// If the actor has called start, that means their chunk is loading.
-				// Wait for the actors chunk to load fully before registration.
-				Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
-				while (!WorldManager.s_ActiveChunks.ContainsKey(chunkXZ))
-				{
-					yield return null;
-				}
 
-				yield return new WaitForEndOfFrame();
-				RegisterToManager();
-			}
-		}
+		Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+		while (!WorldManager.TryGetActiveChunkData(chunkXZ, out _))
+			yield return null;
+
+		yield return new WaitForEndOfFrame();
+
+		RegisterToManager();
 	}
 
 	private void OnEnable()
@@ -512,6 +499,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		}
 	}
 
+	private bool m_saveDataRestored;
+
 	private void RegisterToManager()
 	{
 		if (m_isActorAddedToManager)
@@ -529,7 +518,7 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public string GetComponentId() => "Actor";
 
-	public object GenerateComponentData()
+	public string GenerateComponentData()
 	{
 		ActorSaveData data = new ActorSaveData
 		{
@@ -543,19 +532,21 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	public void RestoreComponentData(object data)
 	{
-		if (data is string actorSaveData)
-		{
-			ActorSaveData actorData = JsonUtility.FromJson<ActorSaveData>(actorSaveData);
-			if (actorData != null)
-			{
-				LogicExecutorState = actorData.LogicState;
-				SettlementID = actorData.SettlementID;
-				WorkstationID = actorData.WorkstationID;
+		if (data is not string actorSaveData)
+			return;
 
-				m_saveDataRestored = true;
-				RegisterToManager();
-			}
-		}
+		ActorSaveData actorData = JsonUtility.FromJson<ActorSaveData>(actorSaveData);
+
+		if (actorData == null)
+			return;
+
+		LogicExecutorState = actorData.LogicState;
+		SettlementID = actorData.SettlementID;
+		WorkstationID = actorData.WorkstationID;
+		m_saveDataRestored = true;
+
+		if (m_isActorAddedToManager)
+			RegisterToManager();
 	}
 
 	[System.Serializable]

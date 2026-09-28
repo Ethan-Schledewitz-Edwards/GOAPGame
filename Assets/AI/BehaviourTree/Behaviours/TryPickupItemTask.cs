@@ -22,7 +22,7 @@ public class TryPickupItemTask : BTNodeBase
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
-		int itemID = context.GetData<int>(AIContextKeys.c_ItemToFindID);
+		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
 
 		if (targetTransform == null || assignedPos == null)
 			return EBTNodeState.STATE_FAILURE;
@@ -36,7 +36,7 @@ public class TryPickupItemTask : BTNodeBase
 		// ItemIO.TryInteract() moves a standalone item into the actor's inventory.
 		if (interactable.TryGetComponent(out IItemObject itemObject) && !itemObject.IsItemStored)
 		{
-			if (itemObject.ItemData == null || itemObject.ItemData.ItemID != itemID)
+			if (itemObject.ItemData == null || itemObject.ItemData.ID != itemID)
 				return EBTNodeState.STATE_FAILURE;
 
 			if (!interactable.TryInteract(

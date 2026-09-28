@@ -3,7 +3,6 @@ using GenericIndex;
 using SaveLoad.Core;
 using SaveLoad.Data;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WorldManagement.AuthoredTiles;
@@ -24,54 +23,115 @@ namespace Entities.Savable
 
 		// ISavableEntity properties
 		public bool SavedByChunks => true;
+		public Vector2Int ChunkXZ => m_chunkXZ;
+		public bool IsRegisteredToChunk => m_isRegisteredToChunk;
+
+
+		// Components
+		private Entity m_entity;
+		private Collider m_collider;
+		private Rigidbody m_rigidbody;
 
 		// Events
 		public event Action DataRestored;
 		public event Action<Vector3, Quaternion> TransformRestored;
 
 		// System
-		private Entity m_entity;
-		private Vector2Int m_chunkXZ = default;
-		private LayerMask m_collisionLayerMask;
+		private Vector2Int m_chunkXZ;
+		private bool m_isRegisteredToChunk = false;
 
 		private bool m_useGravityByDefault;
 		private bool m_isKinematicByDefault;
-		private bool m_isPhysicsEnabled;
-		private bool m_isInitializedFromSave;
 
-		private Collider m_collider;
-		private Rigidbody m_rigidbody;
+		private LayerMask m_collisionLayerMask;
 
-#if UNITY_EDITOR
-		private void OnValidate()
+		private static readonly Dictionary<string, SaveableEntity> s_entitiesByGuid = new();
+
+		#region Static State
+
+		[RuntimeInitializeOnLoadMethod(
+			RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStaticState()
 		{
-			if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
+			s_entitiesByGuid.Clear();
+		}
+
+		public static bool TryGetByGuid(string guid, out SaveableEntity entity)
+		{
+			entity = null;
+
+			if (string.IsNullOrEmpty(guid))
+				return false;
+
+			if (!s_entitiesByGuid.TryGetValue(guid, out entity))
+				return false;
+
+			// Unity object has been destroyed but dictionary entry remains.
+			if (entity == null)
 			{
-				if (!string.IsNullOrEmpty(m_guid))
-				{
-					m_guid = string.Empty;
-					UnityEditor.EditorUtility.SetDirty(this);
-				}
-				return;
+				s_entitiesByGuid.Remove(guid);
+				entity = null;
+				return false;
 			}
 
-			// Generate a unique GUID for scene instances if missing
-			if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
+			return true;
+		}
+
+		private bool TryRegisterGuid(string guid)
+		{
+			if (string.IsNullOrEmpty(guid))
 			{
-				m_guid = System.Guid.NewGuid().ToString();
-				UnityEditor.EditorUtility.SetDirty(this);
-				UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+				Debug.LogError($"[SaveableEntity] '{name}' cannot register an empty GUID.", this);
+
+				return false;
+			}
+
+			if (s_entitiesByGuid.TryGetValue(guid, out SaveableEntity existing))
+			{
+				if (existing != null && existing != this)
+				{
+					Debug.LogError($"[SaveableEntity] Duplicate GUID '{guid}'.\n" +
+						$"Existing: '{existing.name}'\n" +
+						$"Duplicate: '{name}'",
+						this);
+
+					return false;
+				}
+
+				s_entitiesByGuid.Remove(guid);
+			}
+
+			m_guid = guid;
+			s_entitiesByGuid[guid] = this;
+
+			return true;
+		}
+
+		private void UnregisterGuid()
+		{
+			if (string.IsNullOrEmpty(m_guid))
+				return;
+
+			if (s_entitiesByGuid.TryGetValue(m_guid,
+				out SaveableEntity registeredEntity) &&
+				registeredEntity == this)
+			{
+				s_entitiesByGuid.Remove(m_guid);
 			}
 		}
-#endif
+
+		#endregion
 
 		private void Awake()
 		{
 			m_entity = GetComponent<Entity>();
-			m_entity.EntityChunkChanged += RegisterToClosestChunk;
+
+			if (m_entity != null)
+				m_entity.EntityChunkChanged += RegisterToClosestChunk;
 
 			m_collider = GetComponent<Collider>();
 			m_rigidbody = GetComponent<Rigidbody>();
+
 			if (m_rigidbody != null)
 			{
 				m_useGravityByDefault = m_rigidbody.useGravity;
@@ -80,25 +140,33 @@ namespace Entities.Savable
 
 			DisablePhysicsAndCollision();
 
-			if (IsManuallyAuthored && string.IsNullOrEmpty(m_guid))
+			if (IsManuallyAuthored)
 			{
-				Debug.LogError($"[SaveableEntity] Authored entity '{gameObject.name}'" +
-					$" has no serialized GUID!!!", this);
+				if (string.IsNullOrEmpty(m_guid))
+				{
+					Debug.LogError($"[SaveableEntity] Authored entity '{name}' " +
+						$"has no serialized GUID!!!", this);
+				}
+				else
+					TryRegisterGuid(m_guid);
 			}
-			else if (string.IsNullOrEmpty(m_guid) && gameObject.scene.IsValid())
+			else
 			{
-				m_guid = System.Guid.NewGuid().ToString();
+				if (string.IsNullOrEmpty(m_guid) ||
+					m_guid == Guid.Empty.ToString())
+				{
+					m_guid = Guid.NewGuid().ToString();
+				}
+
+				TryRegisterGuid(m_guid);
 			}
+
+			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
 		}
 
 		private void Start()
 		{
-			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
-
-			if (!m_isInitializedFromSave && !IsManuallyAuthored)
-				InitializeRuntimeEntity();
-			else if (IsManuallyAuthored)
-				EnablePhysicsAndCollision();
+			EnablePhysicsAndCollision();
 
 			Vector2Int entityChunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
 			RegisterToClosestChunk(entityChunkXZ);
@@ -110,65 +178,253 @@ namespace Entities.Savable
 				m_entity.EntityChunkChanged -= RegisterToClosestChunk;
 
 			UnregisterFromCurrentChunk();
-			StopAllCoroutines();
+			UnregisterGuid();
 		}
 
-		private void InitializeRuntimeEntity()
-		{
-			if (string.IsNullOrEmpty(m_guid) || m_guid == System.Guid.Empty.ToString())
-			{
-				m_guid = System.Guid.NewGuid().ToString();
-			}
-
-			EnablePhysicsAndCollision();
-		}
+		#region Chunk Registration
 
 		private void RegisterToClosestChunk(Vector2Int chunkXZ)
 		{
-			if (chunkXZ != m_chunkXZ || m_chunkXZ == default)
+			if (!WorldManager.TryGetActiveChunkData(chunkXZ, out TerrainChunk newChunk))
 			{
-				// Unregister this entity from its previous chunk
-				if (m_chunkXZ != default)
+				Debug.LogWarning($"[SaveableEntity] '{name}' attempted to register " +
+					$"to unloaded chunk {chunkXZ}. " +
+					$"The chunk loader must load the chunk " +
+					$"before the entity moves into it.",
+					this);
+
+				return;
+			}
+
+			if (m_isRegisteredToChunk && m_chunkXZ == chunkXZ)
+			{
+				UpdateChunkParent(chunkXZ);
+				return;
+			}
+
+			if (m_isRegisteredToChunk)
+			{
+				if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk previousChunk))
 				{
-					TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
-					if (previousTerrainChunk != null)
-						previousTerrainChunk.UnregisterEntity(gameObject);
+					previousChunk.UnregisterEntity(gameObject);
 				}
+			}
 
-				// Register this entity to the chunk it overlaps with
-				m_chunkXZ = chunkXZ;
-				TerrainChunk terrainChunk = WorldManager.GetChunkData(m_chunkXZ);
+			m_chunkXZ = chunkXZ;
+			m_isRegisteredToChunk = true;
 
-				if (terrainChunk != null)
-					terrainChunk.RegisterEntity(gameObject);
+			newChunk.RegisterEntity(gameObject);
 
-				if (!IsManuallyAuthored)
+			UpdateChunkParent(chunkXZ);
+		}
+
+		private void UpdateChunkParent(Vector2Int chunkXZ)
+		{
+			if (IsManuallyAuthored)
+			{
+				if (AuthoredTileLoader.s_AuthoredChunks.TryGetValue(chunkXZ, out GameObject authoredChunk) &&
+					authoredChunk != null)
 				{
-					if (WorldManager.s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple) && activeChunkTuple.gameObject != null)
-					{
-						transform.parent = activeChunkTuple.gameObject.transform;
-					}
+					transform.SetParent(authoredChunk.transform, true);
 				}
-				else
+			}
+			else
+			{
+				if (WorldManager.s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null)
 				{
-					if(AuthoredTileLoader.s_AuthoredChunks.TryGetValue(m_chunkXZ, out GameObject chunkObject))
-					{
-						transform.parent = chunkObject.transform;
-					}
+					transform.SetParent(activeChunk.gameObject.transform, true);
 				}
 			}
 		}
 
 		private void UnregisterFromCurrentChunk()
 		{
-			// Unregister this entity from its previous chunk
-			TerrainChunk previousTerrainChunk = WorldManager.GetChunkData(m_chunkXZ);
+			if (!m_isRegisteredToChunk)
+				return;
 
-			if (previousTerrainChunk != null)
-				previousTerrainChunk.UnregisterEntity(gameObject);
+			if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk chunk))
+				chunk.UnregisterEntity(gameObject);
 
-			m_chunkXZ = default;
+			m_isRegisteredToChunk = false;
 		}
+
+		#endregion
+
+		/// <summary>
+		/// Gathers data from all ISaveableComponent scripts on this GameObject
+		/// </summary>
+		public SerializableEntityData GenerateSaveData()
+		{
+			if (m_savablePrefabData == null)
+			{
+				Debug.LogError($"[SaveableEntity] '{name}' has no SavableEntityPrefabData assigned.", this);
+
+				return null;
+			}
+
+			if (string.IsNullOrEmpty(m_guid))
+			{
+				Debug.LogError($"[SaveableEntity] '{name}' has no GUID and cannot be saved.", this);
+
+				return null;
+			}
+
+			Vector3 position = transform.position;
+			Quaternion rotation = transform.rotation;
+
+			SerializableEntityData data = new SerializableEntityData
+			{
+				GUID = m_guid,
+
+				PrefabKey = m_savablePrefabData.ID,
+				PosX = position.x,
+				PosY = position.y,
+				PosZ = position.z,
+
+				RotX = rotation.x,
+				RotY = rotation.y,
+				RotZ = rotation.z,
+				RotW = rotation.w,
+			};
+
+			ISaveableComponent[] components = GetComponentsInChildren<ISaveableComponent>(true);
+			HashSet<string> componentIds = new();
+			foreach (ISaveableComponent component in components)
+			{
+				string componentId = component.GetComponentId();
+
+				if (string.IsNullOrEmpty(componentId))
+				{
+					Debug.LogError($"[SaveableEntity] Component '{component.GetType().Name}' on '{name}' " +
+						$"returned an empty component ID.", this);
+
+					continue;
+				}
+
+				if (!componentIds.Add(componentId))
+				{
+					Debug.LogError($"[SaveableEntity] Duplicate component ID '{componentId}' on '{name}'. " +
+						$"Component IDs must be unique per entity.", this);
+
+					continue;
+				}
+
+				object rawData =
+					component.GenerateComponentData();
+
+				if (rawData is string dataString)
+				{
+					data.ComponentData.Add(new ComponentSaveData{K = componentId, V = dataString});
+				}
+				else
+				{
+					Debug.LogError($"[SaveableEntity] Component '{component.GetType().Name}' on '{name}' " +
+						$"must return a string from GenerateComponentData().", this);
+				}
+			}
+
+			return data;
+		}
+
+		/// <summary>
+		/// Pushes the loaded data back into the individual components
+		/// </summary>
+		public bool RestoreFromSaveData(SerializableEntityData data)
+		{
+			if (data == null)
+				return false;
+
+			if (string.IsNullOrEmpty(data.GUID))
+			{
+				Debug.LogError($"[SaveableEntity] Attempted to restore '{name}' " +
+					$"from save data with no GUID.", this);
+
+				return false;
+			}
+
+			// The object may have received a temporary runtime GUID during Instantiate().
+			// Replace it with the persistent GUID.
+			UnregisterGuid();
+
+			if (!TryRegisterGuid(data.GUID))
+			{
+				Debug.LogError($"[SaveableEntity] Could not restore '{name}' " +
+					$"because GUID '{data.GUID}' already belongs to another entity.", this);
+
+				return false;
+			}
+
+			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
+
+			Quaternion rotation = new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
+
+			transform.SetPositionAndRotation(position, rotation);
+
+			TransformRestored?.Invoke(position, rotation);
+
+			RegisterToClosestChunk(CoordinateUtility.WorldToChunkXZ(position));
+
+			// Restore components
+			ISaveableComponent[] components = GetComponentsInChildren<ISaveableComponent>(true);
+			Dictionary<string, ComponentSaveData> savedComponents = new();
+
+			if (data.ComponentData != null)
+			{
+				foreach (ComponentSaveData componentData in data.ComponentData)
+				{
+					if (string.IsNullOrEmpty(componentData.K))
+						continue;
+
+					if (!savedComponents.TryAdd(componentData.K, componentData))
+					{
+						Debug.LogError($"[SaveableEntity] Duplicate saved component ID " +
+							$"'{componentData.K}' for entity GUID '{data.GUID}'.", this);
+					}
+				}
+			}
+
+			HashSet<string> foundComponentIds = new();
+			foreach (ISaveableComponent component in components)
+			{
+				string componentId =
+					component.GetComponentId();
+
+				if (string.IsNullOrEmpty(componentId))
+					continue;
+
+				if (!foundComponentIds.Add(componentId))
+				{
+					Debug.LogError($"[SaveableEntity] Duplicate live component ID " +
+						$"'{componentId}' on '{name}'.", this);
+
+					continue;
+				}
+
+				if (savedComponents.TryGetValue(componentId, out ComponentSaveData componentData))
+				{
+					try
+					{
+						component.RestoreComponentData(componentData.V);
+					}
+					catch (Exception exception)
+					{
+						Debug.LogError($"[SaveableEntity] Failed restoring component " +
+							$"'{componentId}' on '{name}'.\n{exception}", this);
+					}
+				}
+				else
+				{
+					Debug.LogWarning($"[SaveableEntity] No saved data found for " +
+						$"component '{componentId}' on '{name}'.", this);
+				}
+			}
+
+			DataRestored?.Invoke();
+			EnablePhysicsAndCollision();
+			return true;
+		}
+
+		#region Physics
 
 		private void EnablePhysicsAndCollision()
 		{
@@ -179,8 +435,6 @@ namespace Entities.Savable
 			{
 				m_rigidbody.useGravity = m_useGravityByDefault;
 				m_rigidbody.isKinematic = m_isKinematicByDefault;
-
-				m_isPhysicsEnabled = true;
 			}
 		}
 
@@ -194,92 +448,8 @@ namespace Entities.Savable
 				m_rigidbody.useGravity = false;
 				m_rigidbody.isKinematic = true;
 			}
-
-			m_isPhysicsEnabled = false;
 		}
 
-		/// <summary>
-		/// Gathers data from all ISaveableComponent scripts on this GameObject
-		/// </summary>
-		public SerializableEntityData GenerateSaveData()
-		{
-			SerializableEntityData data = null;
-
-			// Get prefab id from index
-			int prefabID = GetPrefabID();
-			if (prefabID == -1)
-				return null;
-
-			data = new SerializableEntityData
-			{
-				GUID = this.m_guid,
-				PrefabId = prefabID,
-				PosX = transform.position.x,
-				PosY = transform.position.y,
-				PosZ = transform.position.z,
-				RotX = transform.rotation.x,
-				RotY = transform.rotation.y,
-				RotZ = transform.rotation.z
-			};
-
-			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
-			foreach (var component in saveableComponents)
-			{
-				object rawData = component.GenerateComponentData();
-				if (rawData is string dataString)
-				{
-					data.ComponentData.Add(new ComponentSaveData
-					{
-						K = component.GetComponentId(),
-						V = dataString
-					});
-				}
-			}
-
-			return data;
-		}
-
-		/// <summary>
-		/// Pushes the loaded data back into the individual components
-		/// </summary>
-		public void RestoreFromSaveData(SerializableEntityData data)
-		{
-			m_isInitializedFromSave = true;
-			this.m_guid = data.GUID;
-
-			// Restore the entities transform
-			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
-			Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
-			transform.position = position;
-			transform.rotation = rotation;
-
-			TransformRestored?.Invoke(position, rotation);
-
-			// Restore component data
-			ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
-			foreach (var component in saveableComponents)
-			{
-				string componentID = component.GetComponentId();
-				ComponentSaveData componentData = data.ComponentData.Find(x => x.K == componentID);
-				if (componentData != null)
-				{
-					component.RestoreComponentData(componentData.V);
-				}
-			}
-			DataRestored?.Invoke();
-
-			EnablePhysicsAndCollision();
-		}
-
-		private int GetPrefabID()
-		{
-			if(m_savablePrefabData == null)
-			{
-				Debug.LogWarning($"No {typeof(SavableEntityPrefabData)} was found on {gameObject.name}. Savable entities must have data assigned to be saved");
-				return -1;
-			}
-
-			return m_savablePrefabData.PrefabID;
-		}
+		#endregion
 	}
 }

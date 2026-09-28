@@ -77,8 +77,7 @@ namespace Interaction.InteractableStructures
 			m_settlementStructureID = settlementStructureID;
 		}
 
-		public override bool TryInteract(
-			IInteractor interactor,
+		public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
 			InteractionPosition reservedPosition,
 			out int interactorValue)
@@ -91,7 +90,7 @@ namespace Interaction.InteractableStructures
 			{
 				foreach (ItemTag tag in m_tagFilter)
 				{
-					executor.AIContext.SetData<int>(AIContextKeys.c_ItemTagPrefix + tag.TagID, tag.TagID);
+					executor.AIContext.SetData<string>(AIContextKeys.c_ItemTagFilterPrefix + tag.ID, tag.ID);
 				}
 
 				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);

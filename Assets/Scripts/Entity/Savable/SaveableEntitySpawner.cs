@@ -10,6 +10,13 @@ namespace Entities.Savable
 	{
 		[SerializeField] private SavableEntityIndex m_entityIndex;
 
+		private TerrainChunkManager m_chunkManager;
+
+		private void Awake()
+		{
+			m_chunkManager = FindAnyObjectByType<TerrainChunkManager>();
+		}
+
 		private void OnEnable()
 		{
 			WorldManager.ChunkSpawnedEntities += HandleChunkLoadedEntities;
@@ -22,10 +29,17 @@ namespace Entities.Savable
 
 		private void HandleChunkLoadedEntities(TerrainChunk chunk, List<SerializableEntityData> savedEntities)
 		{
-			bool isAuthoredWorld = FindAnyObjectByType<TerrainChunkManager>().BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
+			if (savedEntities == null)
+				return;
+
+			bool isAuthoredWorld = m_chunkManager != null &&
+				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
 
 			foreach (SerializableEntityData entityData in savedEntities)
 			{
+				if (entityData == null)
+					continue;
+
 				if (isAuthoredWorld)
 				{
 					TrySpawnPersistentSavableEntity(chunk, entityData);
@@ -39,54 +53,90 @@ namespace Entities.Savable
 
 		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			GameObject prefabToSpawn = m_entityIndex.GetIndexedAsset(entityData.PrefabId).EntityPrefab;
-
-			if (prefabToSpawn == null)
+			// Loading the same GUID twice must never create two entities.
+			if (SaveableEntity.TryGetByGuid(entityData.GUID, out SaveableEntity existing))
 			{
-				Debug.LogWarning($"Could not find prefab with ID {entityData.PrefabId} in index!");
+				Debug.LogWarning($"[SavableEntitySpawner] Entity GUID " +
+					$"'{entityData.GUID}' already exists as " +
+					$"'{existing.name}'. Restoring existing instance.");
+
+				existing.RestoreFromSaveData(entityData);
+				chunk.RegisterEntity(existing.gameObject);
 				return;
 			}
 
-			GameObject spawnedEntity = Instantiate(prefabToSpawn);
-
-			// Restore the savable entitiy component
-			if (spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
+			SavableEntityPrefabData prefabData = ResolvePrefabData(entityData);
+			if (prefabData == null)
 			{
-				saveableEntity.RestoreFromSaveData(entityData);
-				chunk.RegisterEntity(spawnedEntity);
+				Debug.LogError($"[SavableEntitySpawner] Could not resolve prefab " +
+					$"for entity GUID '{entityData.GUID}', " +
+					$"PrefabKey '{entityData.PrefabKey}'.");
+
+				return;
 			}
+
+			GameObject prefab = prefabData.EntityPrefab;
+			if (prefab == null)
+			{
+				Debug.LogError($"[SavableEntitySpawner] Prefab data " +
+					$"'{prefabData.name}' has no EntityPrefab.");
+
+				return;
+			}
+
+			GameObject spawnedEntity = Instantiate(prefab);
+			if (!spawnedEntity.TryGetComponent(out SaveableEntity saveableEntity))
+			{
+				Debug.LogError($"[SavableEntitySpawner] Prefab '{prefab.name}' " +
+					$"does not contain a SaveableEntity component.", spawnedEntity);
+
+				Destroy(spawnedEntity);
+				return;
+			}
+
+			if (!saveableEntity.RestoreFromSaveData(entityData))
+			{
+				Destroy(spawnedEntity);
+				return;
+			}
+
+			chunk.RegisterEntity(spawnedEntity);
 		}
 
-		/// <summary>
-		/// Attempts to locate and restore a persistent savable entity in the specified terrain chunk using the provided
-		/// entity data, or spawns a new instance if not found.
-		/// </summary>
-		/// <param name="chunk">The terrain chunk in which to spawn or restore the entity.</param>
-		/// <param name="entityData">The serialized data containing information about the entity to be spawned or restored.</param>
 		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			SaveableEntity[] allEntities = FindObjectsByType<SaveableEntity>(FindObjectsInactive.Include);
-			foreach (SaveableEntity saveableEntity in allEntities)
+			if (SaveableEntity.TryGetByGuid(entityData.GUID, out SaveableEntity existing))
 			{
-				if (saveableEntity.GetGUID() == entityData.GUID)
-				{
-					if (WorldManager.s_ActiveChunks.TryGetValue(chunk.ChunkXZ, out var activeChunkTuple))
-						saveableEntity.transform.parent = activeChunkTuple.gameObject.transform;
+				existing.RestoreFromSaveData(entityData);
+				chunk.RegisterEntity(existing.gameObject);
 
-					saveableEntity.RestoreFromSaveData(entityData);
-					chunk.RegisterEntity(saveableEntity.gameObject);
+				if (!existing.gameObject.activeSelf)
+					existing.gameObject.SetActive(true);
 
-					if (!saveableEntity.gameObject.activeSelf)
-						saveableEntity.gameObject.SetActive(true);
-
-					return;
-				}
+				return;
 			}
 
-			// Try to spawn normally
-			Debug.LogWarning($"[SaveableEntitySpawner] Could not find a persistent SavableEntity with GUID {entityData.GUID} in the scene. " +
-				$"Spawning duplicate from Prefab ID {entityData.PrefabId}. Ensure Editor GUIDs are serialized if this entity is persistent!");
+			// The expected authored object was not found. (Fallback)
+			Debug.LogWarning($"[SavableEntitySpawner] Could not find persistent entity GUID '{entityData.GUID}'. " +
+				$"Spawning prefab '{entityData.PrefabKey}' instead.");
+
 			TrySpawnSavableEntity(chunk, entityData);
+		}
+
+		private SavableEntityPrefabData ResolvePrefabData(SerializableEntityData entityData)
+		{
+			if (m_entityIndex == null)
+				return null;
+
+			if (!string.IsNullOrEmpty(entityData.PrefabKey))
+			{
+				SavableEntityPrefabData data = m_entityIndex.GetIndexedAsset(entityData.PrefabKey);
+
+				if (data != null)
+					return data;
+			}
+
+			return null;
 		}
 	}
 }

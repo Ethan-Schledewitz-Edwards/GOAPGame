@@ -10,10 +10,11 @@ namespace WorldManagement.Core
 	public class ProximityTerrainLoader : MonoBehaviour
 	{
 		[SerializeField] private Transform m_player;
-		[SerializeField] private int m_renderDist = 4;
+		[SerializeField] private int m_renderDist = 2;
 
 		private ISavableEntity m_playerSaveEntity;
 
+		// System
 		private WorldManager m_worldBuilder;
 		private readonly HashSet<Vector2Int> m_chunksToUnload = new HashSet<Vector2Int>();
 		private readonly List<Vector2Int> m_chunksToLoad = new List<Vector2Int>();
@@ -30,8 +31,11 @@ namespace WorldManagement.Core
 
 			if(m_player != null)
 			{
-				m_playerSaveEntity = m_player.GetComponent<ISavableEntity>();
-				m_playerSaveEntity.TransformRestored += HandleGameLoaded;
+				if (m_player.TryGetComponent(out ISavableEntity savable))
+				{
+					m_playerSaveEntity = savable;
+					savable.TransformRestored += HandleGameLoaded;
+				}
 			}
 			else
 			{
@@ -39,7 +43,6 @@ namespace WorldManagement.Core
 				enabled = false;
 			}
 		}
-
 
 		private void OnDestroy()
 		{

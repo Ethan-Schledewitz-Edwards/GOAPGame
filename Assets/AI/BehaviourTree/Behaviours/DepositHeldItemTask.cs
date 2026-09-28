@@ -54,7 +54,8 @@ public class DepositHeldItemTask : BTNodeBase
 				data.AssignedPos, 
 				out _))
 			{
-				Debug.LogError($"[DepositHeldItemTask] Failed to begin interaction with '{data.TargetTransform.name}'.", data.ExecutorTransform);
+				Debug.LogError($"[DepositHeldItemTask] Failed to begin interaction " +
+					$"with '{data.TargetTransform.name}'.", data.ExecutorTransform);
 				return EBTNodeState.STATE_FAILURE;
 			}
 
@@ -65,13 +66,15 @@ public class DepositHeldItemTask : BTNodeBase
 		Inventory targetInventory = data.TargetInventory.Inventory;
 		if (!targetInventory.TryFindRoomForItem(heldItemData, heldAmount, out _, out _))
 		{
-			Debug.LogError($"[DepositHeldItemTask] '{data.TargetTransform.name}' lacks capacity for {heldAmount}x {heldItemData.ItemID}.", data.ExecutorTransform);
+			Debug.LogError($"[DepositHeldItemTask] '{data.TargetTransform.name}' lacks " +
+				$"capacity for {heldAmount}x {heldItemData.ID}.", data.ExecutorTransform);
 			return EBTNodeState.STATE_FAILURE;
 		}
 
 		if (!data.TargetInventory.TryTransferFrom(heldSlot, heldAmount, out int transferredAmount) || transferredAmount != heldAmount)
 		{
-			Debug.LogError($"[DepositHeldItemTask] Transfer failure or partial transfer with '{data.TargetTransform.name}'.", data.ExecutorTransform);
+			Debug.LogError($"[DepositHeldItemTask] Transfer failure or partial " +
+				$"transfer with '{data.TargetTransform.name}'.", data.ExecutorTransform);
 			return EBTNodeState.STATE_FAILURE;
 		}
 

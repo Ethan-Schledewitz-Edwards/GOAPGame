@@ -35,8 +35,8 @@ public class FindItemEntityOfIDTask : BTNodeBase
 			!executorTransform.TryGetComponent(out IInteractor interactor))
 			return EBTNodeState.STATE_FAILURE;
 
-		int idOfItemToFind = context.GetData<int>(AIContextKeys.c_ItemToFindID);
-		Transform targetItemTransform = SearchForItem(idOfItemToFind, executorTransform, interactor, context);
+		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
+		Transform targetItemTransform = SearchForItem(itemID, executorTransform, interactor, context);
 
 		if (targetItemTransform == null)
 			return EBTNodeState.STATE_FAILURE;
@@ -47,7 +47,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform SearchForItem(int itemID, Transform executorTransform, IInteractor interactor, AIContext context)
+	private Transform SearchForItem(string itemID, Transform executorTransform, IInteractor interactor, AIContext context)
 	{
 		Vector3 executorPosition = executorTransform.position;
 		Vector2Int[] neighbourChunkCoordinates = ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
@@ -69,7 +69,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 
 				if (!entity.TryGetComponent(out IItemObject itemObject) || 
 				    itemObject.IsItemStored || 
-				    itemObject.ItemData.ItemID != itemID)
+				    itemObject.ItemData.ID != itemID)
 				{
 					continue;
 				}
@@ -106,7 +106,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 	/// <summary>
 	/// Finds the nearest available storage structure that contains the requested item.
 	/// </summary>
-	private Transform FindStorageStructure(int itemID, Transform executorTransform, IInteractor interactor, AIContext context)
+	private Transform FindStorageStructure(string itemKey, Transform executorTransform, IInteractor interactor, AIContext context)
 	{
 		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
 		Settlement closestFactionSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
@@ -135,10 +135,10 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		}
 
 		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-		if (itemIndex?.GetIndexedAsset(itemID) is ITaggable<ItemTag> itemTaggable)
+		if (itemIndex?.GetIndexedAsset(itemKey) is ITaggable<ItemTag> itemTaggable)
 		{
 			bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
-			if (passesFilter && inventory.Inventory.GetTotalOfItem(itemID) > 0)
+			if (passesFilter && inventory.Inventory.GetTotalOfItem(itemKey) > 0)
 			{
 				return structureObject.transform;
 			}
@@ -149,7 +149,7 @@ public class FindItemEntityOfIDTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an item of ID {context.GetData<int>(AIContextKeys.c_ItemToFindID)}.");
+		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an item of ID {context.GetData<string>(AIContextKeys.c_ItemToFindID)}.");
 	}
 
 	protected override void OnNodeExited(AIContext context) { }

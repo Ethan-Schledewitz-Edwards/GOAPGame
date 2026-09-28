@@ -1,7 +1,8 @@
+using Entities.Core;
 using SaveLoad.Core;
 using System.Collections;
 using UnityEngine;
-using Entities.Core;
+using static UnityEngine.Analytics.IAnalytic;
 
 public class ActorHealthComponent : HealthComponent, ISaveableComponent
 {
@@ -122,26 +123,28 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 
 	public string GetComponentId() => "ActorHealth";
 
-	public object GenerateComponentData()
+	public string GenerateComponentData()
 	{
-		return new ActorHealthData
+		ActorHealthData data = new ActorHealthData
 		{
 			Hunger = this.Hunger,
 			Rest = this.Rest,
 			Happiness = this.Hapiness,
 			CurrentHealth = this.Health
 		};
+
+		return JsonUtility.ToJson(data);
 	}
 
 	public void RestoreComponentData(object data)
 	{
-		if (data is ActorHealthData healthData)
-		{
-			SetHunger(healthData.Hunger);
-			SetTiredness(healthData.Rest);
-			SetHapiness(healthData.Happiness);
-			SetHealth(healthData.CurrentHealth);
-		}
+		if(data is not ActorHealthData healthData)
+			return;
+
+		SetHunger(healthData.Hunger);
+		SetTiredness(healthData.Rest);
+		SetHapiness(healthData.Happiness);
+		SetHealth(healthData.CurrentHealth);
 	}
 
 	[System.Serializable]

@@ -55,7 +55,10 @@ namespace Construction
 		/// <param name="structureBlueprintID">The identifier of the structure blueprint asset to instantiate.</param>
 		/// <param name="worldPosition">The world position where the blueprint will be placed.</param>
 		/// <param name="rotation">The rotation to apply to the blueprint upon creation.</param>
-		public void CreateBlueprint(int settlementID, int structureBlueprintID, Vector3 worldPosition, Quaternion rotation)
+		public void CreateBlueprint(int settlementID, 
+			string structureBlueprintKey, 
+			Vector3 worldPosition, 
+			Quaternion rotation)
 		{
 			if (m_blueprintPrefab == null)
 			{
@@ -63,7 +66,7 @@ namespace Construction
 				return;
 			}
 
-			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(structureBlueprintID);
+			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(structureBlueprintKey);
 
 			GameObject prefab = Instantiate(m_blueprintPrefab);
 			IStructure structure = prefab.GetComponent<IStructure>();

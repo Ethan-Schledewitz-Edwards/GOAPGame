@@ -65,9 +65,7 @@ namespace WorldManagement.AuthoredTiles
 			s_AuthoredChunks.Clear();
 		}
 
-		private IEnumerator HandleSpawnedChunk
-			(
-				Vector2Int chunkXZ,
+		private IEnumerator HandleSpawnedChunk(Vector2Int chunkXZ,
 				HashSet<Vector2Int> requestedChunks,
 				HashSet<Vector2Int> pendingChunks,
 				Action<Vector2Int> chunkUpdated,

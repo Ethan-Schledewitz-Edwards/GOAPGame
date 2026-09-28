@@ -22,7 +22,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		private BlueprintCancelation m_cancelBlueprint;
 		private BoxCollider m_boxCollider;
 
-		public int m_blueprintDataID;
+		public string m_blueprintDataID;
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
@@ -59,7 +59,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				}
 			}
 
-			m_blueprintDataID = blueprintData.BlueprintDataID;
+			m_blueprintDataID = blueprintData.ID;
 			m_tagFilter = uniqueTags.ToArray();
 
 			m_inventoryComponent.InitializeInventory(blueprintData.RequiredItems.Length);

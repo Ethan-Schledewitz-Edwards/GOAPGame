@@ -48,7 +48,7 @@ public static class AIContextKeys
 	public const string c_StructureSettlementID = "StructureSettlementID";
 	public const string c_StructureID = "StructureID";
 	public const string c_ItemToFindID = "ItemToFind";
-	public const string c_ItemTagPrefix = "itemTagID_";
+	public const string c_ItemTagFilterPrefix = "itemTagFilter_";
 	public const string c_ExecutorFaction = "ExecutorFaction";
 	public const string c_AssignedInteractionPosition = "AssignedInteractionPosition";
 	public const string c_ReservationCleanup = "ReservationCleanup";

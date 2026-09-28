@@ -9,48 +9,23 @@ namespace GenericIndex
 		public int AssetsInIndex => assets.Length;
 		[field: SerializeField] protected T[] assets { get; private set; }
 
-		private Dictionary<string, T> m_nameCache;
-
 		public void RegisterSelf()
 		{
 			IndexRegistry.Register<T>(this);
 		}
 
-		public T GetIndexedAsset(int id)
+		public T GetIndexedAsset(string assetKey)
 		{
-			if (id < 0 || id >= assets.Length) 
+			if (assets == null)
 				return null;
 
-			return 
-				assets[id];
-		}
+			T foundAsset = assets.FirstOrDefault(asset => asset != null && asset.ID == assetKey);
 
-		public T GetIndexedAsset(string assetName)
-		{
-			if (m_nameCache == null)
-			{
-				m_nameCache = new Dictionary<string, T>(assets.Length);
-				foreach (var asset in assets)
-				{
-					if (asset != null)
-					{
-						m_nameCache[asset.name] = asset;
-					}
-				}
-			}
-
-			if (m_nameCache.TryGetValue(assetName, out T foundAsset))
-			{
+			if (foundAsset != null)
 				return foundAsset;
-			}
 
-			Debug.LogError($"[GenericIndex] Asset named '{assetName}' could not be found in the {typeof(T).Name} index.");
+			Debug.LogError($"[GenericIndex] Asset named '{assetKey}' could not be found in the {typeof(T).Name} index.");
 			return null;
-		}
-
-		public T[] GetAllIndexedAssets()
-		{
-			return assets;
 		}
 
 #if UNITY_EDITOR
@@ -91,26 +66,6 @@ namespace GenericIndex
 			}
 
 			assets = currentAssets.ToArray();
-			AssignNewIDs();
-		}
-
-		public void AssignNewIDs()
-		{
-			int updatedCount = 0;
-			for (int i = 0; i < assets.Length; i++)
-			{
-				if (assets[i] == null) 
-					continue;
-
-				assets[i].SetID(i);
-				UnityEditor.EditorUtility.SetDirty(assets[i]);
-				updatedCount++;
-			}
-
-			UnityEditor.EditorUtility.SetDirty(this);
-			UnityEditor.AssetDatabase.SaveAssets();
-
-			Debug.Log($"<color=yellow>{typeof(T).Name} Index Updated!</color> Assigned IDs to {updatedCount} assets.");
 		}
 #endif
 	}

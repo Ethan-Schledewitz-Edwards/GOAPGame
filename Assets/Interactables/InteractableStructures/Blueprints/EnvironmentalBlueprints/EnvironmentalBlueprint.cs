@@ -71,10 +71,13 @@ namespace Interaction.InteractableStructures.Blueprints
 			}
 			else if (m_blueprintToSpawnOnCompletion != null) // Try and spawn a prefab from blueprint data
 			{
-				Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
+				Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
+					$"was completed in settlement:{SettlementID}.");
 
 				// Create the final structure
-				BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintToSpawnOnCompletion.BlueprintDataID);
+				BlueprintData blueprintData = IndexRegistry.
+					GetAsset<BlueprintData>(m_blueprintToSpawnOnCompletion.ID);
+
 				GameObject prefab = blueprintData.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
 

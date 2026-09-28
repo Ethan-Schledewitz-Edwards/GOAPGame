@@ -1,3 +1,4 @@
+using SaveLoad.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,8 +17,9 @@ public class ActorManager : MonoBehaviour
 
 	public static ActorManager Instance;
 
-	[SerializeField] private Transform m_spawnoffset;
-	[SerializeField] private Actor m_actorPrefab;
+	// Components
+	[SerializeField] private Transform m_player;
+	private ISavableEntity m_playerSaveEntity;
 
 	// Events
 	public event Action<Actor> FollowingActorLoaded;
@@ -46,15 +48,37 @@ public class ActorManager : MonoBehaviour
 		}
 
 		Instance = this;
-
+		enabled = false;
+		Debug.Log("DISABLED");
 		s_Actors.Clear();
+
+		if (m_player != null)
+		{
+			if (m_player.TryGetComponent(out ISavableEntity savable))
+			{
+				m_playerSaveEntity = savable;
+				m_playerSaveEntity.TransformRestored += HandleGameLoaded;
+			}
+		}
+		else
+		{
+			Debug.LogWarning("[ActorManager] No reference to the player's transform was set. The system cannot work without " +
+				"the reference for proximity calculations.", this);
+		}
 	}
+
 
 	private void OnDestroy()
 	{
 		if (Instance == this)
 		{
 			Instance = null;
+
+			if(m_playerSaveEntity != null)
+			{
+				m_playerSaveEntity.TransformRestored -= HandleGameLoaded;
+			}
+
 			s_Actors.Clear();
 		}
 	}
@@ -143,5 +167,11 @@ public class ActorManager : MonoBehaviour
 	public void SetPlayerPosition(Vector3 playerPosition)
 	{
 		m_playerPosition = playerPosition;
+	}
+
+	private void HandleGameLoaded(Vector3 playerPosition, Quaternion playerRotation)
+	{
+		enabled = true;
+		Debug.Log("ENABLED");
 	}
 }

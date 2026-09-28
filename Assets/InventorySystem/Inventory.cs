@@ -37,22 +37,22 @@ namespace InventorySystem
 		/// Determines whether the inventory contains any slots with the specified item ID and retrieves the corresponding
 		/// slots.
 		/// </summary>
-		public bool ContainsItem(int itemID, out List<InventorySlot> slots)
+		public bool ContainsItem(string itemID, out List<InventorySlot> slots)
 		{
-			slots = Slots.Where(i => i.SlotsItem != null && i.SlotsItem.ItemID == itemID).ToList();
+			slots = Slots.Where(i => i.SlotsItem != null && i.SlotsItem.ID == itemID).ToList();
 			return slots.Count > 0;
 		}
 
 		/// <summary>
 		/// Returns the total count of an item type in this Inventory
 		/// </summary>
-		public int GetTotalOfItem(int itemID)
+		public int GetTotalOfItem(string itemID)
 		{
 			int count = 0;
 			foreach (InventorySlot i in Slots)
 			{
 				// Skip empty slots or items of a different type
-				if (i.SlotsItem == null || i.SlotsItem.ItemID != itemID)
+				if (i.SlotsItem == null || i.SlotsItem.ID != itemID)
 					continue;
 
 				count += i.AmountInSlot;
@@ -70,7 +70,7 @@ namespace InventorySystem
 			roomAvailable = 0;
 
 			// Try to find a partially filled stack of the same item
-			if (ContainsItem(item.ItemID, out var validSlots))
+			if (ContainsItem(item.ID, out var validSlots))
 			{
 				foreach (InventorySlot slot in validSlots)
 				{

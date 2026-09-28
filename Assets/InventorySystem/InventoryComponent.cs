@@ -38,11 +38,10 @@ namespace InventorySystem
 
 			if (addedItemData.MaxStackSize > 1 &&
 				Inventory.ContainsItem(
-					addedItemData.ItemID,
+					addedItemData.ID,
 					out var slots))
 			{
-				foreach (var slot in slots.Where(
-					s => s.IsRoomAvailable(amount, out _)))
+				foreach (var slot in slots.Where(s => s.IsRoomAvailable(amount, out _)))
 				{
 					slot.AddToStack(
 						amount,
@@ -94,32 +93,22 @@ namespace InventorySystem
 
 			ItemData itemToTransfer = sourceSlot.SlotsItem;
 
-			int transferAmount =
-				Mathf.Min(
-					amountToTransfer,
-					sourceSlot.AmountInSlot);
+			int transferAmount = Mathf.Min(amountToTransfer, sourceSlot.AmountInSlot);
 
-			// Require the destination to have room for the exact requested
-			// transfer. The caller can retry later if it does not.
-			if (!Inventory.TryFindRoomForItem(
-					itemToTransfer,
-					transferAmount,
-					out _,
-					out _))
+			// Require the destination to have room for the exact requested transfer. 
+			if (!Inventory.TryFindRoomForItem(itemToTransfer, transferAmount, out _, out _))
 			{
 				return false;
 			}
 
-			if (!sourceSlot.TryExtractForTransfer(
-					transferAmount,
-					out ItemData extractedItemData,
-					out Transform[] physicalItemObjects))
+			if (!sourceSlot.TryExtractForTransfer(transferAmount, 
+				out ItemData extractedItemData, 
+				out Transform[] physicalItemObjects))
 			{
 				return false;
 			}
 
-			if (TryAddItem(
-					extractedItemData,
+			if (TryAddItem(extractedItemData,
 					transferAmount,
 					physicalItemObjects))
 			{
@@ -129,8 +118,7 @@ namespace InventorySystem
 
 			// Destination rejected the transfer. Restore the exact source
 			// state without dropping or duplicating physical objects.
-			sourceSlot.RestoreAfterFailedTransfer(
-				extractedItemData,
+			sourceSlot.RestoreAfterFailedTransfer(extractedItemData,
 				transferAmount,
 				physicalItemObjects);
 
