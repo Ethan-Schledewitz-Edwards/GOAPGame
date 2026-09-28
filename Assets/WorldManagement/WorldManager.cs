@@ -123,16 +123,15 @@ namespace WorldManagement.Core
 			if (shouldSave)
 				OnReleaseChunkData?.Invoke(chunk.chunkData);
 
-			if (m_chunkBuilder.BuilderMethod ==
-				TerrainChunkManager.EChunkBuilderMethod.Procedural)
+			if (chunk.gameObject != null)
 			{
-				if (chunk.gameObject != null)
-					Destroy(chunk.gameObject);
-			}
-			else
-			{
-				if (chunk.gameObject != null)
+				bool isAuthoredWorld = TerrainChunkManager.s_BuilderMethod ==
+					TerrainChunkManager.EChunkBuilderMethod.Authored;
+
+				if (isAuthoredWorld)
 					chunk.gameObject.SetActive(false);
+				else
+					Destroy(chunk.gameObject);
 			}
 
 			s_ActiveChunks.Remove(chunkXZ);

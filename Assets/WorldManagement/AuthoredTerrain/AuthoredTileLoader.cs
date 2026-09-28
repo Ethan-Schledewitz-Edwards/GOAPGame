@@ -23,8 +23,6 @@ namespace WorldManagement.AuthoredTiles
 
 		private void Awake()
 		{
-			m_chunkManager = GetComponent<TerrainChunkManager>();
-
 			s_AuthoredChunks.Clear();
 			foreach (GameObject chunkObj in m_sceneChunks)
 			{
@@ -37,31 +35,24 @@ namespace WorldManagement.AuthoredTiles
 			}
 		}
 
-		private void OnEnable()
+		private void Start()
 		{
-			if (m_chunkManager != null && 
-				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored)
-			{
+			m_chunkManager = GetComponent<TerrainChunkManager>();
+
+			bool isAuthoredWorld = TerrainChunkManager.s_BuilderMethod ==
+				TerrainChunkManager.EChunkBuilderMethod.Authored;
+
+			if (isAuthoredWorld)
 				m_chunkManager.ProcessChunkSpawned += HandleSpawnedChunk;
-			}
 		}
 
 		private void OnDisable()
 		{
-			if (m_chunkManager != null && 
-				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored)
-			{
-				m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
-			}
+			m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
 		}
 
 		private void OnDestroy()
 		{
-			if (m_chunkManager.BuilderMethod != TerrainChunkManager.EChunkBuilderMethod.Authored)
-				return;
-
-			m_chunkManager.ProcessChunkSpawned -= HandleSpawnedChunk;
-
 			s_AuthoredChunks.Clear();
 		}
 
@@ -69,8 +60,7 @@ namespace WorldManagement.AuthoredTiles
 				HashSet<Vector2Int> requestedChunks,
 				HashSet<Vector2Int> pendingChunks,
 				Action<Vector2Int> chunkUpdated,
-				Action<TerrainChunk, GameObject> chunkFound
-			)
+				Action<TerrainChunk, GameObject> chunkFound)
 		{
 			// Ignore aut of bounds requests
 			if(!s_AuthoredChunks.TryGetValue(chunkXZ, out GameObject chunkObject))

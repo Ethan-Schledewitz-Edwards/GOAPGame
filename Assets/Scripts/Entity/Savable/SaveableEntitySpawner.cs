@@ -10,13 +10,6 @@ namespace Entities.Savable
 	{
 		[SerializeField] private SavableEntityIndex m_entityIndex;
 
-		private TerrainChunkManager m_chunkManager;
-
-		private void Awake()
-		{
-			m_chunkManager = FindAnyObjectByType<TerrainChunkManager>();
-		}
-
 		private void OnEnable()
 		{
 			WorldManager.ChunkSpawnedEntities += HandleChunkLoadedEntities;
@@ -32,8 +25,8 @@ namespace Entities.Savable
 			if (savedEntities == null)
 				return;
 
-			bool isAuthoredWorld = m_chunkManager != null &&
-				m_chunkManager.BuilderMethod == TerrainChunkManager.EChunkBuilderMethod.Authored;
+			bool isAuthoredWorld = TerrainChunkManager.s_BuilderMethod == 
+				TerrainChunkManager.EChunkBuilderMethod.Authored;
 
 			foreach (SerializableEntityData entityData in savedEntities)
 			{

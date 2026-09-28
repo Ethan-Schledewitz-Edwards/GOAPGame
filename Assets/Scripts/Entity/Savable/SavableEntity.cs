@@ -26,7 +26,6 @@ namespace Entities.Savable
 		public Vector2Int ChunkXZ => m_chunkXZ;
 		public bool IsRegisteredToChunk => m_isRegisteredToChunk;
 
-
 		// Components
 		private Entity m_entity;
 		private Collider m_collider;
@@ -49,8 +48,7 @@ namespace Entities.Savable
 
 		#region Static State
 
-		[RuntimeInitializeOnLoadMethod(
-			RuntimeInitializeLoadType.SubsystemRegistration)]
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void ResetStaticState()
 		{
 			s_entitiesByGuid.Clear();
@@ -152,11 +150,7 @@ namespace Entities.Savable
 			}
 			else
 			{
-				if (string.IsNullOrEmpty(m_guid) ||
-					m_guid == Guid.Empty.ToString())
-				{
-					m_guid = Guid.NewGuid().ToString();
-				}
+				m_guid = Guid.NewGuid().ToString();
 
 				TryRegisterGuid(m_guid);
 			}
@@ -168,8 +162,14 @@ namespace Entities.Savable
 		{
 			EnablePhysicsAndCollision();
 
-			Vector2Int entityChunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
-			RegisterToClosestChunk(entityChunkXZ);
+			Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+			UpdateChunkParent(chunkXZ);
+		}
+
+		private void OnEnable()
+		{
+			Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
+			RegisterToClosestChunk(chunkXZ);
 		}
 
 		private void OnDestroy()
@@ -185,6 +185,14 @@ namespace Entities.Savable
 
 		private void RegisterToClosestChunk(Vector2Int chunkXZ)
 		{
+			if (m_isRegisteredToChunk)
+			{
+				if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk previousChunk))
+				{
+					previousChunk.UnregisterEntity(gameObject);
+				}
+			}
+
 			if (!WorldManager.TryGetActiveChunkData(chunkXZ, out TerrainChunk newChunk))
 			{
 				Debug.LogWarning($"[SaveableEntity] '{name}' attempted to register " +
@@ -196,31 +204,19 @@ namespace Entities.Savable
 				return;
 			}
 
-			if (m_isRegisteredToChunk && m_chunkXZ == chunkXZ)
-			{
-				UpdateChunkParent(chunkXZ);
-				return;
-			}
-
-			if (m_isRegisteredToChunk)
-			{
-				if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk previousChunk))
-				{
-					previousChunk.UnregisterEntity(gameObject);
-				}
-			}
-
 			m_chunkXZ = chunkXZ;
 			m_isRegisteredToChunk = true;
 
 			newChunk.RegisterEntity(gameObject);
-
 			UpdateChunkParent(chunkXZ);
 		}
 
 		private void UpdateChunkParent(Vector2Int chunkXZ)
 		{
-			if (IsManuallyAuthored)
+			bool isAuthoredWorld = TerrainChunkManager.s_BuilderMethod == 
+				TerrainChunkManager.EChunkBuilderMethod.Authored;
+
+			if (isAuthoredWorld)
 			{
 				if (AuthoredTileLoader.s_AuthoredChunks.TryGetValue(chunkXZ, out GameObject authoredChunk) &&
 					authoredChunk != null)
@@ -288,6 +284,7 @@ namespace Entities.Savable
 				RotW = rotation.w,
 			};
 
+			// Serialize the entities savable components
 			ISaveableComponent[] components = GetComponentsInChildren<ISaveableComponent>(true);
 			HashSet<string> componentIds = new();
 			foreach (ISaveableComponent component in components)
@@ -310,9 +307,7 @@ namespace Entities.Savable
 					continue;
 				}
 
-				object rawData =
-					component.GenerateComponentData();
-
+				object rawData = component.GenerateComponentData();
 				if (rawData is string dataString)
 				{
 					data.ComponentData.Add(new ComponentSaveData{K = componentId, V = dataString});
@@ -361,7 +356,6 @@ namespace Entities.Savable
 				new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
 
 			transform.SetPositionAndRotation(position, rotation);
-
 			TransformRestored?.Invoke(position, rotation);
 
 			RegisterToClosestChunk(CoordinateUtility.WorldToChunkXZ(position));
