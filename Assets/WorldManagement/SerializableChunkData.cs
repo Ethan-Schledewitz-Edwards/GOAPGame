@@ -35,7 +35,8 @@ namespace WorldManagement.Core
 				if (!saveableEntity.SavedByChunks)
 					continue;
 
-				if (!saveableEntity.IsRegisteredToChunk || saveableEntity.ChunkXZ != thisChunk)
+				if (!saveableEntity.IsRegisteredToChunk || 
+					saveableEntity.ChunkXZ != thisChunk)
 					continue;
 
 				SerializableEntityData data = saveableEntity.GenerateSaveData();

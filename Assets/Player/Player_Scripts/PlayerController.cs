@@ -47,10 +47,10 @@ namespace Player.Core
 		}
 
 		// System Vars
+		private Vector3 m_position;
+		public Quaternion Rotation { get; private set; }
 		private Vector2 m_inputDir;
 		private Vector3 m_velocity;
-		private Vector3 m_position;
-		private Quaternion m_rotation;
 
 		private bool m_isGrounded;
 		private bool m_isJumpPressed;
@@ -540,6 +540,12 @@ namespace Player.Core
 			m_rb.position = position;
 		}
 
+		public void Rotate(Quaternion rotation)
+		{
+			Rotation = rotation;
+			m_player.PlayerMesh.rotation = rotation;
+		}
+
 		public void Stop()
 		{
 			m_velocity = Vector3.zero;
@@ -550,13 +556,13 @@ namespace Player.Core
 
 		private void HandleRotation(Vector3 moveDir)
 		{
-			Quaternion prevRot = m_rotation;
+			Quaternion prevRot = Rotation;
 
 			Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-			m_rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
+			Rotation = Quaternion.Slerp(prevRot, targetRotation, Time.deltaTime * 10f);
 
 			// Rotate player mesh
-			m_player.PlayerMesh.rotation = m_rotation;
+			m_player.PlayerMesh.rotation = Rotation;
 		}
 
 		#endregion

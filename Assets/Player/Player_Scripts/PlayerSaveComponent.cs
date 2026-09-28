@@ -13,10 +13,8 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 
 	// ISavableEntity properties
 	public bool SavedByChunks => false;
-
-	public Vector2Int ChunkXZ => throw new NotImplementedException();
-
-	public bool IsRegisteredToChunk => throw new NotImplementedException();
+	public Vector2Int ChunkXZ => default;
+	public bool IsRegisteredToChunk => false;
 
 	// Events
 	public event Action DataRestored;
@@ -49,21 +47,25 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 
 	public SerializableEntityData GenerateSaveData()
 	{
-		Vector3 playerRotation = transform.eulerAngles;
+		Vector3 playerPosition = transform.position;
+		Quaternion playerRotation = m_playerController.Rotation;
 
 		SerializableEntityData data = new SerializableEntityData
 		{
 			GUID = c_GUID,
 			PrefabKey = "",
-			PosX = transform.position.x,
-			PosY = transform.position.y,
-			PosZ = transform.position.z,
+			PosX = playerPosition.x,
+			PosY = playerPosition.y,
+			PosZ = playerPosition.z,
 			RotX = playerRotation.x,
 			RotY = playerRotation.y,
-			RotZ = playerRotation.z
+			RotZ = playerRotation.z,
+			RotW = playerRotation.w
 		};
 
-		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
+		ISaveableComponent[] saveableComponents = 
+			GetComponentsInChildren<ISaveableComponent>();
+
 		foreach (var component in saveableComponents)
 		{
 			object rawData = component.GenerateComponentData();
@@ -93,8 +95,11 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		SerializableEntityData data = saveFile.PlayerData;
 
 		// Restore Position and Rotation
-		Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
-		Quaternion rotation = Quaternion.Euler(data.RotX, data.RotY, data.RotZ);
+		Vector3 position = 
+			new Vector3(data.PosX, data.PosY, data.PosZ);
+
+		Quaternion rotation = 
+			new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW);
 
 		Debug.Log("Player transform restored successfully!");
 		TransformRestored?.Invoke(position, rotation);
@@ -103,7 +108,7 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		{
 			m_playerController.enabled = true;
 			m_playerController.Teleport(position);
-			transform.rotation = rotation;
+			m_playerController.Rotate(rotation);
 		}
 
 		// Restore component data
