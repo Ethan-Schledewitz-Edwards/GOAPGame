@@ -38,7 +38,8 @@ namespace Interaction.InteractableStructures.Blueprints
 			{
 				foreach (var requiredItem in m_requiredItems)
 				{
-					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && taggableItem.RuntimeTagSet != null)
+					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && 
+						taggableItem.RuntimeTagSet != null)
 					{
 						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
 					}
@@ -59,7 +60,8 @@ namespace Interaction.InteractableStructures.Blueprints
 			}
 			else
 			{
-				Debug.LogWarning("Tried to add an EnvironmentalBlueprint to a settlement that does not exist", this);
+				Debug.LogWarning("Tried to add an EnvironmentalBlueprint to " +
+					"a settlement that does not exist", this);
 			}
 		}
 
@@ -93,13 +95,15 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			gameObject.SetActive(false);
 
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
+				$"was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
 		}
 
 		public void HandleBlueprintCanceled()
 		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceled in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
+				$"was canceled in settlement:{SettlementID}.");
 
 			foreach (InventorySlot slot in m_inventoryComponent.Slots)
 			{

@@ -49,14 +49,11 @@ namespace Construction
 		}
 
 		/// <summary>
-		/// Creates and places a structure blueprint at the specified world position and rotation within a settlement.
+		/// Creates and places a structure blueprint at the specified 
+		/// world position and rotation within a settlement.
 		/// </summary>
-		/// <param name="settlementID">The identifier of the settlement to which the structure will be added.</param>
-		/// <param name="structureBlueprintID">The identifier of the structure blueprint asset to instantiate.</param>
-		/// <param name="worldPosition">The world position where the blueprint will be placed.</param>
-		/// <param name="rotation">The rotation to apply to the blueprint upon creation.</param>
 		public void CreateBlueprint(int settlementID, 
-			string structureBlueprintKey, 
+			string blueprintKey, 
 			Vector3 worldPosition, 
 			Quaternion rotation)
 		{
@@ -66,7 +63,8 @@ namespace Construction
 				return;
 			}
 
-			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(structureBlueprintKey);
+			BlueprintData blueprintData = 
+				IndexRegistry.GetAsset<BlueprintData>(blueprintKey);
 
 			GameObject prefab = Instantiate(m_blueprintPrefab);
 			IStructure structure = prefab.GetComponent<IStructure>();
@@ -110,8 +108,11 @@ namespace Construction
 
 		private void CleanupBlueprint(IBlueprintObject blueprintObject)
 		{
-			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].SettlementStructures[blueprintObject.SettlementStructureID];
-			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].RemoveStructure(structure.SettlementStructureID);
+			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].
+				SettlementStructures[blueprintObject.SettlementStructureID];
+
+			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].
+				RemoveStructure(structure.SettlementStructureID);
 
 			blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
 			blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;

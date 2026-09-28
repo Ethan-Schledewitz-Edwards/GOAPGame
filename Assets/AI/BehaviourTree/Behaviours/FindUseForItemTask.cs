@@ -34,7 +34,9 @@ public class FindUseForItemTask : BTNodeBase
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
 
-		Settlement closestSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
+		Settlement closestSettlement = 
+			SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
+
 		if (closestSettlement != null)
 		{
 			if (TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
@@ -60,8 +62,11 @@ public class FindUseForItemTask : BTNodeBase
 		Settlement closestSettlement,
 		AIContext context)
 	{
-		IStructure closestStructure = closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
-		Debug.Log($"[FindUseForItemTask] Searching for tag {structureTag.name}. Closest found: {(closestStructure != null ? closestStructure.Object.name : "NONE")}");
+		IStructure closestStructure = 
+			closestSettlement.FindNearestStructureOfType(executorTransform.position, structureTag);
+
+		Debug.Log($"[FindUseForItemTask] Searching for tag {structureTag.name}. " +
+			$"Closest found: {(closestStructure != null ? closestStructure.Object.name : "NONE")}");
 
 		if (closestStructure == null)
 			return false;

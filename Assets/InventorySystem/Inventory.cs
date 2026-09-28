@@ -11,7 +11,6 @@ namespace InventorySystem
 	{
 		[Header("Slots")]
 		public List<InventorySlot> Slots { get; private set; }
-		public int Size => Slots.Count;
 
 		public event Action<InventorySlot> SlotChanged;
 
@@ -64,7 +63,10 @@ namespace InventorySystem
 		/// <summary>
 		/// Attempts to locate an inventory slot that contains the specified item and has sufficient available room.
 		/// </summary>
-		public bool TryFindRoomForItem(ItemData item, int roomNeeded, out InventorySlot targetSlot, out int roomAvailable)
+		public bool TryFindRoomForItem(ItemData item, 
+			int roomNeeded, 
+			out InventorySlot targetSlot, 
+			out int roomAvailable)
 		{
 			targetSlot = null;
 			roomAvailable = 0;

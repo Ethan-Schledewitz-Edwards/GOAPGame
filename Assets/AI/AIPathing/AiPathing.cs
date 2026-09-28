@@ -176,26 +176,40 @@ public class AIPathing : MonoBehaviour
 				break;
 
 			case EPathingSimFidelity.Near:
+
 				NavMeshPath nearPath = new NavMeshPath();
-				NavMesh.CalculatePath(transform.position, CurrentDestination, NavMesh.AllAreas, nearPath);
+				NavMesh.CalculatePath(transform.position, 
+					CurrentDestination, 
+					NavMesh.AllAreas, 
+					nearPath);
+
 				m_currentPath = nearPath;
 
 				if (nearPath.status == NavMeshPathStatus.PathComplete)
 				{
 					m_pathCorners = nearPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(nearPath.corners, m_navAgent.speed, true));
+
+					m_destinationCoroutine = StartCoroutine(FollowPath(nearPath.corners, 
+						m_navAgent.speed, 
+						true));
 				}
 				break;
 
 			case EPathingSimFidelity.Distant:
 				NavMeshPath distantPath = new NavMeshPath();
-				NavMesh.CalculatePath(transform.position, CurrentDestination, NavMesh.AllAreas, distantPath);
+
+				NavMesh.CalculatePath(transform.position, CurrentDestination, 
+					NavMesh.AllAreas, 
+					distantPath);
+
 				m_currentPath = distantPath;
 
 				if (distantPath.status == NavMeshPathStatus.PathComplete)
 				{
 					m_pathCorners = distantPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(distantPath.corners, m_navAgent.speed, false));
+					m_destinationCoroutine = StartCoroutine(FollowPath(distantPath.corners, 
+						m_navAgent.speed, 
+						false));
 				}
 				break;
 		}
@@ -212,7 +226,10 @@ public class AIPathing : MonoBehaviour
 			if (dirToTarget.sqrMagnitude > 0.001f)
 			{
 				Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * Time.deltaTime);
+
+				transform.rotation = Quaternion.Slerp(transform.rotation, 
+					targetRotation, 
+					c_rotSpeed * Time.deltaTime);
 			}
 		}
 	}
@@ -254,7 +271,10 @@ public class AIPathing : MonoBehaviour
 					if (lookDir.sqrMagnitude > 0.1f)
 					{
 						Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
-						transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, c_rotSpeed * t);
+
+						transform.rotation = Quaternion.Slerp(transform.rotation, 
+							targetRotation, 
+							c_rotSpeed * t);
 					}
 				}
 

@@ -24,7 +24,8 @@ namespace GenericIndex
 			if (foundAsset != null)
 				return foundAsset;
 
-			Debug.LogError($"[GenericIndex] Asset named '{assetKey}' could not be found in the {typeof(T).Name} index.");
+			Debug.LogError($"[GenericIndex] Asset named '{assetKey}' " +
+				$"could not be found in the {typeof(T).Name} index.");
 			return null;
 		}
 
@@ -52,7 +53,8 @@ namespace GenericIndex
 			int newAssetIndex = 0;
 			for (int i = 0; i < currentAssets.Count; i++)
 			{
-				if (currentAssets[i] == null && newAssetIndex < newAssets.Count)
+				if (currentAssets[i] == null && 
+					newAssetIndex < newAssets.Count)
 				{
 					currentAssets[i] = newAssets[newAssetIndex];
 					newAssetIndex++;

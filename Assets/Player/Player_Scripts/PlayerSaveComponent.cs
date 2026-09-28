@@ -107,7 +107,9 @@ public class PlayerSaveComponent : MonoBehaviour, ISavableEntity
 		}
 
 		// Restore component data
-		ISaveableComponent[] saveableComponents = GetComponentsInChildren<ISaveableComponent>();
+		ISaveableComponent[] saveableComponents = 
+			GetComponentsInChildren<ISaveableComponent>();
+
 		foreach (var component in saveableComponents)
 		{
 			string compId = component.GetComponentId();

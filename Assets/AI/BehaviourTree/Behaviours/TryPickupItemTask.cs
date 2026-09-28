@@ -21,7 +21,10 @@ public class TryPickupItemTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
+		InteractionPosition assignedPos = 
+			context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+
 		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
 
 		if (targetTransform == null || assignedPos == null)
@@ -66,7 +69,8 @@ public class TryPickupItemTask : BTNodeBase
 		{
 			if (actorInventory.TryTransferFrom(inventorySlots[0], 1, out int itemsTransferred) && itemsTransferred > 0)
 			{
-				Debug.Log($"{executorTransform}: Took {itemsTransferred} items of ID:{itemID} from {targetTransform}'s inventory.");
+				Debug.Log($"{executorTransform}: Took {itemsTransferred} items " +
+					$"of ID:{itemID} from {targetTransform}'s inventory.");
 
 				context.ClearData(AIContextKeys.c_ItemToFindID);
 				interactable.StopInteract(interactor, assignedPos);

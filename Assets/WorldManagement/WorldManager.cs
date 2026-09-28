@@ -81,7 +81,10 @@ namespace WorldManagement.Core
 				yield break;
 
 			// Wait for the new chunk to load
-			yield return StartCoroutine(m_chunkBuilder.SpawnChunk(chunkXZ, s_requestedChunks, s_pendingChunks, HandleChunkUpdated));
+			yield return StartCoroutine(m_chunkBuilder.SpawnChunk(chunkXZ, 
+				s_requestedChunks, 
+				s_pendingChunks, 
+				HandleChunkUpdated));
 
 			// Spawn and initialize any entities saved in the chunk after it has been completely loaded
 			if (s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunkTuple))

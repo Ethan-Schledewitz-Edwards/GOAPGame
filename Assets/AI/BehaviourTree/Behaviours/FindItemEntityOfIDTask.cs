@@ -36,7 +36,11 @@ public class FindItemEntityOfIDTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
-		Transform targetItemTransform = SearchForItem(itemID, executorTransform, interactor, context);
+
+		Transform targetItemTransform = SearchForItem(itemID, 
+			executorTransform, 
+			interactor, 
+			context);
 
 		if (targetItemTransform == null)
 			return EBTNodeState.STATE_FAILURE;
@@ -47,10 +51,15 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform SearchForItem(string itemID, Transform executorTransform, IInteractor interactor, AIContext context)
+	private Transform SearchForItem(string itemID, 
+		Transform executorTransform, 
+		IInteractor interactor, 
+		AIContext context)
 	{
 		Vector3 executorPosition = executorTransform.position;
-		Vector2Int[] neighbourChunkCoordinates = ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
+
+		Vector2Int[] neighbourChunkCoordinates = 
+			ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;
@@ -90,7 +99,11 @@ public class FindItemEntityOfIDTask : BTNodeBase
 		}
 
 		// Try to find a friendly storage structure. (Only use it if it is closer than a ground item)
-		Transform nearestStorageStructure = FindStorageStructure(itemID, executorTransform, interactor, context);
+		Transform nearestStorageStructure = FindStorageStructure(itemID, 
+			executorTransform, 
+			interactor, 
+			context);
+
 		if (nearestStorageStructure != null)
 		{
 			float distSqr = (nearestStorageStructure.position - executorPosition).sqrMagnitude;
@@ -106,10 +119,15 @@ public class FindItemEntityOfIDTask : BTNodeBase
 	/// <summary>
 	/// Finds the nearest available storage structure that contains the requested item.
 	/// </summary>
-	private Transform FindStorageStructure(string itemKey, Transform executorTransform, IInteractor interactor, AIContext context)
+	private Transform FindStorageStructure(string itemKey, 
+		Transform executorTransform, 
+		IInteractor interactor, 
+		AIContext context)
 	{
 		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
-		Settlement closestFactionSettlement = SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
+
+		Settlement closestFactionSettlement = 
+			SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
 		
 		if (closestFactionSettlement == null)
 			return null;
@@ -149,7 +167,8 @@ public class FindItemEntityOfIDTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(AIContext context)
 	{
-		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an item of ID {context.GetData<string>(AIContextKeys.c_ItemToFindID)}.");
+		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an " +
+			$"item of ID '{context.GetData<string>(AIContextKeys.c_ItemToFindID)}'.");
 	}
 
 	protected override void OnNodeExited(AIContext context) { }

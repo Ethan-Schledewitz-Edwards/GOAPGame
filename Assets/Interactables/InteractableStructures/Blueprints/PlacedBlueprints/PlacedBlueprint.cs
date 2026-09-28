@@ -95,7 +95,8 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public override void HandleBlueprintCompleted()
 		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was completed in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
+				$"was completed in settlement:{SettlementID}.");
 
 			// Create the final structure
 			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintDataID);
@@ -116,7 +117,8 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public void HandleBlueprintCanceled()
 		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} was canceled in settlement:{SettlementID}.");
+			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
+				$"was canceled in settlement:{SettlementID}.");
 
 			foreach (InventorySlot slot in m_inventoryComponent.Slots)
 			{

@@ -50,10 +50,14 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform FindItemOfTags(Transform executorTransform, IInteractor interactor, ItemTag[] itemTags)
+	private Transform FindItemOfTags(Transform executorTransform, 
+		IInteractor interactor, 
+		ItemTag[] itemTags)
 	{
 		Vector3 executorPosition = executorTransform.position;
-		Vector2Int[] neighbourChunkCoordinates = ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
+
+		Vector2Int[] neighbourChunkCoordinates = 
+			ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
 
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;

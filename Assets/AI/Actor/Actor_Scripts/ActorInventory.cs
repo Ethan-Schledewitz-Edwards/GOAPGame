@@ -28,7 +28,9 @@ public class ActorInventory : InventoryComponent
 
 	#endregion
 
-	public override bool TryAddItem(ItemData addedItemData, int amount, Transform[] itemTransforms = null)
+	public override bool TryAddItem(ItemData addedItemData, 
+		int amount, 
+		Transform[] itemTransforms = null)
 	{
 		if(addedItemData == null)
 			return false;

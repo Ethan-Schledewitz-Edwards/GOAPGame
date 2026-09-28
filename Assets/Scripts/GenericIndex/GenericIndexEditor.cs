@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace GenericIndex
 {
+
+	/// <summary>
+	/// AI generated editor script.
+	/// </summary>
 #if UNITY_EDITOR
 	[CustomEditor(typeof(ScriptableObject), true)]
 	public class GenericIndexEditor : Editor
@@ -12,7 +16,7 @@ namespace GenericIndex
 		public override void OnInspectorGUI()
 		{
 			Type targetType = target.GetType();
-			bool isGenericIndex = IsSubclassOfRawGeneric(typeof(GenericIndexBase<>), targetType);
+			bool isGenericIndex = IsSubclassOfGenericIndex(typeof(GenericIndexBase<>), targetType);
 
 			if (!isGenericIndex)
 			{
@@ -31,7 +35,9 @@ namespace GenericIndex
 				if (EditorUtility.DisplayDialog("Populate Generic Index?",
 					"This will scan your project, append new unique assets, and re-assign all IDs. Proceed?", "Yes", "No"))
 				{
-					var method = targetType.GetMethod("PopulateUniqueAssets", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+					var method = targetType.GetMethod("PopulateUniqueAssets", BindingFlags.Public | 
+						BindingFlags.Instance | 
+						BindingFlags.FlattenHierarchy);
 					if (method != null)
 					{
 						method.Invoke(target, null);
@@ -51,7 +57,9 @@ namespace GenericIndex
 				if (EditorUtility.DisplayDialog("Auto-Assign IDs?",
 					"This will reset all IDs to match the current order of your data array. Proceed?", "Yes", "No"))
 				{
-					var method = targetType.GetMethod("AssignAssetIDs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+					var method = targetType.GetMethod("AssignAssetIDs", BindingFlags.Public | 
+						BindingFlags.Instance | 
+						BindingFlags.FlattenHierarchy);
 					if (method != null)
 					{
 						method.Invoke(target, null);
@@ -67,8 +75,7 @@ namespace GenericIndex
 			GUI.backgroundColor = originalColor;
 		}
 
-		// Helper method to check open generic base classes
-		private bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+		private bool IsSubclassOfGenericIndex(Type generic, Type toCheck)
 		{
 			while (toCheck != null && toCheck != typeof(object))
 			{

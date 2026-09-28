@@ -230,7 +230,8 @@ namespace Entities.Savable
 			}
 			else
 			{
-				if (WorldManager.s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && activeChunk.gameObject != null)
+				if (WorldManager.s_ActiveChunks.TryGetValue(chunkXZ, out var activeChunk) && 
+					activeChunk.gameObject != null)
 				{
 					transform.SetParent(activeChunk.gameObject.transform, true);
 				}
@@ -356,7 +357,8 @@ namespace Entities.Savable
 
 			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 
-			Quaternion rotation = new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
+			Quaternion rotation = 
+				new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
 
 			transform.SetPositionAndRotation(position, rotation);
 

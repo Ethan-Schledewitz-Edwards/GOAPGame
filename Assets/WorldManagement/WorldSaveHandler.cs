@@ -27,7 +27,8 @@ namespace WorldManagement.Core
 		{
 			string path = SaveUtility.GetChunkFilePath(chunkXZ);
 
-			SerializableChunkData chunkData = SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
+			SerializableChunkData chunkData = 
+				SaveLoadManager.Instance.LoadData<SerializableChunkData>(path);
 
 			if (chunkData == null)
 				return null;
@@ -55,7 +56,8 @@ namespace WorldManagement.Core
 
 		public void SaveAllActiveChunks()
 		{
-			TerrainChunk[] activeChunks = new TerrainChunk[WorldManager.s_ActiveChunks.Count];
+			TerrainChunk[] activeChunks = 
+				new TerrainChunk[WorldManager.s_ActiveChunks.Count];
 
 			int index = 0;
 			foreach (var pair in WorldManager.s_ActiveChunks)

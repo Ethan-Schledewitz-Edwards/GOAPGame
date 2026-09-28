@@ -49,7 +49,6 @@ public class ActorManager : MonoBehaviour
 
 		Instance = this;
 		enabled = false;
-		Debug.Log("DISABLED");
 		s_Actors.Clear();
 
 		if (m_player != null)
@@ -172,6 +171,5 @@ public class ActorManager : MonoBehaviour
 	private void HandleGameLoaded(Vector3 playerPosition, Quaternion playerRotation)
 	{
 		enabled = true;
-		Debug.Log("ENABLED");
 	}
 }
