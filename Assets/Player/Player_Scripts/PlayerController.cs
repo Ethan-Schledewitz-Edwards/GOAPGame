@@ -14,7 +14,7 @@ namespace Player.Core
 		private const int c_MaxConcurrentPlanes = 8; // Max number of planes to collide with at once
 
 		// Ground Movement
-		private const float c_walkingSpeed = 6f;
+		private const float c_walkingSpeed = 7f;
 		private const float c_friction = 3.8f;
 		private const float c_acceleration = 8.5f;
 		private const float c_maxSpeed = 8f;
@@ -113,7 +113,9 @@ namespace Player.Core
 					break;
 			}
 
-			if (!float.IsNaN(m_position.x) && !float.IsNaN(m_position.y) && !float.IsNaN(m_position.z))
+			if (!float.IsNaN(m_position.x) && 
+				!float.IsNaN(m_position.y) && 
+				!float.IsNaN(m_position.z))
 			{
 				m_rb.MovePosition(m_position);
 			}
@@ -153,9 +155,6 @@ namespace Player.Core
 
 		#region Collision
 
-		/// <summary>
-		/// Casts the players hull in a position
-		/// </summary>
 		private bool CastHull(Vector3 position, Vector3 direction, float maxDist, out RaycastHit hitInfo)
 		{
 			direction.Normalize();

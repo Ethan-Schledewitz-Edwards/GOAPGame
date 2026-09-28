@@ -18,8 +18,8 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
 	private const float c_workingDist = 0.15f;
-	private const float c_followSpeed = 6.2f;
-	private const float c_workingSpeed = 4.5f;
+	private const float c_followSpeed = 7.2f;
+	private const float c_workingSpeed = 5.8f;
 	private const float c_offDutySpeed = 2f;
 	private const float c_searchForJobRange = 1.5f;
 	private const float c_searchForJobStoppingDistance = 0.25f;

@@ -128,7 +128,10 @@ namespace Player.Core
 				{
 					float selectionRadius = m_worldControllerManager.CursorVisualizer.SelectionRadius;
 
-					HashSet<Collider> hitColliders = Physics.OverlapSphere(worldPosition, selectionRadius, m_interactionLayer).ToHashSet();
+					HashSet<Collider> hitColliders = Physics.OverlapSphere(worldPosition, 
+						selectionRadius, 
+						m_interactionLayer).ToHashSet();
+
 					if (hitColliders.Count > 0)
 					{
 						// Check new colliders
@@ -207,7 +210,8 @@ namespace Player.Core
 			if (m_blueprintData == null)
 				return;
 
-			int nearestSettlementID = SettlementManager.GetClosestSettlementID(transform.position, EFaction.FACTION_PLAYER);
+			int nearestSettlementID = 
+				SettlementManager.GetClosestSettlementID(transform.position, EFaction.FACTION_PLAYER);
 
 			// Create a new player settlement if none were found
 			if (nearestSettlementID == -1)
@@ -226,7 +230,8 @@ namespace Player.Core
 
 		private void UpdateVisuals(bool isValid = false)
 		{
-			PlayerCursorVisualizer cursorVisualizer = m_worldControllerManager.CursorVisualizer;
+			PlayerCursorVisualizer cursorVisualizer = 
+				m_worldControllerManager.CursorVisualizer;
 
 			if (m_blueprintData == null)
 			{
