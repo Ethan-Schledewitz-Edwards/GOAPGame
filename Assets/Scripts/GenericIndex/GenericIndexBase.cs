@@ -30,6 +30,7 @@ namespace GenericIndex
 		}
 
 #if UNITY_EDITOR
+
 		public void PopulateUniqueAssets()
 		{
 			string[] guids = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}");

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
-  m_Name: Wood_Item_SaveableEntityPrefabData
-  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  m_id: Wood_Item_SaveableEntityPrefabData
-  <EntityPrefab>k__BackingField: {fileID: 1874837442947906605, guid: ef83c1d186251ad47aae7488708f1e49, type: 3}
+  m_Name: Peon_SaveableEntityPrefabData
+  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SavableEntityPrefabData
+  m_id: 
+  <EntityPrefab>k__BackingField: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}

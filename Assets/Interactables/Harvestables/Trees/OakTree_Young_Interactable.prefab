@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
-  m_savablePrefabData: {fileID: 0}
+  m_savablePrefabData: {fileID: 11400000, guid: bf97a67a53f97d54f9956caf1a78310f, type: 2}
   m_guid: 
   <IsManuallyAuthored>k__BackingField: 1
 --- !u!1 &6670668404327998910

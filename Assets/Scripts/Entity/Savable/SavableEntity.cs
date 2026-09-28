@@ -3,6 +3,7 @@ using GenericIndex;
 using SaveLoad.Core;
 using SaveLoad.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WorldManagement.AuthoredTiles;
@@ -44,9 +45,11 @@ namespace Entities.Savable
 
 		private LayerMask m_collisionLayerMask;
 
-		private static readonly Dictionary<string, SaveableEntity> s_entitiesByGuid = new();
+		private Coroutine m_registerOnEnabledRoutine;
 
 		#region Static State
+
+		private static readonly Dictionary<string, SaveableEntity> s_entitiesByGuid = new();
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void ResetStaticState()
@@ -125,7 +128,7 @@ namespace Entities.Savable
 			m_entity = GetComponent<Entity>();
 
 			if (m_entity != null)
-				m_entity.EntityChunkChanged += RegisterToClosestChunk;
+				m_entity.EntityChunkChanged += OnEntityChunkChanged;
 
 			m_collider = GetComponent<Collider>();
 			m_rigidbody = GetComponent<Rigidbody>();
@@ -146,7 +149,9 @@ namespace Entities.Savable
 						$"has no serialized GUID!!!", this);
 				}
 				else
+				{
 					TryRegisterGuid(m_guid);
+				}
 			}
 			else
 			{
@@ -168,14 +173,22 @@ namespace Entities.Savable
 
 		private void OnEnable()
 		{
+			StopRegistrationRoutine();
+
+			// Try registering to current position chunk with for two seconds
 			Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
-			RegisterToClosestChunk(chunkXZ);
+			m_registerOnEnabledRoutine = StartCoroutine(RegisterToChunkWithTimeoutRoutine(chunkXZ, 2.0f));
+		}
+
+		private void OnDisable()
+		{
+			StopRegistrationRoutine();
 		}
 
 		private void OnDestroy()
 		{
 			if (m_entity != null)
-				m_entity.EntityChunkChanged -= RegisterToClosestChunk;
+				m_entity.EntityChunkChanged -= OnEntityChunkChanged;
 
 			UnregisterFromCurrentChunk();
 			UnregisterGuid();
@@ -183,25 +196,45 @@ namespace Entities.Savable
 
 		#region Chunk Registration
 
-		private void RegisterToClosestChunk(Vector2Int chunkXZ)
+		private void OnEntityChunkChanged(Vector2Int newChunkXZ)
 		{
-			if (m_isRegisteredToChunk)
+			StopRegistrationRoutine();
+			m_registerOnEnabledRoutine = StartCoroutine(RegisterToChunkWithTimeoutRoutine(newChunkXZ, 2.0f));
+		}
+
+		private IEnumerator RegisterToChunkWithTimeoutRoutine(Vector2Int chunkXZ, float timeoutSeconds)
+		{
+			float timer = 0f;
+			while (timer < timeoutSeconds)
 			{
-				if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk previousChunk))
+				if (TryRegisterToChunk(chunkXZ))
 				{
-					previousChunk.UnregisterEntity(gameObject);
+					m_registerOnEnabledRoutine = null;
+					yield break; // Registered
 				}
+
+				timer += Time.deltaTime;
+				yield return null;
 			}
 
+			Debug.LogWarning($"[SaveableEntity] '{name}' failed to register to " +
+				$"chunk {chunkXZ} after {timeoutSeconds} seconds (Timed Out).", this);
+
+			m_registerOnEnabledRoutine = null;
+			gameObject.SetActive(false);
+		}
+
+		private bool TryRegisterToChunk(Vector2Int chunkXZ)
+		{
 			if (!WorldManager.TryGetActiveChunkData(chunkXZ, out TerrainChunk newChunk))
 			{
-				Debug.LogWarning($"[SaveableEntity] '{name}' attempted to register " +
-					$"to unloaded chunk {chunkXZ}. " +
-					$"The chunk loader must load the chunk " +
-					$"before the entity moves into it.",
-					this);
+				return false;
+			}
 
-				return;
+			// Unregister from old chunk if changing locations
+			if (m_isRegisteredToChunk && m_chunkXZ != chunkXZ)
+			{
+				UnregisterFromCurrentChunk();
 			}
 
 			m_chunkXZ = chunkXZ;
@@ -209,6 +242,21 @@ namespace Entities.Savable
 
 			newChunk.RegisterEntity(gameObject);
 			UpdateChunkParent(chunkXZ);
+
+			return true;
+		}
+
+		private void UnregisterFromCurrentChunk()
+		{
+			if (!m_isRegisteredToChunk)
+				return;
+
+			if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk chunk))
+			{
+				chunk.UnregisterEntity(gameObject);
+			}
+
+			m_isRegisteredToChunk = false;
 		}
 
 		private void UpdateChunkParent(Vector2Int chunkXZ)
@@ -234,15 +282,13 @@ namespace Entities.Savable
 			}
 		}
 
-		private void UnregisterFromCurrentChunk()
+		private void StopRegistrationRoutine()
 		{
-			if (!m_isRegisteredToChunk)
-				return;
-
-			if (WorldManager.TryGetActiveChunkData(m_chunkXZ, out TerrainChunk chunk))
-				chunk.UnregisterEntity(gameObject);
-
-			m_isRegisteredToChunk = false;
+			if (m_registerOnEnabledRoutine != null)
+			{
+				StopCoroutine(m_registerOnEnabledRoutine);
+				m_registerOnEnabledRoutine = null;
+			}
 		}
 
 		#endregion
@@ -358,7 +404,13 @@ namespace Entities.Savable
 			transform.SetPositionAndRotation(position, rotation);
 			TransformRestored?.Invoke(position, rotation);
 
-			RegisterToClosestChunk(CoordinateUtility.WorldToChunkXZ(position));
+			// Attempt to register to chunk, fallback to timed routine if chunk not ready.
+			Vector2Int targetChunkXZ = CoordinateUtility.WorldToChunkXZ(position);
+			if (!TryRegisterToChunk(targetChunkXZ))
+			{
+				StopRegistrationRoutine();
+				m_registerOnEnabledRoutine = StartCoroutine(RegisterToChunkWithTimeoutRoutine(targetChunkXZ, 2.0f));
+			}
 
 			// Restore components
 			ISaveableComponent[] components = GetComponentsInChildren<ISaveableComponent>(true);
