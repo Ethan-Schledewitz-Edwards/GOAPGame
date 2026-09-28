@@ -25,5 +25,9 @@ namespace InventorySystem.Items
 				return m_itemTagCache;
 			}
 		}
+
+#if UNITY_EDITOR
+		public void SetID(string id) => m_id = id;
+#endif
 	}
 }

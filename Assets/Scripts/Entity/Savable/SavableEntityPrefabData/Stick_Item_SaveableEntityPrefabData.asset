@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99ce637ed8e754419bc5c104a8a4309, type: 3}
   m_Name: Stick_Item_SaveableEntityPrefabData
   m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityPrefabData
-  <PrefabKey>k__BackingField: Stick_Item
   <EntityPrefab>k__BackingField: {fileID: 1874837442947906605, guid: 5b36e768f8738774e93279f9eb240148, type: 3}
+  m_id: Stick_Item_SaveableEntityPrefabData

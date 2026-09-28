@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca799cce3dc89b408708cab416bd281, type: 3}
   m_Name: Stick_ItemData
   m_EditorClassIdentifier: InventorySystem::InventorySystem.Items.ItemData
-  <ItemID>k__BackingField: 1
-  <ItemName>k__BackingField: Stick
+  m_id: Stick_ItemData
+  <DisplayName>k__BackingField: 
   <MaxStackSize>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 1874837442947906605, guid: 5b36e768f8738774e93279f9eb240148, type: 3}
   m_itemTags:

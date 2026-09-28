@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca799cce3dc89b408708cab416bd281, type: 3}
   m_Name: Stone_ItemData
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  <ItemID>k__BackingField: 2
-  <ItemName>k__BackingField: Stone
+  m_id: Stone_ItemData
+  <DisplayName>k__BackingField: 
   <MaxStackSize>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 6673996059420899831, guid: 3ad4e379c4f97e34aa810cacaed6ee78, type: 3}
   m_itemTags:

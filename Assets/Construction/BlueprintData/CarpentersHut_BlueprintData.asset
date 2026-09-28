@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
   m_Name: CarpentersHut_BlueprintData
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
-  <BlueprintDataID>k__BackingField: 0
+  m_id: CarpentersHut_BlueprintData
   <DisplayName>k__BackingField: Carpenters Hut
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:

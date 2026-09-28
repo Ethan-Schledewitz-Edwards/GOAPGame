@@ -51,14 +51,14 @@ namespace GenericIndex
 				if (EditorUtility.DisplayDialog("Auto-Assign IDs?",
 					"This will reset all IDs to match the current order of your data array. Proceed?", "Yes", "No"))
 				{
-					var method = targetType.GetMethod("AssignNewIDs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+					var method = targetType.GetMethod("AssignAssetIDs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 					if (method != null)
 					{
 						method.Invoke(target, null);
 					}
 					else
 					{
-						Debug.LogError("Could not find method 'AssignNewIDs' via reflection. Ensure it is not misspelled.");
+						Debug.LogError("Could not find method 'AssignAssetIDs' via reflection. Ensure it is not misspelled.");
 					}
 				}
 			}

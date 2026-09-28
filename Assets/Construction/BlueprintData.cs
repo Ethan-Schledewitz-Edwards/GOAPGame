@@ -18,5 +18,9 @@ namespace Construction
 		[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
 		[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 0.2f;
 		[field: SerializeField] public InteractionPositionConfig[] InteractionPositions { get; private set; }
+
+#if UNITY_EDITOR
+		public void SetID(string id) => m_id = id;
+#endif
 	}
 }

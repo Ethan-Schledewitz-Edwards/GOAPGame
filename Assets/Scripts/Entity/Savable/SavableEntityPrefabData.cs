@@ -8,7 +8,11 @@ namespace Entities.Savable
 	{
 		[field: SerializeField] public GameObject EntityPrefab { get; private set; }
 
-		[SerializeField] private string m_key;
-		public string ID => m_key;
+		[SerializeField] private string m_id;
+		public string ID => m_id;
+
+#if UNITY_EDITOR
+		public void SetID(string id) => m_id = id;
+#endif
 	}
 }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca799cce3dc89b408708cab416bd281, type: 3}
   m_Name: Wood_ItemData
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  <ItemID>k__BackingField: 3
-  <ItemName>k__BackingField: Wood
+  m_id: Wood_ItemData
+  <DisplayName>k__BackingField: 
   <MaxStackSize>k__BackingField: 100
   <ItemPrefab>k__BackingField: {fileID: 1874837442947906605, guid: ef83c1d186251ad47aae7488708f1e49, type: 3}
   m_itemTags:

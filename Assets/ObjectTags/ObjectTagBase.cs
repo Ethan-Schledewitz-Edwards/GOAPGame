@@ -9,5 +9,9 @@ namespace ObjectTags
 		public string ID => m_id;
 
 		[SerializeField, TextArea(10, 5)] private string DeveloperNotes;
+
+#if UNITY_EDITOR
+		public void SetID(string id) => m_id = id;
+#endif
 	}
 }
