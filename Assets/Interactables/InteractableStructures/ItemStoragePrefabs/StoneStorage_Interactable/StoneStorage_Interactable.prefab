@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 4229108502621824834}
   - component: {fileID: 7252548703486566623}
   - component: {fileID: 3638441544696181070}
+  - component: {fileID: 7207726111330700032}
+  - component: {fileID: 8608265597305881377}
   m_Layer: 7
   m_Name: StoneStorage_Interactable
   m_TagString: Untagged
@@ -107,6 +109,34 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7, y: 2, z: 2.7}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &7207726111330700032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141740547682511482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
+  m_canUpdatePosition: 1
+--- !u!114 &8608265597305881377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141740547682511482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
+  m_savablePrefabData: {fileID: 0}
+  m_guid: 99a413af-4980-4b8a-a1bf-5e17a0c182cd
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!1 &2007416522533679037
 GameObject:
   m_ObjectHideFlags: 0

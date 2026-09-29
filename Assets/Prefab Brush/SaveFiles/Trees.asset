@@ -15,7 +15,7 @@ MonoBehaviour:
   prefabList: []
   prefabData:
   - prefab: {fileID: 3778585277737840742, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
-    selected: 0
+    selected: 1
   - prefab: {fileID: 3778585277737840742, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
     selected: 1
   paintType: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
   draggingAction: 0
   rotationAxis: 0
   rotationSensitivity: 10
-  applyParent: 1
+  applyParent: 0
   parentingStyle: 0
   parent: {fileID: 0}
   rotateToMatchSurface: 0
@@ -104,4 +104,4 @@ MonoBehaviour:
   disableBrushHoldKey: 0
   filterFlags: 0
   eraseFilterFlags: 0
-  modFlags: 4
+  modFlags: 0

@@ -1,3 +1,4 @@
+using SaveLoad.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,7 @@ public class ActorManager : MonoBehaviour
 
 	// Components
 	[SerializeField] private Transform m_player;
+	private ISavableEntity m_playerSaveEntity;
 
 	// Events
 	public event Action<Actor> FollowingActorLoaded;
@@ -49,7 +51,15 @@ public class ActorManager : MonoBehaviour
 		enabled = false;
 		s_Actors.Clear();
 
-		if (m_player == null)
+		if (m_player != null)
+		{
+			if (m_player.TryGetComponent(out ISavableEntity savable))
+			{
+				m_playerSaveEntity = savable;
+				m_playerSaveEntity.TransformRestored += HandleGameLoaded;
+			}
+		}
+		else
 		{
 			Debug.LogWarning("[ActorManager] No reference to the player's transform was set. The system cannot work without " +
 				"the reference for proximity calculations.", this);
@@ -62,6 +72,12 @@ public class ActorManager : MonoBehaviour
 		if (Instance == this)
 		{
 			Instance = null;
+
+			if(m_playerSaveEntity != null)
+			{
+				m_playerSaveEntity.TransformRestored -= HandleGameLoaded;
+			}
+
 			s_Actors.Clear();
 		}
 	}

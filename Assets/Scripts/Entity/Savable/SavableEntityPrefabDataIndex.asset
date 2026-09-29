@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8163ce1ed665af541938791b47570d79, type: 3}
+  m_Name: SavableEntityPrefabDataIndex
+  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SavableEntityIndex
+  <assets>k__BackingField:
+  - {fileID: 11400000, guid: e9dc6ca03b2fbe24897ea9f6c2a4e351, type: 2}
+  - {fileID: 11400000, guid: 2d9dc667733c7d24b9ed64cc77ef59bb, type: 2}
+  - {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
+  - {fileID: 11400000, guid: 8bafd1e26fc88a443b0400675490750c, type: 2}
+  - {fileID: 11400000, guid: 5f343c2a4d7fb50449505a0a054e5f17, type: 2}
+  - {fileID: 11400000, guid: 81d5b0d3ee47e4e479800c118ba454f4, type: 2}
+  - {fileID: 11400000, guid: ae181be7fac41b3469526e109dca1b04, type: 2}
+  - {fileID: 11400000, guid: bf97a67a53f97d54f9956caf1a78310f, type: 2}
+  - {fileID: 11400000, guid: d67ffe46d76e2fe4eb4881fb5a4a0f69, type: 2}

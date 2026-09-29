@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 986855869424821196}
   - component: {fileID: 3683834564411842312}
   - component: {fileID: 9142140113109620756}
+  - component: {fileID: 7122403342067172847}
   - component: {fileID: 43451550283000952}
   - component: {fileID: 8676248710036981082}
   - component: {fileID: 8496172798646482293}
@@ -321,6 +322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 852fecdcf5542e845b8511513c69e706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Actor
+  m_canUpdatePosition: 1
   <ActorFaction>k__BackingField: 1
   m_interactionLayers:
     serializedVersion: 2
@@ -416,6 +418,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dabd2efe05671e449416eac077d7f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AI.Actor.Strategies::ActorStrategyBuilder
+--- !u!114 &7122403342067172847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
+  m_savablePrefabData: {fileID: 11400000, guid: 67f0bd79e65295342a68dae0246d1e21, type: 2}
+  m_guid: 
+  <IsManuallyAuthored>k__BackingField: 0
 --- !u!82 &43451550283000952
 AudioSource:
   m_ObjectHideFlags: 0

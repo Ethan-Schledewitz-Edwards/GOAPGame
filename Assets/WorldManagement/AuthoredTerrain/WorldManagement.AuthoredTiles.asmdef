@@ -1,0 +1,16 @@
+{
+    "name": "WorldManagement.AuthoredTiles",
+    "rootNamespace": "WorldManagement.AuthoredTiles",
+    "references": [
+        "GUID:a39e3cb598875424c9296d54a5202212"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

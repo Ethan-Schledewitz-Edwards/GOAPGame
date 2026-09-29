@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using Construction;
+using Entities.Core;
 using AssetIndex.Core;
 using InventorySystem;
 using ObjectTags;
@@ -18,6 +19,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 
+		private Entity m_entity;
 		protected ItemRequestComponent m_itemRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
 
@@ -35,6 +37,9 @@ namespace Interaction.InteractableStructures.Blueprints
 		protected virtual void Awake()
 		{
 			InitializeBehaviourTree();
+
+			m_entity = GetComponent<Entity>();
+			m_entity.EnableDynamicPositionUpdates(false);
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 
