@@ -46,7 +46,6 @@ public class ActorManager : MonoBehaviour
 		}
 
 		Instance = this;
-		enabled = false;
 		s_Actors.Clear();
 
 		if (m_player == null)
@@ -68,18 +67,16 @@ public class ActorManager : MonoBehaviour
 
 	private void Update()
 	{
+		m_playerPosition = m_player.transform.position;
+
 		TickActors(Time.deltaTime);
 	}
 
-	public bool TryAddActor(Actor actor, bool loadedFromSaveFile)
+	public bool TryAddActor(Actor actor)
 	{
 		if (!s_Actors.Contains(actor))
 		{
 			s_Actors.Add(actor);
-
-			if (loadedFromSaveFile &&
-				actor.LogicExecutorState == EActorState.STATE_Follow)
-				FollowingActorLoaded?.Invoke(actor);
 
 			return true;
 		}
@@ -145,15 +142,5 @@ public class ActorManager : MonoBehaviour
 
 			m_accumulatedTime -= k_tpsThreshold;
 		}
-	}
-
-	public void SetPlayerPosition(Vector3 playerPosition)
-	{
-		m_playerPosition = playerPosition;
-	}
-
-	private void HandleGameLoaded(Vector3 playerPosition, Quaternion playerRotation)
-	{
-		enabled = true;
 	}
 }

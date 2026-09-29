@@ -43,11 +43,9 @@ public class Actor : MonoBehaviour, IInteractor
 	public float JobSearchRange => c_searchForJobRange;
 	public float InteractionDistanceSqrt { get; private set; }
 	public int SettlementID { get; private set; } = 0; // Settlement ID actor inhabits
-	public int WorkstationID { get; private set; } = 0; // Structure ID actor resides in
 
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; } = default;
-	private bool m_isActorAddedToManager;
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
@@ -72,7 +70,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 	private void Start()
 	{
-		RegisterToManager();
+		ActorManager.Instance.TryAddActor(this);
 	}
 
 	private void OnEnable()
@@ -103,7 +101,7 @@ public class Actor : MonoBehaviour, IInteractor
 			return;
 
 		ActorHealth?.TickStats(t);
-
+		Debug.Log("TICKED");
 		Pathing?.TickAIPathing();
 
 		// Prevent job acquisition until the investigation destination has been reached.
@@ -478,20 +476,6 @@ public class Actor : MonoBehaviour, IInteractor
 					Debug.Log($"Found Job: {m_targetInteractable} \n Interaction Position {m_assignedInteractionPosition}.", this);
 				}
 			}
-		}
-	}
-
-	private void RegisterToManager()
-	{
-		if (m_isActorAddedToManager)
-			return;
-
-		if (ActorManager.Instance != null)
-		{
-			bool isFollower = LogicExecutorState == EActorState.STATE_Follow;
-
-			m_isActorAddedToManager = 
-				ActorManager.Instance.TryAddActor(this, isFollower);
 		}
 	}
 }
