@@ -66,7 +66,8 @@ namespace Player.Core
 				foreach (Collider i in hitColliders)
 				{
 					Actor actor = i.GetComponent<Actor>();
-					if (actor != null)
+					if (actor != null &&
+						actor.ActorFaction == Factions.Core.EFaction.FACTION_PLAYER)
 					{
 						AddFollower(actor);
 					}
