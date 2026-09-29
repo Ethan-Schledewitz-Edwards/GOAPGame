@@ -22,54 +22,18 @@ namespace Entities.Savable
 		private const string c_prefabDataSaveFolderPath =
 			"Assets/Scripts/Entity/Savable/SavableEntityPrefabData/";
 
-		private SerializedProperty m_isManuallyAuthoredProp;
 		private SerializedProperty m_savablePrefabDataProp;
-		private SerializedProperty m_guidProp;
 
 		private void OnEnable()
 		{
-			m_isManuallyAuthoredProp = serializedObject.FindProperty("<IsManuallyAuthored>k__BackingField");
 			m_savablePrefabDataProp = serializedObject.FindProperty("m_savablePrefabData");
-			m_guidProp = serializedObject.FindProperty("m_guid");
 		}
 
 		public override void OnInspectorGUI()
 		{
 			serializedObject.Update();
 
-			GUI.enabled = false;
-			EditorGUILayout.PropertyField(m_guidProp);
-			GUI.enabled = true;
-
-			EditorGUILayout.PropertyField(m_isManuallyAuthoredProp);
 			EditorGUILayout.PropertyField(m_savablePrefabDataProp);
-
-			bool isPrefabStageOrAsset = PrefabStageUtility.GetCurrentPrefabStage() != null ||
-				EditorUtility.IsPersistent(target);
-
-			// Correctly check if GUID string is empty
-			if (!isPrefabStageOrAsset)
-			{
-				GUI.enabled = false;
-				EditorGUILayout.PropertyField(m_guidProp);
-				GUI.enabled = true;
-
-				if (string.IsNullOrEmpty(m_guidProp.stringValue))
-				{
-					EditorGUILayout.Space();
-					EditorGUILayout.HelpBox("This entity is missing a GUID. " +
-						"Generate one before saving.", MessageType.Error);
-
-					if (GUILayout.Button("Generate GUID", GUILayout.Height(30)))
-					{
-						m_guidProp.stringValue = System.Guid.NewGuid().ToString();
-						serializedObject.ApplyModifiedProperties();
-
-						EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-					}
-				}
-			}
-
 			if (m_savablePrefabDataProp.objectReferenceValue == null)
 			{
 				EditorGUILayout.Space();

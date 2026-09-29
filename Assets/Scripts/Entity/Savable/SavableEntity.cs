@@ -14,12 +14,15 @@ namespace Entities.Savable
 	[RequireComponent(typeof(Entities.Core.Entity))]
 	public class SavableEntity : MonoBehaviour, ISavableEntity
 	{
+		public string GUID => m_guid;
+
+		[SerializeField, HideInInspector]
+		private string m_guid = "";
+
+		[SerializeField, HideInInspector]
+		private bool m_isManuallyAuthored = false;
+
 		[SerializeField] private SavableEntityPrefabData m_savablePrefabData;
-
-		[SerializeField] private string m_guid = "";
-
-		[field: SerializeField, Tooltip("Should be true when an object is not spawned at run-time.")] 
-		public bool IsManuallyAuthored { get; private set; } = false;
 
 		// ISavableEntity properties
 		public bool SavedByChunks => true;
@@ -46,7 +49,7 @@ namespace Entities.Savable
 
 		private Coroutine m_registerOnEnabledRoutine;
 
-		#region Static State
+		#region GUID
 
 		private static readonly Dictionary<string, SavableEntity> s_entitiesByGuid = new();
 
@@ -77,53 +80,105 @@ namespace Entities.Savable
 			return true;
 		}
 
-		private bool TryRegisterGuid(string guid)
-		{
-			if (string.IsNullOrEmpty(guid))
-			{
-				Debug.LogError($"[SaveableEntity] '{name}' cannot register an empty GUID.", this);
-
-				return false;
-			}
-
-			if (s_entitiesByGuid.TryGetValue(guid, out SavableEntity existing))
-			{
-				if (existing != null && existing != this)
-				{
-					Debug.LogError($"[SaveableEntity] Duplicate GUID '{guid}'.\n" +
-						$"Existing: '{existing.name}'\n" +
-						$"Duplicate: '{name}'",
-						this);
-
-					return false;
-				}
-
-				s_entitiesByGuid.Remove(guid);
-			}
-
-			m_guid = guid;
-			s_entitiesByGuid[guid] = this;
-
-			return true;
-		}
-
-		private void UnregisterGuid()
+		private void RegisterGuid()
 		{
 			if (string.IsNullOrEmpty(m_guid))
+			{
+				Debug.LogError($"[SavableEntity] '{name}' has no GUID.", this);
+				return;
+			}
+
+			if (s_entitiesByGuid.TryGetValue(m_guid, out SavableEntity existing) &&
+				existing != null &&
+				existing != this)
+			{
+				Debug.LogError($"[SavableEntity] Duplicate GUID '{m_guid}' detected on " +
+					$"'{name}' and '{existing.name}'.", this);
+
+				return;
+			}
+
+			s_entitiesByGuid[m_guid] = this;
+		}
+
+		private void SetGuid(string newGuid)
+		{
+			if (string.IsNullOrEmpty(newGuid))
 				return;
 
-			if (s_entitiesByGuid.TryGetValue(m_guid,
-				out SavableEntity registeredEntity) &&
-				registeredEntity == this)
+			if (m_guid == newGuid)
+			{
+				s_entitiesByGuid[m_guid] = this;
+				return;
+			}
+
+			// Remove our previous registration.
+			if (!string.IsNullOrEmpty(m_guid) &&
+				s_entitiesByGuid.TryGetValue(m_guid, out SavableEntity existing) &&
+				existing == this)
 			{
 				s_entitiesByGuid.Remove(m_guid);
 			}
+
+			m_guid = newGuid;
+
+			// Prevent duplicate GUID's
+			if (s_entitiesByGuid.TryGetValue(m_guid, out SavableEntity other) &&
+				other != null &&
+				other != this)
+			{
+				Debug.LogError($"[SavableEntity] Cannot assign GUID '{m_guid}' to '{name}'. " +
+					$"It is already owned by '{other.name}'.", this);
+
+				return;
+			}
+
+			s_entitiesByGuid[m_guid] = this;
 		}
 
 		#endregion
 
+#if UNITY_EDITOR
+		private void OnValidate()
+		{
+			if (UnityEditor.EditorApplication.isPlaying)
+				return;
+
+			// Never give Prefabs a GUID
+			if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
+			{
+				if (!string.IsNullOrEmpty(m_guid) || m_isManuallyAuthored)
+				{
+					m_guid = string.Empty;
+					m_isManuallyAuthored = false;
+
+					UnityEditor.EditorUtility.SetDirty(this);
+				}
+
+				return;
+			}
+
+			// Give instances a unique GUID
+			if (gameObject.scene.IsValid() && !m_isManuallyAuthored)
+			{
+				if (string.IsNullOrEmpty(m_guid))
+					m_guid = Guid.NewGuid().ToString();
+
+				m_isManuallyAuthored = true;
+
+				UnityEditor.EditorUtility.SetDirty(this);
+			}
+		}
+#endif
+
 		private void Awake()
 		{
+			if (!m_isManuallyAuthored && 
+				string.IsNullOrEmpty(m_guid))
+			{
+				m_guid = Guid.NewGuid().ToString();
+			}
+
 			m_entity = GetComponent<Entity>();
 
 			if (m_entity != null)
@@ -140,30 +195,12 @@ namespace Entities.Savable
 
 			DisablePhysicsAndCollision();
 
-			if (IsManuallyAuthored)
-			{
-				if (string.IsNullOrEmpty(m_guid))
-				{
-					Debug.LogError($"[SaveableEntity] Authored entity '{name}' " +
-						$"has no serialized GUID!!!", this);
-				}
-				else
-				{
-					TryRegisterGuid(m_guid);
-				}
-			}
-			else
-			{
-				m_guid = Guid.NewGuid().ToString();
-
-				TryRegisterGuid(m_guid);
-			}
-
 			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
 		}
 
 		private void Start()
 		{
+			RegisterGuid();
 			EnablePhysicsAndCollision();
 
 			Vector2Int chunkXZ = CoordinateUtility.WorldToChunkXZ(transform.position);
@@ -190,7 +227,11 @@ namespace Entities.Savable
 				m_entity.EntityChunkChanged -= OnEntityChunkChanged;
 
 			UnregisterFromCurrentChunk();
-			UnregisterGuid();
+
+			if (!string.IsNullOrEmpty(GUID))
+			{
+				s_entitiesByGuid.Remove(GUID);
+			}
 		}
 
 		#region Chunk Registration
@@ -292,6 +333,34 @@ namespace Entities.Savable
 
 		#endregion
 
+		#region Physics
+
+		private void EnablePhysicsAndCollision()
+		{
+			if (m_collider != null)
+				m_collider.enabled = true;
+
+			if (m_rigidbody != null)
+			{
+				m_rigidbody.useGravity = m_useGravityByDefault;
+				m_rigidbody.isKinematic = m_isKinematicByDefault;
+			}
+		}
+
+		private void DisablePhysicsAndCollision()
+		{
+			if (m_collider != null)
+				m_collider.enabled = false;
+
+			if (m_rigidbody != null)
+			{
+				m_rigidbody.useGravity = false;
+				m_rigidbody.isKinematic = true;
+			}
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Gathers data from all ISaveableComponent scripts on this GameObject
 		/// </summary>
@@ -304,7 +373,7 @@ namespace Entities.Savable
 				return null;
 			}
 
-			if (string.IsNullOrEmpty(m_guid))
+			if (string.IsNullOrEmpty(GUID))
 			{
 				Debug.LogError($"[SaveableEntity] '{name}' has no GUID and cannot be saved.", this);
 
@@ -316,7 +385,7 @@ namespace Entities.Savable
 
 			SerializableEntityData data = new SerializableEntityData
 			{
-				GUID = m_guid,
+				GUID = GUID,
 
 				PrefabKey = m_savablePrefabData.ID,
 				PosX = position.x,
@@ -375,24 +444,20 @@ namespace Entities.Savable
 			if (data == null)
 				return false;
 
-			if (string.IsNullOrEmpty(data.GUID))
+			if (!m_isManuallyAuthored)
 			{
-				Debug.LogError($"[SaveableEntity] Attempted to restore '{name}' " +
-					$"from save data with no GUID.", this);
-
-				return false;
+				SetGuid(data.GUID);
+			}
+			else if (m_guid != data.GUID)
+			{
+				Debug.LogWarning(
+					$"[SavableEntity] Manually authored entity '{name}' " +
+					$"has GUID '{m_guid}', but save data contains '{data.GUID}'. " +
+					$"Keeping the authored GUID.",
+					this);
 			}
 
-			UnregisterGuid();
-			if (!TryRegisterGuid(data.GUID))
-			{
-				Debug.LogError($"[SaveableEntity] Could not restore '{name}' " +
-					$"because GUID '{data.GUID}' already belongs to another entity.", this);
-
-				return false;
-			}
-
-			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
+				Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 
 			Quaternion rotation = 
 				new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
@@ -467,33 +532,5 @@ namespace Entities.Savable
 			EnablePhysicsAndCollision();
 			return true;
 		}
-
-		#region Physics
-
-		private void EnablePhysicsAndCollision()
-		{
-			if (m_collider != null)
-				m_collider.enabled = true;
-
-			if (m_rigidbody != null)
-			{
-				m_rigidbody.useGravity = m_useGravityByDefault;
-				m_rigidbody.isKinematic = m_isKinematicByDefault;
-			}
-		}
-
-		private void DisablePhysicsAndCollision()
-		{
-			if (m_collider != null)
-				m_collider.enabled = false;
-
-			if (m_rigidbody != null)
-			{
-				m_rigidbody.useGravity = false;
-				m_rigidbody.isKinematic = true;
-			}
-		}
-
-		#endregion
 	}
 }
