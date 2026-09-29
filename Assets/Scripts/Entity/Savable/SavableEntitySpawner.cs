@@ -35,7 +35,7 @@ namespace Entities.Savable
 
 				if (isAuthoredWorld)
 				{
-					TrySpawnPersistentSavableEntity(chunk, entityData);
+					TrySpawnAuthoredSavableEntity(chunk, entityData);
 				}
 				else
 				{
@@ -46,7 +46,7 @@ namespace Entities.Savable
 
 		private void TrySpawnSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
-			// Loading the same GUID twice must never create two entities.
+			// Loading the same GUID twice shouldn't create two entities.
 			if (SavableEntity.TryGetByGuid(entityData.GUID, out SavableEntity existing))
 			{
 				Debug.LogWarning($"[SavableEntitySpawner] Entity GUID " +
@@ -58,6 +58,7 @@ namespace Entities.Savable
 				return;
 			}
 
+			// Get prefab data
 			SavableEntityPrefabData prefabData = FindPrefabData(entityData);
 			if (prefabData == null)
 			{
@@ -68,6 +69,7 @@ namespace Entities.Savable
 				return;
 			}
 
+			// Get prefab asset from data
 			GameObject prefab = prefabData.EntityPrefab;
 			if (prefab == null)
 			{
@@ -77,6 +79,7 @@ namespace Entities.Savable
 				return;
 			}
 
+			// Spawn the prefab
 			GameObject spawnedEntity = Instantiate(prefab);
 			if (!spawnedEntity.TryGetComponent(out SavableEntity saveableEntity))
 			{
@@ -87,6 +90,7 @@ namespace Entities.Savable
 				return;
 			}
 
+			// Restore save data
 			if (!saveableEntity.RestoreFromSaveData(entityData))
 			{
 				Destroy(spawnedEntity);
@@ -96,7 +100,7 @@ namespace Entities.Savable
 			chunk.RegisterEntity(spawnedEntity);
 		}
 
-		private void TrySpawnPersistentSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
+		private void TrySpawnAuthoredSavableEntity(TerrainChunk chunk, SerializableEntityData entityData)
 		{
 			if (SavableEntity.TryGetByGuid(entityData.GUID, out SavableEntity existing))
 			{
@@ -109,7 +113,7 @@ namespace Entities.Savable
 				return;
 			}
 
-			// The entity either has the wrong GUID or is not authored savable.
+			// The entity either has the wrong GUID or is not an authored savable.
 			// Fallback by spawning the entity normally.
 			TrySpawnSavableEntity(chunk, entityData);
 		}

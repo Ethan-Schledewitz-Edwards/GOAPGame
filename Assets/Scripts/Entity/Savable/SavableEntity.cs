@@ -361,6 +361,8 @@ namespace Entities.Savable
 
 		#endregion
 
+		#region ISavableEntity Methods
+
 		/// <summary>
 		/// Gathers data from all ISaveableComponent scripts on this GameObject
 		/// </summary>
@@ -457,9 +459,9 @@ namespace Entities.Savable
 					this);
 			}
 
-				Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
+			Vector3 position = new Vector3(data.PosX, data.PosY, data.PosZ);
 
-			Quaternion rotation = 
+			Quaternion rotation =
 				new Quaternion(data.RotX, data.RotY, data.RotZ, data.RotW).normalized;
 
 			transform.SetPositionAndRotation(position, rotation);
@@ -532,5 +534,6 @@ namespace Entities.Savable
 			EnablePhysicsAndCollision();
 			return true;
 		}
+		#endregion
 	}
 }

@@ -19,11 +19,10 @@ namespace WorldManagement.Core
 			ChunkX = chunk.ChunkXZ.x;
 			ChunkZ = chunk.ChunkXZ.y;
 
-			Vector2Int thisChunk = new Vector2Int(ChunkX, ChunkZ);
-
-			HashSet<string> savedGuids = new();
+			Vector2Int thisChunkXZ = new Vector2Int(ChunkX, ChunkZ);
 
 			// Populate SavableEntities
+			HashSet<string> savedGuids = new();
 			foreach (GameObject entityObj in chunk.ResidentEntities)
 			{
 				if (entityObj == null)
@@ -36,7 +35,7 @@ namespace WorldManagement.Core
 					continue;
 
 				if (!saveableEntity.IsRegisteredToChunk || 
-					saveableEntity.ChunkXZ != thisChunk)
+					saveableEntity.ChunkXZ != thisChunkXZ)
 					continue;
 
 				SerializableEntityData data = saveableEntity.GenerateSaveData();
@@ -47,8 +46,7 @@ namespace WorldManagement.Core
 				if (!savedGuids.Add(data.GUID))
 				{
 					Debug.LogError($"[SerializableChunkData] Duplicate entity GUID " +
-						$"'{data.GUID}' encountered while saving chunk " +
-						$"{thisChunk}. Skipping duplicate.");
+						$"'{data.GUID}' found while saving chunk {thisChunkXZ}. Skipping duplicate.");
 
 					continue;
 				}
