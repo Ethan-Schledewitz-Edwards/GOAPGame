@@ -42,7 +42,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
-		private void Start()
+		protected virtual void Start()
 		{
 			if (m_interactPositions == null || m_interactPositions.Length == 0)
 				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
@@ -63,7 +63,7 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new BTTimeoutNode(new FindItemEntityOfIDTask(storageTag), 2f),
+				new BTTimeoutNode(new FindItemOfIDTask(storageTag), 2f),
 				new ReserveInteractionPositionTask(),
 				new MoveToInteractionPositionTask(),
 				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),

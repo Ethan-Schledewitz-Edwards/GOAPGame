@@ -50,7 +50,7 @@ namespace Interaction.InteractableStructures
 
 			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 			{
-				new BTTimeoutNode(new FindItemEntityOfTagTask(), 2f),
+				new BTTimeoutNode(new FindItemOfTagTask(), 2f),
 				new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
 				new MoveToInteractionPositionTask(),
 				new CheckForDestinationRangeTask(),

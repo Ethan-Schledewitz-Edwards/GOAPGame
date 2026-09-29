@@ -15,9 +15,9 @@ using UnityEngine;
 /// This node should be decorated with a <see cref="BTTimeoutNode"/> 
 /// and must be followed by a <see cref="ReserveInteractionPositionTask"/> node to reserve the target.
 /// </remarks>
-public class FindItemEntityOfTagTask : BTNodeBase
+public class FindItemOfTagTask : BTNodeBase
 {
-	private const int c_chunkSearchRadius = 2;
+	private const float c_searchRadius = 10f;
 	private const string c_ItemTagsKey = "FindItemEntityOfTagTask_ItemTags";
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
@@ -49,52 +49,47 @@ public class FindItemEntityOfTagTask : BTNodeBase
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
-	private Transform FindItemOfTags(Transform executorTransform, 
-		IInteractor interactor, 
+	private Transform FindItemOfTags(Transform executorTransform,
+		IInteractor interactor,
 		ItemTag[] itemTags)
 	{
 		Vector3 executorPosition = executorTransform.position;
 
-		//Vector2Int[] neighbourChunkCoordinates = 
-		//	ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
-
 		Transform nearest = null;
-		//float minDistanceSqr = float.MaxValue;
-		//foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
-		//{
-		//	TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
-		//	if (terrainChunk?.ResidentEntities == null)
-		//		continue;
+		float minDistanceSqr = float.MaxValue;
 
-		//	foreach (GameObject entity in terrainChunk.ResidentEntities)
-		//	{
-		//		if (entity == null)
-		//			continue;
+		Collider[] hitColliders = Physics.OverlapSphere(executorPosition, c_searchRadius);
+		for (int i = 0; i < hitColliders.Length; i++)
+		{
+			Collider col = hitColliders[i];
+			if (col == null) 
+				continue;
 
-		//		if (!entity.TryGetComponent(out IItemObject itemObject) ||
-		//			itemObject.IsItemStored ||
-		//			!(itemObject.ItemData is ITaggable<ItemTag> taggable))
-		//		{
-		//			continue;
-		//		}
+			GameObject entity = col.gameObject;
 
-		//		if (entity.TryGetComponent(out InteractableObjectBase interactable) &&
-		//			!interactable.HasAvailableWork(interactor))
-		//		{
-		//			continue;
-		//		}
+			if (!entity.TryGetComponent(out IItemObject itemObject) ||
+				itemObject.IsItemStored ||
+				!(itemObject.ItemData is ITaggable<ItemTag> taggable))
+			{
+				continue;
+			}
 
-		//		if (itemTags.Any(tag => taggable.HasTag(tag)))
-		//		{
-		//			float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
-		//			if (distSqr < minDistanceSqr)
-		//			{
-		//				minDistanceSqr = distSqr;
-		//				nearest = entity.transform;
-		//			}
-		//		}
-		//	}
-		//}
+			if (entity.TryGetComponent(out InteractableObjectBase interactable) &&
+				!interactable.HasAvailableWork(interactor))
+			{
+				continue;
+			}
+
+			if (itemTags.Any(tag => taggable.HasTag(tag)))
+			{
+				float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
+				if (distSqr < minDistanceSqr)
+				{
+					minDistanceSqr = distSqr;
+					nearest = entity.transform;
+				}
+			}
+		}
 
 		return nearest;
 	}

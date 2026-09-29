@@ -16,12 +16,12 @@ using Factions.Core;
 /// This node should be decorated with a <see cref="BTTimeoutNode"/> 
 /// and must be followed by a <see cref="ReserveInteractionPositionTask"/> node to reserve the target.
 /// </remarks>
-public class FindItemEntityOfIDTask : BTNodeBase
+public class FindItemOfIDTask : BTNodeBase
 {
-	private const int c_chunkSearchRadius = 2;
+	private const float c_searchRadius = 10f;
 	private readonly StructureTag m_storageTag;
 
-	public FindItemEntityOfIDTask(StructureTag storageTag) : base()
+	public FindItemOfIDTask(StructureTag storageTag) : base()
 	{
 		m_storageTag = storageTag;
 	}
@@ -57,45 +57,38 @@ public class FindItemEntityOfIDTask : BTNodeBase
 	{
 		Vector3 executorPosition = executorTransform.position;
 
-		//Vector2Int[] neighbourChunkCoordinates = 
-		//	ChunkUtility.GetChunkCoordinatesInRadius(executorPosition, c_chunkSearchRadius);
-
 		Transform nearest = null;
 		float minDistanceSqr = float.MaxValue;
 
-		//// Try to find the nearest item on the ground
-		//foreach (Vector2Int chunkXZ in neighbourChunkCoordinates)
-		//{
-		//	TerrainChunk terrainChunk = WorldManager.GetChunkData(chunkXZ);
-		//	if (terrainChunk?.ResidentEntities == null)
-		//		continue;
+		Collider[] hitColliders = Physics.OverlapSphere(executorPosition, c_searchRadius);
+		for (int i = 0; i < hitColliders.Length; i++)
+		{
+			Collider col = hitColliders[i];
+			if (col == null) 
+				continue;
 
-		//	foreach (GameObject entity in terrainChunk.ResidentEntities)
-		//	{
-		//		if (entity == null)
-		//			continue;
+			GameObject entity = col.gameObject;
 
-		//		if (!entity.TryGetComponent(out IItemObject itemObject) || 
-		//		    itemObject.IsItemStored || 
-		//		    itemObject.ItemData.ID != itemID)
-		//		{
-		//			continue;
-		//		}
+			if (!entity.TryGetComponent(out IItemObject itemObject) ||
+				itemObject.IsItemStored ||
+				itemObject.ItemData.ID != itemID)
+			{
+				continue;
+			}
 
-		//		if (entity.TryGetComponent(out InteractableObjectBase interactable) && 
-		//		    !interactable.HasAvailableWork(interactor))
-		//		{
-		//			continue;
-		//		}
+			if (entity.TryGetComponent(out InteractableObjectBase interactable) &&
+				!interactable.HasAvailableWork(interactor))
+			{
+				continue;
+			}
 
-		//		float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
-		//		if (distSqr < minDistanceSqr)
-		//		{
-		//			minDistanceSqr = distSqr;
-		//			nearest = entity.transform;
-		//		}
-		//	}
-		//}
+			float distSqr = (entity.transform.position - executorPosition).sqrMagnitude;
+			if (distSqr < minDistanceSqr)
+			{
+				minDistanceSqr = distSqr;
+				nearest = entity.transform;
+			}
+		}
 
 		// Try to find a friendly storage structure. (Only use it if it is closer than a ground item)
 		Transform nearestStorageStructure = FindStorageStructure(itemID, 

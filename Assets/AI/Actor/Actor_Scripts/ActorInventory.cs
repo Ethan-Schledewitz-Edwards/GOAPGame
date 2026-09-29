@@ -53,7 +53,6 @@ public class ActorInventory : InventoryComponent
 			Transform itemTransform = itemTransforms[0];
 			if (itemTransform.TryGetComponent(out ItemIO item))
 			{
-				Debug.Log("WHAT DID I BREAK?");
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
 				item.gameObject.SetActive(true);

@@ -101,7 +101,6 @@ public class Actor : MonoBehaviour, IInteractor
 			return;
 
 		ActorHealth?.TickStats(t);
-		Debug.Log("TICKED");
 		Pathing?.TickAIPathing();
 
 		// Prevent job acquisition until the investigation destination has been reached.
