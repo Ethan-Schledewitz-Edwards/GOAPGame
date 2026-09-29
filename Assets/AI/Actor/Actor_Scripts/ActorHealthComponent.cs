@@ -1,10 +1,8 @@
-using Entities.Core;
-using SaveLoad.Core;
 using System.Collections;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
 
-public class ActorHealthComponent : HealthComponent, ISaveableComponent
+public class ActorHealthComponent : HealthComponent
 {
 	// Constants
 	private const float c_hungerDegredation = 0.15f;
@@ -34,15 +32,6 @@ public class ActorHealthComponent : HealthComponent, ISaveableComponent
 	{
 		base.Awake();
 		m_actor = GetComponent<Actor>();
-
-		if (GetComponent<ISavableEntity>() != null)
-			GetComponent<ISavableEntity>().TransformRestored += HandleSpawned;
-	}
-
-	private void OnDestroy()
-	{
-		if (GetComponent<ISavableEntity>() != null)
-			GetComponent<ISavableEntity>().TransformRestored -= HandleSpawned;
 	}
 
 	private void HandleSpawned(Vector3 savedPosition, Quaternion savedRotation)

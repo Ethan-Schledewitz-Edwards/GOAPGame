@@ -1,5 +1,4 @@
 using BehaviourTrees;
-using Entities.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;
@@ -9,7 +8,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(Entity))]
+	[RequireComponent(typeof(InventoryComponent))]
 	public class ItemStorageIO : InteractableObjectBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_takeItemBT;
@@ -21,7 +20,6 @@ namespace Interaction.InteractableStructures
 		[SerializeField] private int m_maxCapacity = 4;
 		[SerializeField] private int m_actorsAssigned = 0;
 
-		private Entity m_entity;
 		public InventoryComponent InventoryComponent { get; private set; }
 
 		private int m_settlementID;
@@ -34,8 +32,6 @@ namespace Interaction.InteractableStructures
 
 		private void Awake()
 		{
-			m_entity = GetComponent<Entity>();
-			m_entity.EnableDynamicPositionUpdates(false);
 			InventoryComponent = GetComponent<InventoryComponent>();
 
 			InitializeBehaviourTree();

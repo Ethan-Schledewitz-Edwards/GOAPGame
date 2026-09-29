@@ -12,10 +12,8 @@ GameObject:
   - component: {fileID: 2123883129720176227}
   - component: {fileID: 7143371825989947593}
   - component: {fileID: 3914431523302564834}
-  - component: {fileID: 3017703126850601998}
-  - component: {fileID: 8727153449917918207}
   - component: {fileID: 6019955960294120562}
-  - component: {fileID: 2585908903848927346}
+  - component: {fileID: 3017703126850601998}
   m_Layer: 7
   m_Name: PlacedBlueprintIO
   m_TagString: Untagged
@@ -84,6 +82,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e523031d3b5eb624fab4bcc6c981af1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures::Interaction.InteractableStructures.ItemRequestComponent
+--- !u!114 &6019955960294120562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262572155233583462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba4f3b07ce027b4d8bce483701cbf3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Blueprint::Interaction.Blueprint.BlueprintCancelation
 --- !u!65 &3017703126850601998
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -105,46 +115,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8727153449917918207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262572155233583462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SaveLoad.Data::SaveLoad.Data.SaveableEntity
-  m_savablePrefabData: {fileID: 11400000, guid: 008aa91d14d00724b92add0a5b8e60ed, type: 2}
-  m_guid: 
-  <IsManuallyAuthored>k__BackingField: 0
---- !u!114 &6019955960294120562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262572155233583462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ba4f3b07ce027b4d8bce483701cbf3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Interaction.Blueprint::Interaction.Blueprint.BlueprintCancelation
---- !u!114 &2585908903848927346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262572155233583462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Entity::Entity
-  m_canUpdatePosition: 1
 --- !u!1 &2541393826013963773
 GameObject:
   m_ObjectHideFlags: 0

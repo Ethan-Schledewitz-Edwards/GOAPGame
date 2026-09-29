@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 53915460426571373}
   - component: {fileID: 6691724862660079407}
   - component: {fileID: 1269171079345121271}
-  - component: {fileID: 6566322804506918930}
-  - component: {fileID: 1319984024103182560}
   m_Layer: 7
   m_Name: WoodStorage_Interactable
   m_TagString: Untagged
@@ -109,34 +107,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7, y: 2, z: 2.7}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &6566322804506918930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 162404230185621835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
-  m_canUpdatePosition: 0
---- !u!114 &1319984024103182560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 162404230185621835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
-  m_savablePrefabData: {fileID: 0}
-  m_guid: 
-  <IsManuallyAuthored>k__BackingField: 0
 --- !u!1 &1415920243083721482
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,19 +1,15 @@
 using BehaviourTrees;
-using Entities.Core;
-using Entities.Savable;
 using Factions.Core;
 using InventorySystem;
-using SaveLoad.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using WorldManagement.Core;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
-public class Actor : Entity, IInteractor, ISaveableComponent
+public class Actor : MonoBehaviour, IInteractor
 {
 	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
@@ -35,7 +31,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public AIPathing Pathing { get; private set; }
-	private SavableEntity m_savableEntity;
 
 	// Executors
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
@@ -72,30 +67,16 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutorBase>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
 		Pathing = GetComponent<AIPathing>();
-		m_savableEntity = GetComponent<SavableEntity>();
 		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
-	private IEnumerator Start()
+	private void Start()
 	{
-		SavableEntity saveableEntity = GetComponent<SavableEntity>();
-
-		if (saveableEntity == null)
-		{
-			Debug.LogError($"[Actor] No {typeof(SavableEntity)} component is " +
-				$"present on an Actor. Aborting registration.", this);
-
-			yield break;
-		}
+		RegisterToManager();
 	}
 
 	private void OnEnable()
 	{
-		if (m_savableEntity != null)
-		{
-			m_savableEntity.DataRestored += RegisterToManager;
-		}
-
 		if (GOAPAgentComp != null)
 		{
 			GOAPAgentComp.OnFoundDestination += Pathing.SetDestination;
@@ -105,11 +86,6 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 
 	private void OnDisable()
 	{
-		if (m_savableEntity != null)
-		{
-			m_savableEntity.DataRestored -= RegisterToManager;
-		}
-
 		if (GOAPAgentComp != null)
 		{
 			GOAPAgentComp.OnFoundDestination -= Pathing.SetDestination;
@@ -518,46 +494,4 @@ public class Actor : Entity, IInteractor, ISaveableComponent
 				ActorManager.Instance.TryAddActor(this, isFollower);
 		}
 	}
-
-	#region ISaveableComponent Implementation
-
-	public string GetComponentId() => "Actor";
-
-	public string GenerateComponentData()
-	{
-		ActorSaveData data = new ActorSaveData
-		{
-			LogicState = LogicExecutorState,
-			SettlementID = this.SettlementID,
-			WorkstationID = this.WorkstationID
-		};
-
-		return JsonUtility.ToJson(data);
-	}
-
-	public void RestoreComponentData(object data)
-	{
-		if (data is not string actorSaveData)
-			return;
-
-		ActorSaveData actorData = JsonUtility.FromJson<ActorSaveData>(actorSaveData);
-
-		if (actorData == null)
-			return;
-
-		SetLogicExecutorState(actorData.LogicState);
-
-		SettlementID = actorData.SettlementID;
-		WorkstationID = actorData.WorkstationID;
-	}
-
-	[System.Serializable]
-	public class ActorSaveData
-	{
-		public EActorState LogicState;
-		public int SettlementID;
-		public int WorkstationID;
-	}
-
-	#endregion
 }

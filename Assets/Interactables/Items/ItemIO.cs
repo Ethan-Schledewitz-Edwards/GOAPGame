@@ -1,5 +1,4 @@
 using BehaviourTrees;
-using Entities.Core;
 using AssetIndex.Core;
 using InventorySystem;
 using InventorySystem.Items;
@@ -8,13 +7,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(Entity), typeof(InteractionPosition))]
+[RequireComponent(typeof(Rigidbody), typeof(InteractionPosition))]
 public class ItemIO : InteractableObjectBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
 
 	// Components
-	private Entity m_entity;
 	private Rigidbody m_rb;
 	private InteractionPosition m_interactionPosition;
 
@@ -38,7 +36,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 
 	public void Awake()
 	{
-		m_entity = GetComponent<Entity>();
 		m_rb = GetComponent<Rigidbody>();
 
 		m_interactionPosition = GetComponent<InteractionPosition>();
@@ -85,7 +82,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	public void ItemStored(Transform parent)
 	{
 		m_isItemStored = true;
-		m_entity.EnableDynamicPositionUpdates(false);
 		ConstrainPhysics(true);
 
 		gameObject.SetActive(false);
@@ -110,7 +106,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			transform.position = dropPosition;
 
 		gameObject.SetActive(true);
-		m_entity.EnableDynamicPositionUpdates(true);
 	}
 
 	public override bool TryInteract(
@@ -137,7 +132,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 			if (isItemAdded)
 			{
 				ItemPickedUp?.Invoke(transform);
-				m_holder = interactor;
 				return true;
 			}
 		}

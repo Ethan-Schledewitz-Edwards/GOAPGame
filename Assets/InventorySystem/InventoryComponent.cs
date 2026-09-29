@@ -24,8 +24,7 @@ namespace InventorySystem
 			Inventory = new Inventory(inventorySize);
 		}
 
-		public virtual bool TryAddItem(
-			ItemData addedItemData,
+		public virtual bool TryAddItem(ItemData addedItemData,
 			int amount,
 			Transform[] itemTransforms = null)
 		{

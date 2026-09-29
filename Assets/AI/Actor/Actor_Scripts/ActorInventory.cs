@@ -48,11 +48,12 @@ public class ActorInventory : InventoryComponent
 			return false;
 
 		// Move the item to the held position if physical transforms were provided
-		if (itemTransforms != null && itemTransforms.Length > 0 && itemTransforms[0] != null)
+		if (itemTransforms != null && itemTransforms.Length > 0)
 		{
 			Transform itemTransform = itemTransforms[0];
 			if (itemTransform.TryGetComponent(out ItemIO item))
 			{
+				Debug.Log("WHAT DID I BREAK?");
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;
 				item.gameObject.SetActive(true);

@@ -62,8 +62,6 @@ GameObject:
   - component: {fileID: 7594652639420090286}
   - component: {fileID: 7827061921092389273}
   - component: {fileID: 8920827537773528951}
-  - component: {fileID: 8895968456273647420}
-  - component: {fileID: 276009392157458582}
   m_Layer: 7
   m_Name: FoodStorage_Interactable
   m_TagString: Untagged
@@ -158,34 +156,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.7, y: 2, z: 2.7}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &8895968456273647420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3494104293989071018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f951350febbb974f9c9fd5a43f8272c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Entites.Core::Entities.Core.Entity
-  m_canUpdatePosition: 1
---- !u!114 &276009392157458582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3494104293989071018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b7422f3fe174414f80b9a7ec3726a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Entities.Savable::Entities.Savable.SaveableEntity
-  m_savablePrefabData: {fileID: 0}
-  m_guid: b79054a8-2e86-47fb-9479-5ce55ddb7979
-  <IsManuallyAuthored>k__BackingField: 0
 --- !u!1 &6845580419659024878
 GameObject:
   m_ObjectHideFlags: 0

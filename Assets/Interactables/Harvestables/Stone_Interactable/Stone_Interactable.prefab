@@ -66,14 +66,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860123527070760326}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stone_Interactable
-  m_actorsNeeded: 1
-  m_interactOffset: {fileID: 0}
-  m_formationRadius: 0.9
+  m_minActorsNeededToOperate: 1
+  m_interactPositions: []
 --- !u!114 &7278653846236663314
 MonoBehaviour:
   m_ObjectHideFlags: 0

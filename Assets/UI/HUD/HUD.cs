@@ -47,7 +47,7 @@ public class HUD : Menu
 		MenuManager.OpenMenu(this);
 	}
 
-	internal void SetPlayer(PlayerEntity player)
+	internal void SetPlayer(Player.Core.PlayerEntity player)
 	{
 		HUDElement[] elements = GetComponentsInChildren<HUDElement>();
 		foreach (var element in elements)

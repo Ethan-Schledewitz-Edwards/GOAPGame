@@ -51,8 +51,7 @@ namespace InventorySystem
 			}
 		}
 
-		public void SetSlotsItem(
-			ItemData itemData,
+		public void SetSlotsItem(ItemData itemData,
 			int Amount,
 			Transform parent = null,
 			Transform[] physicalItemObjects = null)
@@ -63,8 +62,7 @@ namespace InventorySystem
 			SlotChanged();
 		}
 
-		public void AddToStack(
-			int amount,
+		public void AddToStack(int amount,
 			Transform parent = null,
 			Transform[] physicalItemObjects = null)
 		{
@@ -88,8 +86,7 @@ namespace InventorySystem
 			SlotChanged();
 		}
 
-		public void RemoveFromStack(
-			int amountToDrop,
+		public void RemoveFromStack(int amountToDrop,
 			out Transform[] droppedItems,
 			bool dropItems = false,
 			Vector3 WorldDropPos = default)
