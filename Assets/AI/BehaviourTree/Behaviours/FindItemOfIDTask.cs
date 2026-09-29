@@ -18,7 +18,7 @@ using Factions.Core;
 /// </remarks>
 public class FindItemOfIDTask : BTNodeBase
 {
-	private const float c_searchRadius = 10f;
+	private const float c_searchRadius = 40f;
 	private readonly StructureTag m_storageTag;
 
 	public FindItemOfIDTask(StructureTag storageTag) : base()

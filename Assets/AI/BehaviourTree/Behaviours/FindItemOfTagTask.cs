@@ -17,7 +17,7 @@ using UnityEngine;
 /// </remarks>
 public class FindItemOfTagTask : BTNodeBase
 {
-	private const float c_searchRadius = 10f;
+	private const float c_searchRadius = 40f;
 	private const string c_ItemTagsKey = "FindItemEntityOfTagTask_ItemTags";
 
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
