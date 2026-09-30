@@ -19,7 +19,7 @@ namespace WorldLighting
 
 		private void Awake()
 		{
-			m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+			m_gameClock = Object.FindObjectsByType<MonoBehaviour>()
 				.OfType<IGameClock>()
 				.FirstOrDefault();
 
