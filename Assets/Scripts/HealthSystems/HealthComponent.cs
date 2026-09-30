@@ -90,11 +90,11 @@ public class HealthComponent : MonoBehaviour
 
 	protected virtual void OnTakeDamage()
 	{
-		if (IsDead) 
+		if (IsDead)
 			return;
 	}
 
-    protected virtual void OnDie()
+	protected virtual void OnDie()
 	{
 		// Spawn destruction particles for all clients
 		if (m_destructionParticles != null)
