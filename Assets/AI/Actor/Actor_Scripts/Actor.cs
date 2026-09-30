@@ -26,8 +26,58 @@ public class Actor : MonoBehaviour, IInteractor
 	[field: SerializeField] public EFaction ActorFaction { get; private set; }
 	[SerializeField] private LayerMask m_interactionLayers;
 
+	/*
+		
+		NOTE: The actor components should not be separate components since they are
+		intrinsically linked to an actor. 
+	
+		Having separate components creates complex reference keeping that makes things 
+		confusing and error prone.
+	
+		Inventory has the excuse that it could be used on other objects (like chests) in
+		the future, but imo this is a bad excuse and it shouldn't be developed that way 
+		unless that feature is currently in development. It's currently very linked to
+		actors anyways.
+	
+		ActorHealthComponent is referenced by Actor, and also keeps a reference to Actor,
+		functionally making it one component anyways.
+		
+		My suggestion:
+		1. Make ActorHealthComponent a partial class.
+
+		File Actor.Health.cs
+		public partial class Actor
+		{
+			health stuff
+		}
+
+		2. I would suggest making ActorInventory a regular class like this:
+
+		File: ActorInventory.cs
+		public class ActorInventory
+		{
+			inventory stuff
+		}
+
+		But because its behaviour seems to be very very connected to actors
+		I think making it a partial class as well would be better.
+
+		File: Actor.Inventory.cs
+		public partial class Actor
+		{
+			inventory stuff
+		}
+
+		File Actor.cs
+		public partial class Actor : Monobehaviour et al
+		{
+			ActorInventory m_inventory; // if regular class is chosen
+		}
+
+	*/
+
 	// Components
-	public Transform Transform => gameObject.transform;
+	public Transform Transform => gameObject.transform;							// NOTE: this is redundant becuase MonoBehaviour.transform is already available.
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public ActorInventory ActorInventory { get; private set; }
 	public AIPathing Pathing { get; private set; }

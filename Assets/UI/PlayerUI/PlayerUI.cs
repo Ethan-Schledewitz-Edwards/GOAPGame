@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 
+// NOTE: I remember from SBTD that navigating the object heirarchy to find the
+// right component was a pain. It may be easier to try to combine these components
+// at the top in some way, but I'm not quite sure.
 [RequireComponent(typeof(AudioSource))]
 public class PlayerUI : MonoBehaviour
 {

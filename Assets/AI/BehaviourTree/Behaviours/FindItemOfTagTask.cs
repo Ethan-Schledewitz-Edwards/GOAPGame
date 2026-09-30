@@ -7,6 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// NOTE: I'm putting this here because I don't know where else to.
+// This is being written halfway through reading all the code for context.
+// I'm noticing a lot of IDs and string tags in this project. I don't think
+// these are actually needed 99% of the time. For example, here
+
 /// <summary>
 /// Searches for the nearest item with a specific tag then adds its data to
 /// the behaviour trees context.

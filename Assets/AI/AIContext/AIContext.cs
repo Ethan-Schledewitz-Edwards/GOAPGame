@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class AIContext
 {
+	// NOTE: If we use fields, then this is not needed. Just reset by newing the class.
+	// Using a generic object dictionary may feel extensible but it is very fuzzy and not at all type safe.
+	// This is essentially javascript, and if you've every used javascript, you'd know it's a
+	// bad idea for games. It makes it easy to misuse and hard to track down mistakes.
+	// This will cause bugs later, mark my words. I recommend switching this out for specialized
+	// arrays, dictionaries, bitfields, or whatever you like.
 	private Dictionary<string, object> m_data = new Dictionary<string, object>();
 
 	public void SetData<T>(string key, T value)
@@ -35,6 +41,14 @@ public class AIContext
 	}
 }
 
+// NOTE: This should either be an enum or just fields in AIContext.
+// Fields is likely the better option, but an enum is just a more
+// efficient way of doing what it's doing currently.
+// NOTE 2: I came back to this after reading the item tag filter code.
+// It makes more sense why it was done this way now, since an enum wouldn't work.
+// but it should still be done with separate fields instead. The item tag filters
+// should probably be an array or dictionary (fun fact, in this situation a dictionary
+// would probably perform worse).
 public static class AIContextKeys
 {
 	public const string c_CurrentBTNode = "CurrentBTNode";
