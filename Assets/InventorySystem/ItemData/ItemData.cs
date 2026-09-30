@@ -8,8 +8,7 @@ namespace InventorySystem.Items
 	[CreateAssetMenu(fileName = "ItemData", menuName = "Items/ItemData")]
 	public class ItemData : ScriptableObject, IIndexedAsset, ITaggable<ItemTag>
 	{
-		[SerializeField] private string m_id;
-		public string ID => m_id;
+		public string ID => name;
 		[field: SerializeField] public string DisplayName { get; private set; }
 		[field: SerializeField] public int MaxStackSize { get; private set; } = 100;
 		[field: SerializeField] public GameObject ItemPrefab { get; private set; }
@@ -25,9 +24,5 @@ namespace InventorySystem.Items
 				return m_itemTagCache;
 			}
 		}
-
-#if UNITY_EDITOR
-		public void SetID(string id) => m_id = id;
-#endif
 	}
 }

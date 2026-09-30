@@ -34,8 +34,8 @@ namespace AssetIndex.Core
 				if (EditorUtility.DisplayDialog("Populate Generic Index?",
 					"This will scan your project, append new unique assets, and re-assign all IDs. Proceed?", "Yes", "No"))
 				{
-					var method = targetType.GetMethod("PopulateUniqueAssets", BindingFlags.Public | 
-						BindingFlags.Instance | 
+					var method = targetType.GetMethod("PopulateUniqueAssets", BindingFlags.Public |
+						BindingFlags.Instance |
 						BindingFlags.FlattenHierarchy);
 					if (method != null)
 					{
@@ -44,28 +44,6 @@ namespace AssetIndex.Core
 					else
 					{
 						Debug.LogError("Could not find method 'PopulateUniqueAssets' via reflection.");
-					}
-				}
-			}
-
-			GUILayout.Space(5);
-
-			GUI.backgroundColor = new Color(0.2f, 0.6f, 1f);
-			if (GUILayout.Button("Auto-Assign IDs (Current Array)", GUILayout.Height(40)))
-			{
-				if (EditorUtility.DisplayDialog("Auto-Assign IDs?",
-					"This will reset all IDs to match the current order of your data array. Proceed?", "Yes", "No"))
-				{
-					var method = targetType.GetMethod("AssignAssetIDs", BindingFlags.Public | 
-						BindingFlags.Instance | 
-						BindingFlags.FlattenHierarchy);
-					if (method != null)
-					{
-						method.Invoke(target, null);
-					}
-					else
-					{
-						Debug.LogError("Could not find method 'AssignAssetIDs' via reflection. Ensure it is not misspelled.");
 					}
 				}
 			}

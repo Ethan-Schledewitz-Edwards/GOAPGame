@@ -87,26 +87,6 @@ namespace AssetIndex.Core
 
 			assets = currentAssets.ToArray();
 		}
-
-		public void AssignAssetIDs()
-		{
-			PopulateUniqueAssets();
-
-			if (assets == null)
-				return;
-
-			foreach (T asset in assets)
-			{
-				if (asset == null)
-					continue;
-
-				asset.SetID(asset.name);
-				UnityEditor.EditorUtility.SetDirty(asset);
-			}
-
-			UnityEditor.EditorUtility.SetDirty(this);
-			UnityEditor.AssetDatabase.SaveAssets();
-		}
 #endif
 	}
 }
