@@ -187,7 +187,7 @@ public abstract class InteractableObjectBase : MonoBehaviour
 		return Array.IndexOf(m_interactPositions, position) >= 0;
 	}
 
-	public abstract void UpdateSpeed(int extra);
+	public virtual void UpdateSpeed(int extra) { }
 
-	public abstract void StopInteractSpeed();
+	public virtual void StopInteractSpeed() { }
 }
