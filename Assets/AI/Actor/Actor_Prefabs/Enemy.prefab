@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4076327792798967286}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 3156336087541255401}
   - component: {fileID: 3781993869151945526}
   - component: {fileID: 7958439274468723181}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: DestinationSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 8441753089272682315}
   - component: {fileID: 9202823284541056031}
   - component: {fileID: 659178778942180411}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: AttackSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8522574657822210537}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: HeldItemPos
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
@@ -208,7 +208,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5089042427203968515}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: DropitemPos
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
@@ -239,7 +239,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6014446224231834510}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Sensors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,7 +283,8 @@ GameObject:
   - component: {fileID: 8676248710036981082}
   - component: {fileID: 8496172798646482293}
   - component: {fileID: 8696353149005091464}
-  m_Layer: 6
+  - component: {fileID: 4890154333251750453}
+  m_Layer: 8
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -585,6 +586,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4890154333251750453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed10cb920b74054d8575150d87a171a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyInteractable
+  m_minActorsNeededToOperate: 1
+  m_interactPositions: []
 --- !u!1001 &2549959233897698088
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -633,17 +648,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7631412687245788768, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -6131569493812146550, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5263723300208739244, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: -5262842105598072972, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8987aa3cb9d78c441a8dac1f7fc68d92, type: 2}
+    - target: {fileID: -3698316661357347987, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: -2649854431428037613, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8987aa3cb9d78c441a8dac1f7fc68d92, type: 2}
+    - target: {fileID: 589193668391616382, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
       propertyPath: m_Name
       value: Human
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4178876045465819262, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8526271116667172610, guid: 38a27fe45c0a0b942a1d3ddd2a8c64eb, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

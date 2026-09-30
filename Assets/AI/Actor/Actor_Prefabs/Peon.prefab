@@ -324,7 +324,7 @@ MonoBehaviour:
   <ActorFaction>k__BackingField: 1
   m_interactionLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
   <GOAPAgentComp>k__BackingField: {fileID: 3683834564411842312}
 --- !u!114 &3333077740091554456
 MonoBehaviour:
