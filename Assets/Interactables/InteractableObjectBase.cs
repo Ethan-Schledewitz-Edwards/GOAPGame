@@ -2,6 +2,9 @@ using BehaviourTrees;
 using System;
 using UnityEngine;
 
+// NOTE: Should probably be called InteractableBase for naming consistency,
+// then dervied classes would be called WhateverInteractable. Or maybe
+// BaseInteractable so the word order is consistent too?
 public abstract class InteractableObjectBase : MonoBehaviour
 {
 	[Header("Settings")]

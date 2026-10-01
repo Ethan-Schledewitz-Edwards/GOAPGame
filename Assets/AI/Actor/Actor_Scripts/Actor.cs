@@ -13,7 +13,7 @@ public class Actor : MonoBehaviour, IInteractor
 {
 	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
-	private const float c_workingDist = 0.15f;
+	private const float c_workingDist = 0.3f;
 	private const float c_followSpeed = 7.2f;
 	private const float c_workingSpeed = 5.8f;
 	private const float c_offDutySpeed = 2f;
@@ -99,7 +99,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
-	private bool m_isInvestigating;
+	private bool m_isInvestigating;	// NOTE: I assume this is an unused feature? It can never be set to true and should be removed.
 	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
@@ -322,7 +322,7 @@ public class Actor : MonoBehaviour, IInteractor
 		{
 			m_targetTransform = actorInteractableObjectBase.transform;
 			TrySetActorJob(actorInteractableObjectBase.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {m_targetTransform} and was succsessful.", this);
+			Debug.Log($"{transform} interacted with {m_targetTransform.name} and was succsessful.", this);
 		}
 	}
 
@@ -443,7 +443,7 @@ public class Actor : MonoBehaviour, IInteractor
 		if (amountToDrop > 0)
 			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 
-		Debug.Log($"{transform} has dropped their items.", this);
+		Debug.Log($"{this.name} has dropped their items.", this);
 	}
 
 	/// <summary>

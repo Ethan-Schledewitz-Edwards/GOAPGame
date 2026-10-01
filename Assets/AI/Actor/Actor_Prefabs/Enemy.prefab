@@ -284,6 +284,7 @@ GameObject:
   - component: {fileID: 8496172798646482293}
   - component: {fileID: 8696353149005091464}
   - component: {fileID: 4890154333251750453}
+  - component: {fileID: 560497179421727225}
   m_Layer: 8
   m_Name: Enemy
   m_TagString: Untagged
@@ -339,7 +340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de4ddc84aba71948b5f67f88b62e569, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AI.Actors::ActorHealthComponent
-  <MaxHealth>k__BackingField: 100
+  <MaxHealth>k__BackingField: 8
   <IsDestroyedOnDeath>k__BackingField: 1
   m_damageParticles: {fileID: 0}
   m_destructionParticles: {fileID: 0}
@@ -599,7 +600,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyInteractable
   m_minActorsNeededToOperate: 1
-  m_interactPositions: []
+  m_interactPositions:
+  - {fileID: 560497179421727225}
+--- !u!114 &560497179421727225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6662613928143633748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction::InteractionPosition
+  <MaxInteractors>k__BackingField: 1
+  <UseFormationRadius>k__BackingField: 0
+  <FormationRadius>k__BackingField: 1.5
+  <RequiresReservation>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!1001 &2549959233897698088
 PrefabInstance:
   m_ObjectHideFlags: 0

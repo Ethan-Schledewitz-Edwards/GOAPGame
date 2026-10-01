@@ -23,11 +23,27 @@ public class ActorManager : MonoBehaviour
 	public event Action<Actor> FollowingActorLoaded;
 
 	// System
+	// NOTE: A hash set can be slow to iterate over, it's probably better to use a list.
+	// Each actor would track its index in the list. On removal, it's a quick look up,
+	// then copy the pointer at the end of the array into the new empty slot and decrease
+	// the array size by 1.
 	public static HashSet<Actor> s_Actors = new HashSet<Actor>();
 	private List<Actor> m_pendingRemovals = new List<Actor>();
 	private bool m_isTicking = false;
 
 	double m_accumulatedTime = 0f;
+
+	// NOTE: Caching this value doesn't really make sense because it's used much less frequently
+	// than it's updated. I would caution against any form of caching while in the development
+	// stage since it requires careful tracking of object lifetimes. Even the	actors list can
+	// be replaced by a FindObjectsByType call, which is undoubtibly slower, but the safety gain
+	// is valuable.
+	// I believe that we should adopt a perspective of all code being written as temporary,
+	// which will benefit game design through rapid prototyping. These things seem small ("it's easy and simple,
+	// I might as well optimize it"), but they add up, and complexity is exponential. Reducing complexity by 10%
+	// can make it 3x faster to change the game design down the road.
+	// We also get the benefit of actually looking at the performance difference between optimized an
+	// unoptimized which often provides unexpected insights into the codebase as a whole.
 	private Vector3 m_playerPosition;
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
