@@ -8,8 +8,8 @@ public class InteractionPosition : MonoBehaviour
 {
 	[SerializeField] public InteractionPositionSettings m_settings;
 
-	private List<IInteractor> m_interactorsPresent;
-	private List<IInteractor> m_reservedInteractors;
+	private List<IInteractor> m_interactorsPresent = new();
+	private List<IInteractor> m_reservedInteractors = new();
 
 	public int ActorsPresent => m_interactorsPresent.Count;
 
@@ -30,36 +30,6 @@ public class InteractionPosition : MonoBehaviour
 	{
 		m_interactorsPresent = new List<IInteractor>(m_settings.MaxInteractors);
 		m_reservedInteractors = new List<IInteractor>(m_settings.MaxInteractors);
-	}
-
-	public void ConfigureInteractionPosition(
-		int maxInteractors,
-		bool useFormationRadius = false,
-		float formationRadius = 1.5f,
-		bool requiresReservation = true,
-		float interactionDistance = 0.3f)
-	{
-		m_settings.MaxInteractors = Mathf.Max(1, maxInteractors);
-		m_settings.UseFormationRadius = useFormationRadius;
-		m_settings.FormationRadius = formationRadius;
-		m_settings.RequiresReservation = requiresReservation;
-		m_settings.InteractionDistance = interactionDistance;
-
-		if (m_interactorsPresent == null)
-		{
-			m_interactorsPresent = new List<IInteractor>(m_settings.MaxInteractors);
-			m_reservedInteractors = new List<IInteractor>(m_settings.MaxInteractors);
-		}
-		else
-		{
-			m_interactorsPresent.Capacity = Mathf.Max(
-				m_interactorsPresent.Count,
-				m_settings.MaxInteractors);
-
-			m_reservedInteractors.Capacity = Mathf.Max(
-				m_reservedInteractors.Count,
-				m_settings.MaxInteractors);
-		}
 	}
 
 	#region Reservation

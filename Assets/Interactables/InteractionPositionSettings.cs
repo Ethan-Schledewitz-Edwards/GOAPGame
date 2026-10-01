@@ -3,6 +3,8 @@ using UnityEngine;
 [System.Serializable]
 public class InteractionPositionSettings
 {
+	// NOTE: This should eventually be removed because the blueprint should really be a prefab.
+	// Who wants to type in offsets manually anyways?
 	public Vector3 LocalOffset = Vector3.zero;
 
 	public int MaxInteractors = 1;
