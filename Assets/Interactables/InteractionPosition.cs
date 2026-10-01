@@ -6,27 +6,7 @@ using UnityEngine;
 // a position and I think the name should reflect that.
 public class InteractionPosition : MonoBehaviour
 {
-	#region Settings
-
-	[Header("Settings")]
-	[field: SerializeField] public int MaxInteractors { get; private set; } = 1;
-	[field: SerializeField] public bool UseFormationRadius { get; private set; } = false;
-	[field: SerializeField] public float FormationRadius { get; private set; } = 1.5f;
-
-	[field: SerializeField]
-	[Tooltip("If false, actors may interact without reserving this position first.")]
-	public bool RequiresReservation { get; private set; } = true;
-
-	// NOTE: This needs to be cleaned up. Anything with a formation radius should just use the formation
-	// radius, and anything without should just use a standard constant. There seems to be a false dichotomy
-	// between this and several other fields/constants like stopping distance, c_interactionDistance, c_searchForJobRange, etc.
-	// These should likely all just be one thing with maybe a ratio to adjust them relative to eachother which
-	// is probably not even necessary.
-	[field: SerializeField]
-	[Tooltip("Maximum horizontal distance from the assigned interaction position.")]
-	public float InteractionDistance { get; private set; } = 0.3f;
-
-	#endregion
+	[SerializeField] public InteractionPositionSettings m_settings;
 
 	private List<IInteractor> m_interactorsPresent;
 	private List<IInteractor> m_reservedInteractors;
@@ -43,13 +23,13 @@ public class InteractionPosition : MonoBehaviour
 	/// For reserved positions, capacity includes both active and reserved actors.
 	/// </summary>
 	public bool HasAvailableCapacity =>
-		!RequiresReservation ||
-		TotalOccupiedOrReserved < MaxInteractors;
+		!m_settings.RequiresReservation ||
+		TotalOccupiedOrReserved < m_settings.MaxInteractors;
 
 	private void Awake()
 	{
-		m_interactorsPresent = new List<IInteractor>(MaxInteractors);
-		m_reservedInteractors = new List<IInteractor>(MaxInteractors);
+		m_interactorsPresent = new List<IInteractor>(m_settings.MaxInteractors);
+		m_reservedInteractors = new List<IInteractor>(m_settings.MaxInteractors);
 	}
 
 	public void ConfigureInteractionPosition(
@@ -59,26 +39,26 @@ public class InteractionPosition : MonoBehaviour
 		bool requiresReservation = true,
 		float interactionDistance = 0.3f)
 	{
-		MaxInteractors = Mathf.Max(1, maxInteractors);
-		UseFormationRadius = useFormationRadius;
-		FormationRadius = formationRadius;
-		RequiresReservation = requiresReservation;
-		InteractionDistance = interactionDistance;
+		m_settings.MaxInteractors = Mathf.Max(1, maxInteractors);
+		m_settings.UseFormationRadius = useFormationRadius;
+		m_settings.FormationRadius = formationRadius;
+		m_settings.RequiresReservation = requiresReservation;
+		m_settings.InteractionDistance = interactionDistance;
 
 		if (m_interactorsPresent == null)
 		{
-			m_interactorsPresent = new List<IInteractor>(MaxInteractors);
-			m_reservedInteractors = new List<IInteractor>(MaxInteractors);
+			m_interactorsPresent = new List<IInteractor>(m_settings.MaxInteractors);
+			m_reservedInteractors = new List<IInteractor>(m_settings.MaxInteractors);
 		}
 		else
 		{
 			m_interactorsPresent.Capacity = Mathf.Max(
 				m_interactorsPresent.Count,
-				MaxInteractors);
+				m_settings.MaxInteractors);
 
 			m_reservedInteractors.Capacity = Mathf.Max(
 				m_reservedInteractors.Count,
-				MaxInteractors);
+				m_settings.MaxInteractors);
 		}
 	}
 
@@ -105,7 +85,7 @@ public class InteractionPosition : MonoBehaviour
 			return false;
 
 		// Non-reserved positions do not need pre-allocation.
-		if (!RequiresReservation)
+		if (!m_settings.RequiresReservation)
 			return true;
 
 		// Already active or already reserved is a valid assignment.
@@ -153,7 +133,7 @@ public class InteractionPosition : MonoBehaviour
 			return true;
 		}
 
-		if (RequiresReservation)
+		if (m_settings.RequiresReservation)
 		{
 			// Reserved positions require pre-allocation.
 			int reservationIndex = m_reservedInteractors.IndexOf(interactor);
@@ -202,10 +182,10 @@ public class InteractionPosition : MonoBehaviour
 		bool isPresent = m_interactorsPresent.Contains(interactor);
 		bool isReserved = m_reservedInteractors.Contains(interactor);
 
-		if (RequiresReservation && !isPresent && !isReserved)
+		if (m_settings.RequiresReservation && !isPresent && !isReserved)
 			return false;
 
-		if (!UseFormationRadius)
+		if (!m_settings.UseFormationRadius)
 			return true;
 
 		int slotIndex;
@@ -226,9 +206,9 @@ public class InteractionPosition : MonoBehaviour
 			slotIndex = m_interactorsPresent.Count;
 		}
 
-		float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, MaxInteractors);
-		float x = Mathf.Cos(angle) * FormationRadius;
-		float z = Mathf.Sin(angle) * FormationRadius;
+		float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, m_settings.MaxInteractors);
+		float x = Mathf.Cos(angle) * m_settings.FormationRadius;
+		float z = Mathf.Sin(angle) * m_settings.FormationRadius;
 
 		position = transform.TransformPoint(new Vector3(x, 0, z));
 
@@ -247,7 +227,7 @@ public class InteractionPosition : MonoBehaviour
 			Vector3 targetPositionFlat = new Vector3(targetPos.x, 0, targetPos.z);
 
 			float distanceSquared = (interactorPositionFlat - targetPositionFlat).sqrMagnitude;
-			return distanceSquared <= InteractionDistance * InteractionDistance;
+			return distanceSquared <= m_settings.InteractionDistance * m_settings.InteractionDistance;
 		}
 
 		return false;
@@ -264,13 +244,13 @@ public class InteractionPosition : MonoBehaviour
 		Gizmos.DrawWireSphere(transform.position, 0.2f);
 
 		Gizmos.color = new Color(0, 1, 1, 0.2f);
-		Gizmos.DrawWireSphere(transform.position, InteractionDistance);
+		Gizmos.DrawWireSphere(transform.position, m_settings.InteractionDistance);
 
 		// Formation radius if it is enabled
-		if (UseFormationRadius)
+		if (m_settings.UseFormationRadius)
 		{
 			Gizmos.color = new Color(1, 1, 0, 0.2f);
-			Gizmos.DrawWireSphere(transform.position, FormationRadius);
+			Gizmos.DrawWireSphere(transform.position, m_settings.FormationRadius);
 		}
 
 		// Green lines to all actively present actors

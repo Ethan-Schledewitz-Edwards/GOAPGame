@@ -25,6 +25,6 @@ namespace Construction
 		[Header("Blueprint World Properties")]
 		[field: SerializeField] public Mesh BlueprintMesh { get; private set; }
 		[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 0.2f;
-		[field: SerializeField] public InteractionPositionConfig[] InteractionPositions { get; private set; }
+		[field: SerializeField] public InteractionPositionSettings[] InteractionPositions { get; private set; }
 	}
 }

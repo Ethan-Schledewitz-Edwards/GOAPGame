@@ -68,7 +68,7 @@ namespace Interaction.InteractableStructures.Blueprints
 			SetBlueprintMesh(blueprintData.BlueprintMesh);
 			for (int i = 0; i < blueprintData.InteractionPositions.Length; i++)
 			{
-				InteractionPositionConfig config = blueprintData.InteractionPositions[i];
+				var config = blueprintData.InteractionPositions[i];
 
 				GameObject interactionObj = new GameObject($"InteractionPosition_{i}");
 				interactionObj.transform.SetParent(transform, false);
