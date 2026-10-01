@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// NOTE: I propose renaming this to InteractionPoint or InteractionNode since position implies
+// a fixed point in space that never moves. This also does a lot more that simply represent
+// a position and I think the name should reflect that.
 public class InteractionPosition : MonoBehaviour
 {
 	#region Settings
@@ -14,6 +17,11 @@ public class InteractionPosition : MonoBehaviour
 	[Tooltip("If false, actors may interact without reserving this position first.")]
 	public bool RequiresReservation { get; private set; } = true;
 
+	// NOTE: This needs to be cleaned up. Anything with a formation radius should just use the formation
+	// radius, and anything without should just use a standard constant. There seems to be a false dichotomy
+	// between this and several other fields/constants like stopping distance, c_interactionDistance, c_searchForJobRange, etc.
+	// These should likely all just be one thing with maybe a ratio to adjust them relative to eachother which
+	// is probably not even necessary.
 	[field: SerializeField]
 	[Tooltip("Maximum horizontal distance from the assigned interaction position.")]
 	public float InteractionDistance { get; private set; } = 0.3f;
@@ -75,6 +83,15 @@ public class InteractionPosition : MonoBehaviour
 	}
 
 	#region Reservation
+
+	// NOTE: I see no point in having non-reserved interactables, seems like
+	// everything should have some limit. I also don't see why formation radius
+	// should be togglable either, why not just set it to 0 with capacity of 1?
+	// The reservation system seems to be a holdover from a more complex time
+	// and I think it can do with a simplification pass along with the new
+	// job search flow. Mostly for the reason of reservations should happen at
+	// click time rather than arrival time so that pikmin can follow moving enemies.
+	// This means the whole system doesn't need to be nearly as complex as it is now.
 
 	/// <summary>
 	/// Attempts to assign this position to an interactor.

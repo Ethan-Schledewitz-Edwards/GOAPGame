@@ -615,7 +615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
   <MaxInteractors>k__BackingField: 1
-  <UseFormationRadius>k__BackingField: 0
+  <UseFormationRadius>k__BackingField: 1
   <FormationRadius>k__BackingField: 1.5
   <RequiresReservation>k__BackingField: 1
   <InteractionDistance>k__BackingField: 0.3

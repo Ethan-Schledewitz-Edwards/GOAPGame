@@ -5,6 +5,9 @@ using UnityEngine;
 // NOTE: Should probably be called InteractableBase for naming consistency,
 // then dervied classes would be called WhateverInteractable. Or maybe
 // BaseInteractable so the word order is consistent too?
+// Maybe this could also be called BaseJobSite if there's no overlap with
+// some other job feature, because it seems like the only purpose of this is to
+// assign jobs to pikmin.
 public abstract class InteractableObjectBase : MonoBehaviour
 {
 	[Header("Settings")]

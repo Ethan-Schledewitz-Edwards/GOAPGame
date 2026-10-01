@@ -10973,14 +10973,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: OakTree_Young_Interactable
       objectReference: {fileID: 0}
-    - target: {fileID: 6779362555471678642, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
-      propertyPath: m_guid
-      value: e676a8ae-246f-42bd-ab37-ca0dbe21cd2e
-      objectReference: {fileID: 0}
-    - target: {fileID: 6779362555471678642, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
-      propertyPath: m_isManuallyAuthored
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
