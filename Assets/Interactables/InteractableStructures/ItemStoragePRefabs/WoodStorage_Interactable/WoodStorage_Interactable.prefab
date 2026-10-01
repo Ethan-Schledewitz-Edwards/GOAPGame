@@ -151,11 +151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
-  <MaxInteractors>k__BackingField: 1
-  <UseFormationRadius>k__BackingField: 0
-  <FormationRadius>k__BackingField: 0
-  <RequiresReservation>k__BackingField: 0
-  <InteractionDistance>k__BackingField: 0.3
+  m_settings:
+    LocalOffset: {x: 0, y: 0, z: 0}
+    MaxInteractors: 1
+    UseFormationRadius: 0
+    FormationRadius: 0
+    RequiresReservation: 0
+    InteractionDistance: 0.3
 --- !u!1 &9060549702506707196
 GameObject:
   m_ObjectHideFlags: 0
