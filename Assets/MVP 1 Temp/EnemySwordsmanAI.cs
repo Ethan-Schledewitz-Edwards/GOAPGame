@@ -1,3 +1,4 @@
+using Player.Core;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,16 +10,26 @@ public class EnemySwordsmanAI : MonoBehaviour
 	public float MaxWanderDist = 40;
 	public float MinWanderTime = 5;
 	public float MaxWanderTime = 15;
+	public float VisionRange = 10;
+	public float ForgetRange = 20;
 
 	private NavMeshAgent m_NavMeshAgent;
 
 	private Vector3 m_WanderOrigin;
 	private float m_WanderTimer;
+	private GameObject m_AttackingObject;
+
+	enum EState
+	{
+		WANDERING,
+		ATTACKING,
+	}
+
+	private EState m_CurrentState = EState.WANDERING;
 
 	void Awake()
 	{
 		m_NavMeshAgent = GetComponent<NavMeshAgent>();
-
 		m_WanderOrigin = m_NavMeshAgent.nextPosition;
 	}
 
@@ -31,11 +42,52 @@ public class EnemySwordsmanAI : MonoBehaviour
 
 	void AIThink()
 	{
-		// Just wander for now
-
 		if (!m_NavMeshAgent.isOnNavMesh)
 		{
 			Debug.LogWarning($"{name} has left the navmesh", gameObject);
+			return;
+		}
+
+		switch (m_CurrentState)
+		{
+			case EState.WANDERING:
+				WanderThink();
+				break;
+
+			case EState.ATTACKING:
+				AttackThink();
+				break;
+		}
+	}
+
+	private void WanderThink()
+	{
+		// Find closest player actor we can see
+		GameObject closestObjectToAttack = null;
+		{
+			float minSqrDistance = VisionRange * VisionRange;
+			var allAttackableObjects = FindObjectsByType<PlayerEntity>();
+			foreach (var attackableObject in allAttackableObjects)
+			{
+				//if (attackableObject.ActorFaction != Factions.Core.EFaction.FACTION_PLAYER)
+				//	continue;
+
+				float sqrDistance = Vector3.SqrMagnitude(attackableObject.transform.position - transform.position);
+
+				if (sqrDistance < minSqrDistance)
+				{
+					closestObjectToAttack = attackableObject.gameObject;
+					minSqrDistance = sqrDistance;
+				}
+			}
+		}
+
+		if (closestObjectToAttack)
+		{
+			// Switch state to attacking when in range of a player actor
+			m_CurrentState = EState.ATTACKING;
+			m_AttackingObject = closestObjectToAttack;
+			m_WanderTimer = 0;
 			return;
 		}
 
@@ -50,6 +102,19 @@ public class EnemySwordsmanAI : MonoBehaviour
 				m_NavMeshAgent.destination = wanderingSpot;
 			}
 		}
+	}
+
+	private void AttackThink()
+	{
+		if (!m_AttackingObject ||
+			Vector3.SqrMagnitude(m_AttackingObject.transform.position - m_NavMeshAgent.nextPosition) > ForgetRange * ForgetRange)
+		{
+			m_CurrentState = EState.WANDERING;
+			m_AttackingObject = null;
+			return;
+		}
+
+		m_NavMeshAgent.destination = m_AttackingObject.transform.position;
 	}
 
 	private bool TryFindWanderingSpot(out Vector3 position)

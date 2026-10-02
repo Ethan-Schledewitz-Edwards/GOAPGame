@@ -161,6 +161,7 @@ MonoBehaviour:
   MaxWanderDist: 40
   MinWanderTime: 5
   MaxWanderTime: 15
+  VisionRange: 5
 --- !u!1001 &2766313196047091780
 PrefabInstance:
   m_ObjectHideFlags: 0
