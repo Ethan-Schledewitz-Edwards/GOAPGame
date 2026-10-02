@@ -11,8 +11,8 @@ public class ActorInventory : InventoryComponent
 	[field: SerializeField] public Transform DropItemTransform { get; private set; }
 
 	// Events
-	public event Action<ItemIO> OnPickedUpItem;
-	public event Action<ItemIO> OnDroppedItem;
+	public event Action<ItemActorInteractable> OnPickedUpItem;
+	public event Action<ItemActorInteractable> OnDroppedItem;
 
 	// System
 	public InventorySlot HeldItemSlot { get; private set; }
@@ -51,7 +51,7 @@ public class ActorInventory : InventoryComponent
 		if (itemTransforms != null && itemTransforms.Length > 0)
 		{
 			Transform itemTransform = itemTransforms[0];
-			if (itemTransform.TryGetComponent(out ItemIO item))
+			if (itemTransform.TryGetComponent(out ItemActorInteractable item))
 			{
 				itemTransform.parent = m_heldItemPosition;
 				itemTransform.position = m_heldItemPosition.position;

@@ -28,6 +28,21 @@ public class AIPathing : MonoBehaviour
 	private Coroutine m_destinationCoroutine;
 
 	// System
+	// NOTE: There are inconsistent ways to access and modify stopping distance.
+	// I think it would be better to avoid get and set functions in early stages
+	// and use properties instead. In this example it would look like:
+	/*
+	public float StoppingDistance
+	{
+		get => m_navAgent.stoppingDistance;
+		set => m_navAgent.stoppingDistance = value;
+	}
+	*/
+	// There's also something to be said about the benefit of making almost everything
+	// public. This can allow you to new and unexpected things without having to jump
+	// through hoops. The purpose of private members is to stop bad programmers from
+	// accidentally breaking things, but I don't think we'll have that problem.
+	// Making things
 	public float StoppingDistance => m_navAgent.stoppingDistance;
 	public bool HasPath { get; private set; }
 	public bool IsMoving { get; private set; }
@@ -81,6 +96,8 @@ public class AIPathing : MonoBehaviour
 			return;
 		}
 
+		// NOTE: Should probably remove this optimization. It can hide other problems, plus that
+		// whole complexity thing.
 		// Only rebuild the path if the difference between
 		// the new and previous destinations is significant
 		if ((destinationPosition - CurrentDestination).sqrMagnitude < 0.01f)
@@ -145,6 +162,8 @@ public class AIPathing : MonoBehaviour
 		}
 	}
 
+	// NOTE: This should probably be stripped out until it's needed again. We don't want to have to
+	// maintain multiple copies of pathing logic as we change how NPCs work.
 	/// <summary>
 	/// Solves a path then then moves the Actor along it.
 	/// </summary>
@@ -178,9 +197,9 @@ public class AIPathing : MonoBehaviour
 			case EPathingSimFidelity.Near:
 
 				NavMeshPath nearPath = new NavMeshPath();
-				NavMesh.CalculatePath(transform.position, 
-					CurrentDestination, 
-					NavMesh.AllAreas, 
+				NavMesh.CalculatePath(transform.position,
+					CurrentDestination,
+					NavMesh.AllAreas,
 					nearPath);
 
 				m_currentPath = nearPath;
@@ -189,8 +208,8 @@ public class AIPathing : MonoBehaviour
 				{
 					m_pathCorners = nearPath.corners;
 
-					m_destinationCoroutine = StartCoroutine(FollowPath(nearPath.corners, 
-						m_navAgent.speed, 
+					m_destinationCoroutine = StartCoroutine(FollowPath(nearPath.corners,
+						m_navAgent.speed,
 						true));
 				}
 				break;
@@ -198,8 +217,8 @@ public class AIPathing : MonoBehaviour
 			case EPathingSimFidelity.Distant:
 				NavMeshPath distantPath = new NavMeshPath();
 
-				NavMesh.CalculatePath(transform.position, CurrentDestination, 
-					NavMesh.AllAreas, 
+				NavMesh.CalculatePath(transform.position, CurrentDestination,
+					NavMesh.AllAreas,
 					distantPath);
 
 				m_currentPath = distantPath;
@@ -207,8 +226,8 @@ public class AIPathing : MonoBehaviour
 				if (distantPath.status == NavMeshPathStatus.PathComplete)
 				{
 					m_pathCorners = distantPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(distantPath.corners, 
-						m_navAgent.speed, 
+					m_destinationCoroutine = StartCoroutine(FollowPath(distantPath.corners,
+						m_navAgent.speed,
 						false));
 				}
 				break;
@@ -227,8 +246,8 @@ public class AIPathing : MonoBehaviour
 			{
 				Quaternion targetRotation = Quaternion.LookRotation(dirToTarget, Vector3.up);
 
-				transform.rotation = Quaternion.Slerp(transform.rotation, 
-					targetRotation, 
+				transform.rotation = Quaternion.Slerp(transform.rotation,
+					targetRotation,
 					c_rotSpeed * Time.deltaTime);
 			}
 		}
@@ -272,8 +291,8 @@ public class AIPathing : MonoBehaviour
 					{
 						Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
 
-						transform.rotation = Quaternion.Slerp(transform.rotation, 
-							targetRotation, 
+						transform.rotation = Quaternion.Slerp(transform.rotation,
+							targetRotation,
 							c_rotSpeed * t);
 					}
 				}

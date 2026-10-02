@@ -2426,6 +2426,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 20ca157e-0ea6-43e3-8cb7-d2eb78a816fa
@@ -8261,6 +8265,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 13042e63-993d-42cb-b211-6693d7ce6905
@@ -10964,14 +10972,6 @@ PrefabInstance:
     - target: {fileID: 3778585277737840742, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
       propertyPath: m_Name
       value: OakTree_Young_Interactable
-      objectReference: {fileID: 0}
-    - target: {fileID: 6779362555471678642, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
-      propertyPath: m_guid
-      value: e676a8ae-246f-42bd-ab37-ca0dbe21cd2e
-      objectReference: {fileID: 0}
-    - target: {fileID: 6779362555471678642, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
-      propertyPath: m_isManuallyAuthored
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16246,6 +16246,10 @@ PrefabInstance:
     - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_Name
       value: Actor (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
@@ -23535,6 +23539,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 44523a1f-0a34-48bf-a008-e7091665ba96
@@ -24898,6 +24906,10 @@ PrefabInstance:
     - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_Name
       value: Actor (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
@@ -29040,6 +29052,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 06a3d25e-bb78-4745-b05a-17c520051175
@@ -31999,6 +32015,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: e9a72832-3e58-47ff-9fb2-c0a4f73ecc6e
@@ -34739,6 +34759,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Actor (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
       value: 189ebf62-3dd9-41f2-9c55-2fe2c6833998
@@ -35205,6 +35229,10 @@ PrefabInstance:
     - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_Name
       value: Actor
+      objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid
@@ -35766,6 +35794,10 @@ PrefabInstance:
     - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_Name
       value: Actor (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6662613928143633748, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7122403342067172847, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
       propertyPath: m_guid

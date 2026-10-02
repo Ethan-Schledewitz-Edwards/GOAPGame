@@ -33,7 +33,7 @@ public class TryPickupItemTask : BTNodeBase
 		if (!assignedPos.GetPositionInRange(interactor, executorTransform.position))
 			return EBTNodeState.STATE_RUNNING;
 
-		if (!targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+		if (!targetTransform.TryGetComponent(out ActorInteractableBase interactable))
 			return EBTNodeState.STATE_FAILURE;
 
 		// ItemIO.TryInteract() moves a standalone item into the actor's inventory.

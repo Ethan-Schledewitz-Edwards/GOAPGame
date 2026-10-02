@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
   m_Name: CarpentersHut_BlueprintData
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
-  m_id: CarpentersHut_BlueprintData
   <DisplayName>k__BackingField: Carpenters Hut
   <Description>k__BackingField: 
   <RequiredItems>k__BackingField:
@@ -22,9 +21,9 @@ MonoBehaviour:
   <BlueprintMesh>k__BackingField: {fileID: 1767986231468006461, guid: c51a3dc80ebf6624aa05aa12e9cd2853, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
   <InteractionPositions>k__BackingField:
-  - <LocalOffset>k__BackingField: {x: 0, y: 0, z: -1.75}
-    <MaxInteractors>k__BackingField: 1
-    <UseFormationRadius>k__BackingField: 0
-    <FormationRadius>k__BackingField: 0
-    <RequiresReservation>k__BackingField: 0
-    <InteractionDistance>k__BackingField: 0.3
+  - LocalOffset: {x: 0, y: 0, z: -1.75}
+    MaxInteractors: 1
+    UseFormationRadius: 0
+    FormationRadius: 0
+    RequiresReservation: 0
+    InteractionDistance: 0.3

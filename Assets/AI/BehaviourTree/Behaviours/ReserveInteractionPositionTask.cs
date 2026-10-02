@@ -31,7 +31,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		if (!targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+		if (!targetTransform.TryGetComponent(out ActorInteractableBase interactable))
 		{
 			Debug.Log($"[ReserveInteractionPositionTask] Failed: Target object " +
 				$"'{targetTransform.name}' lacks an InteractableObjectBase component.", targetTransform);

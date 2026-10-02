@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace AssetIndex.Core
 {
-    public static class IndexRegistry
-    {
-		private static readonly Dictionary<Type, object> s_registryMap = new();
+	public static class IndexRegistry
+	{
+		private static Dictionary<Type, object> s_registryMap = new();
+
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		static void ResetStatics()
+		{
+			s_registryMap = new();
+		}
 
 		public static void Register<T>(AssetIndexBase<T> indexAsset) where T : ScriptableObject, IIndexedAsset
 		{

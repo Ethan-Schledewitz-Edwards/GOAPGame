@@ -75,6 +75,26 @@ namespace Player.Core
 			}
 		}
 
+		private ActorInteractableBase FindClosestInteractablePosition(Vector3 position)
+		{
+			// TODO: Should there also be filtering by factions or something, types of available
+			// jobs?
+
+			// TODO:/NOTE: I think interaction distance / stopping distance / job search distance
+			// (which have both constant and configurable versions!)
+			// should all just be one thing.
+
+			var allInteractables = FindObjectsByType<ActorInteractableBase>();
+
+			float closestDist = float.PositiveInfinity;
+			foreach (var interactable in allInteractables)
+			{
+				//float dist = interactable.TryReserveClosestPosition
+			}
+
+			return null;
+		}
+
 		private void TryAssignActor(Vector3 throwPosition)
 		{
 			// Remove the closest follower and throw them at the cursor
@@ -82,6 +102,15 @@ namespace Player.Core
 			if (followerToThrow != null)
 			{
 				RemoveFollower(followerToThrow);
+
+				// Search for interactable at position
+				var interactable = FindClosestInteractablePosition(throwPosition);
+
+				// TODO:
+				// Yes interactable -> Take job from interactable
+
+				// No interactable	-> Move to position (wander, or come back after doing some confusion emote?)
+
 				followerToThrow.InvestigatePosition(throwPosition);
 			}
 		}

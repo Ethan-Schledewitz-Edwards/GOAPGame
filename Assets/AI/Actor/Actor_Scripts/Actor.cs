@@ -13,7 +13,7 @@ public class Actor : MonoBehaviour, IInteractor
 {
 	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
-	private const float c_workingDist = 0.15f;
+	private const float c_workingDist = 0.3f;
 	private const float c_followSpeed = 7.2f;
 	private const float c_workingSpeed = 5.8f;
 	private const float c_offDutySpeed = 2f;
@@ -99,11 +99,11 @@ public class Actor : MonoBehaviour, IInteractor
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
-	private bool m_isInvestigating;
+	private bool m_isInvestigating;	// NOTE: I assume this is an unused feature? It can never be set to true and should be removed.
 	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
-	private InteractableObjectBase m_targetInteractable;
+	private ActorInteractableBase m_targetInteractable;
 	private InteractionPosition m_assignedInteractionPosition;
 
 	#region Lifecycle
@@ -180,7 +180,7 @@ public class Actor : MonoBehaviour, IInteractor
 					Pathing.SetDestination(validPos);
 
 					// Check distance and attempt interaction directly
-					float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
+					float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
 					if (Pathing.IsWithinDistance(validPos, interactionDistance))
 					{
 						InteractWith(m_targetInteractable, true);
@@ -278,7 +278,7 @@ public class Actor : MonoBehaviour, IInteractor
 		Pathing.SetDestination(destination);
 	}
 
-	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
+	public void InteractWith(ActorInteractableBase actorInteractableObjectBase, bool willReplaceJob)
 	{
 		if (m_behaviourTreeExecutor != null)
 		{
@@ -298,7 +298,7 @@ public class Actor : MonoBehaviour, IInteractor
 			if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 				return;
 
-			float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
+			float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
 			if (!Pathing.IsWithinDistance(validPos, interactionDistance))
 				return;
 		}
@@ -322,7 +322,7 @@ public class Actor : MonoBehaviour, IInteractor
 		{
 			m_targetTransform = actorInteractableObjectBase.transform;
 			TrySetActorJob(actorInteractableObjectBase.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {m_targetTransform} and was succsessful.", this);
+			Debug.Log($"{transform} interacted with {m_targetTransform.name} and was succsessful.", this);
 		}
 	}
 
@@ -382,8 +382,8 @@ public class Actor : MonoBehaviour, IInteractor
 			m_targetTransform = contextTarget;
 
 			if (contextTarget != null)
-				m_targetInteractable = contextTarget.GetComponent<InteractableObjectBase>() ??
-					contextTarget.GetComponentInParent<InteractableObjectBase>();
+				m_targetInteractable = contextTarget.GetComponent<ActorInteractableBase>() ??
+					contextTarget.GetComponentInParent<ActorInteractableBase>();
 			else
 				m_targetInteractable = null;
 		}
@@ -443,7 +443,7 @@ public class Actor : MonoBehaviour, IInteractor
 		if (amountToDrop > 0)
 			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
 
-		Debug.Log($"{transform} has dropped their items.", this);
+		Debug.Log($"{this.name} has dropped their items.", this);
 	}
 
 	/// <summary>
@@ -460,9 +460,9 @@ public class Actor : MonoBehaviour, IInteractor
 	/// <summary>
 	/// Searches for an actor interactable object within a radius.
 	/// </summary>
-	private InteractableObjectBase SearchForTask()
+	private ActorInteractableBase SearchForTask()
 	{
-		InteractableObjectBase closestTask = null;
+		ActorInteractableBase closestTask = null;
 
 		Vector3 pos = transform.position;
 		Collider[] hitColliders = Physics.OverlapSphere(pos, c_searchForJobRange, m_interactionLayers, QueryTriggerInteraction.Collide);
@@ -473,7 +473,7 @@ public class Actor : MonoBehaviour, IInteractor
 			if (i == null)
 				continue;
 
-			if (i.TryGetComponent(out InteractableObjectBase aio))
+			if (i.TryGetComponent(out ActorInteractableBase aio))
 			{
 				if (!aio.HasAvailableWork(this))
 					continue;
