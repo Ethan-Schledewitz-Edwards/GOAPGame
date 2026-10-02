@@ -19,7 +19,7 @@ public class DepositHeldItemTask : BTNodeBase
 		public InteractionPosition AssignedPos;
 		public InventoryComponent ExecutorInventory;
 		public InventoryComponent TargetInventory;
-		public InteractableObjectBase Interactable;
+		public ActorInteractableBase Interactable;
 		public IInteractor Interactor;
 	}
 
@@ -91,7 +91,7 @@ public class DepositHeldItemTask : BTNodeBase
 		if (executorTransform != null && targetTransform != null && assignedPos != null)
 		{
 			if (executorTransform.TryGetComponent(out IInteractor interactor) &&
-				targetTransform.TryGetComponent(out InteractableObjectBase interactable))
+				targetTransform.TryGetComponent(out ActorInteractableBase interactable))
 			{
 				if (interactionStarted)
 				{

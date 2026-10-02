@@ -74,7 +74,7 @@ public class FindUseForItemTask : BTNodeBase
 		GameObject structureObject = closestStructure.Object;
 
 		// Ensure the structure is interactable and can filter items
-		if (!structureObject.TryGetComponent(out InteractableObjectBase interactable) ||
+		if (!structureObject.TryGetComponent(out ActorInteractableBase interactable) ||
 			!structureObject.TryGetComponent(out IItemFiltered itemFiltered))
 		{
 			return false;

@@ -2,9 +2,8 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-// NOTE: The naming scheme is inconsistent (Interactable in the base class, IO in the derived class)
 [RequireComponent(typeof(HarvestableHealthComponent))]
-public class HarvestableIO : InteractableObjectBase
+public class HarvestableActorInteractable : ActorInteractableBase
 {
 	private static BehaviourTree m_harvestBT;
 

@@ -26,7 +26,7 @@ public class ReturnToStructureTask : BTNodeBase
 			if (structure != null && structure.Object != null)
 			{
 				GameObject structureObject = structure.Object;
-				if (structureObject.TryGetComponent(out InteractableObjectBase interactable))
+				if (structureObject.TryGetComponent(out ActorInteractableBase interactable))
 				{
 					// Try to reserve the closest position on the structure's interactable component
 					if (interactable.TryReserveClosestPosition(interactor, executorPosition, out InteractionPosition assignedPosition))

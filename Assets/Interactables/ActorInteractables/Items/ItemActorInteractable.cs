@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody), typeof(InteractionPosition))]
-public class ItemIO : InteractableObjectBase, IItemObject
+public class ItemActorInteractable : ActorInteractableBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
 
@@ -32,7 +32,6 @@ public class ItemIO : InteractableObjectBase, IItemObject
 	// System
 	private bool m_isItemStored;
 	private IInteractor m_holder;
-
 
 	public void Awake()
 	{

@@ -8,7 +8,7 @@ using UnityEngine;
 // Maybe this could also be called BaseJobSite if there's no overlap with
 // some other job feature, because it seems like the only purpose of this is to
 // assign jobs to pikmin.
-public abstract class InteractableObjectBase : MonoBehaviour
+public abstract class ActorInteractableBase : MonoBehaviour
 {
 	[Header("Settings")]
 	[SerializeField] private int m_minActorsNeededToOperate = 1;

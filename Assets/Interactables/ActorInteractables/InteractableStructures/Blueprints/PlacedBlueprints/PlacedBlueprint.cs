@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Interaction.InteractableStructures.Blueprints
 {
 	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
-	public class PlacedBlueprint : BlueprintIOBase, IBlueprintObject
+	public class PlacedBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
 		[Header("Settings & Visuals")]
 		[SerializeField] private Material m_blueprintMaterial;

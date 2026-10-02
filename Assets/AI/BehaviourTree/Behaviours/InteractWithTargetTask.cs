@@ -23,8 +23,8 @@ public class InteractWithTargetTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.STATE_FAILURE;
 
-		InteractableObjectBase iob = targetTransform.GetComponent<InteractableObjectBase>()
-								  ?? targetTransform.GetComponentInParent<InteractableObjectBase>();
+		ActorInteractableBase iob = targetTransform.GetComponent<ActorInteractableBase>()
+								  ?? targetTransform.GetComponentInParent<ActorInteractableBase>();
 
 		if (iob == null)
 			return EBTNodeState.STATE_FAILURE;

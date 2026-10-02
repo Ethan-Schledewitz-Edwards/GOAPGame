@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Interaction.InteractableStructures
 {
 	[RequireComponent(typeof(InventoryComponent))]
-	public class ItemStorageIO : InteractableObjectBase, IStructure, IItemFiltered
+	public class ItemStorageActorInteractable : ActorInteractableBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_takeItemBT;
 

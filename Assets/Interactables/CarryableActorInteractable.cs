@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using UnityEngine;
 
-public class CarryableInteractableObject : InteractableObjectBase
+public class CarryableActorInteractable : ActorInteractableBase
 {
 	private float m_moveSpeed = 0f;
 

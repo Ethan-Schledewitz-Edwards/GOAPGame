@@ -103,7 +103,7 @@ public class Actor : MonoBehaviour, IInteractor
 	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
-	private InteractableObjectBase m_targetInteractable;
+	private ActorInteractableBase m_targetInteractable;
 	private InteractionPosition m_assignedInteractionPosition;
 
 	#region Lifecycle
@@ -278,7 +278,7 @@ public class Actor : MonoBehaviour, IInteractor
 		Pathing.SetDestination(destination);
 	}
 
-	public void InteractWith(InteractableObjectBase actorInteractableObjectBase, bool willReplaceJob)
+	public void InteractWith(ActorInteractableBase actorInteractableObjectBase, bool willReplaceJob)
 	{
 		if (m_behaviourTreeExecutor != null)
 		{
@@ -382,8 +382,8 @@ public class Actor : MonoBehaviour, IInteractor
 			m_targetTransform = contextTarget;
 
 			if (contextTarget != null)
-				m_targetInteractable = contextTarget.GetComponent<InteractableObjectBase>() ??
-					contextTarget.GetComponentInParent<InteractableObjectBase>();
+				m_targetInteractable = contextTarget.GetComponent<ActorInteractableBase>() ??
+					contextTarget.GetComponentInParent<ActorInteractableBase>();
 			else
 				m_targetInteractable = null;
 		}
@@ -460,9 +460,9 @@ public class Actor : MonoBehaviour, IInteractor
 	/// <summary>
 	/// Searches for an actor interactable object within a radius.
 	/// </summary>
-	private InteractableObjectBase SearchForTask()
+	private ActorInteractableBase SearchForTask()
 	{
-		InteractableObjectBase closestTask = null;
+		ActorInteractableBase closestTask = null;
 
 		Vector3 pos = transform.position;
 		Collider[] hitColliders = Physics.OverlapSphere(pos, c_searchForJobRange, m_interactionLayers, QueryTriggerInteraction.Collide);
@@ -473,7 +473,7 @@ public class Actor : MonoBehaviour, IInteractor
 			if (i == null)
 				continue;
 
-			if (i.TryGetComponent(out InteractableObjectBase aio))
+			if (i.TryGetComponent(out ActorInteractableBase aio))
 			{
 				if (!aio.HasAvailableWork(this))
 					continue;

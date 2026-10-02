@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Interaction.InteractableStructures.Blueprints
 {
-    public class EnvironmentalBlueprint : BlueprintIOBase, IBlueprintObject
+    public class EnvironmentalBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
 		[Header("Settings")]
 		[SerializeField] private ItemQuantity[] m_requiredItems;

@@ -75,7 +75,7 @@ namespace Player.Core
 			}
 		}
 
-		private InteractableObjectBase FindClosestInteractablePosition(Vector3 position)
+		private ActorInteractableBase FindClosestInteractablePosition(Vector3 position)
 		{
 			// TODO: Should there also be filtering by factions or something, types of available
 			// jobs?
@@ -84,7 +84,7 @@ namespace Player.Core
 			// (which have both constant and configurable versions!)
 			// should all just be one thing.
 
-			var allInteractables = FindObjectsByType<InteractableObjectBase>();
+			var allInteractables = FindObjectsByType<ActorInteractableBase>();
 
 			float closestDist = float.PositiveInfinity;
 			foreach (var interactable in allInteractables)

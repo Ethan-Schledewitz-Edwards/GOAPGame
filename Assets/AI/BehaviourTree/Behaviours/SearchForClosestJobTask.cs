@@ -22,7 +22,7 @@ public class SearchForClosestJobTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		Vector3 executorPosition = executorTransform.position;
-		InteractableObjectBase closestInteractable = SearchForTask(interactor, executorPosition, context);
+		ActorInteractableBase closestInteractable = SearchForTask(interactor, executorPosition, context);
 		if (closestInteractable != null)
 		{
 			Debug.Log($"[SearchForClosestJobTask]: {executorTransform} found an object to interact with", executorTransform);
@@ -43,9 +43,9 @@ public class SearchForClosestJobTask : BTNodeBase
 	/// <summary>
 	/// Searches for an actor interactable object within a radius.
 	/// </summary>
-	private InteractableObjectBase SearchForTask(IInteractor interactor, Vector3 executorPosition, AIContext context)
+	private ActorInteractableBase SearchForTask(IInteractor interactor, Vector3 executorPosition, AIContext context)
 	{
-		InteractableObjectBase closestTask = null;
+		ActorInteractableBase closestTask = null;
 
 		float interactionRadius = context.GetData<float>(AIContextKeys.c_JobSearchRange, 1.5f);
 		int interactionLayers = context.GetData<int>(AIContextKeys.c_InteractionLayer);
@@ -64,7 +64,7 @@ public class SearchForClosestJobTask : BTNodeBase
 			if (i == null)
 				continue;
 
-			if (i.TryGetComponent(out InteractableObjectBase aio))
+			if (i.TryGetComponent(out ActorInteractableBase aio))
 			{
 				if (!aio.HasAvailableWork(interactor))
 					continue;

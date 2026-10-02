@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class EnemyInteractable : InteractableObjectBase
+public class EnemyInteractable : ActorInteractableBase
 {
 	private static BehaviourTree s_AttackBehaviour;
 
