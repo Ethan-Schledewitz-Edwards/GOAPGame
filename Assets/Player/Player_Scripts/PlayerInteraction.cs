@@ -22,6 +22,7 @@ namespace Player.Core
 		public event Action ClosestInteractableCleared;
 
 		private IPlayerInteractable m_closestInteractable;
+		public Transform m_closestInteractableCol; // Temp for debug
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
 		private HashSet<IPlayerInteractable> m_previousInteractables = new HashSet<IPlayerInteractable>();
@@ -48,7 +49,8 @@ namespace Player.Core
 					m_currentInteractables.Add(interactable);
 
 					// New interactable within display range
-					if (interactable.HasDisplayInfo && !m_previousInteractables.Contains(interactable))
+					if (interactable.HasDisplayInfo && 
+						!m_previousInteractables.Contains(interactable))
 					{
 						NewInteractableInDisplayRange?.Invoke(interactable);
 					}
@@ -99,15 +101,16 @@ namespace Player.Core
 			{
 				m_closestInteractable = interactable;
 				Vector3 promptPosition = interactable.Transform.position + interactable.LocalPromptOffset;
+				m_closestInteractableCol = interactable.Transform;
 
 				ClosestInteractableUpdated?.Invoke(interactable.InteractPrompt, promptPosition);
-				Debug.Log("WHAT");
 			}
 		}
 
 		private void ClearInteractable()
 		{
 			m_closestInteractable = null;
+			m_closestInteractableCol = null;
 			ClosestInteractableCleared?.Invoke();
 		}
 	}

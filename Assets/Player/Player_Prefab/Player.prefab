@@ -589,6 +589,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a15381172a178b4f8f08cddd4462a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Player.Core::Player.Core.PlayerInteraction
+  m_interactionLayer:
+    serializedVersion: 2
+    m_Bits: 136
 --- !u!54 &2388740294352789583
 Rigidbody:
   m_ObjectHideFlags: 0

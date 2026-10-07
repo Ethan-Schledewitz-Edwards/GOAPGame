@@ -14,6 +14,7 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 
 	protected override void Start()
 	{
+		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteraction>();
 		if (m_playerInteraction != null)
 		{
 			m_playerInteraction.ClosestInteractableUpdated += HandlePromptUpdated;

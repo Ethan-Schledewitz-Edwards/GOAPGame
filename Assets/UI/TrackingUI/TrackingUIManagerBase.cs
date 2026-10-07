@@ -43,6 +43,8 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 
 	private void HandleInteractableInRange(IPlayerInteractable playerInteractable)
 	{
+		Debug.Log("THIS SHOULD BE CALLED");
+
 		if (playerInteractable is TInteractable interactable)
 		{
 			if (!m_activeElements.ContainsKey(interactable))

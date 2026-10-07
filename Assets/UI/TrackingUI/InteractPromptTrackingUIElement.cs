@@ -10,4 +10,16 @@ public class InteractPromptTrackingUIElement : TrackingUIElementBase
 		if (m_promptText != null)
 			m_promptText.SetText(prompt);
 	}
+
+	public override void ElementReleased()
+	{
+		gameObject.SetActive(true);
+	}
+
+	public override void ElementReturned()
+	{
+		ResetDynamicPosition();
+		SetPromptText(string.Empty);
+		gameObject.SetActive(false);
+	}
 }

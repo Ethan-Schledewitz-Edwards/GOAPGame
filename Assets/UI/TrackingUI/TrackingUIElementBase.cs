@@ -2,10 +2,6 @@ using UnityEngine;
 
 public abstract class TrackingUIElementBase : UIElement
 {
-	[Header("Settings")]
-	[SerializeField] private bool m_lerp;
-	[SerializeField] private float m_smoothSpeed;
-
 	[Header("Offset")]
 	[SerializeField] private Vector2 m_localOffset;
 
@@ -39,32 +35,12 @@ public abstract class TrackingUIElementBase : UIElement
 		{
 			Camera camera = Camera.main;
 			Vector2 screenPosition = camera.WorldToScreenPoint(targetPosition);
-			Vector2 finalPosition;
-			if (m_lerp)
-			{
-				Vector2 smoothPosition = Vector2.Lerp(m_anchorPosition,
-					screenPosition, 
-					m_smoothSpeed * Time.deltaTime);
-
-				finalPosition = smoothPosition;
-			}
-			else
-			{
-				finalPosition = screenPosition;
-			}
-
-			m_rectTransform.position = finalPosition + m_localOffset;
-			m_anchorPosition = finalPosition;
+			m_rectTransform.position = screenPosition + m_localOffset;
+			m_anchorPosition = screenPosition;
 		}
 	}
 
-	public virtual void ElementReleased()
-	{
+	public abstract void ElementReleased();
 
-	}
-
-	public virtual void ElementReturned()
-	{
-
-	}
+	public abstract void ElementReturned();
 }
