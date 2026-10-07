@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 5153396709130352550}
   - component: {fileID: 6069415673470048647}
   - component: {fileID: 5030504748117166773}
-  - component: {fileID: 5557249503198524681}
+  - component: {fileID: 5246923973207773039}
   - component: {fileID: 8089288841027459147}
   m_Layer: 7
   m_Name: Stone_Item
@@ -174,7 +174,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &5557249503198524681
+--- !u!114 &5246923973207773039
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,11 +183,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6673996059420899831}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbe8fd5c55157b54582208b7384852dc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ee7280d318408840b56e615dcf45a57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
   m_minActorsNeededToOperate: 1
-  m_interactPositions: []
+  m_interactPositions:
+  - {fileID: 8089288841027459147}
   m_itemData: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
   m_stackSize: 1
 --- !u!114 &8089288841027459147
@@ -202,8 +203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
-  <MaxInteractors>k__BackingField: 1
-  <UseFormationRadius>k__BackingField: 0
-  <FormationRadius>k__BackingField: 1.5
-  <RequiresReservation>k__BackingField: 1
-  <InteractionDistance>k__BackingField: 0.2
+  m_settings:
+    LocalOffset: {x: 0, y: 0, z: 0}
+    MaxInteractors: 1
+    UseFormationRadius: 1
+    FormationRadius: 1.5
+    RequiresReservation: 1
+    InteractionDistance: 0.3

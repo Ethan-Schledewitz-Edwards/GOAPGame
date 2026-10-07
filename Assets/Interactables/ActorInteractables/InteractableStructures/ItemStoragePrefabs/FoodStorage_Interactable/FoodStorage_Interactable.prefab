@@ -110,15 +110,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3494104293989071018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7c28197a52100e4787e6b560544b92b, type: 3}
+  m_Script: {fileID: 11500000, guid: f6feb0dfdd5fb4b43b79bc3bbd59bb1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemStorageAIO
   m_minActorsNeededToOperate: 1
   m_interactPositions:
   - {fileID: 2316436260138641491}
-  m_tagFilter:
-  - {fileID: 11400000, guid: 4ed713c2e26940c4f9a7f2a2fb76bcbe, type: 2}
-  m_structureTypeTag: {fileID: 11400000, guid: 417c4f3cf8bfee74bae70b2f7318ca61, type: 2}
+  m_tagFilter: []
+  m_structureTypeTag: {fileID: 0}
   m_maxCapacity: 4
   m_actorsAssigned: 0
 --- !u!208 &7827061921092389273

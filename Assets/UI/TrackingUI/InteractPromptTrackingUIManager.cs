@@ -42,7 +42,6 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 
 			if (!m_interactPromptTrackingUIElement.gameObject.activeSelf)
 			{
-				m_interactPromptTrackingUIElement.gameObject.SetActive(true);
 				m_interactPromptTrackingUIElement.ElementReleased();
 			}
 		}
@@ -56,10 +55,7 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 	{
 		if (m_interactPromptTrackingUIElement.gameObject.activeSelf)
 		{
-			m_interactPromptTrackingUIElement.ResetDynamicPosition();
-			m_interactPromptTrackingUIElement.SetPromptText(string.Empty);
 			m_interactPromptTrackingUIElement.ElementReturned();
-			m_interactPromptTrackingUIElement.gameObject.SetActive(false);
 		}
 	}
 
