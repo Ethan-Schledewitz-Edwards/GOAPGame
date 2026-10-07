@@ -1,17 +1,13 @@
 {
-    "name": "Interaction.Item",
-    "rootNamespace": "",
+    "name": "Interaction.Actor.Harvestables",
+    "rootNamespace": "Interaction.Actor.Harvestables",
     "references": [
         "GUID:034986700f8ed6c499c3c658f56a9386",
-        "GUID:19a69fce138124240bfff07f6ef69a21",
         "GUID:f5a277d94bd7dc44f8d8d59e8969a2b5",
-        "GUID:b48868d35af4eec479739e3be8ceee92",
-        "GUID:cea843fb1da4f2a41a79b660200a2685",
+        "GUID:e928ad11a8e9c0843afaf90f474d01ba",
         "GUID:bbe32f9014a8f6f47993fc4b415cd254",
-        "GUID:4226e2a0af523234d863bc360ce6fd4d",
-        "GUID:0eec0e3185c110644ab23d853bdbea41",
-        "GUID:9ba38f2c76031274599e13fd9c690966",
-        "GUID:43be695e241eefc4d976df3ad33e60b2"
+        "GUID:b48868d35af4eec479739e3be8ceee92",
+        "GUID:cea843fb1da4f2a41a79b660200a2685"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

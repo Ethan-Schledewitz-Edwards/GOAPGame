@@ -5,7 +5,7 @@ using System;
 
 namespace Player.Core
 {
-	public class PlayerInteraction : MonoBehaviour
+	public class PlayerInteraction : MonoBehaviour, IInputHandler
 	{
 		private const float c_displayRange = 12f;
 		private const float c_interactionRange = 3f;
@@ -22,11 +22,20 @@ namespace Player.Core
 		public event Action ClosestInteractableCleared;
 
 		private IPlayerInteractable m_closestInteractable;
-		public Transform m_closestInteractableCol; // Temp for debug
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
 		private HashSet<IPlayerInteractable> m_previousInteractables = new HashSet<IPlayerInteractable>();
 		private HashSet<IPlayerInteractable> m_currentInteractables = new HashSet<IPlayerInteractable>();
+
+		public void Subscribe()
+		{
+			
+		}
+
+		public void UnSubscribe()
+		{
+			
+		}
 
 		private void Update()
 		{
@@ -101,8 +110,6 @@ namespace Player.Core
 			{
 				m_closestInteractable = interactable;
 				Vector3 promptPosition = interactable.Transform.position + interactable.LocalPromptOffset;
-				m_closestInteractableCol = interactable.Transform;
-
 				ClosestInteractableUpdated?.Invoke(interactable.InteractPrompt, promptPosition);
 			}
 		}
@@ -110,7 +117,6 @@ namespace Player.Core
 		private void ClearInteractable()
 		{
 			m_closestInteractable = null;
-			m_closestInteractableCol = null;
 			ClosestInteractableCleared?.Invoke();
 		}
 	}
