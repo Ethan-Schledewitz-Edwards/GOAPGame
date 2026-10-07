@@ -5284,6 +5284,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 645473518606917845, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
+      propertyPath: m_interactionLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -11693,7 +11697,7 @@ GameObject:
   - component: {fileID: 626176725}
   - component: {fileID: 626176724}
   - component: {fileID: 626176723}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11712,7 +11716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bb9f393b63bfc84a8b88da01c647b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UISystem::Temp
-  m_trackingUIElement: {fileID: 1070019016}
+  <LocalPromptOffset>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!65 &626176724
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16460,7 +16464,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.05
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 8090ad469f27a4547af73b62d5351dde, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: a40813f25c4b6104d9335ca2336e17dc, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1001 &878279720
 PrefabInstance:
@@ -19850,17 +19854,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2071504800197458935, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
   m_PrefabInstance: {fileID: 1056276596}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1070019016 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7053860216769822075, guid: 4184ab51b1c9a03499797fe1bca2eded, type: 3}
-  m_PrefabInstance: {fileID: 485634866}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 274cf1475330e374b89cf01adf0ded09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UISystem::TrackingUIElement
 --- !u!1001 &1073415651
 PrefabInstance:
   m_ObjectHideFlags: 0

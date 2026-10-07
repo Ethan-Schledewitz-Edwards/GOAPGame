@@ -479,6 +479,7 @@ GameObject:
   - component: {fileID: 1613715350608868700}
   - component: {fileID: 8055755646343992628}
   - component: {fileID: 7488782142776458643}
+  - component: {fileID: 645473518606917845}
   - component: {fileID: 2388740294352789583}
   - component: {fileID: 2955833704832694629}
   - component: {fileID: 1371981767915270995}
@@ -576,6 +577,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Player::PlayerConstructionController
   m_validMaterial: {fileID: 2100000, guid: ccaa27d7dbce4804a83a9e6de0936711, type: 2}
   m_invalidMaterial: {fileID: 2100000, guid: beefd3942915ba5438d48cdbeac43797, type: 2}
+--- !u!114 &645473518606917845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674105291137834835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a15381172a178b4f8f08cddd4462a7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Player.Core::Player.Core.PlayerInteraction
 --- !u!54 &2388740294352789583
 Rigidbody:
   m_ObjectHideFlags: 0

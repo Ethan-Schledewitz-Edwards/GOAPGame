@@ -1,16 +1,16 @@
 using UnityEngine;
+using Interaction.Player;
 
-public class Temp : MonoBehaviour
+public class Temp : PlayerInteractableBase<Temp>
 {
-    [SerializeField] private TrackingUIElement m_trackingUIElement;
+	public override bool HasDisplayInfo => false;
 
-    void Start()
-    {
-		m_trackingUIElement.SetTrackingPosition(transform.position);
-	}
+	public override bool CanPlayerInteract => true;
 
-	private void Update()
+	public override string InteractPrompt => "Interact";
+
+	public void Update()
 	{
-		m_trackingUIElement.SetTrackingPosition(transform.position);
+		UpdateInteractableInfo();
 	}
 }
