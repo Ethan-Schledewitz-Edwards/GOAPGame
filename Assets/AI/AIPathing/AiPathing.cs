@@ -17,7 +17,7 @@ public class AIPathing : MonoBehaviour
 
 	// Components
 	[field: SerializeField] public GameObject Mesh { get; private set; }
-	private NavMeshAgent m_navAgent;
+	public NavMeshAgent NavAgent { get; private set; }
 
 	[Header("Simulation & Navigation")]
 	public Vector3 CurrentDestination { get; private set; }
@@ -43,48 +43,14 @@ public class AIPathing : MonoBehaviour
 	// through hoops. The purpose of private members is to stop bad programmers from
 	// accidentally breaking things, but I don't think we'll have that problem.
 	// Making things
-	public float StoppingDistance => m_navAgent.stoppingDistance;
+	public float StoppingDistance => NavAgent.stoppingDistance;
 	public bool HasPath { get; private set; }
 	public bool IsMoving { get; private set; }
 
 	private void Awake()
 	{
-		m_navAgent = GetComponent<NavMeshAgent>();
+		NavAgent = GetComponent<NavMeshAgent>();
 	}
-
-	#region Simulation Fidelity
-
-	public void TrySetActorSimFidelity(EPathingSimFidelity fidelity)
-	{
-		if (m_simFidelity == fidelity)
-			return;
-
-		m_simFidelity = fidelity;
-
-		Mesh.SetActive(m_simFidelity == EPathingSimFidelity.Realtime);
-		m_navAgent.enabled = (m_simFidelity == EPathingSimFidelity.Realtime);
-
-		// Swap preexisting path to the method used for the new simulation fidelity
-		if (CurrentDestination != Vector3.zero)
-			ApplyPathingByFidelity();
-	}
-
-	public void UpdateActorSimFidelity(float distToPlayerSqrt)
-	{
-		if (distToPlayerSqrt < c_nearRangeSqrt)
-		{
-			TrySetActorSimFidelity(EPathingSimFidelity.Realtime);
-		}
-		else if (distToPlayerSqrt < c_distantRangeSqrt)
-		{
-			TrySetActorSimFidelity(EPathingSimFidelity.Near);
-		}
-		else
-		{
-			TrySetActorSimFidelity(EPathingSimFidelity.Distant);
-		}
-	}
-	#endregion
 
 	#region Actor Pathing
 
@@ -96,31 +62,14 @@ public class AIPathing : MonoBehaviour
 			return;
 		}
 
-		// NOTE: Should probably remove this optimization. It can hide other problems, plus that
-		// whole complexity thing.
-		// Only rebuild the path if the difference between
-		// the new and previous destinations is significant
-		if ((destinationPosition - CurrentDestination).sqrMagnitude < 0.01f)
-		{
-			if (m_simFidelity == EPathingSimFidelity.Realtime &&
-				m_navAgent.isActiveAndEnabled &&
-				(m_navAgent.pathPending || m_navAgent.hasPath))
-				return;
-
-			if (m_simFidelity != EPathingSimFidelity.Realtime &&
-				m_destinationCoroutine != null)
-				return;
-		}
-
 		CurrentDestination = destinationPosition;
-
-		ApplyPathingByFidelity();
+		NavAgent.SetDestination(destinationPosition);
 	}
 
 	public void ClearDestination()
 	{
-		if (m_navAgent.isActiveAndEnabled)
-			m_navAgent.ResetPath();
+		if (NavAgent.isActiveAndEnabled)
+			NavAgent.ResetPath();
 
 		CurrentDestination = Vector3.zero;
 		m_pathCorners = new Vector3[0];
@@ -138,9 +87,9 @@ public class AIPathing : MonoBehaviour
 
 	public void SetPosition(Vector3 worldPosition)
 	{
-		if (m_navAgent != null)
+		if (NavAgent != null)
 		{
-			m_navAgent.Warp(worldPosition);
+			NavAgent.Warp(worldPosition);
 		}
 		else
 		{
@@ -150,87 +99,15 @@ public class AIPathing : MonoBehaviour
 
 	public void TickAIPathing()
 	{
-		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.isActiveAndEnabled)
+		if (m_simFidelity == EPathingSimFidelity.Realtime && NavAgent.isActiveAndEnabled)
 		{
-			HasPath = m_navAgent.hasPath;
-			IsMoving = m_navAgent.velocity.sqrMagnitude > 0.01f;
+			HasPath = NavAgent.hasPath;
+			IsMoving = NavAgent.velocity.sqrMagnitude > 0.01f;
 		}
 		else
 		{
 			HasPath = (CurrentDestination != Vector3.zero && m_pathCorners.Length > 0);
 			IsMoving = (CurrentDestination != Vector3.zero && m_destinationCoroutine != null);
-		}
-	}
-
-	// NOTE: This should probably be stripped out until it's needed again. We don't want to have to
-	// maintain multiple copies of pathing logic as we change how NPCs work.
-	/// <summary>
-	/// Solves a path then then moves the Actor along it.
-	/// </summary>
-	private void ApplyPathingByFidelity()
-	{
-		// Reset pathing (high-fidelity)
-		if (m_navAgent.isActiveAndEnabled)
-			m_navAgent.ResetPath();
-
-		// Reset pathing (low-fidelity)
-		if (m_destinationCoroutine != null)
-		{
-			StopCoroutine(m_destinationCoroutine);
-			m_destinationCoroutine = null;
-		}
-
-		// Reset pathing corners
-		m_pathCorners = new Vector3[0];
-		m_cornersPassed = 0;
-
-		// Determine pathing solution
-		switch (m_simFidelity)
-		{
-			case EPathingSimFidelity.Realtime:
-				m_navAgent.SetDestination(CurrentDestination);
-
-				m_currentPath = null;
-				m_pathCorners = new Vector3[0];
-				break;
-
-			case EPathingSimFidelity.Near:
-
-				NavMeshPath nearPath = new NavMeshPath();
-				NavMesh.CalculatePath(transform.position,
-					CurrentDestination,
-					NavMesh.AllAreas,
-					nearPath);
-
-				m_currentPath = nearPath;
-
-				if (nearPath.status == NavMeshPathStatus.PathComplete)
-				{
-					m_pathCorners = nearPath.corners;
-
-					m_destinationCoroutine = StartCoroutine(FollowPath(nearPath.corners,
-						m_navAgent.speed,
-						true));
-				}
-				break;
-
-			case EPathingSimFidelity.Distant:
-				NavMeshPath distantPath = new NavMeshPath();
-
-				NavMesh.CalculatePath(transform.position, CurrentDestination,
-					NavMesh.AllAreas,
-					distantPath);
-
-				m_currentPath = distantPath;
-
-				if (distantPath.status == NavMeshPathStatus.PathComplete)
-				{
-					m_pathCorners = distantPath.corners;
-					m_destinationCoroutine = StartCoroutine(FollowPath(distantPath.corners,
-						m_navAgent.speed,
-						false));
-				}
-				break;
 		}
 	}
 
@@ -253,74 +130,6 @@ public class AIPathing : MonoBehaviour
 		}
 	}
 
-	private IEnumerator FollowPath(Vector3[] waypoints, float moveSpeed, bool isLerped)
-	{
-		m_cornersPassed = 0;
-
-		for (int i = 0; i < waypoints.Length - 1; i++)
-		{
-			Vector3 start = waypoints[i];
-			Vector3 end = waypoints[i + 1];
-
-			float dist = Vector3.Distance(start, end);
-			if (dist <= 0.001f)
-			{
-				transform.position = end;
-				m_cornersPassed++;
-				continue;
-			}
-
-			float safeMoveSpeed = Mathf.Max(0.01f, moveSpeed);
-			float travelTime = dist / safeMoveSpeed;
-			float inverseTime = 1f / travelTime;
-
-			float t = 0.0f;
-			while (t < 1.0f)
-			{
-				t += Time.deltaTime * inverseTime;
-
-				if (isLerped)
-				{
-					transform.position = Vector3.Lerp(start, end, t);
-
-					// Face destination
-					Vector3 lookDir = end - transform.position;
-					lookDir.y = 0;
-
-					if (lookDir.sqrMagnitude > 0.1f)
-					{
-						Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
-
-						transform.rotation = Quaternion.Slerp(transform.rotation,
-							targetRotation,
-							c_rotSpeed * t);
-					}
-				}
-
-				yield return null;
-			}
-
-			transform.position = end;
-			m_cornersPassed++;
-
-			// Face next waypoint
-			if (i + 2 < waypoints.Length)
-			{
-				Vector3 lookDir = waypoints[i + 2] - transform.position;
-				lookDir.y = 0;
-				Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
-				transform.rotation = targetRotation;
-			}
-		}
-
-		CurrentDestination = Vector3.zero;
-		m_currentPath = null;
-		m_pathCorners = new Vector3[0];
-		m_cornersPassed = 0;
-
-		m_destinationCoroutine = null;
-	}
-
 	/// <summary>
 	/// Calculates the distance remaining of an actors current path 
 	/// </summary>
@@ -330,15 +139,15 @@ public class AIPathing : MonoBehaviour
 			return 0.0f;
 
 		// Fetch realtime path distance
-		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.enabled)
+		if (m_simFidelity == EPathingSimFidelity.Realtime && NavAgent.enabled)
 		{
-			if (m_navAgent.pathPending)
+			if (NavAgent.pathPending)
 				return float.MaxValue;
 
-			if (!m_navAgent.hasPath || m_navAgent.pathStatus != NavMeshPathStatus.PathComplete)
+			if (!NavAgent.hasPath || NavAgent.pathStatus != NavMeshPathStatus.PathComplete)
 				return float.MaxValue;
 
-			return m_navAgent.remainingDistance;
+			return NavAgent.remainingDistance;
 		}
 
 		// Ignore incomplete low-fi paths
@@ -377,10 +186,10 @@ public class AIPathing : MonoBehaviour
 	public bool IsCalculatingPath()
 	{
 		if (m_simFidelity == EPathingSimFidelity.Realtime &&
-			m_navAgent.enabled &&
+			NavAgent.enabled &&
 			CurrentDestination != Vector3.zero)
 		{
-			return m_navAgent.pathPending;
+			return NavAgent.pathPending;
 		}
 
 		return false;
@@ -424,11 +233,11 @@ public class AIPathing : MonoBehaviour
 			return true;
 
 		// Check if we reached the end of the calculated NavMesh path
-		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.isActiveAndEnabled)
+		if (m_simFidelity == EPathingSimFidelity.Realtime && NavAgent.isActiveAndEnabled)
 		{
-			if (!m_navAgent.pathPending && m_navAgent.hasPath)
+			if (!NavAgent.pathPending && NavAgent.hasPath)
 			{
-				if (m_navAgent.remainingDistance <= arrivalDistance)
+				if (NavAgent.remainingDistance <= arrivalDistance)
 					return true;
 			}
 		}
@@ -453,15 +262,15 @@ public class AIPathing : MonoBehaviour
 		if (HasReachedDestination(Mathf.Max(StoppingDistance, 0.05f)))
 			return false;
 
-		if (m_simFidelity == EPathingSimFidelity.Realtime && m_navAgent.isActiveAndEnabled)
+		if (m_simFidelity == EPathingSimFidelity.Realtime && NavAgent.isActiveAndEnabled)
 		{
-			if (m_navAgent.pathPending)
+			if (NavAgent.pathPending)
 				return false;
 
-			if (!m_navAgent.hasPath)
+			if (!NavAgent.hasPath)
 				return true;
 
-			return m_navAgent.pathStatus != NavMeshPathStatus.PathComplete;
+			return NavAgent.pathStatus != NavMeshPathStatus.PathComplete;
 		}
 
 		return m_currentPath == null ||
@@ -472,8 +281,8 @@ public class AIPathing : MonoBehaviour
 	#endregion
 
 	public void SetStoppingDistance(float stoppingDistance) =>
-		m_navAgent.stoppingDistance = stoppingDistance;
+		NavAgent.stoppingDistance = stoppingDistance;
 
 	public void SetSpeed(float speed) =>
-		m_navAgent.speed = speed;
+		NavAgent.speed = speed;
 }

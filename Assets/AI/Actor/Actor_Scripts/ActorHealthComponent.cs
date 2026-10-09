@@ -36,7 +36,7 @@ public class ActorHealthComponent : HealthComponent
 
 	private void HandleSpawned(Vector3 savedPosition, Quaternion savedRotation)
 	{
-		m_actor.Pathing.SetPosition(savedPosition);
+		m_actor.AIPathing.SetPosition(savedPosition);
 	}
 
 	private void SetHunger(int newHungerValue)

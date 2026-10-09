@@ -2,7 +2,7 @@ using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(HarvestableHealthComponent))]
+[RequireComponent(typeof(TreeHealthComponent))]
 public class HarvestableActorInteractable : ActorInteractableBase
 {
 	private static BehaviourTree m_harvestBT;
@@ -16,12 +16,12 @@ public class HarvestableActorInteractable : ActorInteractableBase
 		{
 			new MoveToInteractionPositionTask(),
 			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
-			new AttackTask(),
-			new BTTimeoutNode(new SearchForClosestJobTask(), 2f),
-			new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
-			new MoveToInteractionPositionTask(),
-			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
-			new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
+			new AttackTask()
+			//new BTTimeoutNode(new SearchForClosestJobTask(), 2f),
+			//new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
+			//new MoveToInteractionPositionTask(),
+			//new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+			//new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 		});
 
 		BehaviourTree tree = new BehaviourTree();
@@ -32,7 +32,7 @@ public class HarvestableActorInteractable : ActorInteractableBase
 
 	public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPosition reservedPosition,
+			InteractionPoint reservedPosition,
 			out int interactorValue)
 	{
 		if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
@@ -40,10 +40,6 @@ public class HarvestableActorInteractable : ActorInteractableBase
 
 		return true;
 	}
-
-	public override void UpdateSpeed(int extra) { }
-
-	public override void StopInteractSpeed() { }
 
 	public override BehaviourTree GetBehaviourTree() => m_harvestBT;
 }

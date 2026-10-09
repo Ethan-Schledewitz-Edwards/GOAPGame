@@ -8,4 +8,8 @@ public interface IInteractor
 	/// Initiates an interaction with a target interactable object.
 	/// </summary>
 	void InteractWith(ActorInteractableBase interactable, bool willReplaceJob);
+
+	void BeginCarrying(Transform parent, Vector3 localPosition);
+
+	void StopCarrying();
 }

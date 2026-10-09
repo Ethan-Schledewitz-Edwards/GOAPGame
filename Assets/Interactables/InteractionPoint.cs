@@ -4,7 +4,7 @@ using UnityEngine;
 // NOTE: I propose renaming this to InteractionPoint or InteractionNode since position implies
 // a fixed point in space that never moves. This also does a lot more that simply represent
 // a position and I think the name should reflect that.
-public class InteractionPosition : MonoBehaviour
+public class InteractionPoint : MonoBehaviour
 {
 	[SerializeField] public InteractionPositionSettings m_settings;
 

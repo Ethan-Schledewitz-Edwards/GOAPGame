@@ -76,7 +76,7 @@ namespace Interaction.InteractableStructures.Blueprints
 				interactionObj.transform.localRotation = Quaternion.identity;
 
 				// Configure the position using the values from the struct
-				InteractionPosition interactionComp = interactionObj.AddComponent<InteractionPosition>();
+				InteractionPoint interactionComp = interactionObj.AddComponent<InteractionPoint>();
 				interactionComp.m_settings = interactionPositionSettings;
 			}
 
@@ -132,6 +132,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
 		}
 
-		public override void StopInteractSpeed() { }
+		public override void LostMinimumActors() { }
 	}
 }

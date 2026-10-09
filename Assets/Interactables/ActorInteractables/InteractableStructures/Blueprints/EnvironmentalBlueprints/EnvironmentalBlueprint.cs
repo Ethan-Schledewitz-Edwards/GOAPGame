@@ -126,6 +126,6 @@ namespace Interaction.InteractableStructures.Blueprints
 
 		public void HandleBlueprintPlaced(BlueprintData structureBlueprintData, Vector3 position, Quaternion rotation) { }
 
-		public override void StopInteractSpeed() { }
+		public override void LostMinimumActors() { }
 	}
 }

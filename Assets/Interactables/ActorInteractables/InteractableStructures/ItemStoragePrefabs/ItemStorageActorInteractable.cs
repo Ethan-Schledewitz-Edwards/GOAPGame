@@ -40,7 +40,7 @@ namespace Interaction.InteractableStructures
 		private void Start()
 		{
 			if (m_interactPositions == null || m_interactPositions.Length == 0)
-				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
+				m_interactPositions = GetComponentsInChildren<InteractionPoint>();
 		}
 
 		private void InitializeBehaviourTree()
@@ -75,7 +75,7 @@ namespace Interaction.InteractableStructures
 
 		public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPosition reservedPosition,
+			InteractionPoint reservedPosition,
 			out int interactorValue)
 		{
 			if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
@@ -100,10 +100,6 @@ namespace Interaction.InteractableStructures
 			interactorValue = -1;
 			return false;
 		}
-
-		public override void UpdateSpeed(int extra) { }
-
-		public override void StopInteractSpeed() { }
 
 		public override BehaviourTree GetBehaviourTree() => s_takeItemBT;
 	}

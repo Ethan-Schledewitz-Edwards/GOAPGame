@@ -58,7 +58,7 @@ public class MoveToInteractionPositionTask : BTNodeBase
 	{
 		destination = Vector3.zero;
 
-		InteractionPosition assignedPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 		if (assignedPosition != null)
 		{
 			IInteractor interactor = executorTransform.GetComponent<IInteractor>();

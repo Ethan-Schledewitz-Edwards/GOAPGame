@@ -131,16 +131,6 @@ public class ActorManager : MonoBehaviour
 				if (actor == null)
 					continue;
 
-				if (actor.LogicExecutorState == EActorState.STATE_Follow)
-				{
-					actor.Pathing.TrySetActorSimFidelity(EPathingSimFidelity.Realtime);
-				}
-				else
-				{
-					float distToPlayerSqrt = (m_playerPosition - actor.Transform.position).sqrMagnitude;
-					actor.Pathing.UpdateActorSimFidelity(distToPlayerSqrt);
-				}
-
 				actor.TickBehaviour(k_tpsThreshold);
 			}
 

@@ -45,7 +45,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		protected virtual void Start()
 		{
 			if (m_interactPositions == null || m_interactPositions.Length == 0)
-				m_interactPositions = GetComponentsInChildren<InteractionPosition>();
+				m_interactPositions = GetComponentsInChildren<InteractionPoint>();
 		}
 
 		protected virtual void OnDestroy()
@@ -85,7 +85,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		public override bool TryInteract(
 			IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPosition reservedPosition,
+			InteractionPoint reservedPosition,
 			out int interactorValue)
 		{
 			// Get the behaviour tree through base interaction
@@ -126,8 +126,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
 		}
-
-		public override void UpdateSpeed(int extra) { }
 
 		public abstract void HandleBlueprintCompleted();
 

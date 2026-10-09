@@ -22,8 +22,8 @@ public class TryPickupItemTask : BTNodeBase
 
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
 
-		InteractionPosition assignedPos = 
-			context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPos = 
+			context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 
 		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
 

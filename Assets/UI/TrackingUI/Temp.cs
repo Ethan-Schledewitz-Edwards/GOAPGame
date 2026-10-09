@@ -7,7 +7,7 @@ public class Temp : PlayerInteractableBase<Temp>
 
 	public override bool CanPlayerInteract => true;
 
-	public override string InteractPrompt => "Interact";
+	public override string InteractPrompt => "Tracking UI Test";
 
 	public void Update()
 	{

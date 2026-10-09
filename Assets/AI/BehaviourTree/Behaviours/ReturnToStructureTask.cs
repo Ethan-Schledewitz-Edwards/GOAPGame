@@ -29,7 +29,7 @@ public class ReturnToStructureTask : BTNodeBase
 				if (structureObject.TryGetComponent(out ActorInteractableBase interactable))
 				{
 					// Try to reserve the closest position on the structure's interactable component
-					if (interactable.TryReserveClosestPosition(interactor, executorPosition, out InteractionPosition assignedPosition))
+					if (interactable.TryReserveClosestPosition(interactor, executorPosition, out InteractionPoint assignedPosition))
 					{
 						if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
 						{
@@ -38,7 +38,7 @@ public class ReturnToStructureTask : BTNodeBase
 							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
 
 							// Store the reserved position in the AI context so interaction nodes can retrieve it
-							context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+							context.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
 
 							// Cleanup delegate in case the behavior tree aborts
 							System.Action cleanup = () =>

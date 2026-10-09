@@ -16,7 +16,7 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		public Transform ExecutorTransform;
 		public Transform TargetTransform;
-		public InteractionPosition AssignedPos;
+		public InteractionPoint AssignedPos;
 		public InventoryComponent ExecutorInventory;
 		public InventoryComponent TargetInventory;
 		public ActorInteractableBase Interactable;
@@ -85,7 +85,7 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition assignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
 
 		if (executorTransform != null && targetTransform != null && assignedPos != null)
@@ -129,7 +129,7 @@ public class DepositHeldItemTask : BTNodeBase
 
 		data.ExecutorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		data.TargetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		data.AssignedPos = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		data.AssignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 
 		if (data.ExecutorTransform == null || data.TargetTransform == null || data.AssignedPos == null)
 			return false;

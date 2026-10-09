@@ -11,10 +11,10 @@ using UnityEngine;
 public abstract class ActorInteractableBase : MonoBehaviour
 {
 	[Header("Settings")]
-	[SerializeField] private int m_minActorsNeededToOperate = 1;
+	[field: SerializeField] protected int m_minActorsToFunction { get; private set; } = 1;
 
 	[Header("Actor Interaction")]
-	[SerializeField] protected InteractionPosition[] m_interactPositions;
+	[SerializeField] protected InteractionPoint[] m_interactPositions;
 
 	/// <summary>
 	/// Finds the closest position this interactor can be assigned to.
@@ -24,7 +24,7 @@ public abstract class ActorInteractableBase : MonoBehaviour
 	public bool TryReserveClosestPosition(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		out InteractionPosition assignedPosition)
+		out InteractionPoint assignedPosition)
 	{
 		assignedPosition = null;
 
@@ -33,12 +33,12 @@ public abstract class ActorInteractableBase : MonoBehaviour
 			m_interactPositions.Length == 0)
 			return false;
 
-		InteractionPosition closestPosition = null;
+		InteractionPoint closestPosition = null;
 		float closestDistanceSqr = float.MaxValue;
 
 		for (int i = 0; i < m_interactPositions.Length; i++)
 		{
-			InteractionPosition position = m_interactPositions[i];
+			InteractionPoint position = m_interactPositions[i];
 
 			if (position == null || !position.HasAvailableCapacity)
 				continue;
@@ -66,7 +66,7 @@ public abstract class ActorInteractableBase : MonoBehaviour
 	/// <summary>
 	/// Cancels a pending reservation.
 	/// </summary>
-	public virtual void CancelReservation(IInteractor interactor, InteractionPosition assignedPosition)
+	public virtual void CancelReservation(IInteractor interactor, InteractionPoint assignedPosition)
 	{
 		assignedPosition?.ReleaseReservation(interactor);
 	}
@@ -77,7 +77,7 @@ public abstract class ActorInteractableBase : MonoBehaviour
 	public virtual bool TryBeginInteraction(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPosition assignedPosition,
+		InteractionPoint assignedPosition,
 		out int interactorValue)
 	{
 		interactorValue = -1;
@@ -96,14 +96,14 @@ public abstract class ActorInteractableBase : MonoBehaviour
 			return false;
 		}
 
-		HandleActorAssigned();
+		ActorAssigned();
 		return true;
 	}
 
 	public virtual bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPosition assignedPosition,
+		InteractionPoint assignedPosition,
 		out int interactorValue)
 	{
 		return TryBeginInteraction
@@ -115,30 +115,22 @@ public abstract class ActorInteractableBase : MonoBehaviour
 			);
 	}
 
-	public virtual void StopInteract(IInteractor interactor, InteractionPosition assignedPosition)
+	public virtual void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)
 	{
 		if (assignedPosition != null)
 			assignedPosition.TryRemoveInteractor(interactor);
 
 		int totalActors = GetTotalActorsPresent();
 
-		if (totalActors < m_minActorsNeededToOperate)
-			StopInteractSpeed();
+		if (totalActors < m_minActorsToFunction)
+			LostMinimumActors();
 	}
 
 	public abstract BehaviourTree GetBehaviourTree();
 
-	#region Actor Handling
+	protected virtual void ActorAssigned() { }
 
-	private void HandleActorAssigned()
-	{
-		int totalActors = GetTotalActorsPresent();
-
-		if (totalActors > m_minActorsNeededToOperate)
-			UpdateSpeed(totalActors - m_minActorsNeededToOperate);
-	}
-
-	#endregion
+	public virtual void LostMinimumActors() { }
 
 	#region Availability
 
@@ -158,7 +150,7 @@ public abstract class ActorInteractableBase : MonoBehaviour
 
 		for (int i = 0; i < m_interactPositions.Length; i++)
 		{
-			InteractionPosition position = m_interactPositions[i];
+			InteractionPoint position = m_interactPositions[i];
 
 			if (position != null && position.HasAvailableCapacity)
 				return false;
@@ -175,7 +167,7 @@ public abstract class ActorInteractableBase : MonoBehaviour
 
 		int total = 0;
 
-		foreach (InteractionPosition position in m_interactPositions)
+		foreach (InteractionPoint position in m_interactPositions)
 		{
 			if (position != null)
 				total += position.ActorsPresent;
@@ -185,15 +177,11 @@ public abstract class ActorInteractableBase : MonoBehaviour
 	}
 	#endregion
 
-	public bool HasInteractionPosition(InteractionPosition position)
+	public bool HasInteractionPosition(InteractionPoint position)
 	{
 		if (position == null || m_interactPositions == null)
 			return false;
 
 		return Array.IndexOf(m_interactPositions, position) >= 0;
 	}
-
-	public virtual void UpdateSpeed(int extra) { }
-
-	public virtual void StopInteractSpeed() { }
 }

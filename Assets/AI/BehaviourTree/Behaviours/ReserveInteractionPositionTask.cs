@@ -40,7 +40,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 
 		// Reuse an existing valid position if it already belongs to the current target. 
 		// Otherwise, attempt to reserve a fresh position.
-		InteractionPosition assignedPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 		if (assignedPosition != null && interactable.HasInteractionPosition(assignedPosition))
 		{
 			if (!assignedPosition.TryGetInteractionPosition(interactor, out Vector3 existingDestination))
@@ -71,7 +71,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		context.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+		context.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
 
 		// Register a cleanup delegate to cancel the reservation if the behavior tree aborts.
 		System.Action cleanup = () =>

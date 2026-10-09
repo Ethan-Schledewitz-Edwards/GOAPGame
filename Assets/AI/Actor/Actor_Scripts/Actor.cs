@@ -1,6 +1,5 @@
 using BehaviourTrees;
 using Factions.Core;
-using InventorySystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(ActorHealthComponent), typeof(ActorInventory), typeof(AIPathing))]
+[RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing))]
 public class Actor : MonoBehaviour, IInteractor
 {
 	private const float c_waitingForJobLimit = 2.0f;
@@ -77,10 +76,11 @@ public class Actor : MonoBehaviour, IInteractor
 	*/
 
 	// Components
-	public Transform Transform => gameObject.transform;							// NOTE: this is redundant becuase MonoBehaviour.transform is already available.
 	public ActorHealthComponent ActorHealth { get; private set; }
-	public ActorInventory ActorInventory { get; private set; }
-	public AIPathing Pathing { get; private set; }
+	public AIPathing AIPathing { get; private set; }
+
+	private Collider m_collider;
+	public Transform Transform => gameObject.transform;
 
 	// Executors
 	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
@@ -104,17 +104,17 @@ public class Actor : MonoBehaviour, IInteractor
 
 	private Transform m_targetTransform;
 	private ActorInteractableBase m_targetInteractable;
-	private InteractionPosition m_assignedInteractionPosition;
+	private InteractionPoint m_assignedInteractionPosition;
 
 	#region Lifecycle
 
 	private void Awake()
 	{
-		ActorHealth = GetComponent<ActorHealthComponent>();
-		ActorInventory = GetComponent<ActorInventory>();
 		m_behaviourTreeExecutor = GetComponent<BehaviourTreeExecutorBase>();
+		ActorHealth = GetComponent<ActorHealthComponent>();
+		AIPathing = GetComponent<AIPathing>();
+		m_collider = GetComponent<Collider>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
-		Pathing = GetComponent<AIPathing>();
 		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
@@ -127,8 +127,8 @@ public class Actor : MonoBehaviour, IInteractor
 	{
 		if (GOAPAgentComp != null)
 		{
-			GOAPAgentComp.OnFoundDestination += Pathing.SetDestination;
-			GOAPAgentComp.OnClearDestination += Pathing.ClearDestination;
+			GOAPAgentComp.OnFoundDestination += AIPathing.SetDestination;
+			GOAPAgentComp.OnClearDestination += AIPathing.ClearDestination;
 		}
 	}
 
@@ -136,8 +136,8 @@ public class Actor : MonoBehaviour, IInteractor
 	{
 		if (GOAPAgentComp != null)
 		{
-			GOAPAgentComp.OnFoundDestination -= Pathing.SetDestination;
-			GOAPAgentComp.OnClearDestination -= Pathing.ClearDestination;
+			GOAPAgentComp.OnFoundDestination -= AIPathing.SetDestination;
+			GOAPAgentComp.OnClearDestination -= AIPathing.ClearDestination;
 		}
 	}
 
@@ -145,23 +145,26 @@ public class Actor : MonoBehaviour, IInteractor
 
 	public void TickBehaviour(float t)
 	{
-		if (Pathing == null || 
+		if (AIPathing == null || 
 			m_behaviourTreeExecutor == null || 
 			GOAPAgentComp == null)
 			return;
 
+		if (LogicExecutorState == EActorState.Carrying)
+			return;
+
 		ActorHealth?.TickStats(t);
-		Pathing?.TickAIPathing();
+		AIPathing?.TickAIPathing();
 
 		// Prevent job acquisition until the investigation destination has been reached.
 		if (m_isInvestigating)
 		{
-			if (!Pathing.HasReachedDestination(c_searchForJobStoppingDistance))
+			if (!AIPathing.HasReachedDestination(c_searchForJobStoppingDistance))
 				return;
 
 			// Resume job searching
 			m_isInvestigating = false;
-			Pathing.ClearDestination();
+			AIPathing.ClearDestination();
 		}
 
 		// Tick search cooldown timer
@@ -177,11 +180,11 @@ public class Actor : MonoBehaviour, IInteractor
 			{
 				if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 				{
-					Pathing.SetDestination(validPos);
+					AIPathing.SetDestination(validPos);
 
 					// Check distance and attempt interaction directly
 					float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
-					if (Pathing.IsWithinDistance(validPos, interactionDistance))
+					if (AIPathing.IsWithinDistance(validPos, interactionDistance))
 					{
 						InteractWith(m_targetInteractable, true);
 					}
@@ -197,15 +200,15 @@ public class Actor : MonoBehaviour, IInteractor
 		{
 			switch (LogicExecutorState)
 			{
-				case EActorState.STATE_OffDuty:
+				case EActorState.OffDuty:
 					GOAPAgentComp.TickGoapPlanner(t);
 					break;
-				case EActorState.STATE_Follow:
+				case EActorState.Follow:
 					if (m_targetTransform != null)
-						Pathing.SetDestination(m_targetTransform.position);
+						AIPathing.SetDestination(m_targetTransform.position);
 					break;
 
-				case EActorState.STATE_Working:
+				case EActorState.Working:
 					if (m_behaviourTreeExecutor != null && m_behaviourTreeExecutor.CurrentBehaviourTree != null)
 					{
 						SyncJobStateFromContext();
@@ -219,15 +222,14 @@ public class Actor : MonoBehaviour, IInteractor
 							 treeState == EBTNodeState.STATE_FAILURE))
 						{
 							BeginOffDuty();
-							DropHeldItem();
 						}
 					}
 					break;
 			}
 		}
 
-		if (m_targetTransform != null && !Pathing.IsMoving)
-			Pathing.FaceTarget(m_targetTransform.position);
+		if (m_targetTransform != null && !AIPathing.IsMoving)
+			AIPathing.FaceTarget(m_targetTransform.position);
 	}
 
 	/// <summary>
@@ -242,31 +244,34 @@ public class Actor : MonoBehaviour, IInteractor
 
 		switch (state)
 		{
-			case EActorState.STATE_OffDuty:
-				Pathing.SetSpeed(c_offDutySpeed);
+			case EActorState.OffDuty:
+				AIPathing.SetSpeed(c_offDutySpeed);
 				break;
-			case EActorState.STATE_Follow:
-				Pathing.SetSpeed(c_followSpeed);
+			case EActorState.Follow:
+				AIPathing.SetSpeed(c_followSpeed);
 				break;
-			case EActorState.STATE_SearchingForWork:
-			case EActorState.STATE_Working:
-				Pathing.SetSpeed(c_workingSpeed);
+			case EActorState.SearchingForWork:
+			case EActorState.Working:
+				AIPathing.SetSpeed(c_workingSpeed);
+				break;
+			case EActorState.Carrying:
+				AIPathing.SetSpeed(0);
 				break;
 		}
 
-		float newStoppingDistance = state == EActorState.STATE_Follow ? c_followDist : c_workingDist;
-		Pathing.SetStoppingDistance(newStoppingDistance);
+		float newStoppingDistance = state == EActorState.Follow ? c_followDist : c_workingDist;
+		AIPathing.SetStoppingDistance(newStoppingDistance);
 	}
 
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear state
+		StopCarrying();
 		BeginOffDuty();
-		DropHeldItem();
 		m_behaviourTreeExecutor.ResetContext();
 
 		// Follow
-		SetLogicExecutorState(EActorState.STATE_Follow);
+		SetLogicExecutorState(EActorState.Follow);
 		m_targetTransform = Player;
 	}
 
@@ -275,15 +280,15 @@ public class Actor : MonoBehaviour, IInteractor
 		m_isInvestigating = true;
 		m_targetTransform = null;
 		BeginJobSearch();
-		Pathing.SetDestination(destination);
+		AIPathing.SetDestination(destination);
 	}
 
 	public void InteractWith(ActorInteractableBase actorInteractableObjectBase, bool willReplaceJob)
 	{
 		if (m_behaviourTreeExecutor != null)
 		{
-			InteractionPosition contextPosition = m_behaviourTreeExecutor.AIContext
-				.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+			InteractionPoint contextPosition = m_behaviourTreeExecutor.AIContext
+				.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 
 			if (contextPosition != null && contextPosition != m_assignedInteractionPosition)
 			{
@@ -299,7 +304,7 @@ public class Actor : MonoBehaviour, IInteractor
 				return;
 
 			float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
-			if (!Pathing.IsWithinDistance(validPos, interactionDistance))
+			if (!AIPathing.IsWithinDistance(validPos, interactionDistance))
 				return;
 		}
 
@@ -326,6 +331,31 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
+	public void BeginCarrying(Transform parent, Vector3 localPosition)
+	{
+		if(parent != null)
+		{
+			SetLogicExecutorState(EActorState.Carrying);
+
+			AIPathing.NavAgent.enabled = false;
+			AIPathing.ClearDestination();
+
+			m_collider.isTrigger = true;
+
+			transform.parent = parent;
+			transform.localPosition = localPosition;
+		}
+	}
+
+	public void StopCarrying()
+	{
+		transform.parent = null;
+		m_collider.isTrigger = false;
+
+		AIPathing.NavAgent.enabled = true;
+		AIPathing.SetPosition(transform.position);
+	}
+
 	private void TrySetActorJob(BehaviourTree behaviourTree)
 	{
 		// A successful interaction converts the reservation into an active
@@ -336,13 +366,13 @@ public class Actor : MonoBehaviour, IInteractor
 			m_assignedInteractionPosition = null;
 			m_targetInteractable = null;
 			m_targetTransform = null;
-			Pathing.ClearDestination();
+			AIPathing.ClearDestination();
 			m_jobSearchCooldown = c_jobSearchCooldownDuration;
 			return;
 		}
 
 		// A new job can be acquired from inside an existing behaviour tree
-		InteractionPosition previousPosition = m_behaviourTreeExecutor.AIContext.GetData<InteractionPosition>( AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint previousPosition = m_behaviourTreeExecutor.AIContext.GetData<InteractionPoint>( AIContextKeys.c_AssignedInteractionPosition);
 		if (previousPosition != null && previousPosition != m_assignedInteractionPosition)
 			ReleaseInteractionPosition(previousPosition);
 
@@ -356,13 +386,13 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 
 		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetDestination);
-		m_behaviourTreeExecutor.AIContext.SetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition, m_assignedInteractionPosition);
+		m_behaviourTreeExecutor.AIContext.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, m_assignedInteractionPosition);
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
-		SetLogicExecutorState(EActorState.STATE_Working);
+		SetLogicExecutorState(EActorState.Working);
 		m_jobAssignedThisTick = true;
 	}
 
-	private void ReleaseInteractionPosition(InteractionPosition position)
+	private void ReleaseInteractionPosition(InteractionPoint position)
 	{
 		if (position == null)
 			return;
@@ -376,7 +406,7 @@ public class Actor : MonoBehaviour, IInteractor
 		AIContext context = m_behaviourTreeExecutor.AIContext;
 
 		Transform contextTarget = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPosition contextPosition = context.GetData<InteractionPosition>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint contextPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
 		if (contextTarget != m_targetTransform)
 		{
 			m_targetTransform = contextTarget;
@@ -405,20 +435,20 @@ public class Actor : MonoBehaviour, IInteractor
 		m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_AssignedInteractionPosition); 
 		m_timeFindingJob = 0; 
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null); 
-		Pathing.ClearDestination(); 
+		AIPathing.ClearDestination(); 
 	}
 
 	private void BeginJobSearch() 
 	{ 
 		ClearJobState(); 
-		SetLogicExecutorState(EActorState.STATE_SearchingForWork); 
+		SetLogicExecutorState(EActorState.SearchingForWork); 
 	}
 
 	private void BeginOffDuty() 
 	{ 
 		ClearJobState(); 
-		SetLogicExecutorState(EActorState.STATE_OffDuty); 
-		Pathing.SetStoppingDistance(c_workingDist); 
+		SetLogicExecutorState(EActorState.OffDuty); 
+		AIPathing.SetStoppingDistance(c_workingDist); 
 	}
 
 	private void HandleFailedInteraction()
@@ -429,21 +459,9 @@ public class Actor : MonoBehaviour, IInteractor
 		m_targetInteractable = null;
 		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
-		Pathing.ClearDestination();
+		AIPathing.ClearDestination();
 
 		m_jobSearchCooldown = c_jobSearchCooldownDuration;
-	}
-
-	/// <summary>
-	/// Drops all items currently held in the actor's inventory slot.
-	/// </summary>
-	private void DropHeldItem()
-	{
-		int amountToDrop = ActorInventory.HeldItemSlot.AmountInSlot;
-		if (amountToDrop > 0)
-			ActorInventory.Inventory.Slots[0].RemoveFromStack(amountToDrop, out var _, true, ActorInventory.DropItemTransform.position);
-
-		Debug.Log($"{this.name} has dropped their items.", this);
 	}
 
 	/// <summary>
@@ -451,10 +469,10 @@ public class Actor : MonoBehaviour, IInteractor
 	/// </summary>
 	private bool IsJobNeeded()
 	{
-		bool isJobFinished = (LogicExecutorState == EActorState.STATE_Working &&
+		bool isJobFinished = (LogicExecutorState == EActorState.Working &&
 			m_behaviourTreeExecutor.CurrentBehaviourTree == null);
 
-		return LogicExecutorState == EActorState.STATE_SearchingForWork || isJobFinished;
+		return LogicExecutorState == EActorState.SearchingForWork || isJobFinished;
 	}
 
 	/// <summary>
@@ -501,7 +519,7 @@ public class Actor : MonoBehaviour, IInteractor
 			return;
 
 		// Allow job search when within range of the target destination
-		bool canSearchForJob = Pathing.HasReachedDestination(c_searchForJobStoppingDistance);
+		bool canSearchForJob = AIPathing.HasReachedDestination(c_searchForJobStoppingDistance);
 		if (canSearchForJob)
 		{
 			m_timeFindingJob += t;
@@ -510,7 +528,6 @@ public class Actor : MonoBehaviour, IInteractor
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
 				BeginOffDuty();
-				DropHeldItem();
 				m_behaviourTreeExecutor.ResetContext();
 				return;
 			}

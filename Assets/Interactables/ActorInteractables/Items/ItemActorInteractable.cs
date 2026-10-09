@@ -7,14 +7,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(InteractionPosition))]
+[RequireComponent(typeof(Rigidbody), typeof(InteractionPoint))]
 public class ItemActorInteractable : ActorInteractableBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
 
 	// Components
 	private Rigidbody m_rb;
-	private InteractionPosition m_interactionPosition;
+	private InteractionPoint m_interactionPosition;
 
 	[Header("Item Data")]
 	[SerializeField] private ItemData m_itemData;
@@ -37,7 +37,7 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 	{
 		m_rb = GetComponent<Rigidbody>();
 
-		m_interactionPosition = GetComponent<InteractionPosition>();
+		m_interactionPosition = GetComponent<InteractionPoint>();
 		InteractionPositionSettings interactionPositionSettings = new()
 		{
 			MaxInteractors = 1,
@@ -50,7 +50,7 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 		m_interactionPosition.m_settings = interactionPositionSettings;
 
 		if (m_interactPositions == null || m_interactPositions.Length == 0)
-			m_interactPositions = new InteractionPosition[] { m_interactionPosition };
+			m_interactPositions = new InteractionPoint[] { m_interactionPosition };
 
 		InitializeBehaviourTree();
 	}
@@ -119,7 +119,7 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 	public override bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPosition reservedPosition,
+		InteractionPoint reservedPosition,
 		out int interactorValue)
 	{
 		if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
@@ -148,10 +148,6 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 		base.StopInteract(interactor, reservedPosition);
 		return false;
 	}
-
-	public override void UpdateSpeed(int extra) { }
-
-	public override void StopInteractSpeed() { }
 
 	public override bool HasAvailableWork(IInteractor interactor)
 	{
