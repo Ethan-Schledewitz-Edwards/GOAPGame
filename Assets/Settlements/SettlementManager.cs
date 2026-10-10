@@ -32,6 +32,7 @@ namespace Settlements
 
 			// Create the default settlement for nuetral structures to populate
 			CreateNewSettlement(Vector3.zero, EFaction.FACTION_WORLD, out _);
+			CreateNewSettlement(Vector3.zero, EFaction.FACTION_PLAYER, out _);
 		}
 
 		private void OnDestroy()
@@ -56,7 +57,7 @@ namespace Settlements
 				return;
 			}
 
-			id = isDefaultFaction ? 0 : s_WorldSettlements.Count + 1;
+			id = isDefaultFaction ? 0 : s_WorldSettlements.Count;
 			Settlement settlement = new Settlement(id, settlementFaction);
 			s_WorldSettlements[id] = settlement;
 		}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// To do: Make a HarvestableHealthBase when multiple harvestables are added
@@ -12,9 +13,6 @@ public class TreeHealthComponent : HealthComponent
 {
 	private const float c_spawnTimeout = 0.2f;
 	private const float c_logSpawnRadius = 1.8f;
-	private const float c_logHalfHeight = .75f; // Probably not the safest way to handle log sizing for the hull check but fuck it we ball.
-	private const float c_logColliderRadius = 0.25f;
-	private const float c_logHullCastRadius = 0.1f;
 
 	[Header("Tree")]
 	[SerializeField] private GameObject m_treeMeshObject;
@@ -27,9 +25,6 @@ public class TreeHealthComponent : HealthComponent
 	public bool IsDamagable => m_isDamagable;
 	[SerializeField] private bool m_isDamagable = true;
 
-	private LayerMask m_logOverlapLayermask;
-	private readonly Collider[] m_hitResults = new Collider[8];
-
 	protected override void Awake()
 	{
 		base.Awake();
@@ -39,8 +34,6 @@ public class TreeHealthComponent : HealthComponent
 
 		if (m_stumpMeshObject != null)
 			m_stumpMeshObject.SetActive(false);
-
-		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
 	}
 
 	private void OnDestroy()
@@ -62,64 +55,25 @@ public class TreeHealthComponent : HealthComponent
 		if (m_stumpMeshObject != null)
 			m_stumpMeshObject.SetActive(true);
 
+		// Spawn a log
 		if(m_spawnedCarryablePrefab != null)
 		{
-			StartCoroutine(SpawnWithTimeoutRoutine());
-		}
-	}
-
-	private bool ValidateSpawnPosition(Vector3 targetPosition, 
-		Vector3 fallDirection, 
-		out Vector3 finalPosition, 
-		out Quaternion finalRotation)
-	{
-		finalPosition = targetPosition;
-		finalRotation = Quaternion.identity;
-
-		Vector3 groundCheckStart = targetPosition + Vector3.up * 1;
-
-		// Check for ground to place the log on
-		RaycastHit hit;
-		if (Physics.Raycast(groundCheckStart, 
-			Vector3.down, 
-			out hit, 
-			2f, 
-			m_logOverlapLayermask, 
-			QueryTriggerInteraction.Ignore))
-		{
-			Vector3 slopeDirection = 
-				Vector3.ProjectOnPlane(fallDirection, hit.normal).normalized;
-
-			// Logs resting position
-			Vector3 spawnPosition = hit.point + (hit.normal * c_logColliderRadius);
-
-			// Hull cast
-			Vector3 topPoint = spawnPosition + (slopeDirection * c_logHalfHeight);
-			Vector3 bottomPoint = spawnPosition - (slopeDirection * c_logHalfHeight);
-			int collidersHit = Physics.OverlapCapsuleNonAlloc(
-				topPoint,
-				bottomPoint,
-				c_logHullCastRadius,
-				m_hitResults,
-				m_logOverlapLayermask
-			);
-
-			// Return the final resting position and rotation of the log
-			if(collidersHit == 0)
+			GameObject log = Instantiate(m_spawnedCarryablePrefab);
+			if(log.TryGetComponent(out LogCarryableActorInteractable logCarryable))
 			{
-				finalPosition = spawnPosition;
-
-				finalRotation = 
-					Quaternion.LookRotation(slopeDirection, hit.normal);
-
-				return true;
+				StartCoroutine(PlaceLogTimeoutRoutine(logCarryable));
+			}
+			else
+			{
+				Debug.Log("[TreeHealthComponent] tried spawning a log prefab without a " +
+					$"{typeof(LogCarryableActorInteractable)} component.", this);
+				Destroy(log);
 			}
 		}
-
-		return false;
 	}
 
-	IEnumerator SpawnWithTimeoutRoutine()
+	
+	IEnumerator PlaceLogTimeoutRoutine(LogCarryableActorInteractable logCarryable)
 	{
 		float timeSpawning = 0f;
 		while (true)
@@ -133,12 +87,17 @@ public class TreeHealthComponent : HealthComponent
 			Vector3 logFallDirection = (spawnPosition - transform.position).normalized;
 
 			// Hull cast then place on the ground
-			if (ValidateSpawnPosition(spawnPosition, 
+			if (logCarryable.ValidateLogPosition(spawnPosition, 
 				logFallDirection,
 				out Vector3 finalPosition,
 				out Quaternion finalRotation))
 			{
-				Instantiate(m_spawnedCarryablePrefab, finalPosition, finalRotation, null);
+				logCarryable.transform.position = finalPosition;
+				logCarryable.transform.rotation = finalRotation;
+
+				if (logCarryable.TryGetComponent(out NavMeshAgent logAgent))
+					logAgent.Warp(finalPosition);
+
 				break;
 			}
 
@@ -147,7 +106,12 @@ public class TreeHealthComponent : HealthComponent
 			if (timeSpawning >= c_spawnTimeout)
 			{
 				Vector3 fallbackSpawnPosition = transform.position + Vector3.up;
-				Instantiate(m_spawnedCarryablePrefab, fallbackSpawnPosition, Quaternion.identity, null);
+				logCarryable.transform.position = fallbackSpawnPosition;
+				logCarryable.transform.rotation = Quaternion.identity;
+
+				if (logCarryable.TryGetComponent(out NavMeshAgent logAgent))
+					logAgent.Warp(finalPosition);
+
 				break;
 			}
 
