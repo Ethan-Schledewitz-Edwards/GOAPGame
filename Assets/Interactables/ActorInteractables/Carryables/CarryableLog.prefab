@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 337514313653397710}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: -0.425, z: -0.5}
+  m_LocalPosition: {x: 0.46, y: -0.25, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -77,7 +77,7 @@ Transform:
   m_GameObject: {fileID: 1702540647813774327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -0.425, z: -0.5}
+  m_LocalPosition: {x: -0.46, y: -0.25, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -154,14 +154,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableActorInteractable
-  <m_minActorsToFunction>k__BackingField: 1
   m_interactPositions:
   - {fileID: 2039784734761804132}
   - {fileID: 7589474822219210813}
   - {fileID: 6769685399950340232}
   - {fileID: 4876911495289317449}
   m_baseMoveSpeed: 3
-  m_deliveryTarget: {fileID: 0}
+  m_logMesh: {fileID: 2143631712808309234}
 --- !u!136 &581121961390997327
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -221,7 +220,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1848493102313110294}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -230,7 +229,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 0.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -260,7 +259,7 @@ Transform:
   m_GameObject: {fileID: 1880780218017053779}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -0.425, z: 0.5}
+  m_LocalPosition: {x: -0.46, y: -0.25, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -311,7 +310,7 @@ Transform:
   m_GameObject: {fileID: 3388805811355477661}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: -0.425, z: 0.5}
+  m_LocalPosition: {x: 0.46, y: -0.25, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

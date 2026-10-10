@@ -13,6 +13,8 @@ namespace Interaction.InteractableStructures.Blueprints
 	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
 	public class PlacedBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
+		protected override int m_minActorsToFunction { get; set; } = 0;
+
 		[Header("Settings & Visuals")]
 		[SerializeField] private Material m_blueprintMaterial;
 		[SerializeField] private MeshFilter m_meshFilter;

@@ -7,6 +7,8 @@ public class HarvestableActorInteractable : ActorInteractableBase
 {
 	private static BehaviourTree m_harvestBT;
 
+	protected override int m_minActorsToFunction { get; set; } = 1;
+
 	private void Awake()
 	{
 		if (m_harvestBT != null)

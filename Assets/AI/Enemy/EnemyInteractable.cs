@@ -7,6 +7,8 @@ public class EnemyInteractable : ActorInteractableBase
 {
 	private static BehaviourTree s_AttackBehaviour;
 
+	protected override int m_minActorsToFunction { get; set; } = 0;
+
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 	static void Init()
 	{

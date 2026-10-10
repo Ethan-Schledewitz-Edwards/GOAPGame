@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
-  m_minActorsNeededToOperate: 1
+  <m_minActorsToFunction>k__BackingField: 1
   m_interactPositions:
   - {fileID: 2991755269999351807}
 --- !u!114 &4026278048805383853
@@ -205,11 +205,10 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
-  m_maxRandomTorqueOnSpawnedLog: 0.2
+  m_logSpawnRadius: 2
   m_treeMeshObject: {fileID: 6670668404327998910}
   m_stumpMeshObject: {fileID: 2824037566599855480}
-  m_carryablePrefab: {fileID: 1848493102313110294, guid: 90ada239b3c9b27439eda4d61753bb74, type: 3}
-  m_localCarryableSpawnOffset: {x: 0, y: 1.4, z: 0}
+  m_spawnedCarryablePrefab: {fileID: 1848493102313110294, guid: 90ada239b3c9b27439eda4d61753bb74, type: 3}
   m_isDamagable: 1
 --- !u!82 &6518718037148992619
 AudioSource:

@@ -13,6 +13,8 @@ namespace Interaction.InteractableStructures.Blueprints
 {
     public class EnvironmentalBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
+		protected override int m_minActorsToFunction { get; set; } = 0;
+
 		[Header("Settings")]
 		[SerializeField] private ItemQuantity[] m_requiredItems;
 		[SerializeField] private int m_blueprintSettlementID;

@@ -11,7 +11,7 @@ using UnityEngine;
 public abstract class ActorInteractableBase : MonoBehaviour
 {
 	[Header("Settings")]
-	[field: SerializeField] protected int m_minActorsToFunction { get; private set; } = 1;
+	protected abstract int m_minActorsToFunction { get; set; }
 
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPoint[] m_interactPositions;
