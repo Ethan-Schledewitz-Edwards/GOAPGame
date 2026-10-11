@@ -14,7 +14,6 @@ namespace BehaviourTrees
 	public abstract class BTNodeBase
 	{
 		public readonly string NodeID = Guid.NewGuid().ToString();
-		protected readonly string m_firstEvaluatedKey;
 
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
@@ -22,7 +21,6 @@ namespace BehaviourTrees
         public BTNodeBase()
 		{
 			m_parentNode = null;
-			m_firstEvaluatedKey = $"{NodeID}_FirstEvaluated";
 		}
 
 		/// <summary>
@@ -36,43 +34,42 @@ namespace BehaviourTrees
 			}
 		}
 
-		public EBTNodeState EvaluateNode(AIContext context, float t)
+		public EBTNodeState EvaluateNode(ref AIContext context, float t)
 		{
-			if (!context.GetData<bool>(m_firstEvaluatedKey))
+			if (context.CurrentNodeID != NodeID)
 			{
-				context.SetData<bool>(m_firstEvaluatedKey, true);
-				OnFirstEvaluate(context);
-				context.SetData<string>(AIContextKeys.c_CurrentBTNode, GetType().Name);
+				context.CurrentNodeID = NodeID;
+				OnFirstEvaluate(ref context);
 			}
 
-			return OnNodeEvaluated(context, t);
+			return OnNodeEvaluated(ref context, t);
 		}
 
-		protected abstract EBTNodeState OnNodeEvaluated(AIContext context, float t);
+		protected abstract EBTNodeState OnNodeEvaluated(ref AIContext context, float t);
 
-		protected abstract void OnFirstEvaluate(AIContext context);
+		protected abstract void OnFirstEvaluate(ref AIContext context);
 
-		public void ExitNode(AIContext context) 
+		public void ExitNode(ref AIContext context) 
 		{
-			context.ClearData(m_firstEvaluatedKey);
-			OnNodeExited(context);
+			context.CurrentNodeID = string.Empty;
+			OnNodeExited(ref context);
 		}
 
-		protected abstract void OnNodeExited(AIContext context);
+		protected abstract void OnNodeExited(ref AIContext context);
 
 		public void ResetNode(AIContext context)
 		{
-			context.SetData<bool>(m_firstEvaluatedKey, false);
+			context.CurrentNodeID = string.Empty;
 
 			foreach (BTNodeBase child in m_childNodes)
 			{
 				child.ResetNode(context);
 			}
 
-			OnNodeReset(context);
+			OnNodeReset(ref context);
 		}
 
-		protected abstract void OnNodeReset(AIContext context);
+		protected abstract void OnNodeReset(ref AIContext context);
 
 		private void AddChild(BTNodeBase node)
 		{

@@ -19,7 +19,6 @@ public class Actor : MonoBehaviour, IInteractor
 	private const float c_searchForJobRange = 1.5f;
 	private const float c_searchForJobStoppingDistance = 0.25f;
 	private const float c_jobSearchCooldownDuration = 2.0f;
-	private const float c_interactionDistance = 0.3f;
 
 	[Header("Parameters")]
 	[field: SerializeField] public EFaction ActorFaction { get; private set; }
@@ -91,7 +90,6 @@ public class Actor : MonoBehaviour, IInteractor
 
 	// System Properties
 	public float JobSearchRange => c_searchForJobRange;
-	public float InteractionDistanceSqrt { get; private set; }
 	public int SettlementID { get; private set; } = 0; // Settlement ID actor inhabits
 
 	// Internal State
@@ -115,7 +113,6 @@ public class Actor : MonoBehaviour, IInteractor
 		AIPathing = GetComponent<AIPathing>();
 		m_collider = GetComponent<Collider>();
 		GOAPAgentComp = GetComponent<GOAPAgent>();
-		InteractionDistanceSqrt = c_interactionDistance * c_interactionDistance;
 	}
 
 	private void Start()

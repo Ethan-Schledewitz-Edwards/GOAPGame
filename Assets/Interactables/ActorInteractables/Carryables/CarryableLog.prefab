@@ -160,7 +160,7 @@ MonoBehaviour:
   - {fileID: 6769685399950340232}
   - {fileID: 4876911495289317449}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
-  m_baseMoveSpeed: 3
+  m_baseMoveSpeed: 1
   m_logMesh: {fileID: 2143631712808309234}
 --- !u!136 &581121961390997327
 CapsuleCollider:

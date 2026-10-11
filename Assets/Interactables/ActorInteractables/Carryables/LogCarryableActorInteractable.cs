@@ -21,7 +21,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;
-	[SerializeField] private float m_baseMoveSpeed = 3f;
+	[SerializeField] private float m_baseMoveSpeed = 1f;
 
 	[Header("Mesh")]
 	[SerializeField] private Transform m_logMesh;

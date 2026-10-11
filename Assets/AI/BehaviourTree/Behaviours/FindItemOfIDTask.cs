@@ -26,15 +26,15 @@ public class FindItemOfIDTask : BTNodeBase
 		m_storageTag = storageTag;
 	}
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		
-		if (executorTransform == null || 
+		Transform executorTransform = context.ExecutorTransform;
+
+		if (executorTransform == null ||
 			!executorTransform.TryGetComponent(out IInteractor interactor))
 			return EBTNodeState.STATE_FAILURE;
 
-		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
+		string itemID = context.ItemToFindID.ToString();
 
 		Transform targetItemTransform = SearchForItem(itemID, 
 			executorTransform, 
@@ -45,8 +45,8 @@ public class FindItemOfIDTask : BTNodeBase
 			return EBTNodeState.STATE_FAILURE;
 
 		// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
-		context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
-		
+		context.TargetTransform = targetItemTransform;
+
 		return EBTNodeState.STATE_SUCSESS;
 	}
 
@@ -94,7 +94,7 @@ public class FindItemOfIDTask : BTNodeBase
 		Transform nearestStorageStructure = FindStorageStructure(itemID, 
 			executorTransform, 
 			interactor, 
-			context);
+			ref context);
 
 		if (nearestStorageStructure != null)
 		{
@@ -113,10 +113,10 @@ public class FindItemOfIDTask : BTNodeBase
 	/// </summary>
 	private Transform FindStorageStructure(string itemKey, 
 		Transform executorTransform, 
-		IInteractor interactor, 
-		AIContext context)
+		IInteractor interactor,
+		ref AIContext context)
 	{
-		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
+		EFaction executorFaction = (EFaction)context.ExecutorFaction;
 
 		Settlement closestFactionSettlement = 
 			SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
@@ -157,13 +157,12 @@ public class FindItemOfIDTask : BTNodeBase
 		return null;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
+	protected override void OnFirstEvaluate(ref AIContext context)
 	{
-		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an " +
-			$"item of ID '{context.GetData<string>(AIContextKeys.c_ItemToFindID)}'.");
+		Debug.Log($"[FindItemEntityOfIDTask] Trying to find an item of ID '{context.ItemToFindID}'.");
 	}
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 }

@@ -7,15 +7,15 @@ namespace BehaviourTrees
 	{
 		private BTNodeBase m_rootNode;
 
-		public EBTNodeState TickBehaviourTree(AIContext aiContext, float t)
+		public EBTNodeState TickBehaviourTree(ref AIContext aiContext, float t)
 		{
 			if (m_rootNode != null)
 			{
-				EBTNodeState state = m_rootNode.EvaluateNode(aiContext, t);
+				EBTNodeState state = m_rootNode.EvaluateNode(ref aiContext, t);
 
 				if (state != EBTNodeState.STATE_RUNNING)
 				{
-					m_rootNode.ExitNode(aiContext);
+					m_rootNode.ExitNode(ref aiContext);
 				}
 
 				return state;

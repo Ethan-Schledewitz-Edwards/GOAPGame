@@ -18,10 +18,8 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 	{
 		base.ResetContext();
 
-		AIContext.SetData<Transform>(AIContextKeys.c_ExecutorTransform, transform);
-		AIContext.SetData<int>(AIContextKeys.c_InteractionLayer, 1 << LayerMask.NameToLayer("Interaction"));
-		AIContext.SetData<EFaction>(AIContextKeys.c_ExecutorFaction, m_actor.ActorFaction);
-		AIContext.SetData<float>(AIContextKeys.c_InteractionDistanceSqrt, m_actor.InteractionDistanceSqrt);
-		AIContext.SetData<float>(AIContextKeys.c_JobSearchRange, m_actor.JobSearchRange);
+		AIContext.ExecutorTransform = transform;
+		AIContext.ExecutorFaction = (int)m_actor.ActorFaction;
+		AIContext.InteractionLayer = 1 << LayerMask.NameToLayer("Interaction");
 	}
 }

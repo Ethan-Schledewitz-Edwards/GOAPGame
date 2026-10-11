@@ -10,11 +10,11 @@ namespace BehaviourTrees
 		public BTSelectorNode() : base() { }
 		public BTSelectorNode(List<BTNodeBase> children) : base(children) { }
 
-		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 		{
 			foreach (BTNodeBase i in m_childNodes)
 			{
-				switch (i.EvaluateNode(context, t))
+				switch (i.EvaluateNode(ref context, t))
 				{
 					case EBTNodeState.STATE_FAILURE:
 						continue;
@@ -30,10 +30,10 @@ namespace BehaviourTrees
 			return EBTNodeState.STATE_FAILURE;
 		}
 
-		protected override void OnFirstEvaluate(AIContext context) { }
+		protected override void OnFirstEvaluate(ref AIContext context) { }
 
-		protected override void OnNodeExited(AIContext context) { }
+		protected override void OnNodeExited(ref AIContext context) { }
 
-		protected override void OnNodeReset(AIContext context) { }
+		protected override void OnNodeReset(ref AIContext context) { }
 	}
 }

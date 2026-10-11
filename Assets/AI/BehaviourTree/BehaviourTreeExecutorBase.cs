@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BehaviourTreeExecutorBase : MonoBehaviour
 {
-	public AIContext AIContext { get; private set; }
+	public AIContext AIContext;
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
 	[field: SerializeField] public string CurrentNodeNameDebug { get; private set; } = "None";
@@ -18,11 +18,10 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 
 	public void SetCurrentBehaviourTree(BehaviourTree behaviourTree)
 	{
-		// Clear the debug name
 		if (behaviourTree == null)
 		{
-			AIContext.SetData<string>(AIContextKeys.c_CurrentBTNode, "None");
-			CurrentNodeNameDebug = AIContext.GetData<string>(AIContextKeys.c_CurrentBTNode, "None");
+			AIContext.CurrentNodeID = "None";
+			CurrentNodeNameDebug = "None";
 		}
 
 		CurrentBehaviourTree = behaviourTree;
@@ -30,10 +29,10 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 
 	public EBTNodeState TickBehaviour(float t)
 	{
-		if (CurrentBehaviourTree != null && AIContext != null)
+		if (CurrentBehaviourTree != null)
 		{
-			EBTNodeState nodeState = CurrentBehaviourTree.TickBehaviourTree(AIContext, t);
-			CurrentNodeNameDebug = AIContext.GetData<string>(AIContextKeys.c_CurrentBTNode, "None");
+			EBTNodeState nodeState = CurrentBehaviourTree.TickBehaviourTree(ref AIContext, t);
+			CurrentNodeNameDebug = AIContext.CurrentNodeID;
 			return nodeState;
 		}
 
@@ -43,12 +42,9 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 
 	public virtual void ResetContext()
 	{
-		if (AIContext != null)
-		{
-			System.Action cleanupAction = AIContext.GetData<System.Action>(AIContextKeys.c_ReservationCleanup);
-			cleanupAction?.Invoke();
+		System.Action cleanupAction = AIContext.ReservationCleanup;
+		cleanupAction?.Invoke();
 
-			AIContext.ClearAllData();
-		}
+		AIContext.ClearAllData();
 	}
 }

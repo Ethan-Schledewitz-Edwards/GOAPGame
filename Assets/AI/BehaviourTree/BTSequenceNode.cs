@@ -14,29 +14,32 @@ namespace BehaviourTrees
 			m_sequenceIndexKey = $"{NodeID}_SequenceIndex";
 		}
 
-		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 		{
 			if (m_childNodes == null || m_childNodes.Count == 0)
 				return EBTNodeState.STATE_SUCSESS;
 
-			int currentChildIndex = context.GetData<int>(m_sequenceIndexKey);
+			if (!context.SequenceIndices.TryGetValue(m_sequenceIndexKey, out int currentChildIndex))
+			{
+				currentChildIndex = 0;
+			}
 
 			while (currentChildIndex < m_childNodes.Count)
 			{
 				BTNodeBase currentChild = m_childNodes[currentChildIndex];
-				EBTNodeState childState = currentChild.EvaluateNode(context, t);
+				EBTNodeState childState = currentChild.EvaluateNode(ref context, t);
 
 				switch (childState)
 				{
 					case EBTNodeState.STATE_FAILURE:
-						currentChild.ExitNode(context);
-						context.SetData<int>(m_sequenceIndexKey, 0); // Reset for next execution cycle
+						currentChild.ExitNode(ref context);
+						context.SequenceIndices[m_sequenceIndexKey] = 0; // Reset for next execution cycle
 						return EBTNodeState.STATE_FAILURE;
 
 					case EBTNodeState.STATE_SUCSESS:
-						currentChild.ExitNode(context);
+						currentChild.ExitNode(ref context);
 						currentChildIndex++;
-						context.SetData<int>(m_sequenceIndexKey, currentChildIndex); // Advance to the next task
+						context.SequenceIndices[m_sequenceIndexKey] = currentChildIndex; // Advance to the next task
 						break;
 
 					case EBTNodeState.STATE_RUNNING:
@@ -44,23 +47,23 @@ namespace BehaviourTrees
 				}
 			}
 
-			context.SetData<int>(m_sequenceIndexKey, 0);
+			context.SequenceIndices[m_sequenceIndexKey] = 0;
 			return EBTNodeState.STATE_SUCSESS;
 		}
 
-		protected override void OnFirstEvaluate(AIContext context) 
+		protected override void OnFirstEvaluate(ref AIContext context)
 		{
-			context.SetData<int>(m_sequenceIndexKey, 0);
+			context.SequenceIndices[m_sequenceIndexKey] = 0;
 		}
 
-		protected override void OnNodeExited(AIContext context) 
+		protected override void OnNodeExited(ref AIContext context)
 		{
-			context.ClearData(m_sequenceIndexKey);
+			context.SequenceIndices.Remove(m_sequenceIndexKey);
 		}
 
-		protected override void OnNodeReset(AIContext context)
+		protected override void OnNodeReset(ref AIContext context)
 		{
-			context.ClearData(m_sequenceIndexKey);
+			context.SequenceIndices.Remove(m_sequenceIndexKey);
 		}
 	}
 }

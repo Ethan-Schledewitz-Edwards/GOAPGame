@@ -17,42 +17,41 @@ namespace BehaviourTrees
 			m_timeoutKey = $"{NodeID}_Timeout";
 		}
 
-		protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+		protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 		{
-			float timeElapsed = context.GetData<float>(m_timeoutKey) + t;
-			context.SetData<float>(m_timeoutKey, timeElapsed);
+			float timeElapsed = context.Timeout + t;
+			context.Timeout = timeElapsed;
 
 			if (timeElapsed >= m_duration)
 			{
-				Transform executor = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+				Transform executor = context.ExecutorTransform;
 				if (executor != null)
 					Debug.Log($"{executor}'s task timed out", executor);
 
 				return EBTNodeState.STATE_FAILURE;
 			}
 
-			return m_childNodes[0].EvaluateNode(context, t);
+			return m_childNodes[0].EvaluateNode(ref context, t);
 		}
 
-		protected override void OnFirstEvaluate(AIContext context)
+		protected override void OnFirstEvaluate(ref AIContext context)
 		{
-			context.ClearData(m_timeoutKey);
-			context.SetData<float>(m_timeoutKey, 0f);
+			context.Timeout = 0f;
 		}
 
-		protected override void OnNodeExited(AIContext context) 
+		protected override void OnNodeExited(ref AIContext context) 
 		{
-			context.ClearData(m_timeoutKey);
+			context.Timeout = 0f;
 
 			foreach (BTNodeBase child in m_childNodes)
 			{
-				child.ExitNode(context);
+				child.ExitNode(ref context);
 			}
 		}
 
-		protected override void OnNodeReset(AIContext context)
+		protected override void OnNodeReset(ref AIContext context)
 		{
-			context.ClearData(m_timeoutKey);
+			context.Timeout = 0f;
 		}
 	}
 }
