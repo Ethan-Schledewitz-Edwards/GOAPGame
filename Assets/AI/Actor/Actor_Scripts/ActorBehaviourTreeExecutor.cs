@@ -20,6 +20,8 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 
 		AIContext.ExecutorTransform = transform;
 		AIContext.ExecutorFaction = (int)m_actor.ActorFaction;
+		AIContext.StoppingDistance = m_actor.AIPathing.NavAgent.stoppingDistance;
+		AIContext.JobSearchDistance = m_actor.JobSearchRange;
 		AIContext.InteractionLayer = 1 << LayerMask.NameToLayer("Interaction");
 	}
 }

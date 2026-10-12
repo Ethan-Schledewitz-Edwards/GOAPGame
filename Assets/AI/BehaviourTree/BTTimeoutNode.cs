@@ -1,3 +1,4 @@
+using AI.AIContext;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace BehaviourTrees
 				if (executor != null)
 					Debug.Log($"{executor}'s task timed out", executor);
 
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 			}
 
 			return m_childNodes[0].EvaluateNode(ref context, t);

@@ -1,3 +1,4 @@
+using AI.AIContext;
 using System.Collections.Generic;
 
 namespace BehaviourTrees
@@ -16,18 +17,18 @@ namespace BehaviourTrees
 			{
 				switch (i.EvaluateNode(ref context, t))
 				{
-					case EBTNodeState.STATE_FAILURE:
+					case EBTNodeState.FAILURE:
 						continue;
 
-					case EBTNodeState.STATE_SUCSESS:
-						return EBTNodeState.STATE_SUCSESS;
+					case EBTNodeState.SUCSESS:
+						return EBTNodeState.SUCSESS;
 
-					case EBTNodeState.STATE_RUNNING:
-						return EBTNodeState.STATE_RUNNING;
+					case EBTNodeState.RUNNING:
+						return EBTNodeState.RUNNING;
 				}
 			}
 
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		protected override void OnFirstEvaluate(ref AIContext context) { }

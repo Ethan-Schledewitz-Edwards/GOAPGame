@@ -1,3 +1,4 @@
+using AI.AIContext;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,9 @@ namespace BehaviourTrees
 {
 	public enum EBTNodeState
 	{
-		STATE_RUNNING,
-		STATE_SUCSESS, 
-		STATE_FAILURE
+		RUNNING,
+		SUCSESS, 
+		FAILURE
 	}
 
 	public abstract class BTNodeBase

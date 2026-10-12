@@ -5,7 +5,7 @@ using System;
 
 namespace Player.Core
 {
-	public class PlayerInteraction : MonoBehaviour, IInputHandler
+	public class PlayerInteractionController : MonoBehaviour, IInputHandler
 	{
 		private const float c_displayRange = 12f;
 		private const float c_interactionRange = 3f;
@@ -14,18 +14,18 @@ namespace Player.Core
 		[SerializeField] private LayerMask m_interactionLayer;
 
 		// Display Range Events
-		public event Action<IPlayerInteractable> NewInteractableInDisplayRange;
-		public event Action<IPlayerInteractable> InteractableOutOfRange;
+		public event Action<PlayerInteractableBase> NewInteractableInDisplayRange;
+		public event Action<PlayerInteractableBase> InteractableOutOfRange;
 
 		// Interaction Events
 		public event Action<string, Vector3> ClosestInteractableUpdated;
 		public event Action ClosestInteractableCleared;
 
-		private IPlayerInteractable m_closestInteractable;
+		private PlayerInteractableBase m_closestInteractable;
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
-		private HashSet<IPlayerInteractable> m_previousInteractables = new HashSet<IPlayerInteractable>();
-		private HashSet<IPlayerInteractable> m_currentInteractables = new HashSet<IPlayerInteractable>();
+		private HashSet<PlayerInteractableBase> m_previousInteractables = new HashSet<PlayerInteractableBase>();
+		private HashSet<PlayerInteractableBase> m_currentInteractables = new HashSet<PlayerInteractableBase>();
 
 		public void Subscribe()
 		{
@@ -46,14 +46,14 @@ namespace Player.Core
 		{
 			int hitCount = Physics.OverlapSphereNonAlloc(transform.position, c_displayRange, m_colliderBuffer, m_interactionLayer);
 
-			IPlayerInteractable closestInteractable = null;
+			PlayerInteractableBase closestInteractable = null;
 			float minSqrDistance = c_interactionRange * c_interactionRange;
 
 			for (int i = 0; i < hitCount; i++)
 			{
 				Collider col = m_colliderBuffer[i];
 
-				if (col.TryGetComponent(out IPlayerInteractable interactable))
+				if (col.TryGetComponent(out PlayerInteractableBase interactable))
 				{
 					m_currentInteractables.Add(interactable);
 
@@ -78,7 +78,7 @@ namespace Player.Core
 			}
 
 			// Find interactables that left display range
-			foreach (IPlayerInteractable prevInteractable in m_previousInteractables)
+			foreach (PlayerInteractableBase prevInteractable in m_previousInteractables)
 			{
 				if (prevInteractable != null && 
 					!m_currentInteractables.Contains(prevInteractable))
@@ -98,13 +98,13 @@ namespace Player.Core
 			}
 
 			// Double buffering swap
-			HashSet<IPlayerInteractable> temp = m_previousInteractables;
+			HashSet<PlayerInteractableBase> temp = m_previousInteractables;
 			m_previousInteractables = m_currentInteractables;
 			m_currentInteractables = temp;
 			m_currentInteractables.Clear();
 		}
 
-		private void SetInteractable(IPlayerInteractable interactable)
+		private void SetInteractable(PlayerInteractableBase interactable)
 		{
 			if (interactable != null)
 			{

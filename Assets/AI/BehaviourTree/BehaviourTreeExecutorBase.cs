@@ -1,3 +1,4 @@
+using AI.AIContext;
 using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,6 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
 	[field: SerializeField] public string CurrentNodeNameDebug { get; private set; } = "None";
-
 
 	protected virtual void Awake()
 	{
@@ -37,7 +37,7 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 		}
 
 		CurrentNodeNameDebug = "None";
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.FAILURE;
 	}
 
 	public virtual void ResetContext()

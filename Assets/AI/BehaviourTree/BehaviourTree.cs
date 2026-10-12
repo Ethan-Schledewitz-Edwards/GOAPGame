@@ -1,3 +1,4 @@
+using AI.AIContext;
 using System;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace BehaviourTrees
 			{
 				EBTNodeState state = m_rootNode.EvaluateNode(ref aiContext, t);
 
-				if (state != EBTNodeState.STATE_RUNNING)
+				if (state != EBTNodeState.RUNNING)
 				{
 					m_rootNode.ExitNode(ref aiContext);
 				}
@@ -23,7 +24,7 @@ namespace BehaviourTrees
 			else
 			{
 				Debug.LogWarning("A behaviour tree is attempting to execute without a root node");
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 			}
 		}
 

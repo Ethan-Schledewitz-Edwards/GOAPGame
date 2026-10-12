@@ -8,6 +8,7 @@ using Settlements;
 using System.Linq;
 using UnityEngine;
 using Factions.Core;
+using AI.AIContext;
 
 /// <summary>
 /// Locates a suitable structure for an item in the nearest settlement. 
@@ -29,10 +30,13 @@ public class FindUseForItemTask : BTNodeBase
 		m_storageTag = storageTag;
 	}
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		EFaction executorFaction = context.GetData<EFaction>(AIContextKeys.c_ExecutorFaction);
+		Transform executorTransform = context.ExecutorTransform;
+		if (executorTransform == null)
+			return EBTNodeState.FAILURE;
+
+		EFaction executorFaction = (EFaction)context.ExecutorFaction;
 
 		Settlement closestSettlement = 
 			SettlementManager.GetClosestSettlement(executorTransform.position, executorFaction);
@@ -40,22 +44,22 @@ public class FindUseForItemTask : BTNodeBase
 		if (closestSettlement != null)
 		{
 			if (TryFindStructureOfTag(m_storageTag, executorTransform, closestSettlement, context))
-				return EBTNodeState.STATE_SUCSESS;
+				return EBTNodeState.SUCSESS;
 
 			if (TryFindStructureOfTag(m_blueprintTag, executorTransform, closestSettlement, context))
-				return EBTNodeState.STATE_SUCSESS;
+				return EBTNodeState.SUCSESS;
 
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 
 	private bool TryFindStructureOfTag(StructureTag structureTag,
 		Transform executorTransform,
@@ -81,7 +85,7 @@ public class FindUseForItemTask : BTNodeBase
 		}
 
 		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-		string heldItemID = context.GetData<string>(AIContextKeys.c_HeldItemID);
+		string heldItemID = context.HeldItemID;
 
 		if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
 		{
@@ -91,7 +95,7 @@ public class FindUseForItemTask : BTNodeBase
 			if (passesFilter)
 			{
 				// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
-				context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
+				context.TargetTransform = structureObject.transform;
 				return true;
 			}
 		}

@@ -1,6 +1,7 @@
 using UnityEngine;
 using AssetIndex.Core;
 using InventorySystem.Items;
+using Interaction.Core;
 
 /*
 	NOTE: IDs are used a lot in this project, and I don't think they're actually necessary

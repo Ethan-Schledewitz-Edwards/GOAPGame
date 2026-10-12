@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 
 /// <summary>
@@ -11,31 +13,29 @@ using UnityEngine;
 /// </remarks>
 public class ReserveInteractionPositionTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		Transform executorTransform = context.ExecutorTransform;
+		if(executorTransform == null )
+			return EBTNodeState.FAILURE;
 
-		if (executorTransform == null || targetTransform == null)
-		{
-			Debug.Log($"[ReserveInteractionPositionTask] Failed: Missing executorTransform " +
-				$"({executorTransform}) or targetTransform ({targetTransform}).", executorTransform);
-			return EBTNodeState.STATE_FAILURE;
-		}
+		Transform targetTransform = context.TargetTransform;
+		if (targetTransform == null)
+			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
 		{
 			Debug.Log("[ReserveInteractionPositionTask] Failed: Executor is missing the " +
 				"IInteractor component.", executorTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		if (!targetTransform.TryGetComponent(out ActorInteractableBase interactable))
 		{
 			Debug.Log($"[ReserveInteractionPositionTask] Failed: Target object " +
 				$"'{targetTransform.name}' lacks an InteractableObjectBase component.", targetTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		// Reuse an existing valid position if it already belongs to the current target. 
@@ -47,20 +47,20 @@ public class ReserveInteractionPositionTask : BTNodeBase
 			{
 				Debug.Log("[ReserveInteractionPositionTask] Failed: Could not retrieve a " +
 					"destination from the existing assigned position.", targetTransform);
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 			}
 
 			Debug.Log("[ReserveInteractionPositionTask] Sucseeded: Retrieved an " +
 					"existing interaction position from the behaviour tree.", targetTransform);
 			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, existingDestination);
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 		}
 
 		if (!interactable.TryReserveClosestPosition(interactor, executorTransform.position, out assignedPosition))
 		{
 			Debug.Log($"[ReserveInteractionPositionTask] Failed: Could not reserve closest " +
 				$"position on interactable object '{targetTransform.name}'.", targetTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		if (!assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
@@ -68,7 +68,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 			Debug.Log("[ReserveInteractionPositionTask] Failed: Could not retrieve a valid " +
 				"destination from the newly reserved position.", targetTransform);
 			assignedPosition.ReleaseReservation(interactor);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		context.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
@@ -86,12 +86,12 @@ public class ReserveInteractionPositionTask : BTNodeBase
 
 		Debug.Log("[ReserveInteractionPositionTask] Sucseeded: Found a new " +
 			"interaction position and a valid movement destination.", targetTransform);
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 }

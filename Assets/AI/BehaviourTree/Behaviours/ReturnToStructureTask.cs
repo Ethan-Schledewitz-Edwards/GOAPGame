@@ -1,23 +1,25 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using Settlements;
 using UnityEngine;
 
 public class ReturnToStructureTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		Vector3 executorPosition = executorTransform.position;
 
-		int settlementID = context.GetData<int>(AIContextKeys.c_StructureSettlementID);
-		int structureID = context.GetData<int>(AIContextKeys.c_StructureID);
+		int settlementID = context.StructureSettlementID;
+		int structureID = context.StructureID;
 
 		if (SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out Settlement settlement))
 		{
@@ -34,11 +36,11 @@ public class ReturnToStructureTask : BTNodeBase
 						if (assignedPosition != null && assignedPosition.TryGetInteractionPosition(interactor, out Vector3 validDestination))
 						{
 							Debug.Log($"An Actor set their target to StructureID:{structureID} in SettlementID:{settlementID}.");
-							context.SetData<Transform>(AIContextKeys.c_TargetTransform, structureObject.transform);
-							context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+							context.TargetTransform = structureObject.transform;
+							context.TargetDestination = validDestination;
 
 							// Store the reserved position in the AI context so interaction nodes can retrieve it
-							context.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+							context.AssignedInteractionPosition = assignedPosition;
 
 							// Cleanup delegate in case the behavior tree aborts
 							System.Action cleanup = () =>
@@ -48,9 +50,9 @@ public class ReturnToStructureTask : BTNodeBase
 									interactable.CancelReservation(interactor, assignedPosition);
 								}
 							};
-							context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
+							context.ReservationCleanup = cleanup;
 
-							return EBTNodeState.STATE_SUCSESS;
+							return EBTNodeState.SUCSESS;
 						}
 					}
 				}
@@ -65,12 +67,12 @@ public class ReturnToStructureTask : BTNodeBase
 			Debug.LogWarning($"No settlement with an ID of:{settlementID} was found.");
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 }

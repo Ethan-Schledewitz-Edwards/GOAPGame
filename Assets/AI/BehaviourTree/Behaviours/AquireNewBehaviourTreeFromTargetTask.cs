@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 
 /// <summary>
@@ -10,14 +12,14 @@ using UnityEngine;
 /// </remarks>
 public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
 		{
 			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
 				"executorTransform is null.");
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
@@ -25,40 +27,40 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 		{
 			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
 				"interactor is null.");
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		Transform targetTransform = context.TargetTransform;
 		if (targetTransform == null)
 		{
 			Debug.LogWarning("[AquireNewBehaviourTreeFromTargetTask] Failed: " +
 				"targetTransform is null.");
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
-		ActorInteractableBase interactable =
-			targetTransform.GetComponent<ActorInteractableBase>() ??
-			targetTransform.GetComponentInParent<ActorInteractableBase>();
+		InteractableBase interactable =
+			targetTransform.GetComponent<InteractableBase>() ??
+			targetTransform.GetComponentInParent<InteractableBase>();
 
 		if (interactable == null)
 		{
 			Debug.LogWarning($"[AquireNewBehaviourTreeFromTargetTask] Failed: " +
 				$"No InteractableObjectBase on '{targetTransform.name}'.");
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		interactor.InteractWith(interactable, true);
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) 
+	protected override void OnFirstEvaluate(ref AIContext context) 
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		Debug.Log($"[AquireNewBehaviourTreeFromTargetTask]: " +
 			$"{executorTransform} is looking for a new behaviour tree.", executorTransform);
 	}
 
-	protected override void OnNodeExited(AIContext context) {}
+	protected override void OnNodeExited(ref AIContext context) {}
 
-	protected override void OnNodeReset(AIContext context) {}
+	protected override void OnNodeReset(ref AIContext context) {}
 }

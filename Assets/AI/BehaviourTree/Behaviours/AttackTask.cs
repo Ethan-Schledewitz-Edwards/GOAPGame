@@ -1,63 +1,61 @@
+using AI.AIContext;
 using BehaviourTrees;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AttackTask : BTNodeBase
 {
-	private readonly string m_cooldownKey;
-
 	private const float c_timeBetweenAttacks = 2f;
 	private const int c_attackDamage = 2;
 
-	public AttackTask() : base()
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		m_cooldownKey = $"{NodeID}_AttackCooldown";
-	}
+		Transform executorTransform = context.ExecutorTransform;
+		if(executorTransform == null)
+			return EBTNodeState.FAILURE;
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
-	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-
+		Transform targetTransform = context.TargetTransform;
 		if (targetTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		if (targetTransform.TryGetComponent(out HealthComponent health) &&
 			!health.IsDead)
 		{
-			float currentTimer = context.GetData<float>(m_cooldownKey) + t;
+			float currentTimer = context.Cooldown + t;
 
 			if (currentTimer >= c_timeBetweenAttacks)
 			{
-				context.SetData<float>(m_cooldownKey, 0f);
-				//Debug.Log($"Actor:{executorTransform} attacked target:{targetTransform}.", targetTransform);
+				context.Cooldown = 0f;
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
 				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
 			}
 			else
 			{
-				context.SetData<float>(m_cooldownKey, currentTimer);
+				context.Cooldown = currentTimer;
 			}
 
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 		}
 		else if (health.IsDead)
 		{
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 		}
 
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
-
-	protected override void OnNodeExited(AIContext context) 
+	protected override void OnFirstEvaluate(ref AIContext context) 
 	{
-		context.ClearData(m_cooldownKey);
+		context.Cooldown = 0f;
 	}
 
-	protected override void OnNodeReset(AIContext context)
+	protected override void OnNodeExited(ref AIContext context) 
 	{
-		context.ClearData(m_cooldownKey);
+		context.Cooldown = 0f;
+	}
+
+	protected override void OnNodeReset(ref AIContext context)
+	{
+		context.Cooldown = 0f;
 	}
 }

@@ -9,14 +9,14 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		if (executorTransform == null ||
 			!executorTransform.TryGetComponent(out AIPathing pathing))
 		{
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		// Recalculate the destination 
 		if (!TryGetDynamicDestination(context, executorTransform, out Vector3 targetDestination))
 		{
 			Debug.Log($"{executorTransform} could not resolve its interaction destination.", executorTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		// Keep the context synchronized with the dynamically calculated position.
@@ -30,7 +30,7 @@ public class MoveToInteractionPositionTask : BTNodeBase
 			pathing.ClearDestination();
 
 			Debug.Log($"{executorTransform} reached their target destination.", executorTransform);
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 		}
 
 		bool destinationChanged =
@@ -39,19 +39,19 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		pathing.SetDestination(targetDestination);
 
 		if (destinationChanged)
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 
 		if (pathing.IsCalculatingPath())
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 
 		// At this point the path has had time to resolve.
 		if (pathing.IsDestinationInvalid())
 		{
 			Debug.Log($"{executorTransform} has an invalid path to {targetDestination}.", executorTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
-		return EBTNodeState.STATE_RUNNING;
+		return EBTNodeState.RUNNING;
 	}
 
 	private bool TryGetDynamicDestination(AIContext context, Transform executorTransform, out Vector3 destination)

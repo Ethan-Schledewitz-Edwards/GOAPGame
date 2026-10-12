@@ -1,4 +1,3 @@
-using UnityEngine;
 using Interaction.Player;
 
 public class Temp : PlayerInteractableBase<Temp>

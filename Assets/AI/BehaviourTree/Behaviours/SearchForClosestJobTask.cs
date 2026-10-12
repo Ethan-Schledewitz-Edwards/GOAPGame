@@ -15,11 +15,11 @@ public class SearchForClosestJobTask : BTNodeBase
 	{
 		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
 		if (executorTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		Vector3 executorPosition = executorTransform.position;
 		ActorInteractableBase closestInteractable = SearchForTask(interactor, executorPosition, context);
@@ -28,10 +28,10 @@ public class SearchForClosestJobTask : BTNodeBase
 			Debug.Log($"[SearchForClosestJobTask]: {executorTransform} found an object to interact with", executorTransform);
 			context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestInteractable.transform);
 
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 		}
 
-		return EBTNodeState.STATE_RUNNING;
+		return EBTNodeState.RUNNING;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context) { }

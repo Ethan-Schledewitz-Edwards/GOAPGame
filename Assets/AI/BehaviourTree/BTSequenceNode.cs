@@ -1,3 +1,4 @@
+using AI.AIContext;
 using System.Collections.Generic;
 
 namespace BehaviourTrees
@@ -17,7 +18,7 @@ namespace BehaviourTrees
 		protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 		{
 			if (m_childNodes == null || m_childNodes.Count == 0)
-				return EBTNodeState.STATE_SUCSESS;
+				return EBTNodeState.SUCSESS;
 
 			if (!context.SequenceIndices.TryGetValue(m_sequenceIndexKey, out int currentChildIndex))
 			{
@@ -31,24 +32,24 @@ namespace BehaviourTrees
 
 				switch (childState)
 				{
-					case EBTNodeState.STATE_FAILURE:
+					case EBTNodeState.FAILURE:
 						currentChild.ExitNode(ref context);
 						context.SequenceIndices[m_sequenceIndexKey] = 0; // Reset for next execution cycle
-						return EBTNodeState.STATE_FAILURE;
+						return EBTNodeState.FAILURE;
 
-					case EBTNodeState.STATE_SUCSESS:
+					case EBTNodeState.SUCSESS:
 						currentChild.ExitNode(ref context);
 						currentChildIndex++;
 						context.SequenceIndices[m_sequenceIndexKey] = currentChildIndex; // Advance to the next task
 						break;
 
-					case EBTNodeState.STATE_RUNNING:
-						return EBTNodeState.STATE_RUNNING; // Resume next frame
+					case EBTNodeState.RUNNING:
+						return EBTNodeState.RUNNING; // Resume next frame
 				}
 			}
 
 			context.SequenceIndices[m_sequenceIndexKey] = 0;
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 		}
 
 		protected override void OnFirstEvaluate(ref AIContext context)

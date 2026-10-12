@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using System.Collections.Generic;
@@ -6,41 +8,37 @@ using UnityEngine;
 
 public class TryPickupItemTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform =
-			context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		if (!executorTransform.TryGetComponent(out IInteractor interactor))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		if (!executorTransform.TryGetComponent(out InventoryComponent actorInventory))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		Transform targetTransform = context.TargetTransform;
+		InteractionPoint assignedPos =  context.AssignedInteractionPosition;
 
-		InteractionPoint assignedPos = 
-			context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
-
-		string itemID = context.GetData<string>(AIContextKeys.c_ItemToFindID);
+		string itemID = context.ItemToFindID;
 
 		if (targetTransform == null || assignedPos == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		if (!assignedPos.GetPositionInRange(interactor, executorTransform.position))
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 
 		if (!targetTransform.TryGetComponent(out ActorInteractableBase interactable))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		// ItemIO.TryInteract() moves a standalone item into the actor's inventory.
 		if (interactable.TryGetComponent(out IItemObject itemObject) && !itemObject.IsItemStored)
 		{
 			if (itemObject.ItemData == null || itemObject.ItemData.ID != itemID)
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 
 			if (!interactable.TryInteract(
 					interactor,
@@ -48,7 +46,7 @@ public class TryPickupItemTask : BTNodeBase
 					assignedPos,
 					out _))
 			{
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 			}
 
 			Debug.Log($"{executorTransform}: Picked up item of ID:{itemID}.");
@@ -56,9 +54,9 @@ public class TryPickupItemTask : BTNodeBase
 			// Pickup is complete, release the reservation immediately.
 			interactable.StopInteract(interactor, assignedPos);
 
-			context.ClearData(AIContextKeys.c_ItemToFindID);
-			context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-			return EBTNodeState.STATE_SUCSESS;
+			context.ItemToFindID = string.Empty;
+			context.AssignedInteractionPosition = null;
+			return EBTNodeState.SUCSESS;
 		}
 
 		// Take items from the inventory
@@ -72,20 +70,20 @@ public class TryPickupItemTask : BTNodeBase
 				Debug.Log($"{executorTransform}: Took {itemsTransferred} items " +
 					$"of ID:{itemID} from {targetTransform}'s inventory.");
 
-				context.ClearData(AIContextKeys.c_ItemToFindID);
+				context.ItemToFindID = string.Empty;
 				interactable.StopInteract(interactor, assignedPos);
-				context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-				return EBTNodeState.STATE_SUCSESS;
+				context.AssignedInteractionPosition = null;
+				return EBTNodeState.SUCSESS;
 			}
 		}
 
 		interactable.StopInteract(interactor, assignedPos);
-		return EBTNodeState.STATE_FAILURE;
+		return EBTNodeState.FAILURE;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 }

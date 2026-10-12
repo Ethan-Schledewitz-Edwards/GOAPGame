@@ -31,11 +31,11 @@ public class DepositHeldItemTask : BTNodeBase
 	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
 	{
 		if (!TryGetDepositData(context, out DepositData data))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		// Distance check
 		if (!data.AssignedPos.GetPositionInRange(data.Interactor, data.ExecutorTransform.position))
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 
 		InventorySlot heldSlot = data.ExecutorInventory.Inventory.Slots[0];
 		ItemData heldItemData = heldSlot.SlotsItem;
@@ -43,7 +43,7 @@ public class DepositHeldItemTask : BTNodeBase
 
 		// Check if stack is already deposited
 		if (heldItemData == null || heldAmount <= 0)
-			return EBTNodeState.STATE_SUCSESS;
+			return EBTNodeState.SUCSESS;
 
 		// Begin interaction (convert reservation)
 		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
@@ -56,7 +56,7 @@ public class DepositHeldItemTask : BTNodeBase
 			{
 				Debug.LogError($"[DepositHeldItemTask] Failed to begin interaction " +
 					$"with '{data.TargetTransform.name}'.", data.ExecutorTransform);
-				return EBTNodeState.STATE_FAILURE;
+				return EBTNodeState.FAILURE;
 			}
 
 			context.SetData(c_InteractionStartedKey, true);
@@ -68,17 +68,17 @@ public class DepositHeldItemTask : BTNodeBase
 		{
 			Debug.LogError($"[DepositHeldItemTask] '{data.TargetTransform.name}' lacks " +
 				$"capacity for {heldAmount}x {heldItemData.ID}.", data.ExecutorTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
 		if (!data.TargetInventory.TryTransferFrom(heldSlot, heldAmount, out int transferredAmount) || transferredAmount != heldAmount)
 		{
 			Debug.LogError($"[DepositHeldItemTask] Transfer failure or partial " +
 				$"transfer with '{data.TargetTransform.name}'.", data.ExecutorTransform);
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 		}
 
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
 	protected override void OnNodeExited(AIContext context)

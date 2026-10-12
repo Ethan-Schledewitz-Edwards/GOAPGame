@@ -215,8 +215,8 @@ public class Actor : MonoBehaviour, IInteractor
 
 						// Clear if the behaviour tree completed and was not replaced this frame.
 						if (!m_jobAssignedThisTick && 
-							(treeState == EBTNodeState.STATE_SUCSESS ||
-							 treeState == EBTNodeState.STATE_FAILURE))
+							(treeState == EBTNodeState.SUCSESS ||
+							 treeState == EBTNodeState.FAILURE))
 						{
 							BeginOffDuty();
 						}

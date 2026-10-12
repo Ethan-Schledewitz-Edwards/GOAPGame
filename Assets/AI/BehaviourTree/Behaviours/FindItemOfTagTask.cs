@@ -6,6 +6,8 @@ using ObjectTags;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using AI.AIContext;
+using Interaction.Core;
 
 // NOTE: I'm putting this here because I don't know where else to.
 // This is being written halfway through reading all the code for context.
@@ -25,24 +27,24 @@ public class FindItemOfTagTask : BTNodeBase
 	private const float c_searchRadius = 40f;
 	private const string c_ItemTagsKey = "FindItemEntityOfTagTask_ItemTags";
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
 		List<ItemTag> itemTags = context.GetData<List<ItemTag>>(c_ItemTagsKey);
 
 		if (itemTags == null || itemTags.Count == 0)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null || !executorTransform.TryGetComponent(out IInteractor interactor))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		Transform targetItemTransform = FindItemOfTags(executorTransform, interactor, itemTags.ToArray());
 
 		if (targetItemTransform == null)
-			return EBTNodeState.STATE_RUNNING;
+			return EBTNodeState.RUNNING;
 
 		// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
-		context.SetData<Transform>(AIContextKeys.c_TargetTransform, targetItemTransform);
+		context.TargetTransform = targetItemTransform;
 
 		// Clean up temporary context data on success
 		foreach (ItemTag tag in itemTags)
@@ -51,7 +53,7 @@ public class FindItemOfTagTask : BTNodeBase
 		}
 		context.ClearData(c_ItemTagsKey);
 
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
 	private Transform FindItemOfTags(Transform executorTransform,
@@ -102,7 +104,7 @@ public class FindItemOfTagTask : BTNodeBase
 	/// <summary>
 	/// Extracts item tags from the AI context data set and stores them in the context.
 	/// </summary>
-	protected override void OnFirstEvaluate(AIContext context)
+	protected override void OnFirstEvaluate(ref AIContext context)
 	{
 		List<ItemTag> itemTags = new List<ItemTag>();
 		foreach (string key in context.GetDataSet().Keys)
@@ -121,12 +123,12 @@ public class FindItemOfTagTask : BTNodeBase
 		context.SetData<List<ItemTag>>(c_ItemTagsKey, itemTags);
 	}
 
-	protected override void OnNodeExited(AIContext context)
+	protected override void OnNodeExited(ref AIContext context)
 	{
 		context.ClearData(c_ItemTagsKey);
 	}
 
-	protected override void OnNodeReset(AIContext context)
+	protected override void OnNodeReset(ref AIContext context)
 	{
 		context.ClearData(c_ItemTagsKey);
 	}

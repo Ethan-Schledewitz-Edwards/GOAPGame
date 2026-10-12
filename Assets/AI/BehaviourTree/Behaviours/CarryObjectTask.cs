@@ -12,22 +12,22 @@ public class CarryObjectTask : BTNodeBase
 {
 	private const string c_IsCarryingKey = "IsCarryingState";
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		Transform targetTransform = context.TargetTransform;
 		if (targetTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		ActorInteractableBase interactable = targetTransform.GetComponentInParent<ActorInteractableBase>();
-		InteractionPoint assignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPos = context.AssignedInteractionPosition;
 
 		if (context.GetData<bool>(c_IsCarryingKey, false) == false)
 		{
@@ -40,7 +40,7 @@ public class CarryObjectTask : BTNodeBase
 			}
 		}
 
-		return EBTNodeState.STATE_RUNNING;
+		return EBTNodeState.RUNNING;
 	}
 
 	protected override void OnFirstEvaluate(AIContext context) { }

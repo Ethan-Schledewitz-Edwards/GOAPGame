@@ -7,6 +7,8 @@ using Settlements;
 using System.Linq;
 using UnityEngine;
 using Factions.Core;
+using AI.AIContext;
+using Interaction.Core;
 
 /// <summary>
 /// Searches for the nearest item with a specific ID then adds its data to
@@ -32,7 +34,7 @@ public class FindItemOfIDTask : BTNodeBase
 
 		if (executorTransform == null ||
 			!executorTransform.TryGetComponent(out IInteractor interactor))
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		string itemID = context.ItemToFindID.ToString();
 
@@ -42,12 +44,12 @@ public class FindItemOfIDTask : BTNodeBase
 			context);
 
 		if (targetItemTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
 		context.TargetTransform = targetItemTransform;
 
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
 	private Transform SearchForItem(string itemID, 

@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 
 /// <summary>
@@ -9,33 +11,33 @@ using UnityEngine;
 /// </remarks>
 public class InteractWithTargetTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 		if (interactor == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+		Transform targetTransform = context.TargetTransform;
 		if (targetTransform == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		ActorInteractableBase iob = targetTransform.GetComponent<ActorInteractableBase>()
 								  ?? targetTransform.GetComponentInParent<ActorInteractableBase>();
 
 		if (iob == null)
-			return EBTNodeState.STATE_FAILURE;
+			return EBTNodeState.FAILURE;
 
 		interactor.InteractWith(iob, false);
-		return EBTNodeState.STATE_SUCSESS;
+		return EBTNodeState.SUCSESS;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) {}
+	protected override void OnFirstEvaluate(ref AIContext context) {}
 
-	protected override void OnNodeExited(AIContext context) {}
+	protected override void OnNodeExited(ref AIContext context) {}
 
-	protected override void OnNodeReset(AIContext context) {}
+	protected override void OnNodeReset(ref AIContext context) {}
 }

@@ -7,13 +7,13 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 	where TInteractable : PlayerInteractableBase<TInteractable>
 	where TUIElement : TrackingUIElementBase
 {
-	protected PlayerInteraction m_playerInteraction;
+	protected PlayerInteractionController m_playerInteraction;
 
 	protected Dictionary<TInteractable, TUIElement> m_activeElements = new Dictionary<TInteractable, TUIElement>();
 
 	protected virtual void Start()
 	{
-		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteraction>();
+		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
 		if (m_playerInteraction != null)
 		{
 			m_playerInteraction.NewInteractableInDisplayRange += HandleInteractableInRange;
@@ -43,8 +43,6 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 
 	private void HandleInteractableInRange(IPlayerInteractable playerInteractable)
 	{
-		Debug.Log("THIS SHOULD BE CALLED");
-
 		if (playerInteractable is TInteractable interactable)
 		{
 			if (!m_activeElements.ContainsKey(interactable))
