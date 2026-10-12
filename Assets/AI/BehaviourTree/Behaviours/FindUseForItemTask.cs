@@ -1,6 +1,5 @@
 using BehaviourTrees;
 using AssetIndex.Core;
-using Interaction.InteractableStructures;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;

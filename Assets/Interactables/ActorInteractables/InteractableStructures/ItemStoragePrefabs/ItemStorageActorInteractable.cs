@@ -1,9 +1,11 @@
 using BehaviourTrees;
+using Interaction.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using ObjectTags;
 using Settlements;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Interaction.InteractableStructures
@@ -24,6 +26,11 @@ namespace Interaction.InteractableStructures
 
 		public InventoryComponent InventoryComponent { get; private set; }
 
+		// IInteractable properties
+		protected override string m_interactPrompt => string.Empty;
+		protected override bool m_hasTrackingDisplayInfo => false;
+
+		// IStructure properties
 		private int m_settlementID;
 		private int m_settlementStructureID;
 
@@ -84,15 +91,22 @@ namespace Interaction.InteractableStructures
 				return false;
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-			if (executor != null && executor.AIContext != null)
+			if (executor != null)
 			{
-				foreach (ItemTag tag in m_tagFilter)
+				if (m_tagFilter != null && m_tagFilter.Length > 0)
 				{
-					executor.AIContext.SetData<string>(AIContextKeys.c_ItemTagFilterPrefix + tag.ID, tag.ID);
+					executor.AIContext.ItemTagFilters = m_tagFilter
+						.Where(tag => tag != null)
+						.Select(tag => tag.ID)
+						.ToArray();
+				}
+				else
+				{
+					executor.AIContext.ItemTagFilters = null;
 				}
 
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-				executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
+				executor.AIContext.StructureSettlementID = m_settlementID;
+				executor.AIContext.StructureID = m_settlementStructureID;
 				m_actorsAssigned = GetTotalActorsPresent();
 				return true;
 			}

@@ -7,8 +7,9 @@ using Settlements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Interaction.Core;
 
-namespace Interaction.InteractableStructures.Blueprints
+namespace Interaction.ActorInteractables.Structures
 {
 	[RequireComponent(typeof(InventoryComponent), typeof(ItemRequestComponent))]
 	public abstract class BlueprintActorInteractableBase : ActorInteractableBase, IStructure, IItemFiltered
@@ -24,11 +25,17 @@ namespace Interaction.InteractableStructures.Blueprints
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
 
+		// IInteractable properties
+		protected override string m_interactPrompt => string.Empty;
+		protected override bool m_hasTrackingDisplayInfo => true;
+
+		// IStructure properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
 
+		// IItemFiltered properties
 		[SerializeField] protected ItemTag[] m_tagFilter;
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 
@@ -37,7 +44,6 @@ namespace Interaction.InteractableStructures.Blueprints
 			InitializeBehaviourTree();
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
-
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
@@ -48,8 +54,10 @@ namespace Interaction.InteractableStructures.Blueprints
 				m_interactPositions = GetComponentsInChildren<InteractionPoint>();
 		}
 
-		protected virtual void OnDestroy()
+		protected override void OnDestroy()
 		{
+			base.OnDestroy();
+
 			if (m_itemRequestComponent != null)
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
 		}
@@ -100,19 +108,22 @@ namespace Interaction.InteractableStructures.Blueprints
 
 			// Tell the actor which items to find (Its behaviour tree will use the context to find the item)
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-			if (executor != null && executor.AIContext != null)
+			if (executor != null)
 			{
 				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) &&
 					inventoryComponent.Slots.Count > 0)
 				{
 					string requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
 
-					if (requestedItemID == "")
+					if (string.IsNullOrEmpty(requestedItemID))
 						return false;
 
-					executor.AIContext.SetData<int>(AIContextKeys.c_StructureSettlementID, m_settlementID);
-					executor.AIContext.SetData<int>(AIContextKeys.c_StructureID, m_settlementStructureID);
-					executor.AIContext.SetData<string>(AIContextKeys.c_ItemToFindID, requestedItemID);
+					var context = executor.AIContext;
+					context.StructureSettlementID = m_settlementID;
+					context.StructureID = m_settlementStructureID;
+					context.ItemToFindID = requestedItemID;
+
+					executor.AIContext = context;
 					return true;
 				}
 			}

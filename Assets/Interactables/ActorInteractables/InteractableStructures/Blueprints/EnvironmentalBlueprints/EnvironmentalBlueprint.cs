@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Interaction.InteractableStructures.Blueprints
+namespace Interaction.ActorInteractables.Structures
 {
     public class EnvironmentalBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
@@ -22,6 +22,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		[SerializeField] private BlueprintData m_blueprintToSpawnOnCompletion;
 		[SerializeField] private GameObject m_objectEnabledOnCompletion;
 
+		// IBlueprintObject properties
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
 

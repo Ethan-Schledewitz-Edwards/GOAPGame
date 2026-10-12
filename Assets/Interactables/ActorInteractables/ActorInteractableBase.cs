@@ -3,13 +3,30 @@ using Interaction.Core;
 using System;
 using UnityEngine;
 
-public abstract class ActorInteractableBase : InteractableBase
+public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 {
 	[Header("Settings")]
 	protected abstract int m_minActorsToFunction { get; set; }
 
+	public string InteractPrompt => m_interactPrompt;
+	protected abstract string m_interactPrompt { get; }
+
+	public Vector3 LocalPromptOffset => m_localPromptOffset;
+	[SerializeField] private Vector3 m_localPromptOffset;
+
+	public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
+	protected abstract bool m_hasTrackingDisplayInfo { get; }
+
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPoint[] m_interactPositions;
+
+	public event Action OnInfoUpdated;
+	public event Action InteractableDestroyed;
+
+	protected virtual void OnDestroy()
+	{
+		InteractableDestroyed?.Invoke();
+	}
 
 	/// <summary>
 	/// Finds the closest position this interactor can be assigned to.
@@ -178,5 +195,10 @@ public abstract class ActorInteractableBase : InteractableBase
 			return false;
 
 		return Array.IndexOf(m_interactPositions, position) >= 0;
+	}
+
+	public virtual void UpdateInteractableInfo()
+	{
+		OnInfoUpdated?.Invoke();
 	}
 }

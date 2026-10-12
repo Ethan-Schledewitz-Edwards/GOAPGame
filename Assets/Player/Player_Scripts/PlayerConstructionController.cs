@@ -1,4 +1,3 @@
-using Interaction.InteractableStructures.Blueprints;
 using Settlements;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Construction;
 using Factions.Core;
+using Interaction.ActorInteractables.Structures;
 
 namespace Player.Core
 {

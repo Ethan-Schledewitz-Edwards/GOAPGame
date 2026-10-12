@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using Interaction.Core;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,10 @@ public class HarvestableActorInteractable : ActorInteractableBase
 	private static BehaviourTree m_harvestBT;
 
 	protected override int m_minActorsToFunction { get; set; } = 1;
+
+	// IInteractable properties
+	protected override string m_interactPrompt => string.Empty;
+	protected override bool m_hasTrackingDisplayInfo => true;
 
 	private void Awake()
 	{

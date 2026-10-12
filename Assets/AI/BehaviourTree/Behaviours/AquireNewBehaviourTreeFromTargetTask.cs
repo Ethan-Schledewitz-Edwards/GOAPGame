@@ -38,9 +38,9 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 		}
 
-		InteractableBase interactable =
-			targetTransform.GetComponent<InteractableBase>() ??
-			targetTransform.GetComponentInParent<InteractableBase>();
+		ActorInteractableBase interactable =
+			targetTransform.GetComponent<ActorInteractableBase>() ??
+			targetTransform.GetComponentInParent<ActorInteractableBase>();
 
 		if (interactable == null)
 		{

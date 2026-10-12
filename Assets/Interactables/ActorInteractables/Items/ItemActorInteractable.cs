@@ -6,6 +6,7 @@ using ObjectTags;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Interaction.Core;
 
 [RequireComponent(typeof(Rigidbody), typeof(InteractionPoint))]
 public class ItemActorInteractable : ActorInteractableBase, IItemObject
@@ -24,6 +25,10 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 
 	// Events
 	public event Action<Transform> ItemPickedUp;
+
+	// IInteractable properties
+	protected override string m_interactPrompt => string.Empty;
+	protected override bool m_hasTrackingDisplayInfo => false;
 
 	// IItemObject properties
 	public ItemData ItemData => m_itemData;

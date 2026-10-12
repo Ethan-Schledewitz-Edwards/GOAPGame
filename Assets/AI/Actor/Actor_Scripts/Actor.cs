@@ -1,11 +1,13 @@
 using BehaviourTrees;
 using Factions.Core;
+using Interaction.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using AI.AIContext;
 
 [RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing))]
 public class Actor : MonoBehaviour, IInteractor
@@ -41,7 +43,7 @@ public class Actor : MonoBehaviour, IInteractor
 		functionally making it one component anyways.
 		
 		My suggestion:
-		1. Make ActorHealthComponent a partial class.
+1. 		Make ActorHealthComponent a partial class.
 
 		File Actor.Health.cs
 		public partial class Actor
@@ -97,7 +99,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
-	private bool m_isInvestigating;	// NOTE: I assume this is an unused feature? It can never be set to true and should be removed.
+	private bool m_isInvestigating; // NOTE: I assume this is an unused feature? It can never be set to true and should be removed.
 	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
@@ -142,8 +144,8 @@ public class Actor : MonoBehaviour, IInteractor
 
 	public void TickBehaviour(float t)
 	{
-		if (AIPathing == null || 
-			m_behaviourTreeExecutor == null || 
+		if (AIPathing == null ||
+			m_behaviourTreeExecutor == null ||
 			GOAPAgentComp == null)
 			return;
 
@@ -214,7 +216,7 @@ public class Actor : MonoBehaviour, IInteractor
 						EBTNodeState treeState = m_behaviourTreeExecutor.TickBehaviour(t);
 
 						// Clear if the behaviour tree completed and was not replaced this frame.
-						if (!m_jobAssignedThisTick && 
+						if (!m_jobAssignedThisTick &&
 							(treeState == EBTNodeState.SUCSESS ||
 							 treeState == EBTNodeState.FAILURE))
 						{
@@ -280,57 +282,59 @@ public class Actor : MonoBehaviour, IInteractor
 		AIPathing.SetDestination(destination);
 	}
 
-	public void InteractWith(ActorInteractableBase actorInteractableObjectBase, bool willReplaceJob)
+	public void InteractWith(IInteractable interactable, bool willReplaceJob)
 	{
-		if (m_behaviourTreeExecutor != null)
+		if(interactable is ActorInteractableBase actorInteractable)
 		{
-			InteractionPoint contextPosition = m_behaviourTreeExecutor.AIContext
-				.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
-
-			if (contextPosition != null && contextPosition != m_assignedInteractionPosition)
+			if (m_behaviourTreeExecutor != null)
 			{
-				ReleaseInteractionPosition(m_assignedInteractionPosition);
-				m_assignedInteractionPosition = contextPosition;
+				InteractionPoint contextPosition = m_behaviourTreeExecutor.AIContext.AssignedInteractionPosition;
+
+				if (contextPosition != null && contextPosition != m_assignedInteractionPosition)
+				{
+					ReleaseInteractionPosition(m_assignedInteractionPosition);
+					m_assignedInteractionPosition = contextPosition;
+				}
 			}
-		}
 
-		// Recalculate the interaction position in case it moved between ticks.
-		if (m_assignedInteractionPosition != null)
-		{
-			if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+			// Recalculate the interaction position in case it moved between ticks.
+			if (m_assignedInteractionPosition != null)
+			{
+				if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+					return;
+
+				float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
+				if (!AIPathing.IsWithinDistance(validPos, interactionDistance))
+					return;
+			}
+
+			m_targetTransform = actorInteractable.transform;
+			bool isInteractionSuccessful = actorInteractable.TryInteract
+			(
+				this,
+				transform.position,
+				m_assignedInteractionPosition,
+				out int interactorValue
+			);
+
+			if (!isInteractionSuccessful)
+			{
+				HandleFailedInteraction();
 				return;
+			}
 
-			float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
-			if (!AIPathing.IsWithinDistance(validPos, interactionDistance))
-				return;
-		}
-
-		m_targetTransform = actorInteractableObjectBase.transform;
-		bool isInteractionSuccessful = actorInteractableObjectBase.TryInteract
-		(
-			this,
-			transform.position,
-			m_assignedInteractionPosition,
-			out int interactorValue
-		);
-
-		if (!isInteractionSuccessful)
-		{
-			HandleFailedInteraction();
-			return;
-		}
-
-		if (willReplaceJob)
-		{
-			m_targetTransform = actorInteractableObjectBase.transform;
-			TrySetActorJob(actorInteractableObjectBase.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {m_targetTransform.name} and was succsessful.", this);
+			if (willReplaceJob)
+			{
+				m_targetTransform = actorInteractable.transform;
+				TrySetActorJob(actorInteractable.GetBehaviourTree());
+				Debug.Log($"{transform} interacted with {m_targetTransform.name} and was succsessful.", this);
+			}
 		}
 	}
 
 	public void BeginCarrying(Transform parent, Vector3 localPosition)
 	{
-		if(parent != null)
+		if (parent != null)
 		{
 			SetLogicExecutorState(EActorState.Carrying);
 
@@ -369,11 +373,12 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 
 		// A new job can be acquired from inside an existing behaviour tree
-		InteractionPoint previousPosition = m_behaviourTreeExecutor.AIContext.GetData<InteractionPoint>( AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint previousPosition = m_behaviourTreeExecutor.AIContext.AssignedInteractionPosition;
 		if (previousPosition != null && previousPosition != m_assignedInteractionPosition)
 			ReleaseInteractionPosition(previousPosition);
 
-		m_behaviourTreeExecutor.AIContext.SetData<Transform>(AIContextKeys.c_TargetTransform, m_targetTransform);
+		var context = m_behaviourTreeExecutor.AIContext;
+		context.TargetTransform = m_targetTransform;
 
 		Vector3 targetDestination = m_targetTransform.position;
 		if (m_assignedInteractionPosition != null &&
@@ -382,8 +387,10 @@ public class Actor : MonoBehaviour, IInteractor
 			targetDestination = validPos;
 		}
 
-		m_behaviourTreeExecutor.AIContext.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetDestination);
-		m_behaviourTreeExecutor.AIContext.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, m_assignedInteractionPosition);
+		context.TargetDestination = targetDestination;
+		context.AssignedInteractionPosition = m_assignedInteractionPosition;
+		m_behaviourTreeExecutor.AIContext = context;
+
 		m_behaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
 		SetLogicExecutorState(EActorState.Working);
 		m_jobAssignedThisTick = true;
@@ -402,8 +409,8 @@ public class Actor : MonoBehaviour, IInteractor
 	{
 		AIContext context = m_behaviourTreeExecutor.AIContext;
 
-		Transform contextTarget = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPoint contextPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
+		Transform contextTarget = context.TargetTransform;
+		InteractionPoint contextPosition = context.AssignedInteractionPosition;
 		if (contextTarget != m_targetTransform)
 		{
 			m_targetTransform = contextTarget;
@@ -422,30 +429,34 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
-	private void ClearJobState() 
-	{ 
-		ReleaseInteractionPosition(m_assignedInteractionPosition); 
-		m_targetInteractable = null; 
-		m_targetTransform = null; 
-		m_assignedInteractionPosition = null; 
-		m_isInvestigating = false; 
-		m_behaviourTreeExecutor.AIContext.ClearData(AIContextKeys.c_AssignedInteractionPosition); 
-		m_timeFindingJob = 0; 
-		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null); 
-		AIPathing.ClearDestination(); 
+	private void ClearJobState()
+	{
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
+		m_targetInteractable = null;
+		m_targetTransform = null;
+		m_assignedInteractionPosition = null;
+		m_isInvestigating = false;
+
+		var context = m_behaviourTreeExecutor.AIContext;
+		context.AssignedInteractionPosition = null;
+		m_behaviourTreeExecutor.AIContext = context;
+
+		m_timeFindingJob = 0;
+		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
+		AIPathing.ClearDestination();
 	}
 
-	private void BeginJobSearch() 
-	{ 
-		ClearJobState(); 
-		SetLogicExecutorState(EActorState.SearchingForWork); 
+	private void BeginJobSearch()
+	{
+		ClearJobState();
+		SetLogicExecutorState(EActorState.SearchingForWork);
 	}
 
-	private void BeginOffDuty() 
-	{ 
-		ClearJobState(); 
-		SetLogicExecutorState(EActorState.OffDuty); 
-		AIPathing.SetStoppingDistance(c_workingDist); 
+	private void BeginOffDuty()
+	{
+		ClearJobState();
+		SetLogicExecutorState(EActorState.OffDuty);
+		AIPathing.SetStoppingDistance(c_workingDist);
 	}
 
 	private void HandleFailedInteraction()

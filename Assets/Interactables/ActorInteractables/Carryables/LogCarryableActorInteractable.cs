@@ -19,6 +19,10 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 
 	protected override int m_minActorsToFunction { get; set; } = 2;
 
+	// IInteractable properties
+	protected override string m_interactPrompt => string.Empty;
+	protected override bool m_hasTrackingDisplayInfo => false;
+
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;
 	[SerializeField] private float m_baseMoveSpeed = 1f;

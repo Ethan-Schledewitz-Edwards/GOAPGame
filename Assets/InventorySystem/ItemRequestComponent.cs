@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Interaction.InteractableStructures
+namespace InventorySystem
 {
 	public class ItemRequestComponent : MonoBehaviour
 	{

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Interaction.InteractableStructures.Blueprints
+namespace Interaction.ActorInteractables.Structures
 {
     public class BlueprintCancelation : MonoBehaviour
     {

@@ -2,8 +2,8 @@
     "name": "Interaction.Actor.Carryable",
     "rootNamespace": "Interaction.Actor.Carryable",
     "references": [
-        "GUID:c16579099a3343e40bd68824edff1224",
         "GUID:034986700f8ed6c499c3c658f56a9386",
+        "GUID:c16579099a3343e40bd68824edff1224",
         "GUID:f5a277d94bd7dc44f8d8d59e8969a2b5",
         "GUID:e928ad11a8e9c0843afaf90f474d01ba",
         "GUID:bbe32f9014a8f6f47993fc4b415cd254",

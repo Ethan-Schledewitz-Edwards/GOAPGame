@@ -7,8 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Interaction.Core;
 
-namespace Interaction.InteractableStructures.Blueprints
+namespace Interaction.ActorInteractables.Structures
 {
 	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
 	public class PlacedBlueprint : BlueprintActorInteractableBase, IBlueprintObject
@@ -24,6 +25,7 @@ namespace Interaction.InteractableStructures.Blueprints
 		private BlueprintCancelation m_cancelBlueprint;
 		private BoxCollider m_boxCollider;
 
+		// IBlueprintObject properties
 		public string m_blueprintDataID;
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
