@@ -1,11 +1,13 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 
 public class MoveToInteractionPositionTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null ||
 			!executorTransform.TryGetComponent(out AIPathing pathing))
 		{
@@ -13,14 +15,14 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		}
 
 		// Recalculate the destination 
-		if (!TryGetDynamicDestination(context, executorTransform, out Vector3 targetDestination))
+		if (!TryGetDynamicDestination(ref context, executorTransform, out Vector3 targetDestination))
 		{
 			Debug.Log($"{executorTransform} could not resolve its interaction destination.", executorTransform);
 			return EBTNodeState.FAILURE;
 		}
 
 		// Keep the context synchronized with the dynamically calculated position.
-		context.SetData<Vector3>(AIContextKeys.c_TargetDestination, targetDestination);
+		context.TargetDestination = targetDestination;
 
 		float arrivalDistance = Mathf.Max(pathing.StoppingDistance, 0.05f);
 
@@ -54,11 +56,11 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		return EBTNodeState.RUNNING;
 	}
 
-	private bool TryGetDynamicDestination(AIContext context, Transform executorTransform, out Vector3 destination)
+	private bool TryGetDynamicDestination(ref AIContext context, Transform executorTransform, out Vector3 destination)
 	{
 		destination = Vector3.zero;
 
-		InteractionPoint assignedPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPosition = context.AssignedInteractionPosition;
 		if (assignedPosition != null)
 		{
 			IInteractor interactor = executorTransform.GetComponent<IInteractor>();
@@ -72,14 +74,14 @@ public class MoveToInteractionPositionTask : BTNodeBase
 		}
 
 		// Fallback to the static destination stored in context.
-		destination = context.GetData<Vector3>(AIContextKeys.c_TargetDestination);
+		destination = context.TargetDestination;
 
 		return true;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 }

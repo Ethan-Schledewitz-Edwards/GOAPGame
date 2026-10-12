@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 
 /// <summary>
@@ -11,9 +13,9 @@ using UnityEngine;
 /// </remarks>
 public class SearchForClosestJobTask : BTNodeBase
 {
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null)
 			return EBTNodeState.FAILURE;
 
@@ -26,7 +28,7 @@ public class SearchForClosestJobTask : BTNodeBase
 		if (closestInteractable != null)
 		{
 			Debug.Log($"[SearchForClosestJobTask]: {executorTransform} found an object to interact with", executorTransform);
-			context.SetData<Transform>(AIContextKeys.c_TargetTransform, closestInteractable.transform);
+			context.TargetTransform = closestInteractable.transform;
 
 			return EBTNodeState.SUCSESS;
 		}
@@ -34,11 +36,11 @@ public class SearchForClosestJobTask : BTNodeBase
 		return EBTNodeState.RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context) { }
+	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(AIContext context) { }
+	protected override void OnNodeReset(ref AIContext context) { }
 
 	/// <summary>
 	/// Searches for an actor interactable object within a radius.
@@ -47,8 +49,8 @@ public class SearchForClosestJobTask : BTNodeBase
 	{
 		ActorInteractableBase closestTask = null;
 
-		float interactionRadius = context.GetData<float>(AIContextKeys.c_JobSearchRange, 1.5f);
-		int interactionLayers = context.GetData<int>(AIContextKeys.c_InteractionLayer);
+		float interactionRadius = context.JobSearchDistance;
+		int interactionLayers = context.InteractionLayer;
 
 		Collider[] hitColliders = Physics.OverlapSphere
 		(

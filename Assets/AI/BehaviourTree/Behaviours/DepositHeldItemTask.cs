@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using InventorySystem;
 using InventorySystem.Items;
 using UnityEngine;
@@ -10,8 +12,6 @@ using UnityEngine;
 /// </summary>
 public class DepositHeldItemTask : BTNodeBase
 {
-	private const string c_InteractionStartedKey = "DepositInteractionStarted";
-
 	private struct DepositData
 	{
 		public Transform ExecutorTransform;
@@ -23,12 +23,12 @@ public class DepositHeldItemTask : BTNodeBase
 		public IInteractor Interactor;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context)
+	protected override void OnFirstEvaluate(ref AIContext context)
 	{
-		context.SetData(c_InteractionStartedKey, false);
+		context.DepositInteractionStarted = false;
 	}
 
-	protected override EBTNodeState OnNodeEvaluated(AIContext context, float t)
+	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
 		if (!TryGetDepositData(context, out DepositData data))
 			return EBTNodeState.FAILURE;
@@ -46,7 +46,7 @@ public class DepositHeldItemTask : BTNodeBase
 			return EBTNodeState.SUCSESS;
 
 		// Begin interaction (convert reservation)
-		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
+		bool interactionStarted = context.DepositInteractionStarted;
 		if (!interactionStarted)
 		{
 			if (!data.Interactable.TryBeginInteraction(data.Interactor, 
@@ -59,7 +59,7 @@ public class DepositHeldItemTask : BTNodeBase
 				return EBTNodeState.FAILURE;
 			}
 
-			context.SetData(c_InteractionStartedKey, true);
+			context.DepositInteractionStarted = true;
 		}
 
 		// Validate space and execute transfer
@@ -81,12 +81,12 @@ public class DepositHeldItemTask : BTNodeBase
 		return EBTNodeState.SUCSESS;
 	}
 
-	protected override void OnNodeExited(AIContext context)
+	protected override void OnNodeExited(ref AIContext context)
 	{
-		Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		InteractionPoint assignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
-		bool interactionStarted = context.GetData<bool>(c_InteractionStartedKey);
+		Transform executorTransform = context.ExecutorTransform;
+		Transform targetTransform = context.TargetTransform;
+		InteractionPoint assignedPos = context.AssignedInteractionPosition;
+		bool interactionStarted = context.DepositInteractionStarted;
 
 		if (executorTransform != null && targetTransform != null && assignedPos != null)
 		{
@@ -111,14 +111,14 @@ public class DepositHeldItemTask : BTNodeBase
 		}
 
 		// Context cleanup
-		context.ClearData(AIContextKeys.c_ReservationCleanup);
-		context.ClearData(AIContextKeys.c_AssignedInteractionPosition);
-		context.ClearData(c_InteractionStartedKey);
+		context.ReservationCleanup = null;
+		context.AssignedInteractionPosition = null;
+		context.DepositInteractionStarted = false;
 	}
 
-	protected override void OnNodeReset(AIContext context)
+	protected override void OnNodeReset(ref AIContext context)
 	{
-		context.ClearData(c_InteractionStartedKey);
+		context.DepositInteractionStarted = false;
 	}
 
 	#region Helper Methods
@@ -127,9 +127,9 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		data = default;
 
-		data.ExecutorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
-		data.TargetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
-		data.AssignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
+		data.ExecutorTransform = context.ExecutorTransform;
+		data.TargetTransform = context.TargetTransform;
+		data.AssignedPos = context.AssignedInteractionPosition;
 
 		if (data.ExecutorTransform == null || data.TargetTransform == null || data.AssignedPos == null)
 			return false;

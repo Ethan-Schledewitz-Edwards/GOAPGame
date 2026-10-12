@@ -40,7 +40,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 
 		// Reuse an existing valid position if it already belongs to the current target. 
 		// Otherwise, attempt to reserve a fresh position.
-		InteractionPoint assignedPosition = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
+		InteractionPoint assignedPosition = context.AssignedInteractionPosition;
 		if (assignedPosition != null && interactable.HasInteractionPosition(assignedPosition))
 		{
 			if (!assignedPosition.TryGetInteractionPosition(interactor, out Vector3 existingDestination))
@@ -52,7 +52,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 
 			Debug.Log("[ReserveInteractionPositionTask] Sucseeded: Retrieved an " +
 					"existing interaction position from the behaviour tree.", targetTransform);
-			context.SetData<Vector3>(AIContextKeys.c_TargetDestination, existingDestination);
+			context.TargetDestination = existingDestination;
 			return EBTNodeState.SUCSESS;
 		}
 
@@ -71,7 +71,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 		}
 
-		context.SetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition, assignedPosition);
+		context.AssignedInteractionPosition = assignedPosition;
 
 		// Register a cleanup delegate to cancel the reservation if the behavior tree aborts.
 		System.Action cleanup = () =>
@@ -81,8 +81,8 @@ public class ReserveInteractionPositionTask : BTNodeBase
 				interactable.CancelReservation(interactor, assignedPosition);
 			}
 		};
-		context.SetData<System.Action>(AIContextKeys.c_ReservationCleanup, cleanup);
-		context.SetData<Vector3>(AIContextKeys.c_TargetDestination, validDestination);
+		context.ReservationCleanup = cleanup;
+		context.TargetDestination = validDestination;
 
 		Debug.Log("[ReserveInteractionPositionTask] Sucseeded: Found a new " +
 			"interaction position and a valid movement destination.", targetTransform);

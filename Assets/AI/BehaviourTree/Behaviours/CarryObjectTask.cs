@@ -1,4 +1,6 @@
+using AI.AIContext;
 using BehaviourTrees;
+using Interaction.Core;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,8 +12,6 @@ using UnityEngine.AI;
 /// </remarks>
 public class CarryObjectTask : BTNodeBase
 {
-	private const string c_IsCarryingKey = "IsCarryingState";
-
 	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
 		Transform executorTransform = context.ExecutorTransform;
@@ -29,9 +29,9 @@ public class CarryObjectTask : BTNodeBase
 		ActorInteractableBase interactable = targetTransform.GetComponentInParent<ActorInteractableBase>();
 		InteractionPoint assignedPos = context.AssignedInteractionPosition;
 
-		if (context.GetData<bool>(c_IsCarryingKey, false) == false)
+		if (context.IsCarryingObject == false)
 		{
-			context.SetData(c_IsCarryingKey, true);
+			context.IsCarryingObject = true;
 
 			// Snap into calculated formation position
 			if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 formationWorldPos))
@@ -43,15 +43,15 @@ public class CarryObjectTask : BTNodeBase
 		return EBTNodeState.RUNNING;
 	}
 
-	protected override void OnFirstEvaluate(AIContext context) { }
+	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(AIContext context)
+	protected override void OnNodeExited(ref AIContext context)
 	{
-		if (context.GetData<bool>(c_IsCarryingKey, false) != false)
+		if (context.IsCarryingObject)
 		{
-			context.ClearData(c_IsCarryingKey);
+			context.IsCarryingObject = false;
 
-			Transform executorTransform = context.GetData<Transform>(AIContextKeys.c_ExecutorTransform);
+			Transform executorTransform = context.ExecutorTransform;
 			if (executorTransform != null)
 			{
 				// Unparent the executor
@@ -64,8 +64,8 @@ public class CarryObjectTask : BTNodeBase
 					rb.isKinematic = false;
 
 				IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-				InteractionPoint assignedPos = context.GetData<InteractionPoint>(AIContextKeys.c_AssignedInteractionPosition);
-				Transform targetTransform = context.GetData<Transform>(AIContextKeys.c_TargetTransform);
+				InteractionPoint assignedPos = context.AssignedInteractionPosition;
+				Transform targetTransform = context.TargetTransform;
 
 				if (interactor != null && assignedPos != null && targetTransform != null)
 				{
@@ -79,8 +79,8 @@ public class CarryObjectTask : BTNodeBase
 		}
 	}
 
-	protected override void OnNodeReset(AIContext context)
+	protected override void OnNodeReset(ref AIContext context)
 	{
-		OnNodeExited(context);
+		OnNodeExited(ref context);
 	}
 }

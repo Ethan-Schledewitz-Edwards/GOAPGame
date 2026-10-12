@@ -29,16 +29,14 @@ public class FindItemOfTagTask : BTNodeBase
 
 	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
-		List<ItemTag> itemTags = context.GetData<List<ItemTag>>(c_ItemTagsKey);
-
-		if (itemTags == null || itemTags.Count == 0)
+		if (context.CachedResolvedItemTags == null || context.CachedResolvedItemTags.Length == 0)
 			return EBTNodeState.FAILURE;
 
 		Transform executorTransform = context.ExecutorTransform;
 		if (executorTransform == null || !executorTransform.TryGetComponent(out IInteractor interactor))
 			return EBTNodeState.FAILURE;
 
-		Transform targetItemTransform = FindItemOfTags(executorTransform, interactor, itemTags.ToArray());
+		Transform targetItemTransform = FindItemOfTags(executorTransform, interactor, context.CachedResolvedItemTags);
 
 		if (targetItemTransform == null)
 			return EBTNodeState.RUNNING;
@@ -46,12 +44,9 @@ public class FindItemOfTagTask : BTNodeBase
 		// The subsequent ReserveInteractionPositionTask handles reservation and cleanup.
 		context.TargetTransform = targetItemTransform;
 
-		// Clean up temporary context data on success
-		foreach (ItemTag tag in itemTags)
-		{
-			context.ClearData(AIContextKeys.c_ItemTagFilterPrefix + tag.ID);
-		}
-		context.ClearData(c_ItemTagsKey);
+		// Clean up data on success
+		context.ItemTagFilters = null;
+		context.CachedResolvedItemTags = null;
 
 		return EBTNodeState.SUCSESS;
 	}
@@ -69,7 +64,7 @@ public class FindItemOfTagTask : BTNodeBase
 		for (int i = 0; i < hitColliders.Length; i++)
 		{
 			Collider col = hitColliders[i];
-			if (col == null) 
+			if (col == null)
 				continue;
 
 			GameObject entity = col.gameObject;
@@ -106,30 +101,33 @@ public class FindItemOfTagTask : BTNodeBase
 	/// </summary>
 	protected override void OnFirstEvaluate(ref AIContext context)
 	{
-		List<ItemTag> itemTags = new List<ItemTag>();
-		foreach (string key in context.GetDataSet().Keys)
+		if (context.ItemTagFilters == null || context.ItemTagFilters.Length == 0)
 		{
-			if(!key.StartsWith(AIContextKeys.c_ItemTagFilterPrefix))
-			continue;
+			context.CachedResolvedItemTags = null;
+			return;
+		}
 
-			// Extract the string remaining after the prefix
-			string tagKey = key.Substring(AIContextKeys.c_ItemTagFilterPrefix.Length);
+		List<ItemTag> resolvedTags = new List<ItemTag>();
+		foreach (string tagKey in context.ItemTagFilters)
+		{
+			if (string.IsNullOrEmpty(tagKey))
+				continue;
 
 			ItemTag tag = IndexRegistry.GetAsset<ItemTag>(tagKey);
 			if (tag != null)
-				itemTags.Add(tag);
+				resolvedTags.Add(tag);
 		}
 
-		context.SetData<List<ItemTag>>(c_ItemTagsKey, itemTags);
+		context.CachedResolvedItemTags = resolvedTags.ToArray();
 	}
 
 	protected override void OnNodeExited(ref AIContext context)
 	{
-		context.ClearData(c_ItemTagsKey);
+		context.CachedResolvedItemTags = null;
 	}
 
 	protected override void OnNodeReset(ref AIContext context)
 	{
-		context.ClearData(c_ItemTagsKey);
+		context.CachedResolvedItemTags = null;
 	}
 }

@@ -1,4 +1,5 @@
 using Interaction.Core;
+using ObjectTags;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,9 +24,13 @@ namespace AI.AIContext
 		public LayerMask InteractionLayer;
 		public InteractionPoint AssignedInteractionPosition;
 
+		// Carrying
+		public bool IsCarryingObject;
+
 		// Inventory
 		public string HeldItemID;
 		public string ItemToFindID;
+		public bool DepositInteractionStarted;
 
 		// Structures
 		public int StructureSettlementID;
@@ -33,6 +38,7 @@ namespace AI.AIContext
 
 		// Filters
 		public string[] ItemTagFilters;
+		public ItemTag[] CachedResolvedItemTags;
 
 		// Cleanup
 		public System.Action ReservationCleanup;
