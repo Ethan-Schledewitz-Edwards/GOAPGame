@@ -2,51 +2,54 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class MenuButton : MonoBehaviour, IPointerEnterHandler, ISelectHandler
+namespace UISystem.Core
 {
-	[field: Header("Sounds")]
-	[SerializeField] private AudioClip m_hoverButton;
-	[SerializeField] private AudioClip m_pressButton;
-
-	[field: Header("Properties")]
-
-	[SerializeField, Tooltip("Plays sounds even if the button is not interactable.")]
-	private bool m_forceSounds;
-
-	// System
-	protected Button m_pairedButton;
-	protected Menu m_parentMenu;
-
-	private void Awake()
+	[RequireComponent(typeof(Button))]
+	public class MenuButton : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 	{
-		m_pairedButton = GetComponent<Button>();
-	}
+		[field: Header("Sounds")]
+		[SerializeField] private AudioClip m_hoverButton;
+		[SerializeField] private AudioClip m_pressButton;
 
-	public void InitButton(Menu menu)
-	{
-		m_parentMenu = menu;
-		m_pairedButton = GetComponent<Button>();
-		m_pairedButton.onClick.AddListener(ButtonClicked);
-	}
+		[field: Header("Properties")]
 
-	public void OnPointerEnter(PointerEventData eventData)
-	{
-		PlaySound(m_hoverButton);
-	}
+		[SerializeField, Tooltip("Plays sounds even if the button is not interactable.")]
+		private bool m_forceSounds;
 
-	public void OnSelect(BaseEventData eventData)
-	{
-		PlaySound(m_pressButton);
-	}
+		// System
+		protected Button m_pairedButton;
+		protected Menu m_parentMenu;
 
-	private void PlaySound(AudioClip clip)
-	{
-		if (clip != null && isActiveAndEnabled && (m_forceSounds || m_pairedButton.interactable))
+		private void Awake()
 		{
-			MenuManager.AudioSource.PlayOneShot(clip);
+			m_pairedButton = GetComponent<Button>();
 		}
-	}
 
-	protected virtual void ButtonClicked(){}
+		public void InitButton(Menu menu)
+		{
+			m_parentMenu = menu;
+			m_pairedButton = GetComponent<Button>();
+			m_pairedButton.onClick.AddListener(ButtonClicked);
+		}
+
+		public void OnPointerEnter(PointerEventData eventData)
+		{
+			PlaySound(m_hoverButton);
+		}
+
+		public void OnSelect(BaseEventData eventData)
+		{
+			PlaySound(m_pressButton);
+		}
+
+		private void PlaySound(AudioClip clip)
+		{
+			if (clip != null && isActiveAndEnabled && (m_forceSounds || m_pairedButton.interactable))
+			{
+				MenuManager.AudioSource.PlayOneShot(clip);
+			}
+		}
+
+		protected virtual void ButtonClicked() { }
+	}
 }

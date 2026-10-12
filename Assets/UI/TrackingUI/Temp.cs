@@ -1,12 +1,10 @@
 using Interaction.Player;
 
-public class Temp : PlayerInteractableBase<Temp>
+public class Temp : PlayerInteractableBase
 {
-	public override bool HasDisplayInfo => false;
+	protected override string m_interactPrompt => "Tracking UI Test";
 
-	public override bool CanPlayerInteract => true;
-
-	public override string InteractPrompt => "Tracking UI Test";
+	protected override bool m_hasTrackingDisplayInfo => false;
 
 	public void Update()
 	{

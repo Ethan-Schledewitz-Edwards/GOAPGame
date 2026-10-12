@@ -9,6 +9,10 @@ public class EnemyInteractable : ActorInteractableBase
 
 	protected override int m_minActorsToFunction { get; set; } = 0;
 
+	protected override string m_interactPrompt => string.Empty;
+
+	protected override bool m_hasTrackingDisplayInfo => false;
+
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 	static void Init()
 	{

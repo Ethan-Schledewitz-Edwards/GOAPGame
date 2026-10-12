@@ -1,7 +1,8 @@
 using UnityEngine;
-using Interaction.Player;
+using Interaction.Core;
 using System.Collections.Generic;
 using System;
+using Interaction.Player;
 
 namespace Player.Core
 {
@@ -14,18 +15,18 @@ namespace Player.Core
 		[SerializeField] private LayerMask m_interactionLayer;
 
 		// Display Range Events
-		public event Action<PlayerInteractableBase> NewInteractableInDisplayRange;
-		public event Action<PlayerInteractableBase> InteractableOutOfRange;
+		public event Action<IInteractable> NewInteractableInDisplayRange;
+		public event Action<IInteractable> InteractableOutOfRange;
 
 		// Interaction Events
 		public event Action<string, Vector3> ClosestInteractableUpdated;
 		public event Action ClosestInteractableCleared;
 
-		private PlayerInteractableBase m_closestInteractable;
+		private IInteractable m_closestInteractable;
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
-		private HashSet<PlayerInteractableBase> m_previousInteractables = new HashSet<PlayerInteractableBase>();
-		private HashSet<PlayerInteractableBase> m_currentInteractables = new HashSet<PlayerInteractableBase>();
+		private HashSet<IInteractable> m_previousInteractables = new HashSet<IInteractable>();
+		private HashSet<IInteractable> m_currentInteractables = new HashSet<IInteractable>();
 
 		public void Subscribe()
 		{
@@ -46,25 +47,26 @@ namespace Player.Core
 		{
 			int hitCount = Physics.OverlapSphereNonAlloc(transform.position, c_displayRange, m_colliderBuffer, m_interactionLayer);
 
-			PlayerInteractableBase closestInteractable = null;
+			IInteractable closestInteractable = null;
 			float minSqrDistance = c_interactionRange * c_interactionRange;
 
 			for (int i = 0; i < hitCount; i++)
 			{
 				Collider col = m_colliderBuffer[i];
 
-				if (col.TryGetComponent(out PlayerInteractableBase interactable))
+				if (col.TryGetComponent(out IInteractable interactable))
 				{
 					m_currentInteractables.Add(interactable);
 
 					// New interactable within display range
-					if (interactable.HasDisplayInfo && 
+					if (interactable.HasTrackingDisplayInfo &&
 						!m_previousInteractables.Contains(interactable))
 					{
 						NewInteractableInDisplayRange?.Invoke(interactable);
 					}
 
-					if (!interactable.CanPlayerInteract)
+					// Only PlayerInteractables allow direct player interactions & prompts
+					if (interactable is not PlayerInteractableBase)
 						continue;
 
 					// Calculate distance for interaction prompt
@@ -78,9 +80,9 @@ namespace Player.Core
 			}
 
 			// Find interactables that left display range
-			foreach (PlayerInteractableBase prevInteractable in m_previousInteractables)
+			foreach (IInteractable prevInteractable in m_previousInteractables)
 			{
-				if (prevInteractable != null && 
+				if (prevInteractable != null &&
 					!m_currentInteractables.Contains(prevInteractable))
 				{
 					InteractableOutOfRange?.Invoke(prevInteractable);
@@ -94,23 +96,26 @@ namespace Player.Core
 					ClearInteractable();
 
 				if (closestInteractable != null)
-					SetInteractable(closestInteractable);
+					SetInteractable(closestInteractable as PlayerInteractableBase);
 			}
 
 			// Double buffering swap
-			HashSet<PlayerInteractableBase> temp = m_previousInteractables;
+			HashSet<IInteractable> temp = m_previousInteractables;
 			m_previousInteractables = m_currentInteractables;
 			m_currentInteractables = temp;
 			m_currentInteractables.Clear();
 		}
 
-		private void SetInteractable(PlayerInteractableBase interactable)
+		private void SetInteractable(PlayerInteractableBase playerInteractable)
 		{
-			if (interactable != null)
+			if (playerInteractable != null)
 			{
-				m_closestInteractable = interactable;
-				Vector3 promptPosition = interactable.Transform.position + interactable.LocalPromptOffset;
-				ClosestInteractableUpdated?.Invoke(interactable.InteractPrompt, promptPosition);
+				m_closestInteractable = playerInteractable;
+
+				Vector3 promptPosition = playerInteractable.transform.position +
+					playerInteractable.LocalPromptOffset;
+
+				ClosestInteractableUpdated?.Invoke(playerInteractable.InteractPrompt, promptPosition);
 			}
 		}
 

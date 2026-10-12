@@ -14,6 +14,7 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 
 	protected override void Start()
 	{
+		// Dont call base since this uses a different implementation
 		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
 		if (m_playerInteraction != null)
 		{
@@ -75,7 +76,7 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 
 	protected override void InitializeUI(Temp interactable, InteractPromptTrackingUIElement uiElement)
 	{
-		Debug.Log("SEt interact prompt");
+		Debug.Log("Set interact prompt");
 
 		uiElement.SetPromptText(interactable.InteractPrompt);
 	}

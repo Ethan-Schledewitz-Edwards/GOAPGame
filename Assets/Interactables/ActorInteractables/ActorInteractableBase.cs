@@ -8,6 +8,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	[Header("Settings")]
 	protected abstract int m_minActorsToFunction { get; set; }
 
+	// IInteractable properties
 	public string InteractPrompt => m_interactPrompt;
 	protected abstract string m_interactPrompt { get; }
 
@@ -16,6 +17,9 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 	public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
 	protected abstract bool m_hasTrackingDisplayInfo { get; }
+
+	public Transform InteractableTransform => transform;
+
 
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPoint[] m_interactPositions;

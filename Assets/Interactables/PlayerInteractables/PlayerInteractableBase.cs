@@ -6,6 +6,7 @@ namespace Interaction.Player
 {
 	public abstract class PlayerInteractableBase : MonoBehaviour, IInteractable
 	{
+		// IInteractable properties
 		public string InteractPrompt => m_interactPrompt;
 		protected abstract string m_interactPrompt { get; }
 
@@ -14,6 +15,8 @@ namespace Interaction.Player
 
 		public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
 		protected abstract bool m_hasTrackingDisplayInfo { get; }
+
+		public Transform InteractableTransform => transform;
 
 		public event Action InteractableDestroyed;
 		public event Action OnInfoUpdated;

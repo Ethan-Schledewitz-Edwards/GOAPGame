@@ -8,6 +8,7 @@ namespace Interaction.Core
 		public string InteractPrompt { get; }
 		public Vector3 LocalPromptOffset { get; }
 		public bool HasTrackingDisplayInfo { get; }
+		public Transform InteractableTransform { get; }
 
 		public event Action OnInfoUpdated;
 		public event Action InteractableDestroyed;

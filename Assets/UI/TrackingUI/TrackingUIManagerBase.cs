@@ -1,10 +1,10 @@
-using Interaction.Player;
 using Player.Core;
 using System.Collections.Generic;
 using UnityEngine;
+using Interaction.Core;
 
 public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBehaviour
-	where TInteractable : PlayerInteractableBase<TInteractable>
+	where TInteractable : class, IInteractable
 	where TUIElement : TrackingUIElementBase
 {
 	protected PlayerInteractionController m_playerInteraction;
@@ -29,56 +29,52 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 			m_playerInteraction.InteractableOutOfRange -= HandleInteractableOutOfRange;
 		}
 
-		// Cleanup subscriptions
+		// Cleanup subscriptions and active elements
 		foreach (var kvp in m_activeElements)
 		{
 			if (kvp.Key != null)
 			{
-				kvp.Key.OnInfoUpdated -= HandleInfoUpdated;
-				kvp.Key.InteractableDestroyed -= HandleInteractableDestroyed;
+				CleanupInteractableSubscriptions(kvp.Key);
 			}
 		}
 		m_activeElements.Clear();
 	}
 
-	private void HandleInteractableInRange(IPlayerInteractable playerInteractable)
+	private void HandleInteractableInRange(IInteractable interactable)
 	{
-		if (playerInteractable is TInteractable interactable)
+		if (interactable is TInteractable typedInteractable && typedInteractable.HasTrackingDisplayInfo)
 		{
-			if (!m_activeElements.ContainsKey(interactable))
+			if (!m_activeElements.ContainsKey(typedInteractable))
 			{
-				TUIElement uiElement = GetUIElement(interactable);
+				TUIElement uiElement = GetUIElement(typedInteractable);
 				if (uiElement != null)
 				{
-					m_activeElements.Add(interactable, uiElement);
+					m_activeElements.Add(typedInteractable, uiElement);
 					uiElement.ElementReleased();
 
-					// Subscribe to the interactable's updates
-					interactable.OnInfoUpdated += HandleInfoUpdated;
-					interactable.InteractableDestroyed += HandleInteractableDestroyed;
+					// Subscribe to updates specific to this interactable type
+					RegisterInteractableSubscriptions(typedInteractable);
 
 					// Setup initial position and initialize visuals
-					UpdateElementPosition(interactable, uiElement);
-					InitializeUI(interactable, uiElement);
+					UpdateElementPosition(typedInteractable, uiElement);
+					InitializeUI(typedInteractable, uiElement);
 				}
 			}
 		}
 	}
 
-	private void HandleInteractableOutOfRange(IPlayerInteractable interactable)
+	private void HandleInteractableOutOfRange(IInteractable interactable)
 	{
 		if (interactable is TInteractable typedInteractable)
 		{
 			if (m_activeElements.TryGetValue(typedInteractable, out TUIElement uiElement))
 			{
-				// Unsubscribe from the interactable
-				typedInteractable.OnInfoUpdated -= HandleInfoUpdated;
-				typedInteractable.InteractableDestroyed -= HandleInteractableDestroyed;
+				CleanupInteractableSubscriptions(typedInteractable);
 
 				uiElement.ResetDynamicPosition();
 				uiElement.ElementReturned();
 
-				// Allow  implementation to pool or destroy the UI element
+				// Allow implementation to pool or destroy the UI element
 				ReleaseUIElement(uiElement);
 
 				m_activeElements.Remove(typedInteractable);
@@ -86,31 +82,31 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 		}
 	}
 
-	private void HandleInfoUpdated(TInteractable interactable)
+	protected void RefreshElement(TInteractable interactable, TUIElement uiElement)
 	{
-		if (m_activeElements.TryGetValue(interactable, out TUIElement uiElement))
-		{
-			// Refresh position and UI data
-			UpdateElementPosition(interactable, uiElement);
-			UpdateUI(interactable, uiElement);
-		}
-	}
-
-	private void HandleInteractableDestroyed(TInteractable interactable)
-	{
-		if (m_activeElements.TryGetValue(interactable, out TUIElement uiElement))
-		{
-			// Refresh position and UI data
-			UpdateElementPosition(interactable, uiElement);
-			UpdateUI(interactable, uiElement);
-		}
+		UpdateElementPosition(interactable, uiElement);
+		UpdateUI(interactable, uiElement);
 	}
 
 	private void UpdateElementPosition(TInteractable interactable, TUIElement uiElement)
 	{
-		Vector3 targetPosition = interactable.Transform.position + interactable.LocalPromptOffset;
-		uiElement.SetTrackingPosition(targetPosition);
+		if (interactable.InteractableTransform != null)
+		{
+			// Fallback or local offset handling if applicable
+			Vector3 targetPosition = interactable.InteractableTransform.position;
+			uiElement.SetTrackingPosition(targetPosition);
+		}
 	}
+
+	/// <summary>
+	/// Override to subscribe to any custom update events provided by your specific interactable type.
+	/// </summary>
+	protected virtual void RegisterInteractableSubscriptions(TInteractable interactable) { }
+
+	/// <summary>
+	/// Override to unsubscribe from custom update events.
+	/// </summary>
+	protected virtual void CleanupInteractableSubscriptions(TInteractable interactable) { }
 
 	/// <summary>
 	/// Supply a UI element for the given interactable (e.g., pull from an Object Pool or Instantiate).
@@ -128,7 +124,7 @@ public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBeh
 	protected abstract void InitializeUI(TInteractable interactable, TUIElement uiElement);
 
 	/// <summary>
-	/// Called whenever the interactable fires UpdateInteractableInfo() to refresh dynamic data.
+	/// Called to refresh dynamic data.
 	/// </summary>
 	protected abstract void UpdateUI(TInteractable interactable, TUIElement uiElement);
 }

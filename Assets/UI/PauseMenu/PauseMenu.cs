@@ -1,3 +1,4 @@
+using UISystem.Core;
 using UnityEngine;
 
 public class PauseMenu : Menu
