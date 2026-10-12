@@ -99,10 +99,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5153396709130352550}
+  - component: {fileID: 5246923973207773039}
+  - component: {fileID: 2461797574714936175}
   - component: {fileID: 6069415673470048647}
   - component: {fileID: 5030504748117166773}
-  - component: {fileID: 5246923973207773039}
-  - component: {fileID: 8089288841027459147}
   m_Layer: 7
   m_Name: Stone_Item
   m_TagString: Untagged
@@ -126,6 +126,42 @@ Transform:
   - {fileID: 3532606945759420174}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5246923973207773039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ee7280d318408840b56e615dcf45a57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  m_localPromptOffset: {x: 0, y: 0, z: 0}
+  m_interactPositions:
+  - {fileID: 2461797574714936175}
+  m_itemData: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
+  m_stackSize: 1
+--- !u!114 &2461797574714936175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673996059420899831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Core::Interaction.Core.InteractionPoint
+  m_settings:
+    LocalOffset: {x: 0, y: 0, z: 0}
+    MaxInteractors: 1
+    UseFormationRadius: 0
+    FormationRadius: 0
+    RequiresReservation: 1
+    InteractionDistance: 0.3
 --- !u!65 &6069415673470048647
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -174,39 +210,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &5246923973207773039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6673996059420899831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ee7280d318408840b56e615dcf45a57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  m_minActorsNeededToOperate: 1
-  m_interactPositions:
-  - {fileID: 8089288841027459147}
-  m_itemData: {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
-  m_stackSize: 1
---- !u!114 &8089288841027459147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6673996059420899831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Interaction::InteractionPosition
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 1
-    FormationRadius: 1.5
-    RequiresReservation: 1
-    InteractionDistance: 0.3

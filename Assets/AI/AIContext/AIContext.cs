@@ -48,5 +48,4 @@ namespace AI.AIContext
 			this = new AIContext();
 		}
 	}
-
 }
