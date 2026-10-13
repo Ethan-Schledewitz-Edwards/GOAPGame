@@ -105,11 +105,6 @@ namespace Interaction.Core
 			return true;
 		}
 
-		public void StopInteract(IInteractor interactor)
-		{
-			TryRemoveInteractor(interactor);
-		}
-
 		public void TryRemoveInteractor(IInteractor interactor)
 		{
 			if (m_interactorsPresent.Contains(interactor))

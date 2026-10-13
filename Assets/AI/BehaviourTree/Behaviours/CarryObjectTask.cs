@@ -26,9 +26,7 @@ public class CarryObjectTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.FAILURE;
 
-		ActorInteractableBase interactable = targetTransform.GetComponentInParent<ActorInteractableBase>();
 		InteractionPoint assignedPos = context.AssignedInteractionPosition;
-
 		if (context.IsCarryingObject == false)
 		{
 			context.IsCarryingObject = true;

@@ -12,13 +12,13 @@ using AI.AIContext;
 [RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing))]
 public class Actor : MonoBehaviour, IInteractor
 {
+	public const float c_JobSearchRange = 1.5f;
 	private const float c_waitingForJobLimit = 2.0f;
 	private const float c_followDist = 1.2f;
 	private const float c_workingDist = 0.3f;
 	private const float c_followSpeed = 7.2f;
 	private const float c_workingSpeed = 5.8f;
 	private const float c_offDutySpeed = 2f;
-	private const float c_searchForJobRange = 1.5f;
 	private const float c_searchForJobStoppingDistance = 0.25f;
 	private const float c_jobSearchCooldownDuration = 2.0f;
 
@@ -79,8 +79,9 @@ public class Actor : MonoBehaviour, IInteractor
 	// Components
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public AIPathing AIPathing { get; private set; }
-
 	private Collider m_collider;
+
+	// IInteractorProperties
 	public Transform Transform => gameObject.transform;
 
 	// Executors
@@ -90,16 +91,12 @@ public class Actor : MonoBehaviour, IInteractor
 	// Events
 	public event Action<int> OnSettlementUpdated;
 
-	// System Properties
-	public float JobSearchRange => c_searchForJobRange;
-	public int SettlementID { get; private set; } = 0; // Settlement ID actor inhabits
-
 	// Internal State
 	public EActorState LogicExecutorState { get; private set; } = default;
 
 	private float m_timeFindingJob;
 	private float m_jobSearchCooldown = 0f;
-	private bool m_isInvestigating; // NOTE: I assume this is an unused feature? It can never be set to true and should be removed.
+	private bool m_isInvestigatingPositionForJob;
 	private bool m_jobAssignedThisTick;
 
 	private Transform m_targetTransform;
@@ -156,13 +153,13 @@ public class Actor : MonoBehaviour, IInteractor
 		AIPathing?.TickAIPathing();
 
 		// Prevent job acquisition until the investigation destination has been reached.
-		if (m_isInvestigating)
+		if (m_isInvestigatingPositionForJob)
 		{
 			if (!AIPathing.HasReachedDestination(c_searchForJobStoppingDistance))
 				return;
 
 			// Resume job searching
-			m_isInvestigating = false;
+			m_isInvestigatingPositionForJob = false;
 			AIPathing.ClearDestination();
 		}
 
@@ -276,7 +273,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 	public void InvestigatePosition(Vector3 destination)
 	{
-		m_isInvestigating = true;
+		m_isInvestigatingPositionForJob = true;
 		m_targetTransform = null;
 		BeginJobSearch();
 		AIPathing.SetDestination(destination);
@@ -311,7 +308,7 @@ public class Actor : MonoBehaviour, IInteractor
 				HandleFailedInteraction();
 				return;
 			}
-
+			Debug.Log("OH DEAR");
 			if (willReplaceJob)
 			{
 				m_targetTransform = actorInteractable.transform;
@@ -424,7 +421,7 @@ public class Actor : MonoBehaviour, IInteractor
 		m_targetInteractable = null;
 		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
-		m_isInvestigating = false;
+		m_isInvestigatingPositionForJob = false;
 
 		var context = m_behaviourTreeExecutor.AIContext;
 		context.AssignedInteractionPosition = null;
@@ -480,7 +477,7 @@ public class Actor : MonoBehaviour, IInteractor
 		ActorInteractableBase closestTask = null;
 
 		Vector3 pos = transform.position;
-		Collider[] hitColliders = Physics.OverlapSphere(pos, c_searchForJobRange, m_interactionLayers, QueryTriggerInteraction.Collide);
+		Collider[] hitColliders = Physics.OverlapSphere(pos, c_JobSearchRange, m_interactionLayers, QueryTriggerInteraction.Collide);
 
 		float closestDist = Mathf.Infinity;
 		foreach (Collider i in hitColliders)

@@ -109,21 +109,21 @@ public class ActorStrategyBuilder : MonoBehaviour
 
 	public void UpdateHouse(int structureID)
 	{
-		int settlementID = m_actor.SettlementID;
-		Vector3 housePos = SettlementManager.s_WorldSettlements[settlementID].SettlementStructures[structureID].Object.transform.position;
+		//int settlementID = m_actor.SettlementID;
+		//Vector3 housePos = SettlementManager.s_WorldSettlements[settlementID].SettlementStructures[structureID].Object.transform.position;
 
-		HashSet<AgentAction> actions = new HashSet<AgentAction>();
-		actions.Add(new AgentAction.ActionBuilder("MoveToHouse")
-			.BuildWithStrategy(new MoveStrategy(m_goapAgent, () => housePos))
-			.AddEffect(m_goapAgent.Beliefs["ActorAtHouse"])
-			.Build());
-		m_goapAgent.UpdateActions(actions);
+		//HashSet<AgentAction> actions = new HashSet<AgentAction>();
+		//actions.Add(new AgentAction.ActionBuilder("MoveToHouse")
+		//	.BuildWithStrategy(new MoveStrategy(m_goapAgent, () => housePos))
+		//	.AddEffect(m_goapAgent.Beliefs["ActorAtHouse"])
+		//	.Build());
+		//m_goapAgent.UpdateActions(actions);
 
 
-		Dictionary<string, AgentBelief> beliefs = new Dictionary<string, AgentBelief>();
-		BeliefFactory beliefFactory = new BeliefFactory(m_goapAgent, beliefs);
-		beliefFactory.AddPosBelief("ActorAtHome", 3f, housePos);
-		m_goapAgent.UpdateBeliefs(beliefs);
+		//Dictionary<string, AgentBelief> beliefs = new Dictionary<string, AgentBelief>();
+		//BeliefFactory beliefFactory = new BeliefFactory(m_goapAgent, beliefs);
+		//beliefFactory.AddPosBelief("ActorAtHome", 3f, housePos);
+		//m_goapAgent.UpdateBeliefs(beliefs);
 	}
 
 	public void SeekFood()
