@@ -69,21 +69,6 @@ namespace Interaction.ActorInteractables.Structures
 			m_inventoryComponent.InitializeInventory(blueprintData.RequiredItems.Length);
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
 
-			SetBlueprintMesh(blueprintData.BlueprintMesh);
-			for (int i = 0; i < blueprintData.InteractionPositions.Length; i++)
-			{
-				var interactionPositionSettings = blueprintData.InteractionPositions[i];
-
-				GameObject interactionObj = new GameObject($"InteractionPosition_{i}");
-				interactionObj.transform.SetParent(transform, false);
-				interactionObj.transform.localPosition = interactionPositionSettings.LocalOffset;
-				interactionObj.transform.localRotation = Quaternion.identity;
-
-				// Configure the position using the values from the struct
-				InteractionPoint interactionComp = interactionObj.AddComponent<InteractionPoint>();
-				interactionComp.m_settings = interactionPositionSettings;
-			}
-
 			transform.position = position;
 			transform.rotation = rotation;
 
@@ -123,17 +108,6 @@ namespace Interaction.ActorInteractables.Structures
 			}
 
 			BlueprintCanceled?.Invoke(this);
-		}
-
-		private void SetBlueprintMesh(Mesh blueprintMesh)
-		{
-			m_meshFilter.mesh = blueprintMesh;
-			m_meshRenderer.material = m_blueprintMaterial;
-
-			// Adjust the blueprint's box collider to match the mesh
-			Bounds meshBounds = blueprintMesh.bounds;
-			m_boxCollider.size = meshBounds.size;
-			m_boxCollider.center = Vector3.up * meshBounds.extents.y;
 		}
 
 		public override void LostMinimumActors() { }

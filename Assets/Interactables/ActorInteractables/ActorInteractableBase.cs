@@ -56,7 +56,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		{
 			InteractionPoint position = m_interactPositions[i];
 
-			if (position == null || !position.HasAvailableCapacity)
+			if (position == null || !position.HasAvailableCapacity())
 				continue;
 
 			float distanceSqr =
@@ -175,7 +175,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		{
 			InteractionPoint position = m_interactPositions[i];
 
-			if (position != null && position.HasAvailableCapacity)
+			if (position != null && position.HasAvailableCapacity())
 				return false;
 		}
 

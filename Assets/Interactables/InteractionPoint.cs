@@ -5,7 +5,14 @@ namespace Interaction.Core
 {
 	public class InteractionPoint : MonoBehaviour
 	{
-		[SerializeField] public InteractionPositionSettings m_settings;
+		[Tooltip("If 0, there is no limit on the number of interactors.")]
+		public int MaxInteractors { get; private set; } = 1;
+
+		[Tooltip("If greater than 0, actors will use this value when forming a formation. If 0, actors will not encircle this interaction point.")]
+		public float FormationRadius { get; private set; } = 1.5f;
+
+		[Tooltip("Determines how close an actor must be to the interaction point to begin interacting.")]
+		public float InteractionDistance { get; private set; } = 0.3f;
 
 		private List<IInteractor> m_interactorsPresent = new();
 		private List<IInteractor> m_reservedInteractors = new();
@@ -17,34 +24,16 @@ namespace Interaction.Core
 		public int TotalOccupiedOrReserved =>
 			m_interactorsPresent.Count + m_reservedInteractors.Count;
 
-		/// <summary>
-		/// For non-reserved positions there is never a capacity restriction.
-		/// For reserved positions, capacity includes both active and reserved actors.
-		/// </summary>
-		public bool HasAvailableCapacity =>
-			!m_settings.RequiresReservation ||
-			TotalOccupiedOrReserved < m_settings.MaxInteractors;
-
 		private void Awake()
 		{
-			m_interactorsPresent = new List<IInteractor>(m_settings.MaxInteractors);
-			m_reservedInteractors = new List<IInteractor>(m_settings.MaxInteractors);
+			m_interactorsPresent = new List<IInteractor>(MaxInteractors);
+			m_reservedInteractors = new List<IInteractor>(MaxInteractors);
 		}
 
 		#region Reservation
 
-		// NOTE: I see no point in having non-reserved interactables, seems like
-		// everything should have some limit. I also don't see why formation radius
-		// should be togglable either, why not just set it to 0 with capacity of 1?
-		// The reservation system seems to be a holdover from a more complex time
-		// and I think it can do with a simplification pass along with the new
-		// job search flow. Mostly for the reason of reservations should happen at
-		// click time rather than arrival time so that pikmin can follow moving enemies.
-		// This means the whole system doesn't need to be nearly as complex as it is now.
-
 		/// <summary>
 		/// Attempts to assign this position to an interactor.
-		///
 		/// Reserved positions create a reservation.
 		/// Non-reserved positions require no bookkeeping at assignment time.
 		/// </summary>
@@ -54,7 +43,7 @@ namespace Interaction.Core
 				return false;
 
 			// Non-reserved positions do not need pre-allocation.
-			if (!m_settings.RequiresReservation)
+			if (!RequiresResrvation())
 				return true;
 
 			// Already active or already reserved is a valid assignment.
@@ -62,7 +51,7 @@ namespace Interaction.Core
 				m_reservedInteractors.Contains(interactor))
 				return true;
 
-			if (!HasAvailableCapacity)
+			if (!HasAvailableCapacity())
 				return false;
 
 			m_reservedInteractors.Add(interactor);
@@ -102,9 +91,8 @@ namespace Interaction.Core
 				return true;
 			}
 
-			if (m_settings.RequiresReservation)
+			if (RequiresResrvation())
 			{
-				// Reserved positions require pre-allocation.
 				int reservationIndex = m_reservedInteractors.IndexOf(interactor);
 
 				if (reservationIndex < 0)
@@ -151,10 +139,10 @@ namespace Interaction.Core
 			bool isPresent = m_interactorsPresent.Contains(interactor);
 			bool isReserved = m_reservedInteractors.Contains(interactor);
 
-			if (m_settings.RequiresReservation && !isPresent && !isReserved)
+			if (RequiresResrvation() && !isPresent && !isReserved)
 				return false;
 
-			if (!m_settings.UseFormationRadius)
+			if (!UsesFormationRadius())
 				return true;
 
 			int slotIndex;
@@ -175,9 +163,9 @@ namespace Interaction.Core
 				slotIndex = m_interactorsPresent.Count;
 			}
 
-			float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, m_settings.MaxInteractors);
-			float x = Mathf.Cos(angle) * m_settings.FormationRadius;
-			float z = Mathf.Sin(angle) * m_settings.FormationRadius;
+			float angle = Mathf.Max(0, slotIndex) * Mathf.PI * 2f / Mathf.Max(1, MaxInteractors);
+			float x = Mathf.Cos(angle) * FormationRadius;
+			float z = Mathf.Sin(angle) * FormationRadius;
 
 			position = transform.TransformPoint(new Vector3(x, 0, z));
 
@@ -195,14 +183,33 @@ namespace Interaction.Core
 				Vector3 interactorPositionFlat = new Vector3(worldPosition.x, 0, worldPosition.z);
 				Vector3 targetPositionFlat = new Vector3(targetPos.x, 0, targetPos.z);
 
-				float distanceSquared = (interactorPositionFlat - targetPositionFlat).sqrMagnitude;
-				return distanceSquared <= m_settings.InteractionDistance * m_settings.InteractionDistance;
+				float distanceSqrt = (interactorPositionFlat - targetPositionFlat).sqrMagnitude;
+				return distanceSqrt <= InteractionDistance * InteractionDistance;
 			}
 
 			return false;
 		}
 
 		#endregion
+
+		/// <summary>
+		/// For non-reserved positions there is never a capacity restriction.
+		/// For reserved positions, capacity includes both active and reserved actors.
+		/// </summary>
+		public bool HasAvailableCapacity()
+		{
+			return MaxInteractors == 0 || TotalOccupiedOrReserved < MaxInteractors;
+		}
+
+		public bool RequiresResrvation()
+		{
+			return MaxInteractors > 0;
+		}
+
+		public bool UsesFormationRadius()
+		{
+			return FormationRadius > 0;
+		}
 
 #if UNITY_EDITOR
 
@@ -213,13 +220,13 @@ namespace Interaction.Core
 			Gizmos.DrawWireSphere(transform.position, 0.2f);
 
 			Gizmos.color = new Color(0, 1, 1, 0.2f);
-			Gizmos.DrawWireSphere(transform.position, m_settings.InteractionDistance);
+			Gizmos.DrawWireSphere(transform.position, InteractionDistance);
 
 			// Formation radius if it is enabled
-			if (m_settings.UseFormationRadius)
+			if (FormationRadius > 0)
 			{
 				Gizmos.color = new Color(1, 1, 0, 0.2f);
-				Gizmos.DrawWireSphere(transform.position, m_settings.FormationRadius);
+				Gizmos.DrawWireSphere(transform.position, FormationRadius);
 			}
 
 			// Green lines to all actively present actors

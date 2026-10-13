@@ -10,9 +10,6 @@ namespace Construction
 	{
 		public static ConstructionManager Instance;
 
-		[SerializeField] private Material m_blueprintMaterial;
-		[SerializeField] private GameObject m_blueprintPrefab;
-
 		// Events
 		public event Action<BlueprintData> NewDevelopmentAttempted;
 
@@ -47,43 +44,77 @@ namespace Construction
 		}
 
 		/// <summary>
-		/// Creates and places a structure blueprint at the specified 
-		/// world position and rotation within a settlement.
+		/// Creates and places a blueprint at the specified world position and rotation within a settlement.
 		/// </summary>
-		public void CreateBlueprint(int settlementID, 
-			string blueprintKey, 
-			Vector3 worldPosition, 
+		public void CreateBlueprint(
+			int settlementID,
+			string blueprintKey,
+			Vector3 worldPosition,
 			Quaternion rotation)
 		{
-			if (m_blueprintPrefab == null)
+			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(blueprintKey);
+
+			if (blueprintData == null)
 			{
-				Debug.LogError("StructureData or Prefab is missing!");
+				Debug.LogError(
+					$"Failed to create blueprint: No BlueprintData found for key '{blueprintKey}'.",
+					this);
 				return;
 			}
 
-			BlueprintData blueprintData = 
-				IndexRegistry.GetAsset<BlueprintData>(blueprintKey);
+			if (blueprintData.BlueprintPrefab == null)
+			{
+				Debug.LogError(
+					$"Failed to create blueprint '{blueprintKey}': BlueprintPrefab is null.",
+					blueprintData);
+				return;
+			}
 
-			GameObject prefab = Instantiate(m_blueprintPrefab);
+			if (!SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out var settlement)
+				|| settlement == null)
+			{
+				Debug.LogError(
+					$"Failed to create blueprint '{blueprintKey}': Settlement with ID {settlementID} does not exist.",
+					this);
+				return;
+			}
+
+			GameObject prefab = Instantiate(blueprintData.BlueprintPrefab);
+
 			IStructure structure = prefab.GetComponent<IStructure>();
 			IBlueprintObject blueprintObject = prefab.GetComponent<IBlueprintObject>();
 
-			// Add to settlement
-			SettlementManager.s_WorldSettlements[settlementID].AddStructure(structure);
+			if (structure == null || blueprintObject == null)
+			{
+				Debug.LogError(
+					$"Failed to create blueprint '{blueprintKey}': Prefab '{prefab.name}' is missing " +
+					$"{(structure == null ? nameof(IStructure) : string.Empty)}" +
+					$"{(structure == null && blueprintObject == null ? " and " : string.Empty)}" +
+					$"{(blueprintObject == null ? nameof(IBlueprintObject) : string.Empty)}.",
+					prefab);
 
-			// Place the blueprint on the ground
-			Bounds blueprintBounds = blueprintData.BlueprintMesh.bounds;
-			float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y);
-			Vector3 offsetPosition = worldPosition + Vector3.up * distanceToBottom;
+				Destroy(prefab);
+				return;
+			}
 
-			// Init the blueprint
-			blueprintObject.HandleBlueprintPlaced
-				(
-					blueprintData,
-					offsetPosition,
-					rotation
-				);
+			// Position the blueprint at ground level using its renderer bounds.
+			Vector3 offsetPosition = worldPosition;
+			if (prefab.TryGetComponent(out MeshRenderer meshRenderer))
+			{
+				float distanceToBottom = meshRenderer.bounds.min.y;
+				offsetPosition.y -= distanceToBottom - worldPosition.y;
+			}
 
+			// Initialize the blueprint.
+			blueprintObject.HandleBlueprintPlaced(
+				blueprintData,
+				offsetPosition,
+				rotation);
+
+			// Register the structure with the settlement.
+			settlement.AddStructure(structure);
+
+			// Subscribe to blueprint events.
 			blueprintObject.BlueprintCompleted += OnBlueprintCompleted;
 			blueprintObject.BlueprintCanceled += OnBlueprintCanceled;
 		}

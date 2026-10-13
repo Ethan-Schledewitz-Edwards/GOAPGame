@@ -44,18 +44,6 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 	{
 		m_rb = GetComponent<Rigidbody>();
 
-		m_interactionPosition = GetComponent<InteractionPoint>();
-		InteractionPositionSettings interactionPositionSettings = new()
-		{
-			MaxInteractors = 1,
-			UseFormationRadius = false,
-			FormationRadius = 0,
-			RequiresReservation = true,
-			InteractionDistance = 0.5f,
-		};
-
-		m_interactionPosition.m_settings = interactionPositionSettings;
-
 		if (m_interactPositions == null || m_interactPositions.Length == 0)
 			m_interactPositions = new InteractionPoint[] { m_interactionPosition };
 

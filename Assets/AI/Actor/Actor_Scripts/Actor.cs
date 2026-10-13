@@ -182,7 +182,7 @@ public class Actor : MonoBehaviour, IInteractor
 					AIPathing.SetDestination(validPos);
 
 					// Check distance and attempt interaction directly
-					float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
+					float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
 					if (AIPathing.IsWithinDistance(validPos, interactionDistance))
 					{
 						InteractWith(m_targetInteractable, true);
@@ -292,7 +292,7 @@ public class Actor : MonoBehaviour, IInteractor
 				if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
 					return;
 
-				float interactionDistance = m_assignedInteractionPosition.m_settings.InteractionDistance;
+				float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
 				if (!AIPathing.IsWithinDistance(validPos, interactionDistance))
 					return;
 			}
