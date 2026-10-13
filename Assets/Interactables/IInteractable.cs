@@ -9,6 +9,7 @@ namespace Interaction.Core
 		public Vector3 LocalPromptOffset { get; }
 		public bool HasTrackingDisplayInfo { get; }
 		public Transform InteractableTransform { get; }
+		public InteractionPoint[] InteractionPoints { get; }
 
 		public event Action OnInfoUpdated;
 		public event Action InteractableDestroyed;

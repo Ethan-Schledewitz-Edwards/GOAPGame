@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Interaction.Actor.InteractableStructures
 {
-	public class Duplicatinator : MonoBehaviour, IStructure
+	public class Duplicatinator : ActorInteractableBase, IStructure
 	{
 		[Header("Settings")]
 		[SerializeField] private StructureTag m_duplicatinatorTag;
@@ -17,6 +17,12 @@ namespace Interaction.Actor.InteractableStructures
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
+
+		protected override int m_minActorsToFunction => 0; // Needs a log not people
+
+		protected override string m_interactPrompt => string.Empty;
+
+		protected override bool m_hasTrackingDisplayInfo => false; // Will have this in the future for progress bars
 
 		// System
 		private int m_settlementID;
@@ -41,5 +47,7 @@ namespace Interaction.Actor.InteractableStructures
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
 		}
+
+		public override BehaviourTree GetBehaviourTree() { return null; }
 	}
 }

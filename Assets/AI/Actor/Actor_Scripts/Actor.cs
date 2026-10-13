@@ -296,6 +296,7 @@ public class Actor : MonoBehaviour, IInteractor
 			m_targetTransform = null;
 			AIPathing.ClearDestination();
 			m_jobSearchCooldown = c_jobSearchCooldownDuration;
+			BeginOffDuty();
 			return;
 		}
 
@@ -352,9 +353,8 @@ public class Actor : MonoBehaviour, IInteractor
 				return;
 			}
 
-			m_targetTransform = actorInteractable.transform;
 			TrySetActorJob(actorInteractable.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {m_targetTransform.name} and was succsessful.", this);
+			Debug.Log($"{transform} interacted with {actorInteractable.name} and was succsessful.", this);
 		}
 	}
 

@@ -13,7 +13,7 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 {
 	private static BehaviourTree s_ItemBT;
 
-	protected override int m_minActorsToFunction { get; set; } = 0;
+	protected override int m_minActorsToFunction => 0;
 
 	// Components
 	private Rigidbody m_rb;

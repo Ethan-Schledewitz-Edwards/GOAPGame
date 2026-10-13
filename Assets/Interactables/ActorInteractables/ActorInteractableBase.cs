@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 {
 	[Header("Settings")]
-	protected abstract int m_minActorsToFunction { get; set; }
+	protected abstract int m_minActorsToFunction { get; }
 
 	// IInteractable properties
 	public string InteractPrompt => m_interactPrompt;
@@ -21,6 +21,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public Transform InteractableTransform => transform;
 
 	[Header("Actor Interaction")]
+	public InteractionPoint[] InteractionPoints => m_interactionPoints;
 	private InteractionPoint[] m_interactionPoints;
 
 	public event Action OnInfoUpdated;
@@ -59,9 +60,9 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public bool TryReserveClosestPosition(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		out InteractionPoint assignedPosition)
+		out InteractionPoint reservedPoint)
 	{
-		assignedPosition = null;
+		reservedPoint = null;
 
 		if (interactor == null ||
 			m_interactionPoints == null ||
@@ -94,7 +95,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		if (!closestPosition.TryReservePosition(interactor))
 			return false;
 
-		assignedPosition = closestPosition;
+		reservedPoint = closestPosition;
 		return true;
 	}
 

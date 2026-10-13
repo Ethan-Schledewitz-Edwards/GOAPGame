@@ -15,7 +15,7 @@ namespace Interaction.InteractableStructures
 	{
 		private static BehaviourTree s_takeItemBT;
 
-		protected override int m_minActorsToFunction { get; set; } = 0;
+		protected override int m_minActorsToFunction => 0;
 
 		[Header("Settings")]
 		public ItemTag[] ItemTagFilter => m_tagFilter;

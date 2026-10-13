@@ -18,6 +18,9 @@ namespace Interaction.Player
 
 		public Transform InteractableTransform => transform;
 
+		public InteractionPoint[] InteractionPoints => m_interactionPoints;
+		private InteractionPoint[] m_interactionPoints;
+
 		public event Action InteractableDestroyed;
 		public event Action OnInfoUpdated;
 

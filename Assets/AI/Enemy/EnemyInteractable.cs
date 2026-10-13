@@ -7,7 +7,7 @@ public class EnemyInteractable : ActorInteractableBase
 {
 	private static BehaviourTree s_AttackBehaviour;
 
-	protected override int m_minActorsToFunction { get; set; } = 0;
+	protected override int m_minActorsToFunction => 0;
 
 	protected override string m_interactPrompt => string.Empty;
 

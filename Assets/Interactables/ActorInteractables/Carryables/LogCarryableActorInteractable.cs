@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent))]
-public class LogCarryableActorInteractable : ActorInteractableBase
+public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 {
 	private static BehaviourTree m_logBT;
 
@@ -18,11 +18,13 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 	private const float c_logColliderRadius = 0.25f;
 	private const float c_logHullCastRadius = 0.1f;
 
-	protected override int m_minActorsToFunction { get; set; } = 2;
+	protected override int m_minActorsToFunction => 2;
 
 	// IInteractable properties
 	protected override string m_interactPrompt => string.Empty;
 	protected override bool m_hasTrackingDisplayInfo => false;
+
+	public Transform Transform => transform;
 
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;
@@ -74,13 +76,14 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 	{
 		if (m_isBeingCarried)
 		{
-			Transform closestDuplicatinator = FindClosestDuplicatinator();
-			if (closestDuplicatinator != null)
+			var closestDuplicatinator = FindClosestDuplicatinator();
+			if (closestDuplicatinator.Item1 != null &&
+				closestDuplicatinator.Item2 != null)
 			{
-				Debug.Log("Found!");
+				m_currentTarget = closestDuplicatinator.Item1;
 
-				m_currentTarget = closestDuplicatinator;
-				m_navMeshAgent.SetDestination(m_currentTarget.transform.position);
+				if (closestDuplicatinator.Item2.TryGetInteractionPosition(this, out Vector3 destination))
+					m_navMeshAgent.SetDestination(destination);
 			}
 		}
 	}
@@ -112,6 +115,15 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 	{
 		HandleCarryStopped();
 	}
+
+	public void UseInteractable(IInteractable interactable)
+	{
+		// Start the duplicatinator
+	}
+
+	public void BeginCarrying(Transform parent, Vector3 localPosition) { }
+
+	public void StopCarrying() { }
 
 	private void HandleCarryStarted()
 	{
@@ -156,33 +168,10 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 		}
 	}
 
-	private Transform FindClosestDuplicatinator()
-	{
-		EFaction executorFaction = EFaction.FACTION_PLAYER;// This should be the first guy that picks up the log
-
-		Settlement closestFactionSettlement =
-			SettlementManager.GetClosestSettlement(transform.position, executorFaction);
-
-		if (closestFactionSettlement == null)
-			return null;
-
-		IStructure closestStructure = closestFactionSettlement.
-			FindNearestStructureOfType(transform.position, m_duplicatinatorTag);
-
-		if (closestStructure == null)
-			return null;
-
-		GameObject structureObject = closestStructure.Object;
-		if (structureObject != null)
-			return structureObject.transform;
-
-		return null;
-	}
-
 	public bool ValidateLogPosition(Vector3 targetPosition,
-	Vector3 fallDirection,
-	out Vector3 finalPosition,
-	out Quaternion finalRotation)
+		Vector3 fallDirection,
+		out Vector3 finalPosition,
+		out Quaternion finalRotation)
 	{
 		finalPosition = targetPosition;
 		finalRotation = Quaternion.identity;
@@ -228,6 +217,35 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 		}
 
 		return false;
+	}
+
+	private (Transform, InteractionPoint) FindClosestDuplicatinator()
+	{
+		EFaction executorFaction = EFaction.FACTION_PLAYER;// This should be the first guy that picks up the log
+
+		Settlement closestFactionSettlement =
+			SettlementManager.GetClosestSettlement(transform.position, executorFaction);
+
+		if (closestFactionSettlement == null)
+			return (null, null);
+
+		IStructure closestStructure = closestFactionSettlement.
+			FindNearestStructureOfType(transform.position, m_duplicatinatorTag);
+
+		if (closestStructure == null)
+			return (null, null);
+
+		GameObject structureObject = closestStructure.Object;
+		if (structureObject != null &&
+			structureObject.TryGetComponent(out ActorInteractableBase interactable))
+		{
+			if(interactable.TryReserveClosestPosition(this, transform.position, out InteractionPoint assignedPosition))
+			{
+				return (interactable.transform, assignedPosition);
+			}
+		}
+
+		return (null, null);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => m_logBT;

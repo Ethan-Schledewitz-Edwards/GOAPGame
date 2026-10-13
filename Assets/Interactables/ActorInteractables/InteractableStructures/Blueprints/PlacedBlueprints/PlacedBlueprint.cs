@@ -14,7 +14,7 @@ namespace Interaction.ActorInteractables.Structures
 	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
 	public class PlacedBlueprint : BlueprintActorInteractableBase, IBlueprintObject
 	{
-		protected override int m_minActorsToFunction { get; set; } = 0;
+		protected override int m_minActorsToFunction => 0;
 
 		[Header("Settings & Visuals")]
 		[SerializeField] private Material m_blueprintMaterial;
