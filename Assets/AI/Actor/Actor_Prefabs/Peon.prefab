@@ -374,7 +374,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17e6a5a8c34dba469568b8dde42bd9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AI.BehaviourTrees::BehaviourTreeExecutor
-  <CurrentNodeNameDebug>k__BackingField: None
+  AIContext:
+    Timeout: 0
+    Cooldown: 0
+    ExecutorTransform: {fileID: 0}
+    ExecutorFaction: 0
+    TargetTransform: {fileID: 0}
+    TargetDestination: {x: 0, y: 0, z: 0}
+    JobSearchDistance: 0
+    InteractionLayer:
+      serializedVersion: 2
+      m_Bits: 0
+    AssignedInteractionPosition: {fileID: 0}
+    IsCarryingObject: 0
+    DepositInteractionStarted: 0
+    StructureSettlementID: 0
+    StructureID: 0
 --- !u!114 &3683834564411842312
 MonoBehaviour:
   m_ObjectHideFlags: 0

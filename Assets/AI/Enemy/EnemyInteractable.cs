@@ -25,13 +25,11 @@ public class EnemyInteractable : ActorInteractableBase
 		{
 			BTSequenceNode attackSequence = new(new List<BTNodeBase>()
 			{
-				new MoveToInteractionPositionTask(),
-				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new MoveToInteractionPointTask(),
 				new AttackTask(),
 				new BTTimeoutNode(new SearchForClosestJobTask(), 2f),
 				new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
-				new MoveToInteractionPositionTask(),
-				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new MoveToInteractionPointTask(),
 				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 			});
 

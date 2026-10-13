@@ -3,7 +3,7 @@ using BehaviourTrees;
 using Interaction.Core;
 using UnityEngine;
 
-public class MoveToInteractionPositionTask : BTNodeBase
+public class MoveToInteractionPointTask : BTNodeBase
 {
 	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{

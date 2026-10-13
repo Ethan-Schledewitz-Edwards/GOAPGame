@@ -8,22 +8,18 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 	public AIContext AIContext;
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
-	[field: SerializeField] public string CurrentNodeNameDebug { get; private set; } = "None";
-
 	protected virtual void Awake()
 	{
 		AIContext = new AIContext();
+	}
+
+	private void Start()
+	{
 		ResetContext();
 	}
 
 	public void SetCurrentBehaviourTree(BehaviourTree behaviourTree)
 	{
-		if (behaviourTree == null)
-		{
-			AIContext.CurrentNodeID = "None";
-			CurrentNodeNameDebug = "None";
-		}
-
 		CurrentBehaviourTree = behaviourTree;
 	}
 
@@ -32,11 +28,8 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 		if (CurrentBehaviourTree != null)
 		{
 			EBTNodeState nodeState = CurrentBehaviourTree.TickBehaviourTree(ref AIContext, t);
-			CurrentNodeNameDebug = AIContext.CurrentNodeID;
 			return nodeState;
 		}
-
-		CurrentNodeNameDebug = "None";
 		return EBTNodeState.FAILURE;
 	}
 

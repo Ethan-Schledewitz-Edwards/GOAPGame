@@ -54,8 +54,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
 		{
-			new MoveToInteractionPositionTask(),
-			new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+			new MoveToInteractionPointTask(),
 			new CarryObjectTask()
 		});
 		BehaviourTree tree = new BehaviourTree();

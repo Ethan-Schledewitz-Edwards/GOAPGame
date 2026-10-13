@@ -74,8 +74,7 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 		{
 			new BTTimeoutNode(new FindUseForItemTask(blueprintTag, storageTag), 2f),
 			new ReserveInteractionPositionTask(),
-			new MoveToInteractionPositionTask(),
-			new CheckForDestinationRangeTask(),
+			new MoveToInteractionPointTask(),
 			new BTTimeoutNode(new DepositHeldItemTask(), 2f),
 			new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 		});

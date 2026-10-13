@@ -286,17 +286,6 @@ public class Actor : MonoBehaviour, IInteractor
 	{
 		if(interactable is ActorInteractableBase actorInteractable)
 		{
-			if (m_behaviourTreeExecutor != null)
-			{
-				InteractionPoint contextPosition = m_behaviourTreeExecutor.AIContext.AssignedInteractionPosition;
-
-				if (contextPosition != null && contextPosition != m_assignedInteractionPosition)
-				{
-					ReleaseInteractionPosition(m_assignedInteractionPosition);
-					m_assignedInteractionPosition = contextPosition;
-				}
-			}
-
 			// Recalculate the interaction position in case it moved between ticks.
 			if (m_assignedInteractionPosition != null)
 			{

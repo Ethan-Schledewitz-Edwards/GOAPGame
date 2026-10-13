@@ -49,7 +49,7 @@ public class DepositHeldItemTask : BTNodeBase
 		bool interactionStarted = context.DepositInteractionStarted;
 		if (!interactionStarted)
 		{
-			if (!data.Interactable.TryBeginInteraction(data.Interactor, 
+			if (!data.Interactable.TryInteract(data.Interactor, 
 				data.ExecutorTransform.position, 
 				data.AssignedPos, 
 				out _))

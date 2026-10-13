@@ -46,6 +46,7 @@ public class AttackTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(ref AIContext context) 
 	{
+		Debug.Log("Test");
 		context.Cooldown = 0f;
 	}
 

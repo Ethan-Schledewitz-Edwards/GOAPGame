@@ -1,5 +1,6 @@
 using Interaction.Core;
 using ObjectTags;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,17 +10,38 @@ namespace AI.AIContext
 	public struct AIContext
 	{
 		// Behavior Tree and Execution 
-		public string CurrentNodeID;
+		private HashSet<string> m_activeNodeIDs;
+
+		public HashSet<string> ActiveNodeIDs
+		{
+			get
+			{
+				if (m_activeNodeIDs == null)
+					m_activeNodeIDs = new HashSet<string>();
+
+				return m_activeNodeIDs;
+			}
+		}
+
+
 		public float Timeout;
 		public float Cooldown;
-		public readonly Dictionary<string, int> SequenceIndices;
+		private Dictionary<string, int> m_sequenceIndices;
+		public Dictionary<string, int> SequenceIndices
+		{
+			get
+			{
+				if (m_sequenceIndices == null)
+					m_sequenceIndices = new Dictionary<string, int>();
+				return m_sequenceIndices;
+			}
+		}
 		public Transform ExecutorTransform;
 		public int ExecutorFaction;
 
 		// Targeting and Navigation
 		public Transform TargetTransform;
 		public Vector3 TargetDestination;
-		public float StoppingDistance;
 		public float JobSearchDistance;
 		public LayerMask InteractionLayer;
 		public InteractionPoint AssignedInteractionPosition;
@@ -28,8 +50,19 @@ namespace AI.AIContext
 		public bool IsCarryingObject;
 
 		// Inventory
-		public string HeldItemID;
-		public string ItemToFindID;
+		private string m_heldItemID;
+		public string HeldItemID
+		{
+			get => m_heldItemID ?? string.Empty;
+			set => m_heldItemID = value;
+		}
+
+		private string m_itemToFindID;
+		public string ItemToFindID
+		{
+			get => m_itemToFindID ?? string.Empty;
+			set => m_itemToFindID = value;
+		}
 		public bool DepositInteractionStarted;
 
 		// Structures
@@ -37,8 +70,19 @@ namespace AI.AIContext
 		public int StructureID;
 
 		// Filters
-		public string[] ItemTagFilters;
-		public ItemTag[] CachedResolvedItemTags;
+		private string[] m_itemTagFilters;
+		public string[] ItemTagFilters
+		{
+			get => m_itemTagFilters ?? Array.Empty<string>();
+			set => m_itemTagFilters = value;
+		}
+
+		private ItemTag[] m_cachedResolvedItemTags;
+		public ItemTag[] CachedResolvedItemTags
+		{
+			get => m_cachedResolvedItemTags ?? Array.Empty<ItemTag>();
+			set => m_cachedResolvedItemTags = value;
+		}
 
 		// Cleanup
 		public System.Action ReservationCleanup;

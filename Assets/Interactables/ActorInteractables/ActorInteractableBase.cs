@@ -88,9 +88,9 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	}
 
 	/// <summary>
-	/// Begins an interaction using the previously assigned position.
+	/// Begins an interaction using an assigned interaction position.
 	/// </summary>
-	public virtual bool TryBeginInteraction(
+	public bool TryBeginInteraction(
 		IInteractor interactor,
 		Vector3 actorPosition,
 		InteractionPoint assignedPosition,
@@ -101,7 +101,9 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		if (interactor == null ||
 			assignedPosition == null ||
 			!HasInteractionPosition(assignedPosition))
+		{
 			return false;
+		}
 
 		if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
@@ -116,6 +118,11 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		return true;
 	}
 
+	/// <summary>
+	/// Performs the normal interaction entry point.
+	/// Specialized interactables can extend this to acquire jobs
+	/// or perform other interaction-specific actions.
+	/// </summary>
 	public virtual bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
@@ -123,12 +130,12 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		out int interactorValue)
 	{
 		return TryBeginInteraction
-			(
-				interactor,
-				actorPosition,
-				assignedPosition,
-				out interactorValue
-			);
+		(
+			interactor,
+			actorPosition,
+			assignedPosition,
+			out interactorValue
+		);
 	}
 
 	public virtual void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)

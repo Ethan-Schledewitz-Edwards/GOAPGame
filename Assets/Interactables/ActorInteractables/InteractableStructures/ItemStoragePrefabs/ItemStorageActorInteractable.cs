@@ -61,12 +61,10 @@ namespace Interaction.InteractableStructures
 			{
 				new BTTimeoutNode(new FindItemOfTagTask(), 2f),
 				new BTTimeoutNode(new ReserveInteractionPositionTask(), 2f),
-				new MoveToInteractionPositionTask(),
-				new CheckForDestinationRangeTask(),
+				new MoveToInteractionPointTask(),
 				new InteractWithTargetTask(),
 				new ReturnToStructureTask(),
-				new MoveToInteractionPositionTask(),
-				new CheckForDestinationRangeTask(),
+				new MoveToInteractionPointTask(),
 				new BTTimeoutNode(new DepositHeldItemTask(), 60f),
 				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
 			});

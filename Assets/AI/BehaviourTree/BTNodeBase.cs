@@ -1,3 +1,4 @@
+
 using AI.AIContext;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace BehaviourTrees
 	public enum EBTNodeState
 	{
 		RUNNING,
-		SUCSESS, 
+		SUCSESS,
 		FAILURE
 	}
 
@@ -19,53 +20,61 @@ namespace BehaviourTrees
 		protected BTNodeBase m_parentNode;
 		protected List<BTNodeBase> m_childNodes = new List<BTNodeBase>();
 
-        public BTNodeBase()
+		public BTNodeBase()
 		{
 			m_parentNode = null;
 		}
 
-		/// <summary>
-		/// Fills the nodes list of children on construction
-		/// </summary>
 		public BTNodeBase(List<BTNodeBase> children) : this()
 		{
-			foreach (BTNodeBase i in children)
+			foreach (BTNodeBase child in children)
 			{
-				AddChild(i);
+				AddChild(child);
 			}
 		}
 
+
 		public EBTNodeState EvaluateNode(ref AIContext context, float t)
 		{
-			if (context.CurrentNodeID != NodeID)
+			if (context.ActiveNodeIDs.Add(NodeID))
 			{
-				context.CurrentNodeID = NodeID;
 				OnFirstEvaluate(ref context);
 			}
 
 			return OnNodeEvaluated(ref context, t);
 		}
 
-		protected abstract EBTNodeState OnNodeEvaluated(ref AIContext context, float t);
+		protected abstract EBTNodeState OnNodeEvaluated(
+			ref AIContext context, float t);
 
 		protected abstract void OnFirstEvaluate(ref AIContext context);
 
-		public void ExitNode(ref AIContext context) 
+
+		public void ExitNode(ref AIContext context)
 		{
-			context.CurrentNodeID = string.Empty;
-			OnNodeExited(ref context);
+			// Clean up descendants before this node.
+			foreach (BTNodeBase child in m_childNodes)
+			{
+				child.ExitNode(ref context);
+			}
+
+			// Only exit nodes that are currently active.
+			if (context.ActiveNodeIDs.Remove(NodeID))
+			{
+				OnNodeExited(ref context);
+			}
 		}
 
 		protected abstract void OnNodeExited(ref AIContext context);
 
-		public void ResetNode(AIContext context)
+		public void ResetNode(ref AIContext context)
 		{
-			context.CurrentNodeID = string.Empty;
-
 			foreach (BTNodeBase child in m_childNodes)
 			{
-				child.ResetNode(context);
+				child.ResetNode(ref context);
 			}
+
+			context.ActiveNodeIDs.Remove(NodeID);
 
 			OnNodeReset(ref context);
 		}
@@ -74,6 +83,12 @@ namespace BehaviourTrees
 
 		private void AddChild(BTNodeBase node)
 		{
+			if (node == null)
+			{
+				Debug.LogError($"Cannot add a null child to behaviour tree node {NodeID}.");
+				return;
+			}
+
 			node.SetParentNode(this);
 			m_childNodes.Add(node);
 		}

@@ -73,12 +73,10 @@ namespace Interaction.ActorInteractables.Structures
 			{
 				new BTTimeoutNode(new FindItemOfIDTask(storageTag), 2f),
 				new ReserveInteractionPositionTask(),
-				new MoveToInteractionPositionTask(),
-				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new MoveToInteractionPointTask(),
 				new BTTimeoutNode(new TryPickupItemTask(), 2f),
 				new ReturnToStructureTask(),
-				new MoveToInteractionPositionTask(),
-				new BTTimeoutNode(new CheckForDestinationRangeTask(), 2f),
+				new MoveToInteractionPointTask(),
 				new BTTimeoutNode(new DepositHeldItemTask(), 2f),
 				new ReserveInteractionPositionTask(),
 				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
