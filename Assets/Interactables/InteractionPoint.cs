@@ -5,22 +5,19 @@ namespace Interaction.Core
 {
 	public class InteractionPoint : MonoBehaviour
 	{
-		[Tooltip("If 0, there is no limit on the number of interactors.")]
-		public int MaxInteractors { get; private set; } = 1;
+		[field: Tooltip("If 0, there is no limit on the number of interactors.")]
+		[field: SerializeField] public int MaxInteractors { get; private set; } = 1;
 
-		[Tooltip("If greater than 0, actors will use this value when forming a formation. If 0, actors will not encircle this interaction point.")]
-		public float FormationRadius { get; private set; } = 1.5f;
+		[field: Tooltip("If greater than 0, actors will use this value when forming a formation. If 0, actors will not encircle this interaction point.")]
+		[field: SerializeField] public float FormationRadius { get; private set; } = 1.5f;
 
-		[Tooltip("Determines how close an actor must be to the interaction point to begin interacting.")]
-		public float InteractionDistance { get; private set; } = 0.3f;
+		[field: Tooltip("Determines how close an actor must be to the interaction point to begin interacting.")]
+		[field: SerializeField] public float InteractionDistance { get; private set; } = 0.3f;
 
 		private List<IInteractor> m_interactorsPresent = new();
 		private List<IInteractor> m_reservedInteractors = new();
 
 		public int ActorsPresent => m_interactorsPresent.Count;
-
-		public int ReservedInteractors => m_reservedInteractors.Count;
-
 		public int TotalOccupiedOrReserved =>
 			m_interactorsPresent.Count + m_reservedInteractors.Count;
 

@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 2209374878578469070}
   - component: {fileID: 8339903104644427181}
   m_Layer: 7
-  m_Name: InteractionPosition
+  m_Name: InteractionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -205,11 +205,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6950124047208913694}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 994fa6435b443d946b2651bf3f2ce6f3, type: 3}
+  m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
-  <MaxInteractors>k__BackingField: 1
-  <UseFormationRadius>k__BackingField: 0
+  <MaxInteractors>k__BackingField: 4
   <FormationRadius>k__BackingField: 0
-  <RequiresReservation>k__BackingField: 0
   <InteractionDistance>k__BackingField: 0.3

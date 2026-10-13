@@ -44,13 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.2
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.5
 --- !u!1 &1702540647813774327
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,13 +91,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.2
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.5
 --- !u!1 &1848493102313110294
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,6 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableActorInteractable
+  m_localPromptOffset: {x: 0, y: 0, z: 0}
   m_interactPositions:
   - {fileID: 2039784734761804132}
   - {fileID: 7589474822219210813}
@@ -221,7 +214,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1848493102313110294}
   m_Enabled: 1
   m_AgentTypeID: -334000983
-  m_Radius: 1
+  m_Radius: 0.85
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -278,13 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.2
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.5
 --- !u!1 &3388805811355477661
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,13 +318,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.2
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.5
 --- !u!1 &8072590804003672114
 GameObject:
   m_ObjectHideFlags: 0

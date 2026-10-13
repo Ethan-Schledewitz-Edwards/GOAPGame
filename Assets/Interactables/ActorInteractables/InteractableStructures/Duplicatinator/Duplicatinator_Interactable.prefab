@@ -136,13 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.3
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!1 &9127017081437623561
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,11 +198,11 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.95, y: 0.5, z: 0.95}
+  m_Extents: {x: 1.35, y: 1, z: 1.35}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
 --- !u!65 &1063335660902267423
 BoxCollider:
@@ -227,5 +223,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2.7, y: 2, z: 2.7}
+  m_Center: {x: 0, y: 1, z: 0}

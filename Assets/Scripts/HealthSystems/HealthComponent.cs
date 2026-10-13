@@ -22,6 +22,7 @@ public class HealthComponent : MonoBehaviour
 	[SerializeField] private AudioClip[] m_dieSounds;
 
 	// System vars
+	public bool IsDamagable = true;
 	public int Health { get; private set; }
 	public bool IsDead { get; private set; }
 
@@ -53,7 +54,7 @@ public class HealthComponent : MonoBehaviour
 
 	public void TryTakeDamage(int amount, Vector3 hitPos, Vector3 hitDir)
 	{
-		if (IsDead)
+		if (IsDead || !IsDamagable)
 			return;
 
 		RemoveHealth(amount);

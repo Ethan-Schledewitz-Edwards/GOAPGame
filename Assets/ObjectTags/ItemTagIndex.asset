@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: ItemTagIndex
   m_EditorClassIdentifier: ObjectTags::ObjectTags.ItemTagIndex
   <assets>k__BackingField:
-  - {fileID: 11400000, guid: 4ed713c2e26940c4f9a7f2a2fb76bcbe, type: 2}
-  - {fileID: 11400000, guid: 97c68dc4729accb48b01a4c82245dd66, type: 2}
   - {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}

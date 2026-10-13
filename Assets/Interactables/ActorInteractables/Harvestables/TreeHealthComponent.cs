@@ -21,10 +21,6 @@ public class TreeHealthComponent : HealthComponent
 	[Header("Carryable")]
 	[SerializeField] private GameObject m_spawnedCarryablePrefab;
 
-	// System
-	public bool IsDamagable => m_isDamagable;
-	[SerializeField] private bool m_isDamagable = true;
-
 	protected override void Awake()
 	{
 		base.Awake();

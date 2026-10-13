@@ -13,7 +13,5 @@ MonoBehaviour:
   m_Name: ItemIndex
   m_EditorClassIdentifier: InventorySystem::InventorySystem.Items.ItemIndex
   <assets>k__BackingField:
-  - {fileID: 11400000, guid: 87746f40b22e84d4686298cab8695c4f, type: 2}
   - {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
-  - {fileID: 11400000, guid: f44edd34d779d6b4f86bcb8eb178d177, type: 2}
   - {fileID: 11400000, guid: 66bbf63d126497c429c8a343d320068a, type: 2}

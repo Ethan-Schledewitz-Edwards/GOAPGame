@@ -66,13 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Core::Interaction.Core.InteractionPoint
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 1
-    UseFormationRadius: 0
-    FormationRadius: 0
-    RequiresReservation: 1
-    InteractionDistance: 0.3
+  <MaxInteractors>k__BackingField: 1
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!33 &1214428380774560143
 MeshFilter:
   m_ObjectHideFlags: 0

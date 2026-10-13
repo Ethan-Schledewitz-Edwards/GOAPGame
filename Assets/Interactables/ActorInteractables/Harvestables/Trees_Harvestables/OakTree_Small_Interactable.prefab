@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
-  <m_minActorsToFunction>k__BackingField: 1
+  m_localPromptOffset: {x: 0, y: 0, z: 0}
   m_interactPositions:
   - {fileID: 2991755269999351807}
 --- !u!114 &4026278048805383853
@@ -205,7 +205,6 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
-  m_logSpawnRadius: 2
   m_treeMeshObject: {fileID: 6670668404327998910}
   m_stumpMeshObject: {fileID: 2824037566599855480}
   m_spawnedCarryablePrefab: {fileID: 1848493102313110294, guid: 90ada239b3c9b27439eda4d61753bb74, type: 3}
@@ -457,10 +456,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::InteractionPosition
-  m_settings:
-    LocalOffset: {x: 0, y: 0, z: 0}
-    MaxInteractors: 12
-    UseFormationRadius: 1
-    FormationRadius: 1
-    RequiresReservation: 1
-    InteractionDistance: 0.3
+  <MaxInteractors>k__BackingField: 12
+  <FormationRadius>k__BackingField: 1
+  <InteractionDistance>k__BackingField: 0.3

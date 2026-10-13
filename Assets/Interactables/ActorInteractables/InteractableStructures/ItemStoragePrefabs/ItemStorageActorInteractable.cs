@@ -21,8 +21,6 @@ namespace Interaction.InteractableStructures
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 		[SerializeField] private ItemTag[] m_tagFilter;
 		[SerializeField] private StructureTag m_structureTypeTag;
-		[SerializeField] private int m_maxCapacity = 4;
-		[SerializeField] private int m_actorsAssigned = 0;
 
 		public InventoryComponent InventoryComponent { get; private set; }
 
@@ -105,7 +103,6 @@ namespace Interaction.InteractableStructures
 
 				executor.AIContext.StructureSettlementID = m_settlementID;
 				executor.AIContext.StructureID = m_settlementStructureID;
-				m_actorsAssigned = GetTotalActorsPresent();
 				return true;
 			}
 
