@@ -33,10 +33,9 @@ public class HarvestableActorInteractable : ActorInteractableBase
 
 	public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPoint reservedPosition,
-			out int interactorValue)
+			InteractionPoint reservedPosition)
 	{
-		if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
+		if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 			return false;
 
 		return true;

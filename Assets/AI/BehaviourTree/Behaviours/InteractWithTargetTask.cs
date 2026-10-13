@@ -31,7 +31,7 @@ public class InteractWithTargetTask : BTNodeBase
 		if (iob == null)
 			return EBTNodeState.FAILURE;
 
-		interactor.InteractWith(iob, false);
+		interactor.UseInteractable(iob);
 		return EBTNodeState.SUCSESS;
 	}
 

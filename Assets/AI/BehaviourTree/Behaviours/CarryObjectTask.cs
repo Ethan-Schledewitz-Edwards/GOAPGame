@@ -26,16 +26,11 @@ public class CarryObjectTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.FAILURE;
 
-		InteractionPoint assignedPos = context.AssignedInteractionPosition;
-		if (context.IsCarryingObject == false)
+		// Snap into calculated formation position
+		InteractionPoint reservedPoint = context.ReservedInteractionPoint;
+		if (reservedPoint.TryGetInteractionPosition(interactor, out Vector3 formationWorldPos))
 		{
-			context.IsCarryingObject = true;
-
-			// Snap into calculated formation position
-			if (assignedPos.TryGetInteractionPosition(interactor, out Vector3 formationWorldPos))
-			{
-				interactor.BeginCarrying(assignedPos.transform, assignedPos.transform.InverseTransformPoint(formationWorldPos));
-			}
+			interactor.BeginCarrying(reservedPoint.transform, reservedPoint.transform.InverseTransformPoint(formationWorldPos));
 		}
 
 		return EBTNodeState.RUNNING;
@@ -43,39 +38,7 @@ public class CarryObjectTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(ref AIContext context) { }
 
-	protected override void OnNodeExited(ref AIContext context)
-	{
-		if (context.IsCarryingObject)
-		{
-			context.IsCarryingObject = false;
-
-			Transform executorTransform = context.ExecutorTransform;
-			if (executorTransform != null)
-			{
-				// Unparent the executor
-				executorTransform.SetParent(null);
-
-				// Re-enable generic unity components
-				if (executorTransform.TryGetComponent(out NavMeshAgent agent)) 
-					agent.enabled = true;
-				if (executorTransform.TryGetComponent(out Rigidbody rb)) 
-					rb.isKinematic = false;
-
-				IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-				InteractionPoint assignedPos = context.AssignedInteractionPosition;
-				Transform targetTransform = context.TargetTransform;
-
-				if (interactor != null && assignedPos != null && targetTransform != null)
-				{
-					ActorInteractableBase interactable = targetTransform.GetComponentInParent<ActorInteractableBase>();
-					if (interactable != null)
-					{
-						interactable.StopInteract(interactor, assignedPos);
-					}
-				}
-			}
-		}
-	}
+	protected override void OnNodeExited(ref AIContext context) { }
 
 	protected override void OnNodeReset(ref AIContext context)
 	{

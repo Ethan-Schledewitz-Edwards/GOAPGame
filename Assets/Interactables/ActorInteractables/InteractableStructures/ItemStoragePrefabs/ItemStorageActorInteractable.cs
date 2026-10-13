@@ -80,10 +80,9 @@ namespace Interaction.InteractableStructures
 
 		public override bool TryInteract(IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPoint reservedPosition,
-			out int interactorValue)
+			InteractionPoint reservedPosition)
 		{
-			if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
+			if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 				return false;
 
 			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
@@ -107,8 +106,6 @@ namespace Interaction.InteractableStructures
 			}
 
 			base.StopInteract(interactor, reservedPosition);
-
-			interactorValue = -1;
 			return false;
 		}
 

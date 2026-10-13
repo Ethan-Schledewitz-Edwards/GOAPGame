@@ -110,13 +110,11 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 		gameObject.SetActive(true);
 	}
 
-	public override bool TryInteract(
-		IInteractor interactor,
+	public override bool TryInteract(IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPoint reservedPosition,
-		out int interactorValue)
+		InteractionPoint reservedPosition)
 	{
-		if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
+		if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 			return false;
 
 		if (m_itemData == null)

@@ -40,7 +40,7 @@ public class ReturnToStructureTask : BTNodeBase
 							context.TargetDestination = validDestination;
 
 							// Store the reserved position in the AI context so interaction nodes can retrieve it
-							context.AssignedInteractionPosition = assignedPosition;
+							context.ReservedInteractionPoint = assignedPosition;
 
 							// Cleanup delegate in case the behavior tree aborts
 							System.Action cleanup = () =>

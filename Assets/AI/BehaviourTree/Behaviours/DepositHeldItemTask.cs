@@ -16,7 +16,7 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		public Transform ExecutorTransform;
 		public Transform TargetTransform;
-		public InteractionPoint AssignedPos;
+		public InteractionPoint ReservedPosition;
 		public InventoryComponent ExecutorInventory;
 		public InventoryComponent TargetInventory;
 		public ActorInteractableBase Interactable;
@@ -34,7 +34,7 @@ public class DepositHeldItemTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 
 		// Distance check
-		if (!data.AssignedPos.GetPositionInRange(data.Interactor, data.ExecutorTransform.position))
+		if (!data.ReservedPosition.GetPositionInRange(data.Interactor, data.ExecutorTransform.position))
 			return EBTNodeState.RUNNING;
 
 		InventorySlot heldSlot = data.ExecutorInventory.Inventory.Slots[0];
@@ -51,8 +51,7 @@ public class DepositHeldItemTask : BTNodeBase
 		{
 			if (!data.Interactable.TryInteract(data.Interactor, 
 				data.ExecutorTransform.position, 
-				data.AssignedPos, 
-				out _))
+				data.ReservedPosition))
 			{
 				Debug.LogError($"[DepositHeldItemTask] Failed to begin interaction " +
 					$"with '{data.TargetTransform.name}'.", data.ExecutorTransform);
@@ -85,10 +84,10 @@ public class DepositHeldItemTask : BTNodeBase
 	{
 		Transform executorTransform = context.ExecutorTransform;
 		Transform targetTransform = context.TargetTransform;
-		InteractionPoint assignedPos = context.AssignedInteractionPosition;
+		InteractionPoint reservedPoint = context.ReservedInteractionPoint;
 		bool interactionStarted = context.DepositInteractionStarted;
 
-		if (executorTransform != null && targetTransform != null && assignedPos != null)
+		if (executorTransform != null && targetTransform != null && reservedPoint != null)
 		{
 			if (executorTransform.TryGetComponent(out IInteractor interactor) &&
 				targetTransform.TryGetComponent(out ActorInteractableBase interactable))
@@ -96,12 +95,12 @@ public class DepositHeldItemTask : BTNodeBase
 				if (interactionStarted)
 				{
 					Debug.Log("[DepositHeldItemTask] Stopping interaction.");
-					interactable.StopInteract(interactor, assignedPos);
+					interactable.StopInteract(interactor, reservedPoint);
 				}
 				else
 				{
 					Debug.Log("[DepositHeldItemTask] Cancelling reservation.");
-					interactable.CancelReservation(interactor, assignedPos);
+					interactable.CancelReservation(interactor, reservedPoint);
 				}
 			}
 		}
@@ -112,7 +111,7 @@ public class DepositHeldItemTask : BTNodeBase
 
 		// Context cleanup
 		context.ReservationCleanup = null;
-		context.AssignedInteractionPosition = null;
+		context.ReservedInteractionPoint = null;
 		context.DepositInteractionStarted = false;
 	}
 
@@ -129,9 +128,9 @@ public class DepositHeldItemTask : BTNodeBase
 
 		data.ExecutorTransform = context.ExecutorTransform;
 		data.TargetTransform = context.TargetTransform;
-		data.AssignedPos = context.AssignedInteractionPosition;
+		data.ReservedPosition = context.ReservedInteractionPoint;
 
-		if (data.ExecutorTransform == null || data.TargetTransform == null || data.AssignedPos == null)
+		if (data.ExecutorTransform == null || data.TargetTransform == null || data.ReservedPosition == null)
 			return false;
 
 		if (!data.ExecutorTransform.TryGetComponent(out data.ExecutorInventory) || data.ExecutorInventory.Inventory == null)

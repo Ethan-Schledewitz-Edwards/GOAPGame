@@ -60,14 +60,14 @@ public class MoveToInteractionPointTask : BTNodeBase
 	{
 		destination = Vector3.zero;
 
-		InteractionPoint assignedPosition = context.AssignedInteractionPosition;
-		if (assignedPosition != null)
+		InteractionPoint reservedPoint = context.ReservedInteractionPoint;
+		if (reservedPoint != null)
 		{
 			IInteractor interactor = executorTransform.GetComponent<IInteractor>();
 			if (interactor == null)
 				return false;
 
-			if (!assignedPosition.TryGetInteractionPosition(interactor, out destination))
+			if (!reservedPoint.TryGetInteractionPosition(interactor, out destination))
 				return false;
 
 			return true;

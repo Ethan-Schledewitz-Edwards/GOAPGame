@@ -49,7 +49,7 @@ public class AquireNewBehaviourTreeFromTargetTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 		}
 
-		interactor.InteractWith(interactable, true);
+		interactor.UseInteractable(interactable);
 		return EBTNodeState.SUCSESS;
 	}
 

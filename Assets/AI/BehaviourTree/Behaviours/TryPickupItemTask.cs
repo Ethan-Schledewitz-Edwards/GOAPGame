@@ -21,14 +21,14 @@ public class TryPickupItemTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 
 		Transform targetTransform = context.TargetTransform;
-		InteractionPoint assignedPos =  context.AssignedInteractionPosition;
+		InteractionPoint reservedPoint =  context.ReservedInteractionPoint;
 
 		string itemID = context.ItemToFindID;
 
-		if (targetTransform == null || assignedPos == null)
+		if (targetTransform == null || reservedPoint == null)
 			return EBTNodeState.FAILURE;
 
-		if (!assignedPos.GetPositionInRange(interactor, executorTransform.position))
+		if (!reservedPoint.GetPositionInRange(interactor, executorTransform.position))
 			return EBTNodeState.RUNNING;
 
 		if (!targetTransform.TryGetComponent(out ActorInteractableBase interactable))
@@ -40,11 +40,9 @@ public class TryPickupItemTask : BTNodeBase
 			if (itemObject.ItemData == null || itemObject.ItemData.ID != itemID)
 				return EBTNodeState.FAILURE;
 
-			if (!interactable.TryInteract(
-					interactor,
+			if (!interactable.TryInteract(interactor,
 					executorTransform.position,
-					assignedPos,
-					out _))
+					reservedPoint))
 			{
 				return EBTNodeState.FAILURE;
 			}
@@ -52,10 +50,10 @@ public class TryPickupItemTask : BTNodeBase
 			Debug.Log($"{executorTransform}: Picked up item of ID:{itemID}.");
 
 			// Pickup is complete, release the reservation immediately.
-			interactable.StopInteract(interactor, assignedPos);
+			interactable.StopInteract(interactor, reservedPoint);
 
 			context.ItemToFindID = string.Empty;
-			context.AssignedInteractionPosition = null;
+			context.ReservedInteractionPoint = null;
 			return EBTNodeState.SUCSESS;
 		}
 
@@ -71,13 +69,13 @@ public class TryPickupItemTask : BTNodeBase
 					$"of ID:{itemID} from {targetTransform}'s inventory.");
 
 				context.ItemToFindID = string.Empty;
-				interactable.StopInteract(interactor, assignedPos);
-				context.AssignedInteractionPosition = null;
+				interactable.StopInteract(interactor, reservedPoint);
+				context.ReservedInteractionPoint = null;
 				return EBTNodeState.SUCSESS;
 			}
 		}
 
-		interactable.StopInteract(interactor, assignedPos);
+		interactable.StopInteract(interactor, reservedPoint);
 		return EBTNodeState.FAILURE;
 	}
 

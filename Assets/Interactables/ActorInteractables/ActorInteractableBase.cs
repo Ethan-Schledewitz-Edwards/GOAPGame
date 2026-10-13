@@ -20,7 +20,6 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 	public Transform InteractableTransform => transform;
 
-
 	[Header("Actor Interaction")]
 	[SerializeField] protected InteractionPoint[] m_interactPositions;
 
@@ -87,16 +86,48 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		assignedPosition?.ReleaseReservation(interactor);
 	}
 
+	///// <summary>
+	///// Begins an interaction using an assigned interaction position.
+	///// </summary>
+	//public bool TryBeginInteraction(
+	//	IInteractor interactor,
+	//	Vector3 actorPosition,
+	//	InteractionPoint assignedPosition,
+	//	out int interactorValue)
+	//{
+	//	interactorValue = -1;
+
+	//	if (interactor == null ||
+	//		assignedPosition == null ||
+	//		!HasInteractionPosition(assignedPosition))
+	//	{
+	//		return false;
+	//	}
+
+	//	if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
+	//		return false;
+
+	//	if (!assignedPosition.TryBeginInteraction(interactor, out interactorValue))
+	//	{
+	//		CancelReservation(interactor, assignedPosition);
+	//		return false;
+	//	}
+
+	//	ActorAssigned();
+	//	return true;
+	//}
+
 	/// <summary>
-	/// Begins an interaction using an assigned interaction position.
+	/// Performs the normal interaction entry point.
+	/// Specialized interactables can extend this to acquire jobs
+	/// or perform other interaction-specific actions.
 	/// </summary>
-	public bool TryBeginInteraction(
+	public virtual bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPoint assignedPosition,
-		out int interactorValue)
+		InteractionPoint assignedPosition
+		)
 	{
-		interactorValue = -1;
 
 		if (interactor == null ||
 			assignedPosition == null ||
@@ -108,7 +139,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		if (!assignedPosition.TryBeginInteraction(interactor, out interactorValue))
+		if (!assignedPosition.TryBeginInteraction(interactor, out _))
 		{
 			CancelReservation(interactor, assignedPosition);
 			return false;
@@ -116,26 +147,6 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 		ActorAssigned();
 		return true;
-	}
-
-	/// <summary>
-	/// Performs the normal interaction entry point.
-	/// Specialized interactables can extend this to acquire jobs
-	/// or perform other interaction-specific actions.
-	/// </summary>
-	public virtual bool TryInteract(
-		IInteractor interactor,
-		Vector3 actorPosition,
-		InteractionPoint assignedPosition,
-		out int interactorValue)
-	{
-		return TryBeginInteraction
-		(
-			interactor,
-			actorPosition,
-			assignedPosition,
-			out interactorValue
-		);
 	}
 
 	public virtual void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)

@@ -44,7 +44,7 @@ namespace AI.AIContext
 		public Vector3 TargetDestination;
 		public float JobSearchDistance;
 		public LayerMask InteractionLayer;
-		public InteractionPoint AssignedInteractionPosition;
+		public InteractionPoint ReservedInteractionPoint;
 
 		// Interactions
 		public int AttackDamage;

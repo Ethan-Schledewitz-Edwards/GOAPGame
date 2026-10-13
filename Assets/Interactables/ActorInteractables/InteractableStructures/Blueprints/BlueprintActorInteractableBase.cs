@@ -91,11 +91,10 @@ namespace Interaction.ActorInteractables.Structures
 		public override bool TryInteract(
 			IInteractor interactor,
 			Vector3 actorPosition,
-			InteractionPoint reservedPosition,
-			out int interactorValue)
+			InteractionPoint reservedPosition)
 		{
 			// Get the behaviour tree through base interaction
-			if (!base.TryInteract(interactor, actorPosition, reservedPosition, out interactorValue))
+			if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 				return false;
 
 			if (m_itemRequestComponent == null)

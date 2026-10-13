@@ -9,10 +9,9 @@ namespace Interaction.Core
 		/// <summary>
 		/// Initiates an interaction with a target interactable object.
 		/// </summary>
-		void InteractWith(IInteractable interactable, bool willReplaceJob); // Move will replace job to actor
+		void UseInteractable(IInteractable interactable);
 
 		void BeginCarrying(Transform parent, Vector3 localPosition);
-
-		void StopCarrying(); // Move to actor
+		void StopCarrying();
 	}
 }
