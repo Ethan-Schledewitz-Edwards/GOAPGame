@@ -22,5 +22,6 @@ public class ActorBehaviourTreeExecutor : BehaviourTreeExecutorBase
 		AIContext.ExecutorFaction = (int)m_actor.ActorFaction;
 		AIContext.JobSearchDistance = Actor.c_JobSearchRange;
 		AIContext.InteractionLayer = 1 << LayerMask.NameToLayer("Interaction");
+		AIContext.AttackDamage = 1; // Hard coded for now
 	}
 }

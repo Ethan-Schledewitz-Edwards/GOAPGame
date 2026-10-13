@@ -6,7 +6,6 @@ using UnityEngine;
 public class AttackTask : BTNodeBase
 {
 	private const float c_timeBetweenAttacks = 2f;
-	private const int c_attackDamage = 2;
 
 	protected override EBTNodeState OnNodeEvaluated(ref AIContext context, float t)
 	{
@@ -27,7 +26,7 @@ public class AttackTask : BTNodeBase
 			{
 				context.Cooldown = 0f;
 				Vector3 attackDir = targetTransform.position - executorTransform.position;
-				health.TryTakeDamage(c_attackDamage, targetTransform.position, attackDir);
+				health.TryTakeDamage(context.AttackDamage, targetTransform.position, attackDir);
 			}
 			else
 			{
@@ -46,7 +45,6 @@ public class AttackTask : BTNodeBase
 
 	protected override void OnFirstEvaluate(ref AIContext context) 
 	{
-		Debug.Log("Test");
 		context.Cooldown = 0f;
 	}
 

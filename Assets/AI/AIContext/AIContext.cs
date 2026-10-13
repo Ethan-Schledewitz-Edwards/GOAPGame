@@ -46,7 +46,8 @@ namespace AI.AIContext
 		public LayerMask InteractionLayer;
 		public InteractionPoint AssignedInteractionPosition;
 
-		// Carrying
+		// Interactions
+		public int AttackDamage;
 		public bool IsCarryingObject;
 
 		// Inventory
