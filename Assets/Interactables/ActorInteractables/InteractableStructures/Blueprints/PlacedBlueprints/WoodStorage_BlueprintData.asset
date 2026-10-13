@@ -19,5 +19,5 @@ MonoBehaviour:
     amount: 3
   <PlacementMesh>k__BackingField: {fileID: 1767986231468006461, guid: c51a3dc80ebf6624aa05aa12e9cd2853, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
-  <BlueprintPrefab>k__BackingField: {fileID: 0}
+  <BlueprintPrefab>k__BackingField: {fileID: 2203288883335143524, guid: 1745f8b69baf1704881b5279766d5da5, type: 3}
   <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 162404230185621835, guid: cda47e29b34ca4c498b3c7702f62e3c0, type: 3}
