@@ -10,7 +10,7 @@ namespace Player.Core
 		private const float c_maxCursorDistanceController = 6.0f;
 		private const float c_maxCursorDistanceMouse = 12.0f;
 
-		[field: SerializeField] public PlayerCursorVisualizer CursorVisualizer;
+		[field: SerializeField] public PlayerCursorVisualizer CursorVisualizer { get; private set; }
 		[SerializeField] private Camera m_mainCamera;
 
 		// System

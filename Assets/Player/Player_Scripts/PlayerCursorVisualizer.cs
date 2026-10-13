@@ -32,7 +32,7 @@ public class PlayerCursorVisualizer : MonoBehaviour
 	private void Awake()
 	{
 		m_cursorObject.transform.localScale = m_cursorMinTargetScale;
-		DisableBlueprint();
+		ClearBlueprintPlacementVisuals();
 	}
 
 	private void OnDisable()
@@ -130,38 +130,33 @@ public class PlayerCursorVisualizer : MonoBehaviour
 
 	#region
 
-	public void SetBlueprint(BlueprintData blueprintData, 
+	public void SetBlueprintPlacementVisuals(BlueprintData blueprintData, 
 		Material[] materials, 
 		Quaternion localRotation = default)
 	{
 		m_cursorObject.SetActive(false);
 
-		Mesh blueprintMesh = blueprintData.BlueprintMesh;
+		// Update the mesh renderer
+		Mesh blueprintMesh = blueprintData.PlacementMesh;
 		Bounds blueprintBounds = blueprintMesh.bounds;
-
-		m_meshFilter.mesh = blueprintData.BlueprintMesh;
+		m_meshFilter.mesh = blueprintData.PlacementMesh;
 		m_meshRenderer.sharedMaterials = materials;
-
 		m_meshRenderer.transform.rotation = localRotation;
 
+		// Move the mesh out of the ground
 		float distanceToBottom = (blueprintBounds.center.y - blueprintBounds.extents.y);
 		m_meshRenderer.transform.localPosition = Vector3.up * distanceToBottom;
 
 		m_blueprintVisualsObject.SetActive(true);
 	}
 
-	private void ResetBlueprintVisuals()
+	public void ClearBlueprintPlacementVisuals()
 	{
+		m_blueprintVisualsObject.SetActive(false);
 		m_meshFilter.mesh = m_defaultMesh;
 		m_meshRenderer.sharedMaterials = m_blueprintMaterial;
 		m_meshRenderer.transform.localPosition = Vector3.zero;
 		m_meshRenderer.transform.localRotation = Quaternion.identity;
-	}
-
-	public void DisableBlueprint()
-	{
-		m_blueprintVisualsObject.SetActive(false);
-		ResetBlueprintVisuals();
 	}
 	#endregion
 }

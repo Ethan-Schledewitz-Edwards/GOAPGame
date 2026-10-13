@@ -49,7 +49,7 @@ namespace Player.Core
 			if (ConstructionManager.Instance != null)
 				ConstructionManager.Instance.NewDevelopmentAttempted += SetBlueprintVisuals;
 
-			UpdateVisuals();
+			UpdateVisuals(false);
 		}
 
 		private void OnDestroy()
@@ -106,7 +106,7 @@ namespace Player.Core
 				LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
 				if (m_blueprintData != null)
 				{
-					Vector3 extents = m_blueprintData.BlueprintMesh.bounds.extents;
+					Vector3 extents = m_blueprintData.PlacementMesh.bounds.extents;
 					float baseRadius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z));
 					float clearance = baseRadius + m_blueprintData.PlacementClearenceRadius;
 
@@ -199,7 +199,7 @@ namespace Player.Core
 			m_blueprintData = null;
 			m_isPlacementValid = false;
 			m_placementRotation = Quaternion.identity;
-			UpdateVisuals();
+			UpdateVisuals(false);
 
 			if (m_followerController != null)
 				m_followerController.enabled = true;
@@ -228,26 +228,27 @@ namespace Player.Core
 			ClearBlueprintVisuals();
 		}
 
-		private void UpdateVisuals(bool isValid = false)
+		private void UpdateVisuals(bool isPlacementValid)
 		{
 			PlayerCursorVisualizer cursorVisualizer = 
 				m_worldControllerManager.CursorVisualizer;
 
 			if (m_blueprintData == null)
 			{
-				cursorVisualizer?.DisableBlueprint();
+				cursorVisualizer?.ClearBlueprintPlacementVisuals();
 				cursorVisualizer?.EnableCursor();
 				return;
 			}
 
-			Material[] materials = { isValid ? m_validMaterial : m_invalidMaterial };
+			Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
 
-			Bounds bounds = m_blueprintData.BlueprintMesh.bounds;
+			Bounds bounds = m_blueprintData.PlacementMesh.bounds;
 			Vector3 localOffset = new Vector3(0, bounds.extents.y, 0);
-			cursorVisualizer?.SetBlueprint(m_blueprintData,
+
+			cursorVisualizer?.SetBlueprintPlacementVisuals(m_blueprintData,
 				materials,
 				m_placementRotation
-				);
+			);
 		}
 	}
 }

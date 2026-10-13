@@ -567,7 +567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97651f1d2f1d3114aaec24fda4098471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Player.Core::Player.Core.PlayerWorldControllerManager
-  CursorVisualizer: {fileID: 6828390110988528725}
+  <CursorVisualizer>k__BackingField: {fileID: 6828390110988528725}
   m_mainCamera: {fileID: 6661631668660036274}
 --- !u!114 &6817196783401577192
 MonoBehaviour:
