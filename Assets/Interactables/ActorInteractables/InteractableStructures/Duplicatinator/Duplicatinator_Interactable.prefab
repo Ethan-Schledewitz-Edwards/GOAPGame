@@ -138,7 +138,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction::InteractionPoint
   <MaxInteractors>k__BackingField: 1
   <FormationRadius>k__BackingField: 0
-  <InteractionDistance>k__BackingField: 0.3
+  <InteractionDistance>k__BackingField: 1
 --- !u!1 &9127017081437623561
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9365e19408366ce45b4136726df9ddde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Actor.InteractableStructures::Interaction.Actor.InteractableStructures.Duplicatinator
+  m_localPromptOffset: {x: 0, y: 0, z: 0}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
 --- !u!208 &4621684914593885089
 NavMeshObstacle:

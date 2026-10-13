@@ -11,7 +11,8 @@ namespace Interaction.Core
 		/// </summary>
 		void UseInteractable(IInteractable interactable);
 
+		void CancelInteraction();
+
 		void BeginCarrying(Transform parent, Vector3 localPosition);
-		void StopCarrying();
 	}
 }

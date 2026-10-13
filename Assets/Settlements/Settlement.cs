@@ -49,11 +49,21 @@ namespace Settlements
 
 		public IStructure FindNearestStructureOfType(Vector3 position, StructureTag structureTag)
 		{
+			return FindNearestStructureOfType(position, structureTag);
+		}
+
+		public IStructure FindNearestStructureOfType(Vector3 position,
+			StructureTag structureTag,
+			HashSet<IStructure> structuresToIgnore)
+		{
 			IStructure closest = null;
 			float minDistance = float.MaxValue;
 
 			foreach (var structure in SettlementStructures.Values)
 			{
+				if (structuresToIgnore != null && structuresToIgnore.Contains(structure))
+					continue;
+
 				if (structure.StructureTypeTag == structureTag)
 				{
 					float dist = Vector3.Distance(structure.Object.transform.position, position);

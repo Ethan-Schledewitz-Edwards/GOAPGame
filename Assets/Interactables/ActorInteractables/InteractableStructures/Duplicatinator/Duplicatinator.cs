@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using Factions.Core;
+using Interaction.Core;
 using ObjectTags;
 using Settlements;
 using System.Collections.Generic;
@@ -46,6 +47,13 @@ namespace Interaction.Actor.InteractableStructures
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
+		}
+
+		public override bool TryInteract(IInteractor interactor, Vector3 actorPosition, InteractionPoint assignedPosition)
+		{
+			Debug.Log("FUCK YEAH");
+
+			return base.TryInteract(interactor, actorPosition, assignedPosition);
 		}
 
 		public override BehaviourTree GetBehaviourTree() { return null; }

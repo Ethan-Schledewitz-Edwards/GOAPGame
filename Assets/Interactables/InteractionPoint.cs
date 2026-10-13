@@ -111,6 +111,22 @@ namespace Interaction.Core
 				m_interactorsPresent.Remove(interactor);
 		}
 
+		public void CancelAllInteractions()
+		{
+			foreach (IInteractor interactor in m_interactorsPresent)
+			{
+				interactor.CancelInteraction();
+			}
+
+			foreach (IInteractor interactor in m_reservedInteractors)
+			{
+				interactor.CancelInteraction();
+			}
+
+			m_interactorsPresent.Clear();
+			m_reservedInteractors.Clear();
+		}
+
 		#endregion
 
 		#region Position

@@ -189,7 +189,7 @@ public class Actor : MonoBehaviour, IInteractor
 				}
 				else
 				{
-					HandleFailedInteraction();
+					ClearJobState(true);
 					return;
 				}
 			}
@@ -264,7 +264,7 @@ public class Actor : MonoBehaviour, IInteractor
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear state
-		StopCarrying();
+		CancelInteraction();
 		BeginOffDuty();
 		m_behaviourTreeExecutor.ResetContext();
 
@@ -290,12 +290,6 @@ public class Actor : MonoBehaviour, IInteractor
 		// interactor. If there is no behaviour tree, release that position now.
 		if (behaviourTree == null)
 		{
-			ReleaseInteractionPosition(m_assignedInteractionPosition);
-			m_assignedInteractionPosition = null;
-			m_targetInteractable = null;
-			m_targetTransform = null;
-			AIPathing.ClearDestination();
-			m_jobSearchCooldown = c_jobSearchCooldownDuration;
 			BeginOffDuty();
 			return;
 		}
@@ -349,7 +343,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 			if (!isInteractionSuccessful)
 			{
-				HandleFailedInteraction();
+				ClearJobState(true);
 				return;
 			}
 
@@ -358,17 +352,9 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
-	private void HandleFailedInteraction()
+	public void CancelInteraction()
 	{
-		Debug.Log($"{transform} has failed an interaction with {m_targetTransform}.", this);
-		ReleaseInteractionPosition(m_assignedInteractionPosition);
-
-		m_targetInteractable = null;
-		m_targetTransform = null;
-		m_assignedInteractionPosition = null;
-		AIPathing.ClearDestination();
-
-		m_jobSearchCooldown = c_jobSearchCooldownDuration;
+		ClearJobState();
 	}
 
 	public void BeginCarrying(Transform parent, Vector3 localPosition)
@@ -387,15 +373,6 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
-	public void StopCarrying()
-	{
-		transform.parent = null;
-		m_collider.isTrigger = false;
-
-		AIPathing.NavAgent.enabled = true;
-		AIPathing.SetPosition(transform.position);
-	}
-
 	private void ReleaseInteractionPosition(InteractionPoint position)
 	{
 		if (position == null)
@@ -405,34 +382,50 @@ public class Actor : MonoBehaviour, IInteractor
 		position.TryRemoveInteractor(this);
 	}
 
-	private void ClearJobState()
-	{
-		if(m_targetInteractable != null && 
-			m_assignedInteractionPosition != null)
-		{
-			m_targetInteractable.StopInteract(this, m_assignedInteractionPosition);
-		}
-
-		ReleaseInteractionPosition(m_assignedInteractionPosition);
-		m_targetInteractable = null;
-		m_targetTransform = null;
-		m_assignedInteractionPosition = null;
-		m_isInvestigatingPositionForJob = false;
-
-		var context = m_behaviourTreeExecutor.AIContext;
-		context.ReservedInteractionPoint = null;
-		m_behaviourTreeExecutor.AIContext = context;
-
-		m_timeFindingJob = 0;
-		m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
-		AIPathing.ClearDestination();
-	}
-
 	private void BeginOffDuty()
 	{
 		ClearJobState();
 		SetLogicExecutorState(EActorState.OffDuty);
 		AIPathing.SetStoppingDistance(c_workingDist);
+	}
+
+	private void ClearJobState(bool applyCooldown = false)
+	{
+		if (m_targetInteractable != null && m_assignedInteractionPosition != null)
+		{
+			m_targetInteractable.StopInteract(this, m_assignedInteractionPosition);
+		}
+
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
+
+		// Reset local references
+		m_targetInteractable = null;
+		m_targetTransform = null;
+		m_assignedInteractionPosition = null;
+		m_isInvestigatingPositionForJob = false;
+		m_timeFindingJob = 0;
+
+		// Reset AI Context to avoid stale data
+		if (m_behaviourTreeExecutor != null)
+		{
+			// Reset parenting if the actor was carrying something
+			if (m_behaviourTreeExecutor.AIContext.IsCarryingObject)
+			{
+				transform.parent = null;
+				m_collider.isTrigger = false;
+
+				AIPathing.NavAgent.enabled = true;
+				AIPathing.SetPosition(transform.position);
+			}
+
+			m_behaviourTreeExecutor.ResetContext();
+			m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
+		}
+
+		AIPathing?.ClearDestination();
+
+		if (applyCooldown)
+			m_jobSearchCooldown = c_jobSearchCooldownDuration;
 	}
 
 	private void SyncJobStateFromContext()

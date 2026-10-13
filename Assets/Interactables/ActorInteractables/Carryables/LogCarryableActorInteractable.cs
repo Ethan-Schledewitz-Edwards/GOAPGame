@@ -17,6 +17,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 	private const float c_logHalfHeight = .75f;
 	private const float c_logColliderRadius = 0.25f;
 	private const float c_logHullCastRadius = 0.1f;
+	private const float c_searchRetryInterval = 1f;
 
 	protected override int m_minActorsToFunction => 2;
 
@@ -31,17 +32,21 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 	[SerializeField] private float m_baseMoveSpeed = 1f;
 
 	[Header("Mesh")]
-	[SerializeField] private Transform m_logMesh;
+	[SerializeField] private Transform m_logMeshTransform;
 
 	// Components
 	private Rigidbody m_rigidbody;
 	private NavMeshAgent m_navMeshAgent;
-	private Transform m_currentTarget;
 
 	// System
-	private bool m_isBeingCarried;
 	private LayerMask m_logOverlapLayermask;
 	private readonly Collider[] m_hitResults = new Collider[8];
+
+	private bool m_isBeingCarried;
+	private ActorInteractableBase m_targetDuplicatinator;
+	private InteractionPoint m_registeredPoint;
+
+	private float m_searchCountdown;
 
 	protected override void Awake()
 	{
@@ -74,16 +79,45 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	private void FixedUpdate()
 	{
-		if (m_isBeingCarried)
-		{
-			var closestDuplicatinator = FindClosestDuplicatinator();
-			if (closestDuplicatinator.Item1 != null &&
-				closestDuplicatinator.Item2 != null)
-			{
-				m_currentTarget = closestDuplicatinator.Item1;
+		if (!m_isBeingCarried)
+			return;
 
-				if (closestDuplicatinator.Item2.TryGetInteractionPosition(this, out Vector3 destination))
-					m_navMeshAgent.SetDestination(destination);
+		if (m_targetDuplicatinator == null && 
+			Time.time >= m_searchCountdown)
+		{
+			var (duplicatinator, point) = FindClosestDuplicatinator();
+			if (duplicatinator != null && point != null)
+			{
+				m_targetDuplicatinator = duplicatinator;
+				m_registeredPoint = point;
+			}
+			else
+			{
+				m_searchCountdown = Time.time + c_searchRetryInterval;
+			}
+		}
+
+		if (m_registeredPoint != null)
+		{
+			if (m_registeredPoint.TryGetInteractionPosition(this, out Vector3 destination))
+			{
+				m_navMeshAgent.SetDestination(destination);
+			}
+		}
+
+		// Move towards the assigned interaction point and check distance
+		if (m_registeredPoint != null && 
+			m_targetDuplicatinator != null)
+		{
+			if (m_registeredPoint.TryGetInteractionPosition(this, out Vector3 destination))
+			{
+				m_navMeshAgent.SetDestination(destination);
+
+				float distanceToDestination = Vector3.Distance(transform.position, destination);
+				if (distanceToDestination <= m_registeredPoint.InteractionDistance)
+				{
+					UseInteractable(m_targetDuplicatinator);
+				}
 			}
 		}
 	}
@@ -96,7 +130,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 			if (!m_isBeingCarried)
 				HandleCarryStarted();
 
-			m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
+			UpdateMovementSpeed(actorsPresent);
 		}
 	}
 
@@ -107,7 +141,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 		int actorsPresent = TotalActorsPresent();
 		if (actorsPresent >= m_minActorsToFunction)
 		{
-			m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
+			UpdateMovementSpeed(actorsPresent);
 		}
 	}
 
@@ -118,20 +152,21 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	public void UseInteractable(IInteractable interactable)
 	{
-		// Start the duplicatinator
+		// Try to start the duplicatinator
+		if(interactable != null &&
+			interactable is ActorInteractableBase actorInteractable)
+		{
+			actorInteractable.TryInteract(this, transform.position, m_registeredPoint);
+		}
 	}
-
-	public void BeginCarrying(Transform parent, Vector3 localPosition) { }
-
-	public void StopCarrying() { }
 
 	private void HandleCarryStarted()
 	{
 		m_isBeingCarried = true;
 
 		// Move the log mesh up to make it look like it's being carried
-		if (m_logMesh != null)
-			m_logMesh.localPosition = Vector3.up * c_logMeshCarryOffset;
+		if (m_logMeshTransform != null)
+			m_logMeshTransform.localPosition = Vector3.up * c_logMeshCarryOffset;
 
 		m_navMeshAgent.enabled = true;
 	}
@@ -140,9 +175,18 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 	{
 		m_isBeingCarried = false;
 
+		if(m_targetDuplicatinator != null && 
+			m_registeredPoint != null)
+		{
+			m_targetDuplicatinator.CancelReservation(this, m_registeredPoint);
+		}
+
+		m_targetDuplicatinator = null;
+		m_registeredPoint = null;
+
 		// Move the log mesh to it's default position
-		if (m_logMesh != null)
-			m_logMesh.localPosition = Vector3.zero;
+		if (m_logMeshTransform != null)
+			m_logMeshTransform.localPosition = Vector3.zero;
 
 		m_navMeshAgent.enabled = false;
 		m_navMeshAgent.speed = 0f;
@@ -219,7 +263,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 		return false;
 	}
 
-	private (Transform, InteractionPoint) FindClosestDuplicatinator()
+	private (ActorInteractableBase, InteractionPoint) FindClosestDuplicatinator()
 	{
 		EFaction executorFaction = EFaction.FACTION_PLAYER;// This should be the first guy that picks up the log
 
@@ -229,24 +273,48 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 		if (closestFactionSettlement == null)
 			return (null, null);
 
-		IStructure closestStructure = closestFactionSettlement.
-			FindNearestStructureOfType(transform.position, m_duplicatinatorTag);
+		HashSet<IStructure> invalidStructures = new HashSet<IStructure>();
 
-		if (closestStructure == null)
-			return (null, null);
-
-		GameObject structureObject = closestStructure.Object;
-		if (structureObject != null &&
-			structureObject.TryGetComponent(out ActorInteractableBase interactable))
+		while (true)
 		{
-			if(interactable.TryReserveClosestPosition(this, transform.position, out InteractionPoint assignedPosition))
-			{
-				return (interactable.transform, assignedPosition);
-			}
-		}
+			// Find the closest duplicatinator excluding the invalid ones
+			IStructure closestStructure = closestFactionSettlement.
+				FindNearestStructureOfType(transform.position, m_duplicatinatorTag, invalidStructures);
 
-		return (null, null);
+			// No structures are left
+			if (closestStructure == null)
+				return (null, null);
+
+			GameObject structureObject = closestStructure.Object;
+			if (structureObject != null &&
+				structureObject.TryGetComponent(out ActorInteractableBase interactable))
+			{
+				if (interactable.TryReserveClosestPosition(this, transform.position, out InteractionPoint assignedPosition))
+				{
+					return (interactable, assignedPosition);
+				}
+			}
+
+			invalidStructures.Add(closestStructure);
+		}
+	}
+
+	private void UpdateMovementSpeed(int actorsPresent)
+	{
+		m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => m_logBT;
+
+	public void BeginCarrying(Transform parent, Vector3 localPosition) { }
+
+	public void StopCarrying() { }
+
+	public void CancelInteraction()
+	{
+		foreach (InteractionPoint point in InteractionPoints)
+		{
+			point.CancelAllInteractions();
+		}
+	}
 }
