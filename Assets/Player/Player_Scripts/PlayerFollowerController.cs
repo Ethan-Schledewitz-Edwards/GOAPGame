@@ -96,7 +96,7 @@ namespace Player.Core
 			if (m_activeFollowers.Contains(newFollower))
 				return;
 
-			Debug.Log("Added Follower eh");
+			Debug.Log("Added Follower");
 
 			// Update systems to include new actor
 			m_activeFollowers.Add(newFollower);

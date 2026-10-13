@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using Factions.Core;
+using Interaction.Core;
 using InventorySystem.Items;
 using ObjectTags;
 using Settlements;
@@ -74,9 +75,9 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 		if (m_isBeingCarried)
 		{
 			Transform closestDuplicatinator = FindClosestDuplicatinator();
-			if (m_currentTarget != closestDuplicatinator)
+			if (closestDuplicatinator != null)
 			{
-				Debug.Log("FOUND!");
+				Debug.Log("Found!");
 
 				m_currentTarget = closestDuplicatinator;
 				m_navMeshAgent.SetDestination(m_currentTarget.transform.position);
@@ -87,12 +88,22 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 	protected override void ActorAssigned()
 	{
 		int actorsPresent = TotalActorsPresent();
-
 		if (actorsPresent >= m_minActorsToFunction)
 		{
 			if (!m_isBeingCarried)
 				HandleCarryStarted();
 
+			m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
+		}
+	}
+
+	public override void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)
+	{
+		base.StopInteract(interactor, assignedPosition);
+
+		int actorsPresent = TotalActorsPresent();
+		if (actorsPresent >= m_minActorsToFunction)
+		{
 			m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
 		}
 	}
@@ -121,19 +132,28 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 		if (m_logMesh != null)
 			m_logMesh.localPosition = Vector3.zero;
 
+		m_navMeshAgent.enabled = false;
+		m_navMeshAgent.speed = 0f;
+
 		// Hull cast then snap to the ground
 		if (ValidateLogPosition(transform.position,
 			Vector3.forward,
 			out Vector3 finalPosition,
 			out Quaternion finalRotation))
 		{
-			transform.position = finalPosition;
-			transform.rotation = finalRotation;
-			m_navMeshAgent.Warp(finalPosition);
+			// If using a Rigidbody, move it via Rigidbody to prevent physics stutter/snapping back
+			if (m_rigidbody != null)
+			{
+				m_rigidbody.isKinematic = true;
+				m_rigidbody.MovePosition(finalPosition);
+				m_rigidbody.MoveRotation(finalRotation);
+			}
+			else
+			{
+				transform.position = finalPosition;
+				transform.rotation = finalRotation;
+			}
 		}
-
-		m_navMeshAgent.enabled = false;
-		m_navMeshAgent.speed = 0f;
 	}
 
 	private Transform FindClosestDuplicatinator()

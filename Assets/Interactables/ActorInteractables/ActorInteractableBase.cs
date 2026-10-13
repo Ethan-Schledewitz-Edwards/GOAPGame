@@ -133,17 +133,21 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		return true;
 	}
 
+	protected virtual void ActorAssigned() { }
+
 	public virtual void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)
 	{
+		int actorCountBeforeRemoval = TotalActorsPresent();
+
 		if (assignedPosition != null)
 			assignedPosition.TryRemoveInteractor(interactor);
 
-		int totalActors = TotalActorsPresent();
-		if (totalActors < m_minActorsToFunction)
+		// Actor count fell below requirement
+		int actorCountAfterRemoval = TotalActorsPresent();
+		if (actorCountBeforeRemoval >= m_minActorsToFunction &&
+			actorCountAfterRemoval < m_minActorsToFunction)
 			LostMinimumActors();
 	}
-
-	protected virtual void ActorAssigned() { }
 
 	public virtual void LostMinimumActors() { }
 
