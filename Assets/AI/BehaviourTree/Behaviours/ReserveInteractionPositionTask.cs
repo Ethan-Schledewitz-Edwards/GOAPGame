@@ -41,7 +41,7 @@ public class ReserveInteractionPositionTask : BTNodeBase
 		// Reuse an existing valid position if it already belongs to the current target. 
 		// Otherwise, attempt to reserve a fresh position.
 		InteractionPoint assignedPosition = context.ReservedInteractionPoint;
-		if (assignedPosition != null && interactable.HasInteractionPosition(assignedPosition))
+		if (assignedPosition != null && interactable.OwnsInteractionPoint(assignedPosition))
 		{
 			if (!assignedPosition.TryGetInteractionPosition(interactor, out Vector3 existingDestination))
 			{

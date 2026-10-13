@@ -40,8 +40,9 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 	private LayerMask m_logOverlapLayermask;
 	private readonly Collider[] m_hitResults = new Collider[8];
 
-	private void Awake()
+	protected override void Awake()
 	{
+		base.Awake();
 
 		m_rigidbody = GetComponent<Rigidbody>();
 		m_navMeshAgent = GetComponent<NavMeshAgent>();
@@ -49,7 +50,12 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 
 		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
 
-		if (m_logBT != null) 
+		InitializeBehaviourTree();
+	}
+
+	private void InitializeBehaviourTree()
+	{
+		if (m_logBT != null)
 			return;
 
 		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
@@ -80,7 +86,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase
 
 	protected override void ActorAssigned()
 	{
-		int actorsPresent = GetTotalActorsPresent();
+		int actorsPresent = TotalActorsPresent();
 
 		if (actorsPresent >= m_minActorsToFunction)
 		{

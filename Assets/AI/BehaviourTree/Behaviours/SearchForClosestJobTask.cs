@@ -68,7 +68,7 @@ public class SearchForClosestJobTask : BTNodeBase
 
 			if (i.TryGetComponent(out ActorInteractableBase aio))
 			{
-				if (!aio.HasAvailableWork(interactor))
+				if (!aio.HasWorkForInteractor(interactor))
 					continue;
 
 				float dist = Vector3.Distance(executorPosition, aio.transform.position);

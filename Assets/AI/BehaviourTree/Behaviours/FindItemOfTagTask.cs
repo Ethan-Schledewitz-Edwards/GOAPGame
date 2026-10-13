@@ -77,7 +77,7 @@ public class FindItemOfTagTask : BTNodeBase
 			}
 
 			if (entity.TryGetComponent(out ActorInteractableBase interactable) &&
-				!interactable.HasAvailableWork(interactor))
+				!interactable.HasWorkForInteractor(interactor))
 			{
 				continue;
 			}

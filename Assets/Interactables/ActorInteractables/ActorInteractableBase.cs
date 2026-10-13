@@ -21,10 +21,30 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public Transform InteractableTransform => transform;
 
 	[Header("Actor Interaction")]
-	[SerializeField] protected InteractionPoint[] m_interactPositions;
+	private InteractionPoint[] m_interactionPoints;
 
 	public event Action OnInfoUpdated;
 	public event Action InteractableDestroyed;
+
+	protected virtual void Awake()
+	{
+		m_interactionPoints = GetComponentsInChildren<InteractionPoint>();
+		int interactionPointsCount = m_interactionPoints.Length;
+
+		if(interactionPointsCount == 0)
+		{
+			// Fallback to this component
+			m_interactionPoints = GetComponents<InteractionPoint>();
+			interactionPointsCount = m_interactionPoints.Length;
+
+			// Warning if truly no components were found
+			if(interactionPointsCount == 0)
+			{
+				Debug.LogWarning("$[ActorInteractableBase] no interaction points were " +
+					$"attached to {this.name}. Interactions will not be possible without any.", this);
+			}
+		}
+	}
 
 	protected virtual void OnDestroy()
 	{
@@ -44,16 +64,16 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		assignedPosition = null;
 
 		if (interactor == null ||
-			m_interactPositions == null ||
-			m_interactPositions.Length == 0)
+			m_interactionPoints == null ||
+			m_interactionPoints.Length == 0)
 			return false;
 
 		InteractionPoint closestPosition = null;
 		float closestDistanceSqr = float.MaxValue;
 
-		for (int i = 0; i < m_interactPositions.Length; i++)
+		for (int i = 0; i < m_interactionPoints.Length; i++)
 		{
-			InteractionPoint position = m_interactPositions[i];
+			InteractionPoint position = m_interactionPoints[i];
 
 			if (position == null || !position.HasAvailableCapacity())
 				continue;
@@ -86,42 +106,6 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		assignedPosition?.ReleaseReservation(interactor);
 	}
 
-	///// <summary>
-	///// Begins an interaction using an assigned interaction position.
-	///// </summary>
-	//public bool TryBeginInteraction(
-	//	IInteractor interactor,
-	//	Vector3 actorPosition,
-	//	InteractionPoint assignedPosition,
-	//	out int interactorValue)
-	//{
-	//	interactorValue = -1;
-
-	//	if (interactor == null ||
-	//		assignedPosition == null ||
-	//		!HasInteractionPosition(assignedPosition))
-	//	{
-	//		return false;
-	//	}
-
-	//	if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
-	//		return false;
-
-	//	if (!assignedPosition.TryBeginInteraction(interactor, out interactorValue))
-	//	{
-	//		CancelReservation(interactor, assignedPosition);
-	//		return false;
-	//	}
-
-	//	ActorAssigned();
-	//	return true;
-	//}
-
-	/// <summary>
-	/// Performs the normal interaction entry point.
-	/// Specialized interactables can extend this to acquire jobs
-	/// or perform other interaction-specific actions.
-	/// </summary>
 	public virtual bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
@@ -131,7 +115,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 		if (interactor == null ||
 			assignedPosition == null ||
-			!HasInteractionPosition(assignedPosition))
+			!OwnsInteractionPoint(assignedPosition))
 		{
 			return false;
 		}
@@ -154,54 +138,34 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 		if (assignedPosition != null)
 			assignedPosition.TryRemoveInteractor(interactor);
 
-		int totalActors = GetTotalActorsPresent();
-
+		int totalActors = TotalActorsPresent();
 		if (totalActors < m_minActorsToFunction)
 			LostMinimumActors();
 	}
-
-	public abstract BehaviourTree GetBehaviourTree();
 
 	protected virtual void ActorAssigned() { }
 
 	public virtual void LostMinimumActors() { }
 
-	#region Availability
-
-	public virtual bool HasAvailableWork(IInteractor interactor)
+	public virtual void UpdateInteractableInfo()
 	{
-		return !IsAtActorCapacity();
+		OnInfoUpdated?.Invoke();
 	}
 
-	/// <summary>
-	/// Returns true when every interaction position is unavailable.
-	/// </summary>
-	public bool IsAtActorCapacity()
+	public virtual bool HasWorkForInteractor(IInteractor interactor)
 	{
-		if (m_interactPositions == null ||
-			m_interactPositions.Length == 0)
-			return true;
-
-		for (int i = 0; i < m_interactPositions.Length; i++)
-		{
-			InteractionPoint position = m_interactPositions[i];
-
-			if (position != null && position.HasAvailableCapacity())
-				return false;
-		}
-
-		return true;
+		return !AllInteractionPointsOccupied();
 	}
 
-	public int GetTotalActorsPresent()
+	public int TotalActorsPresent()
 	{
-		if (m_interactPositions == null ||
-			m_interactPositions.Length == 0)
+		if (m_interactionPoints == null ||
+			m_interactionPoints.Length == 0)
 			return 0;
 
 		int total = 0;
 
-		foreach (InteractionPoint position in m_interactPositions)
+		foreach (InteractionPoint position in m_interactionPoints)
 		{
 			if (position != null)
 				total += position.ActorsPresent;
@@ -209,18 +173,34 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 		return total;
 	}
-	#endregion
 
-	public bool HasInteractionPosition(InteractionPoint position)
+	public bool OwnsInteractionPoint(InteractionPoint position)
 	{
-		if (position == null || m_interactPositions == null)
+		if (position == null || m_interactionPoints == null)
 			return false;
 
-		return Array.IndexOf(m_interactPositions, position) >= 0;
+		return Array.IndexOf(m_interactionPoints, position) >= 0;
 	}
 
-	public virtual void UpdateInteractableInfo()
+	public abstract BehaviourTree GetBehaviourTree();
+
+	/// <summary>
+	/// Returns true if every interaction position is unavailable.
+	/// </summary>
+	private bool AllInteractionPointsOccupied()
 	{
-		OnInfoUpdated?.Invoke();
+		if (m_interactionPoints == null ||
+			m_interactionPoints.Length == 0)
+			return true;
+
+		for (int i = 0; i < m_interactionPoints.Length; i++)
+		{
+			InteractionPoint position = m_interactionPoints[i];
+
+			if (position != null && position.HasAvailableCapacity())
+				return false;
+		}
+
+		return true;
 	}
 }

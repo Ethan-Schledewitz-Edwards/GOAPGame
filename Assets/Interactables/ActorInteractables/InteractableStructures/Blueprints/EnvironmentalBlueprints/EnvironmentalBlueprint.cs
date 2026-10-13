@@ -50,9 +50,8 @@ namespace Interaction.ActorInteractables.Structures
 			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
 		}
 
-		protected override void Start()
+		protected void Start()
 		{
-			base.Start();
 			m_settlementID = m_blueprintSettlementID;
 
 			if (SettlementManager.s_WorldSettlements.TryGetValue(m_settlementID, out Settlement settlement))

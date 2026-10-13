@@ -37,17 +37,13 @@ namespace Interaction.InteractableStructures
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
 
-		private void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
+
 			InventoryComponent = GetComponent<InventoryComponent>();
 
 			InitializeBehaviourTree();
-		}
-
-		private void Start()
-		{
-			if (m_interactPositions == null || m_interactPositions.Length == 0)
-				m_interactPositions = GetComponentsInChildren<InteractionPoint>();
 		}
 
 		private void InitializeBehaviourTree()

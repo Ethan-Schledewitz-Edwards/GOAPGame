@@ -40,12 +40,11 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 	private bool m_isItemStored;
 	private IInteractor m_holder;
 
-	public void Awake()
+	protected override void Awake()
 	{
-		m_rb = GetComponent<Rigidbody>();
+		base.Awake();
 
-		if (m_interactPositions == null || m_interactPositions.Length == 0)
-			m_interactPositions = new InteractionPoint[] { m_interactionPosition };
+		m_rb = GetComponent<Rigidbody>();
 
 		InitializeBehaviourTree();
 	}
@@ -141,12 +140,12 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 		return false;
 	}
 
-	public override bool HasAvailableWork(IInteractor interactor)
+	public override bool HasWorkForInteractor(IInteractor interactor)
 	{
 		if (m_isItemStored)
 			return false;
 
-		return base.HasAvailableWork(interactor);
+		return base.HasWorkForInteractor(interactor);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => s_ItemBT;

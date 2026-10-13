@@ -39,19 +39,15 @@ namespace Interaction.ActorInteractables.Structures
 		[SerializeField] protected ItemTag[] m_tagFilter;
 		public ItemTag[] ItemTagFilter => m_tagFilter;
 
-		protected virtual void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
+
 			InitializeBehaviourTree();
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
 			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
-		}
-
-		protected virtual void Start()
-		{
-			if (m_interactPositions == null || m_interactPositions.Length == 0)
-				m_interactPositions = GetComponentsInChildren<InteractionPoint>();
 		}
 
 		protected override void OnDestroy()

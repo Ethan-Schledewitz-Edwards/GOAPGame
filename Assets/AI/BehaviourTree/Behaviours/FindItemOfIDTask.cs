@@ -79,7 +79,7 @@ public class FindItemOfIDTask : BTNodeBase
 			}
 
 			if (entity.TryGetComponent(out ActorInteractableBase interactable) &&
-				!interactable.HasAvailableWork(interactor))
+				!interactable.HasWorkForInteractor(interactor))
 			{
 				continue;
 			}
@@ -135,7 +135,7 @@ public class FindItemOfIDTask : BTNodeBase
 		GameObject structureObject = closestStructure.Object;
 
 		if (!structureObject.TryGetComponent(out ActorInteractableBase interactable) || 
-		    !interactable.HasAvailableWork(interactor))
+		    !interactable.HasWorkForInteractor(interactor))
 		{
 			return null;
 		}

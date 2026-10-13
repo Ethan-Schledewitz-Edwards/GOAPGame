@@ -205,10 +205,10 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
+  IsDamagable: 1
   m_treeMeshObject: {fileID: 6670668404327998910}
   m_stumpMeshObject: {fileID: 2824037566599855480}
   m_spawnedCarryablePrefab: {fileID: 1848493102313110294, guid: 90ada239b3c9b27439eda4d61753bb74, type: 3}
-  m_isDamagable: 1
 --- !u!82 &6518718037148992619
 AudioSource:
   m_ObjectHideFlags: 0
@@ -315,12 +315,12 @@ NavMeshObstacle:
   m_GameObject: {fileID: 3778585277737840742}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.25, y: 1, z: 0.25}
+  m_Shape: 0
+  m_Extents: {x: 0.5, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
 --- !u!1 &6670668404327998910
 GameObject:

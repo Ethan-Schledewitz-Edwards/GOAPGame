@@ -483,15 +483,15 @@ public class Actor : MonoBehaviour, IInteractor
 			if (i == null)
 				continue;
 
-			if (i.TryGetComponent(out ActorInteractableBase aio))
+			if (i.TryGetComponent(out ActorInteractableBase actorInteractable))
 			{
-				if (!aio.HasAvailableWork(this))
+				if (!actorInteractable.HasWorkForInteractor(this))
 					continue;
 
-				float dist = (pos - aio.transform.position).sqrMagnitude;
+				float dist = (pos - actorInteractable.transform.position).sqrMagnitude;
 				if (dist < closestDist)
 				{
-					closestTask = aio;
+					closestTask = actorInteractable;
 					closestDist = dist;
 				}
 			}
