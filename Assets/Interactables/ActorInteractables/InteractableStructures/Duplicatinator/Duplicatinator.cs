@@ -5,6 +5,7 @@ using ObjectTags;
 using Settlements;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Interaction.Actor.InteractableStructures
@@ -107,20 +108,31 @@ namespace Interaction.Actor.InteractableStructures
 			m_isDuplicatingNodds = false;
 			UpdateInteractableInfo(); // Hide timer
 
+			int columns = Mathf.CeilToInt(Mathf.Sqrt(noddsProduced));
+			float spacing = 0.5f;
+
 			for (int i = 0; i < noddsProduced; i++)
 			{
-				SpawnNodd();
+				int x = i % columns;
+				int y = i / columns;
+
+				Vector2 xzOffset = new Vector2(x * spacing, y * spacing);
+
+				SpawnNodd(xzOffset);
 			}
 		}
 
-		private void SpawnNodd()
+		private void SpawnNodd(Vector2 offset)
 		{
 			if(m_noddSpawnPoint == null ||
 				m_noddPrefab == null)
 				return;
 
-			Instantiate(m_noddPrefab, 
-				m_noddSpawnPoint.position, 
+			Vector3 spawnPosition = m_noddSpawnPoint.position + 
+				new Vector3(offset.x, 0, offset.y);
+
+			Instantiate(m_noddPrefab,
+				spawnPosition, 
 				m_noddSpawnPoint.rotation, null);
 		}
 
