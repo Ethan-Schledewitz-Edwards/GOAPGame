@@ -27,7 +27,6 @@ namespace Interaction.ActorInteractables.Structures
 
 		// IInteractable properties
 		protected override string m_interactPrompt => string.Empty;
-		protected override bool m_hasTrackingDisplayInfo => true;
 
 		// IStructure properties
 		public StructureTag StructureTypeTag => m_structureTypeTag;
@@ -50,10 +49,8 @@ namespace Interaction.ActorInteractables.Structures
 			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
-		protected override void OnDestroy()
+		private void OnDestroy()
 		{
-			base.OnDestroy();
-
 			if (m_itemRequestComponent != null)
 				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
 		}

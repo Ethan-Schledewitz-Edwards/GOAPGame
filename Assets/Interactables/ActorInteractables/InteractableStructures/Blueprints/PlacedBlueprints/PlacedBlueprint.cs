@@ -41,10 +41,8 @@ namespace Interaction.ActorInteractables.Structures
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 		}
 
-		protected override void OnDestroy()
+		private void OnDestroy()
 		{
-			base.OnDestroy();
-
 			m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 		}
 

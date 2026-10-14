@@ -9,34 +9,28 @@ namespace Player.Core
 	public class PlayerInteractionController : MonoBehaviour, IInputHandler
 	{
 		private const float c_displayRange = 12f;
-		private const float c_interactionRange = 3f;
+		private const float c_interactionRange = 4f;
 		private const int c_maxColliders = 16;
 
 		[SerializeField] private LayerMask m_interactionLayer;
 
-		// Display Range Events
-		public event Action<IInteractable> NewInteractableInDisplayRange;
-		public event Action<IInteractable> InteractableOutOfRange;
+		// Trackable Object Events
+		public event Action<ITrackableObject> NewTrackableObjectInDisplayRange;
+		public event Action<ITrackableObject> TrackableObjectOutOfRange;
 
 		// Interaction Events
 		public event Action<string, Vector3> ClosestInteractableUpdated;
 		public event Action ClosestInteractableCleared;
 
-		private IInteractable m_closestInteractable;
+		private PlayerInteractableBase m_closestInteractable;
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
-		private HashSet<IInteractable> m_previousInteractables = new HashSet<IInteractable>();
-		private HashSet<IInteractable> m_currentInteractables = new HashSet<IInteractable>();
+		private HashSet<ITrackableObject> m_previousTrackables = new HashSet<ITrackableObject>();
+		private HashSet<ITrackableObject> m_currentTrackables = new HashSet<ITrackableObject>();
 
-		public void Subscribe()
-		{
-			
-		}
-
-		public void UnSubscribe()
-		{
-			
-		}
+		// TO do: Interaction input using these methods
+		public void Subscribe() { }
+		public void UnSubscribe() { }
 
 		private void Update()
 		{
@@ -47,63 +41,60 @@ namespace Player.Core
 		{
 			int hitCount = Physics.OverlapSphereNonAlloc(transform.position, c_displayRange, m_colliderBuffer, m_interactionLayer);
 
-			IInteractable closestInteractable = null;
+			PlayerInteractableBase closestInteractable = null;
 			float minSqrDistance = c_interactionRange * c_interactionRange;
 
 			for (int i = 0; i < hitCount; i++)
 			{
 				Collider col = m_colliderBuffer[i];
 
-				if (col.TryGetComponent(out IInteractable interactable))
+				// Any object implementing ITrackableObject gets tracked UI.
+				if (col.TryGetComponent(out ITrackableObject trackableObject))
 				{
-					m_currentInteractables.Add(interactable);
+					m_currentTrackables.Add(trackableObject);
 
-					// New interactable within display range
-					if (interactable.HasTrackingDisplayInfo &&
-						!m_previousInteractables.Contains(interactable))
+					if (!m_previousTrackables.Contains(trackableObject))
 					{
-						NewInteractableInDisplayRange?.Invoke(interactable);
+						NewTrackableObjectInDisplayRange?.Invoke(trackableObject);
 					}
+				}
 
-					// Only PlayerInteractables allow direct player interactions & prompts
-					if (interactable is not PlayerInteractableBase)
-						continue;
-
-					// Calculate distance for interaction prompt
+				//  Find the closest player interactable
+				if (col.TryGetComponent(out PlayerInteractableBase playerInteractable))
+				{
 					float sqrDistance = (col.transform.position - transform.position).sqrMagnitude;
 					if (sqrDistance <= minSqrDistance)
 					{
-						closestInteractable = interactable;
+						closestInteractable = playerInteractable;
 						minSqrDistance = sqrDistance;
 					}
 				}
 			}
 
-			// Find interactables that left display range
-			foreach (IInteractable prevInteractable in m_previousInteractables)
+			// Find trackable objects that left the display range
+			foreach (ITrackableObject prevTrackable in m_previousTrackables)
 			{
-				if (prevInteractable != null &&
-					!m_currentInteractables.Contains(prevInteractable))
+				if (prevTrackable != null && !m_currentTrackables.Contains(prevTrackable))
 				{
-					InteractableOutOfRange?.Invoke(prevInteractable);
+					TrackableObjectOutOfRange?.Invoke(prevTrackable);
 				}
 			}
 
-			// Handle closest interactable updates
+			// Handle closest interactable prompt updates
 			if (closestInteractable != m_closestInteractable)
 			{
 				if (m_closestInteractable != null)
 					ClearInteractable();
 
 				if (closestInteractable != null)
-					SetInteractable(closestInteractable as PlayerInteractableBase);
+					SetInteractable(closestInteractable);
 			}
 
-			// Double buffering swap
-			HashSet<IInteractable> temp = m_previousInteractables;
-			m_previousInteractables = m_currentInteractables;
-			m_currentInteractables = temp;
-			m_currentInteractables.Clear();
+			// Double buffering swap for trackables
+			HashSet<ITrackableObject> temp = m_previousTrackables;
+			m_previousTrackables = m_currentTrackables;
+			m_currentTrackables = temp;
+			m_currentTrackables.Clear();
 		}
 
 		private void SetInteractable(PlayerInteractableBase playerInteractable)

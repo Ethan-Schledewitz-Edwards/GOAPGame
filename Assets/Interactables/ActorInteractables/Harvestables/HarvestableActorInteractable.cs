@@ -12,7 +12,6 @@ public class HarvestableActorInteractable : ActorInteractableBase
 
 	// IInteractable properties
 	protected override string m_interactPrompt => string.Empty;
-	protected override bool m_hasTrackingDisplayInfo => true;
 
 	protected override void Awake()
 	{

@@ -26,7 +26,6 @@ namespace Interaction.InteractableStructures
 
 		// IInteractable properties
 		protected override string m_interactPrompt => string.Empty;
-		protected override bool m_hasTrackingDisplayInfo => false;
 
 		// IStructure properties
 		private int m_settlementID;

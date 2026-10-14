@@ -23,7 +23,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	// IInteractable properties
 	protected override string m_interactPrompt => string.Empty;
-	protected override bool m_hasTrackingDisplayInfo => false;
 
 	public Transform Transform => transform;
 

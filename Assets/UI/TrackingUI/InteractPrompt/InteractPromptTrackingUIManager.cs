@@ -2,19 +2,20 @@ using Player.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, InteractPromptTrackingUIElement>
+public class InteractPromptTrackingUIManager : MonoBehaviour
 {
 	[SerializeField] private InteractPromptTrackingUIElement m_interactPromptTrackingUIElement;
 
+	private PlayerInteractionController m_playerInteraction;
+
 	private void Awake()
 	{
-		Assert.IsNotNull(m_interactPromptTrackingUIElement, "[InteractPromptTrackingUIManager] The reference to the " +
-			"interactPromptTrackingUIElement is missing.");
+		Assert.IsNotNull(m_interactPromptTrackingUIElement, "[InteractPromptTrackingUIManager] " +
+			"The reference to the interactPromptTrackingUIElement is missing.");
 	}
 
-	protected override void Start()
+	private void Start()
 	{
-		// Dont call base since this uses a different implementation
 		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
 		if (m_playerInteraction != null)
 		{
@@ -22,10 +23,13 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 			m_playerInteraction.ClosestInteractableCleared += HandlePromptCleared;
 		}
 
-		m_interactPromptTrackingUIElement.gameObject.SetActive(false);
+		if (m_interactPromptTrackingUIElement != null)
+		{
+			m_interactPromptTrackingUIElement.gameObject.SetActive(false);
+		}
 	}
 
-	protected override void OnDestroy()
+	private void OnDestroy()
 	{
 		if (m_playerInteraction != null)
 		{
@@ -54,37 +58,10 @@ public class InteractPromptTrackingUIManager : TrackingUIManagerBase<Temp, Inter
 
 	private void HandlePromptCleared()
 	{
-		if (m_interactPromptTrackingUIElement.gameObject.activeSelf)
+		if (m_interactPromptTrackingUIElement != null && 
+			m_interactPromptTrackingUIElement.gameObject.activeSelf)
 		{
 			m_interactPromptTrackingUIElement.ElementReturned();
 		}
-	}
-
-	protected override InteractPromptTrackingUIElement GetUIElement(Temp interactable)
-	{
-		Debug.Log("Get interact prompt");
-
-		return m_interactPromptTrackingUIElement;
-	}
-
-	protected override void ReleaseUIElement(InteractPromptTrackingUIElement uiElement)
-	{
-		Debug.Log("Release");
-
-		uiElement.gameObject.SetActive(false);
-	}
-
-	protected override void InitializeUI(Temp interactable, InteractPromptTrackingUIElement uiElement)
-	{
-		Debug.Log("Set interact prompt");
-
-		uiElement.SetPromptText(interactable.InteractPrompt);
-	}
-
-	protected override void UpdateUI(Temp interactable, InteractPromptTrackingUIElement uiElement)
-	{
-		Debug.Log("Update interact prompt");
-
-		uiElement.SetPromptText(interactable.InteractPrompt);
 	}
 }

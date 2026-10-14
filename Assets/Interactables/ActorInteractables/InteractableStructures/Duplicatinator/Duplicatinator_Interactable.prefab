@@ -149,6 +149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4096898627607497459}
   - component: {fileID: 8889112409096884335}
+  - component: {fileID: 6665421013647682190}
   - component: {fileID: 4621684914593885089}
   - component: {fileID: 1063335660902267423}
   m_Layer: 7
@@ -187,10 +188,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9365e19408366ce45b4136726df9ddde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Actor.InteractableStructures::Interaction.Actor.InteractableStructures.Duplicatinator
-  m_localPromptOffset: {x: 0, y: 0, z: 0}
+  m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
   m_noddSpawnPoint: {fileID: 2586353325853295127}
   m_noddPrefab: {fileID: 2239435831216304708, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
+--- !u!114 &6665421013647682190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127017081437623561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db115c758ed2c204caca8780fc6cf527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedProgressComponent
 --- !u!208 &4621684914593885089
 NavMeshObstacle:
   m_ObjectHideFlags: 0

@@ -5,11 +5,11 @@ using ObjectTags;
 using Settlements;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Interaction.Actor.InteractableStructures
 {
+	[RequireComponent(typeof(UITrackedProgressComponent))]
 	public class Duplicatinator : ActorInteractableBase, IStructure
 	{
 		[Header("Settings")]
@@ -19,15 +19,17 @@ namespace Interaction.Actor.InteractableStructures
 
 		protected override int m_minActorsToFunction => 0; // Needs a carryable not guys
 
+		// IInteractable properties
 		protected override string m_interactPrompt => string.Empty;
-
-		protected override bool m_hasTrackingDisplayInfo => false; // Will have this in the future for progress bars
 
 		// IStructure properties
 		public StructureTag StructureTypeTag => m_duplicatinatorTag;
 		public int SettlementID => m_settlementID;
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
+
+		// Components
+		private UITrackedProgressComponent m_progressComponent;
 
 		// System
 		private int m_settlementID;
@@ -37,6 +39,13 @@ namespace Interaction.Actor.InteractableStructures
 		private bool m_isDuplicatingNodds;
 		private float m_duplicationCountdown;
 		/*Add a variable to specify which type is produced*/
+
+		protected override void Awake()
+		{
+			base.Awake();
+
+			m_progressComponent = GetComponent<UITrackedProgressComponent>();
+		}
 
 		private void Start()
 		{
@@ -52,11 +61,9 @@ namespace Interaction.Actor.InteractableStructures
 			}
 		}
 
-		protected override void OnDestroy()
+		private void OnDestroy()
 		{
 			StopCoroutine(m_duplicationRoutine);
-
-			base.OnDestroy();
 		}
 
 		public void SetSettlement(int settlementID, int settlementStructureID)
@@ -100,13 +107,13 @@ namespace Interaction.Actor.InteractableStructures
 			while (m_duplicationCountdown > 0)
 			{
 				m_duplicationCountdown -= Time.deltaTime;
-				UpdateInteractableInfo(); // Show timer counting down
+				m_progressComponent.UpdateProgressValue(m_duplicationCountdown, duration); // Show timer counting down
 				yield return null;
 			}
 
 			m_duplicationCountdown = 0f;
 			m_isDuplicatingNodds = false;
-			UpdateInteractableInfo(); // Hide timer
+			m_progressComponent.UpdateProgressValue(0, duration); // Hide timer
 
 			int columns = Mathf.CeilToInt(Mathf.Sqrt(noddsProduced));
 			float spacing = 0.5f;

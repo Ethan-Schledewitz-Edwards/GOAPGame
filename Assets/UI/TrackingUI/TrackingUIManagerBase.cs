@@ -1,130 +1,133 @@
+using Interaction.Core;
 using Player.Core;
 using System.Collections.Generic;
 using UnityEngine;
-using Interaction.Core;
 
-public abstract class TrackingUIManagerBase<TInteractable, TUIElement> : MonoBehaviour
-	where TInteractable : class, IInteractable
-	where TUIElement : TrackingUIElementBase
+namespace UISystem.TrackingUI
 {
-	protected PlayerInteractionController m_playerInteraction;
-
-	protected Dictionary<TInteractable, TUIElement> m_activeElements = new Dictionary<TInteractable, TUIElement>();
-
-	protected virtual void Start()
+	public abstract class TrackingUIManagerBase<TTrackable, TUIElement> : MonoBehaviour
+	where TTrackable : class, ITrackableObject
+	where TUIElement : TrackingUIElementBase
 	{
-		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
-		if (m_playerInteraction != null)
-		{
-			m_playerInteraction.NewInteractableInDisplayRange += HandleInteractableInRange;
-			m_playerInteraction.InteractableOutOfRange += HandleInteractableOutOfRange;
-		}
-	}
+		protected PlayerInteractionController m_playerInteraction;
 
-	protected virtual void OnDestroy()
-	{
-		if (m_playerInteraction != null)
-		{
-			m_playerInteraction.NewInteractableInDisplayRange -= HandleInteractableInRange;
-			m_playerInteraction.InteractableOutOfRange -= HandleInteractableOutOfRange;
-		}
+		protected Dictionary<TTrackable, TUIElement> m_activeElements = new Dictionary<TTrackable, TUIElement>();
 
-		// Cleanup subscriptions and active elements
-		foreach (var kvp in m_activeElements)
+		protected virtual void Start()
 		{
-			if (kvp.Key != null)
+			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
+			if (m_playerInteraction != null)
 			{
-				CleanupInteractableSubscriptions(kvp.Key);
+				m_playerInteraction.NewTrackableObjectInDisplayRange += HandleInteractableInRange;
+				m_playerInteraction.TrackableObjectOutOfRange += HandleInteractableOutOfRange;
 			}
 		}
-		m_activeElements.Clear();
-	}
 
-	private void HandleInteractableInRange(IInteractable interactable)
-	{
-		if (interactable is TInteractable typedInteractable && typedInteractable.HasTrackingDisplayInfo)
+		protected virtual void OnDestroy()
 		{
-			if (!m_activeElements.ContainsKey(typedInteractable))
+			if (m_playerInteraction != null)
 			{
-				TUIElement uiElement = GetUIElement(typedInteractable);
-				if (uiElement != null)
+				m_playerInteraction.NewTrackableObjectInDisplayRange -= HandleInteractableInRange;
+				m_playerInteraction.TrackableObjectOutOfRange -= HandleInteractableOutOfRange;
+			}
+
+			// Cleanup subscriptions and active elements
+			foreach (var kvp in m_activeElements)
+			{
+				if (kvp.Key != null)
 				{
-					m_activeElements.Add(typedInteractable, uiElement);
-					uiElement.ElementReleased();
+					CleanupTrackableSubscriptions(kvp.Key);
+				}
+			}
+			m_activeElements.Clear();
+		}
 
-					// Subscribe to updates specific to this interactable type
-					RegisterInteractableSubscriptions(typedInteractable);
+		private void HandleInteractableInRange(ITrackableObject trackable)
+		{
+			if (trackable is TTrackable typedTrackable)
+			{
+				if (!m_activeElements.ContainsKey(typedTrackable))
+				{
+					TUIElement uiElement = GetUIElement(typedTrackable);
+					if (uiElement != null)
+					{
+						m_activeElements.Add(typedTrackable, uiElement);
+						uiElement.ElementReleased();
 
-					// Setup initial position and initialize visuals
-					UpdateElementPosition(typedInteractable, uiElement);
-					InitializeUI(typedInteractable, uiElement);
+						// Subscribe to updates specific to this trackable type
+						RegisterTrackableSubscriptions(typedTrackable);
+
+						// Setup initial position and initialize visuals
+						UpdateElementPosition(typedTrackable, uiElement);
+						InitializeUI(typedTrackable, uiElement);
+					}
 				}
 			}
 		}
-	}
 
-	private void HandleInteractableOutOfRange(IInteractable interactable)
-	{
-		if (interactable is TInteractable typedInteractable)
+		private void HandleInteractableOutOfRange(ITrackableObject trackable)
 		{
-			if (m_activeElements.TryGetValue(typedInteractable, out TUIElement uiElement))
+			if (trackable is TTrackable typedTrackable)
 			{
-				CleanupInteractableSubscriptions(typedInteractable);
+				if (m_activeElements.TryGetValue(typedTrackable, out TUIElement uiElement))
+				{
+					CleanupTrackableSubscriptions(typedTrackable);
 
-				uiElement.ResetDynamicPosition();
-				uiElement.ElementReturned();
+					uiElement.ResetDynamicPosition();
+					uiElement.ElementReturned();
 
-				// Allow implementation to pool or destroy the UI element
-				ReleaseUIElement(uiElement);
+					// Allow implementation to pool or destroy the UI element
+					ReleaseUIElement(uiElement);
 
-				m_activeElements.Remove(typedInteractable);
+					m_activeElements.Remove(typedTrackable);
+				}
 			}
 		}
-	}
 
-	protected void RefreshElement(TInteractable interactable, TUIElement uiElement)
-	{
-		UpdateElementPosition(interactable, uiElement);
-		UpdateUI(interactable, uiElement);
-	}
-
-	private void UpdateElementPosition(TInteractable interactable, TUIElement uiElement)
-	{
-		if (interactable.InteractableTransform != null)
+		protected void RefreshElement(TTrackable interactable, TUIElement uiElement)
 		{
-			// Fallback or local offset handling if applicable
-			Vector3 targetPosition = interactable.InteractableTransform.position;
-			uiElement.SetTrackingPosition(targetPosition);
+			UpdateElementPosition(interactable, uiElement);
+			UpdateUI(interactable, uiElement);
 		}
+
+		private void UpdateElementPosition(TTrackable interactable, TUIElement uiElement)
+		{
+			if (interactable.ObjectTransform != null)
+			{
+				// Fallback or local offset handling if applicable
+				Vector3 targetPosition = interactable.ObjectTransform.position;
+				uiElement.SetTrackingPosition(targetPosition);
+			}
+		}
+
+		/// <summary>
+		/// Override to subscribe to any custom update events provided by your specific trackable type.
+		/// </summary>
+		protected virtual void RegisterTrackableSubscriptions(TTrackable trackable) { }
+
+		/// <summary>
+		/// Override to unsubscribe from custom update events.
+		/// </summary>
+		protected virtual void CleanupTrackableSubscriptions(TTrackable trackable) { }
+
+		/// <summary>
+		/// Supply a UI element for the given trackable (e.g., pull from an Object Pool or Instantiate).
+		/// </summary>
+		protected abstract TUIElement GetUIElement(TTrackable trackable);
+
+		/// <summary>
+		/// Release the UI element (e.g., return it to the Object Pool or Destroy it).
+		/// </summary>
+		protected abstract void ReleaseUIElement(TUIElement uiElement);
+
+		/// <summary>
+		/// Called when the trackable is first displayed. Set up initial text, icons, etc.
+		/// </summary>
+		protected abstract void InitializeUI(TTrackable trackable, TUIElement uiElement);
+
+		/// <summary>
+		/// Called to refresh dynamic data.
+		/// </summary>
+		protected abstract void UpdateUI(TTrackable interactable, TUIElement uiElement);
 	}
-
-	/// <summary>
-	/// Override to subscribe to any custom update events provided by your specific interactable type.
-	/// </summary>
-	protected virtual void RegisterInteractableSubscriptions(TInteractable interactable) { }
-
-	/// <summary>
-	/// Override to unsubscribe from custom update events.
-	/// </summary>
-	protected virtual void CleanupInteractableSubscriptions(TInteractable interactable) { }
-
-	/// <summary>
-	/// Supply a UI element for the given interactable (e.g., pull from an Object Pool or Instantiate).
-	/// </summary>
-	protected abstract TUIElement GetUIElement(TInteractable interactable);
-
-	/// <summary>
-	/// Release the UI element (e.g., return it to the Object Pool or Destroy it).
-	/// </summary>
-	protected abstract void ReleaseUIElement(TUIElement uiElement);
-
-	/// <summary>
-	/// Called when the interactable is first displayed. Set up initial text, icons, etc.
-	/// </summary>
-	protected abstract void InitializeUI(TInteractable interactable, TUIElement uiElement);
-
-	/// <summary>
-	/// Called to refresh dynamic data.
-	/// </summary>
-	protected abstract void UpdateUI(TInteractable interactable, TUIElement uiElement);
 }

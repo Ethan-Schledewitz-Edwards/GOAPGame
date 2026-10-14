@@ -11,7 +11,6 @@ public class EnemyInteractable : ActorInteractableBase
 
 	protected override string m_interactPrompt => string.Empty;
 
-	protected override bool m_hasTrackingDisplayInfo => false;
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 	static void Init()

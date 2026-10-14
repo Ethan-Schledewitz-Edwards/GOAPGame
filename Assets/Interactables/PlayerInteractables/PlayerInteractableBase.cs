@@ -13,9 +13,6 @@ namespace Interaction.Player
 		public Vector3 LocalInteractionPromptOffset => m_localPromptOffset;
 		[SerializeField] private Vector3 m_localPromptOffset;
 
-		public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
-		protected abstract bool m_hasTrackingDisplayInfo { get; }
-
 		public Transform InteractableTransform => transform;
 
 		public InteractionPoint[] InteractionPoints => m_interactionPoints;

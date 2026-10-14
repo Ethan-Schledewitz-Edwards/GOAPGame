@@ -28,7 +28,6 @@ public class ItemActorInteractable : ActorInteractableBase, IItemObject
 
 	// IInteractable properties
 	protected override string m_interactPrompt => string.Empty;
-	protected override bool m_hasTrackingDisplayInfo => false;
 
 	// IItemObject properties
 	public ItemData ItemData => m_itemData;

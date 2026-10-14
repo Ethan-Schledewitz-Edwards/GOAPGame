@@ -15,17 +15,10 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public Vector3 LocalInteractionPromptOffset => m_localInteractionPromptOffset;
 	[SerializeField] private Vector3 m_localInteractionPromptOffset;
 
-	public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
-	protected abstract bool m_hasTrackingDisplayInfo { get; }
-
 	public Transform InteractableTransform => transform;
 
-	[Header("Actor Interaction")]
 	public InteractionPoint[] InteractionPoints => m_interactionPoints;
 	private InteractionPoint[] m_interactionPoints;
-
-	public event Action InteractableInfoUpdated;
-	public event Action InteractableDestroyed;
 
 	protected virtual void Awake()
 	{
@@ -45,11 +38,6 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 					$"attached to {this.name}. Interactions will not be possible without any.", this);
 			}
 		}
-	}
-
-	protected virtual void OnDestroy()
-	{
-		InteractableDestroyed?.Invoke();
 	}
 
 	/// <summary>
@@ -151,11 +139,6 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	}
 
 	public virtual void LostMinimumActors() { }
-
-	public virtual void UpdateInteractableInfo()
-	{
-		InteractableInfoUpdated?.Invoke();
-	}
 
 	public virtual bool HasWorkForInteractor(IInteractor interactor)
 	{
