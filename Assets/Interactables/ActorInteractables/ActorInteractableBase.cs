@@ -12,8 +12,8 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public string InteractPrompt => m_interactPrompt;
 	protected abstract string m_interactPrompt { get; }
 
-	public Vector3 LocalPromptOffset => m_localPromptOffset;
-	[SerializeField] private Vector3 m_localPromptOffset;
+	public Vector3 LocalInteractionPromptOffset => m_localInteractionPromptOffset;
+	[SerializeField] private Vector3 m_localInteractionPromptOffset;
 
 	public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
 	protected abstract bool m_hasTrackingDisplayInfo { get; }
@@ -24,7 +24,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public InteractionPoint[] InteractionPoints => m_interactionPoints;
 	private InteractionPoint[] m_interactionPoints;
 
-	public event Action OnInfoUpdated;
+	public event Action InteractableInfoUpdated;
 	public event Action InteractableDestroyed;
 
 	protected virtual void Awake()
@@ -57,7 +57,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	/// For reserved positions, assignment creates a reservation.
 	/// For non-reserved positions, assignment is a position selection.
 	/// </summary>
-	public bool TryReserveClosestPosition(
+	public virtual bool TryReserveClosestPosition(
 		IInteractor interactor,
 		Vector3 actorPosition,
 		out InteractionPoint reservedPoint)
@@ -154,7 +154,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 	public virtual void UpdateInteractableInfo()
 	{
-		OnInfoUpdated?.Invoke();
+		InteractableInfoUpdated?.Invoke();
 	}
 
 	public virtual bool HasWorkForInteractor(IInteractor interactor)

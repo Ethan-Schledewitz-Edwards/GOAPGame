@@ -10,7 +10,7 @@ namespace Interaction.Player
 		public string InteractPrompt => m_interactPrompt;
 		protected abstract string m_interactPrompt { get; }
 
-		public Vector3 LocalPromptOffset => m_localPromptOffset;
+		public Vector3 LocalInteractionPromptOffset => m_localPromptOffset;
 		[SerializeField] private Vector3 m_localPromptOffset;
 
 		public bool HasTrackingDisplayInfo => m_hasTrackingDisplayInfo;
@@ -22,7 +22,7 @@ namespace Interaction.Player
 		private InteractionPoint[] m_interactionPoints;
 
 		public event Action InteractableDestroyed;
-		public event Action OnInfoUpdated;
+		public event Action InteractableInfoUpdated;
 
 		protected virtual void OnDestroy()
 		{
@@ -31,7 +31,7 @@ namespace Interaction.Player
 
 		public virtual void UpdateInteractableInfo()
 		{
-			OnInfoUpdated?.Invoke();
+			InteractableInfoUpdated?.Invoke();
 		}
 	}
 }

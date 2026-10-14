@@ -113,7 +113,7 @@ namespace Player.Core
 				m_closestInteractable = playerInteractable;
 
 				Vector3 promptPosition = playerInteractable.transform.position +
-					playerInteractable.LocalPromptOffset;
+					playerInteractable.LocalInteractionPromptOffset;
 
 				ClosestInteractableUpdated?.Invoke(playerInteractable.InteractPrompt, promptPosition);
 			}

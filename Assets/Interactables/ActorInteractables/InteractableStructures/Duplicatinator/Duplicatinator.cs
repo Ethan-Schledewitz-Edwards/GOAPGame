@@ -3,6 +3,7 @@ using Factions.Core;
 using Interaction.Core;
 using ObjectTags;
 using Settlements;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,14 @@ namespace Interaction.Actor.InteractableStructures
 	{
 		[Header("Settings")]
 		[SerializeField] private StructureTag m_duplicatinatorTag;
+		[SerializeField] private Transform m_noddSpawnPoint;
+		[SerializeField] private Transform m_noddPrefab;
+
+		protected override int m_minActorsToFunction => 0; // Needs a carryable not guys
+
+		protected override string m_interactPrompt => string.Empty;
+
+		protected override bool m_hasTrackingDisplayInfo => false; // Will have this in the future for progress bars
 
 		// IStructure properties
 		public StructureTag StructureTypeTag => m_duplicatinatorTag;
@@ -19,15 +28,14 @@ namespace Interaction.Actor.InteractableStructures
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
 
-		protected override int m_minActorsToFunction => 0; // Needs a log not people
-
-		protected override string m_interactPrompt => string.Empty;
-
-		protected override bool m_hasTrackingDisplayInfo => false; // Will have this in the future for progress bars
-
 		// System
 		private int m_settlementID;
 		private int m_settlementStructureID;
+
+		private Coroutine m_duplicationRoutine;
+		private bool m_isDuplicatingNodds;
+		private float m_duplicationCountdown;
+		/*Add a variable to specify which type is produced*/
 
 		private void Start()
 		{
@@ -43,17 +51,77 @@ namespace Interaction.Actor.InteractableStructures
 			}
 		}
 
+		protected override void OnDestroy()
+		{
+			StopCoroutine(m_duplicationRoutine);
+
+			base.OnDestroy();
+		}
+
 		public void SetSettlement(int settlementID, int settlementStructureID)
 		{
 			m_settlementID = settlementID;
 			m_settlementStructureID = settlementStructureID;
 		}
 
+		public override bool TryReserveClosestPosition(IInteractor interactor, 
+			Vector3 actorPosition, 
+			out InteractionPoint reservedPoint)
+		{
+			reservedPoint = null;
+
+			if (m_isDuplicatingNodds)
+				return false;
+
+			return base.TryReserveClosestPosition(interactor, actorPosition, out reservedPoint);
+		}
+
 		public override bool TryInteract(IInteractor interactor, Vector3 actorPosition, InteractionPoint assignedPosition)
 		{
-			Debug.Log("FUCK YEAH");
+			if(m_isDuplicatingNodds) 
+				return false;
 
-			return base.TryInteract(interactor, actorPosition, assignedPosition);
+			// Kick actors off of the carryable
+			interactor.InteractionCanceled();
+
+			Destroy(interactor.Transform.gameObject);
+
+			m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(4, 5f));
+
+			return true;
+		}
+
+		private IEnumerator BeginNoddDuplication(int noddsProduced, float duration /*Add a property to specify which type to produce*/)
+		{
+			m_isDuplicatingNodds = true;
+			m_duplicationCountdown = duration;
+
+			while (m_duplicationCountdown > 0)
+			{
+				m_duplicationCountdown -= Time.deltaTime;
+				UpdateInteractableInfo(); // Show timer counting down
+				yield return null;
+			}
+
+			m_duplicationCountdown = 0f;
+			m_isDuplicatingNodds = false;
+			UpdateInteractableInfo(); // Hide timer
+
+			for (int i = 0; i < noddsProduced; i++)
+			{
+				SpawnNodd();
+			}
+		}
+
+		private void SpawnNodd()
+		{
+			if(m_noddSpawnPoint == null ||
+				m_noddPrefab == null)
+				return;
+
+			Instantiate(m_noddPrefab, 
+				m_noddSpawnPoint.position, 
+				m_noddSpawnPoint.rotation, null);
 		}
 
 		public override BehaviourTree GetBehaviourTree() { return null; }

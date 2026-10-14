@@ -310,7 +310,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	public void StopCarrying() { }
 
-	public void CancelInteraction()
+	public void InteractionCanceled()
 	{
 		foreach (InteractionPoint point in InteractionPoints)
 		{

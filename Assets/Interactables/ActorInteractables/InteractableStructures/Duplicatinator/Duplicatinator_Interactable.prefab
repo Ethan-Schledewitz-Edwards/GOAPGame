@@ -189,6 +189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction.Actor.InteractableStructures::Interaction.Actor.InteractableStructures.Duplicatinator
   m_localPromptOffset: {x: 0, y: 0, z: 0}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
+  m_noddSpawnPoint: {fileID: 2586353325853295127}
+  m_noddPrefab: {fileID: 2239435831216304708, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
 --- !u!208 &4621684914593885089
 NavMeshObstacle:
   m_ObjectHideFlags: 0

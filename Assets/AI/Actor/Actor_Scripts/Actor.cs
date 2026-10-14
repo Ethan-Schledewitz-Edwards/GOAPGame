@@ -139,6 +139,14 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
+	private void OnDestroy()
+	{
+		if (m_assignedInteractionPosition != null)
+		{
+			m_assignedInteractionPosition.InteractionsCanceled -= InteractionCanceled;
+		}
+	}
+
 	#endregion
 
 	public void TickBehaviour(float t)
@@ -219,7 +227,7 @@ public class Actor : MonoBehaviour, IInteractor
 							(treeState == EBTNodeState.SUCSESS ||
 							 treeState == EBTNodeState.FAILURE))
 						{
-							BeginOffDuty();
+							ClearJobState(false);
 						}
 					}
 					break;
@@ -264,9 +272,8 @@ public class Actor : MonoBehaviour, IInteractor
 	public void FollowPlayer(Transform Player)
 	{
 		// Clear state
-		CancelInteraction();
-		BeginOffDuty();
-		m_behaviourTreeExecutor.ResetContext();
+		InteractionCanceled();
+		ClearJobState(false);
 
 		// Follow
 		SetLogicExecutorState(EActorState.Follow);
@@ -290,7 +297,7 @@ public class Actor : MonoBehaviour, IInteractor
 		// interactor. If there is no behaviour tree, release that position now.
 		if (behaviourTree == null)
 		{
-			BeginOffDuty();
+			ClearJobState(false);
 			return;
 		}
 
@@ -334,6 +341,12 @@ public class Actor : MonoBehaviour, IInteractor
 			}
 
 			m_targetTransform = actorInteractable.transform;
+
+			if (m_assignedInteractionPosition != null)
+			{
+				m_assignedInteractionPosition.InteractionsCanceled -= InteractionCanceled;
+			}
+
 			bool isInteractionSuccessful = actorInteractable.TryInteract
 			(
 				this,
@@ -347,12 +360,13 @@ public class Actor : MonoBehaviour, IInteractor
 				return;
 			}
 
+			m_assignedInteractionPosition.InteractionsCanceled += InteractionCanceled;
 			TrySetActorJob(actorInteractable.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {actorInteractable.name} and was succsessful.", this);
+			Debug.Log($"{transform} interacted with {actorInteractable.name} and was successful.", this);
 		}
 	}
 
-	public void CancelInteraction()
+	public void InteractionCanceled()
 	{
 		ClearJobState();
 	}
@@ -373,28 +387,20 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 	}
 
-	private void ReleaseInteractionPosition(InteractionPoint position)
+	private void ReleaseInteractionPosition(InteractionPoint registeredPoint)
 	{
-		if (position == null)
+		if (registeredPoint == null)
 			return;
 
-		position.ReleaseReservation(this);
-		position.TryRemoveInteractor(this);
-	}
-
-	private void BeginOffDuty()
-	{
-		ClearJobState();
-		SetLogicExecutorState(EActorState.OffDuty);
-		AIPathing.SetStoppingDistance(c_workingDist);
+		registeredPoint.InteractionsCanceled -= InteractionCanceled;
+		registeredPoint.ReleaseReservation(this);
+		registeredPoint.TryRemoveInteractor(this);
 	}
 
 	private void ClearJobState(bool applyCooldown = false)
 	{
-		if (m_targetInteractable != null && m_assignedInteractionPosition != null)
-		{
+		if (m_targetInteractable != null)
 			m_targetInteractable.StopInteract(this, m_assignedInteractionPosition);
-		}
 
 		ReleaseInteractionPosition(m_assignedInteractionPosition);
 
@@ -408,24 +414,24 @@ public class Actor : MonoBehaviour, IInteractor
 		// Reset AI Context to avoid stale data
 		if (m_behaviourTreeExecutor != null)
 		{
-			// Reset parenting if the actor was carrying something
-			if (m_behaviourTreeExecutor.AIContext.IsCarryingObject)
-			{
-				transform.parent = null;
-				m_collider.isTrigger = false;
-
-				AIPathing.NavAgent.enabled = true;
-				AIPathing.SetPosition(transform.position);
-			}
-
 			m_behaviourTreeExecutor.ResetContext();
 			m_behaviourTreeExecutor.SetCurrentBehaviourTree(null);
 		}
 
+		transform.parent = null;
+		m_collider.isTrigger = false;
+
+		AIPathing.NavAgent.enabled = true;
 		AIPathing?.ClearDestination();
+		AIPathing.SetPosition(transform.position);
 
 		if (applyCooldown)
+		{
 			m_jobSearchCooldown = c_jobSearchCooldownDuration;
+			SetLogicExecutorState(EActorState.SearchingForWork);
+		}
+		else
+			SetLogicExecutorState(EActorState.OffDuty);
 	}
 
 	private void SyncJobStateFromContext()
@@ -512,8 +518,7 @@ public class Actor : MonoBehaviour, IInteractor
 			// Stop the job search if its been too long
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
-				BeginOffDuty();
-				m_behaviourTreeExecutor.ResetContext();
+				ClearJobState(true);
 				return;
 			}
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ namespace Interaction.Core
 
 		[field: Tooltip("Determines how close an actor must be to the interaction point to begin interacting.")]
 		[field: SerializeField] public float InteractionDistance { get; private set; } = 0.3f;
+
+		public event Action InteractionsCanceled;
 
 		private List<IInteractor> m_interactorsPresent = new();
 		private List<IInteractor> m_reservedInteractors = new();
@@ -113,15 +116,7 @@ namespace Interaction.Core
 
 		public void CancelAllInteractions()
 		{
-			foreach (IInteractor interactor in m_interactorsPresent)
-			{
-				interactor.CancelInteraction();
-			}
-
-			foreach (IInteractor interactor in m_reservedInteractors)
-			{
-				interactor.CancelInteraction();
-			}
+			InteractionsCanceled?.Invoke();
 
 			m_interactorsPresent.Clear();
 			m_reservedInteractors.Clear();
