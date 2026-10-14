@@ -56,6 +56,7 @@ namespace Player.Core
 					if (!m_previousTrackables.Contains(trackableObject))
 					{
 						NewTrackableObjectInDisplayRange?.Invoke(trackableObject);
+						Debug.Log(trackableObject);
 					}
 				}
 

@@ -95,7 +95,8 @@ namespace UISystem.TrackingUI
 			if (interactable.ObjectTransform != null)
 			{
 				// Fallback or local offset handling if applicable
-				Vector3 targetPosition = interactable.ObjectTransform.position;
+				Vector3 targetPosition = interactable.ObjectTransform.position + 
+					interactable.LocalTrackingPointOffset;
 				uiElement.SetTrackingPosition(targetPosition);
 			}
 		}
