@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 1403681809950730677}
   - component: {fileID: 3214825593510965529}
   - component: {fileID: 4026278048805383853}
+  - component: {fileID: 7982115691812477690}
   - component: {fileID: 6518718037148992619}
   - component: {fileID: 1005846120864118715}
   m_Layer: 7
@@ -184,9 +185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4cd43ba49ccff479a91f73758212fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
-  m_localPromptOffset: {x: 0, y: 0, z: 0}
-  m_interactPositions:
-  - {fileID: 2991755269999351807}
+  m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &4026278048805383853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,6 +208,18 @@ MonoBehaviour:
   m_treeMeshObject: {fileID: 6670668404327998910}
   m_stumpMeshObject: {fileID: 2824037566599855480}
   m_spawnedCarryablePrefab: {fileID: 1848493102313110294, guid: 90ada239b3c9b27439eda4d61753bb74, type: 3}
+--- !u!114 &7982115691812477690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778585277737840742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db115c758ed2c204caca8780fc6cf527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedProgressComponent
 --- !u!82 &6518718037148992619
 AudioSource:
   m_ObjectHideFlags: 0

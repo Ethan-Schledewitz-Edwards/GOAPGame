@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using Interaction.Core;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using UnityEngine.AI;
 /// To do: Make a HarvestableHealthBase when multiple harvestables are added
 /// Move most of the functionality there but keep the log spawning logic specific to trees
 /// </summary>
+[RequireComponent(typeof(UITrackedProgressComponent))]
 public class TreeHealthComponent : HealthComponent
 {
 	private const float c_spawnTimeout = 0.2f;
@@ -21,9 +23,15 @@ public class TreeHealthComponent : HealthComponent
 	[Header("Carryable")]
 	[SerializeField] private GameObject m_spawnedCarryablePrefab;
 
+	// Components
+	private UITrackedProgressComponent m_progressComponent;
+
 	protected override void Awake()
 	{
 		base.Awake();
+
+		m_progressComponent = GetComponent<UITrackedProgressComponent>();
+		m_progressComponent.IsTrackingEnabled = false;
 
 		if (m_treeMeshObject != null)
 			m_treeMeshObject.SetActive(true);
@@ -35,6 +43,14 @@ public class TreeHealthComponent : HealthComponent
 	private void OnDestroy()
 	{
 		StopAllCoroutines();
+	}
+
+	protected override void OnTakeDamage()
+	{
+		base.OnTakeDamage();
+
+		m_progressComponent.IsTrackingEnabled = true; // Display health as progress
+		m_progressComponent.UpdateProgressValue(Health, MaxHealth);
 	}
 
 	protected override void OnDie()

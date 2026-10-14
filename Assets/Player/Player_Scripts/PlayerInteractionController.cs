@@ -48,8 +48,9 @@ namespace Player.Core
 			{
 				Collider col = m_colliderBuffer[i];
 
-				// Any object implementing ITrackableObject gets tracked UI.
-				if (col.TryGetComponent(out ITrackableObject trackableObject))
+				// Any object implementing ITrackableObject with tracking enabled gets tracked UI.
+				if (col.TryGetComponent(out ITrackableObject trackableObject) &&
+					trackableObject.IsTrackingEnabled)
 				{
 					m_currentTrackables.Add(trackableObject);
 
@@ -75,7 +76,8 @@ namespace Player.Core
 			// Find trackable objects that left the display range
 			foreach (ITrackableObject prevTrackable in m_previousTrackables)
 			{
-				if (prevTrackable != null && !m_currentTrackables.Contains(prevTrackable))
+				if (prevTrackable != null && 
+					!m_currentTrackables.Contains(prevTrackable))
 				{
 					TrackableObjectOutOfRange?.Invoke(prevTrackable);
 				}

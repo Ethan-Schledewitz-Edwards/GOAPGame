@@ -5,6 +5,8 @@ namespace Interaction.Core
 {
     public interface ITrackableObject
     {
+		public bool IsTrackingEnabled { get; set; }
+
 		/// <summary>
 		/// The local offset relative to the object used to position the world-space UI element.
 		/// </summary>

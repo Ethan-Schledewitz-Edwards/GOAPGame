@@ -68,8 +68,6 @@ namespace UISystem.TrackingUI
 
 		protected override void InitializeUI(UITrackedProgressComponent progressComponent, ProgressWheelTrackingUIElement uiElement)
 		{
-			Debug.Log("WHAT THE ACTUAL FUCK");
-
 			float progressPercentage = progressComponent.ProgressPercentage;
 			float progressValue = progressPercentage * 360f;
 

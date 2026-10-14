@@ -45,6 +45,7 @@ namespace Interaction.Actor.InteractableStructures
 			base.Awake();
 
 			m_progressComponent = GetComponent<UITrackedProgressComponent>();
+			m_progressComponent.IsTrackingEnabled = false;
 		}
 
 		private void Start()
@@ -63,6 +64,7 @@ namespace Interaction.Actor.InteractableStructures
 
 		private void OnDestroy()
 		{
+			if(m_duplicationRoutine != null)
 			StopCoroutine(m_duplicationRoutine);
 		}
 
@@ -103,6 +105,7 @@ namespace Interaction.Actor.InteractableStructures
 		{
 			m_isDuplicatingNodds = true;
 			m_duplicationCountdown = duration;
+			m_progressComponent.IsTrackingEnabled = true;
 
 			while (m_duplicationCountdown > 0)
 			{
@@ -113,7 +116,7 @@ namespace Interaction.Actor.InteractableStructures
 
 			m_duplicationCountdown = 0f;
 			m_isDuplicatingNodds = false;
-			m_progressComponent.UpdateProgressValue(0, duration); // Hide timer
+			m_progressComponent.UpdateProgressValue(0f, 0f); // Free the progress tracker
 
 			int columns = Mathf.CeilToInt(Mathf.Sqrt(noddsProduced));
 			float spacing = 0.5f;
