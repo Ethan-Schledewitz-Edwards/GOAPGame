@@ -11,7 +11,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent))]
 public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 {
-	private static BehaviourTree m_logBT;
+	private static BehaviourTree m_carryableBT = null; // Interacting with this object parents the
+													   // interactor to it which does not need a BT.
 
 	private const float c_logMeshCarryOffset = 0.5f;
 	private const float c_logHalfHeight = .75f;
@@ -55,24 +56,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 		m_navMeshAgent.enabled = false;
 
 		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
-
-		//InitializeBehaviourTree();
-	}
-
-	private void InitializeBehaviourTree()
-	{
-		if (m_logBT != null)
-			return;
-
-		BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-		{
-			new MoveToInteractionPointTask(),
-			new CarryObjectTask()
-		});
-		BehaviourTree tree = new BehaviourTree();
-		tree.SetTree(root);
-
-		m_logBT = tree;
 	}
 
 	private void FixedUpdate()
@@ -318,7 +301,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 		m_navMeshAgent.speed = (actorsPresent * 1.2f);
 	}
 
-	public override BehaviourTree GetBehaviourTree() => m_logBT;
+	public override BehaviourTree GetBehaviourTree() => m_carryableBT;
 
 	public void BeginCarrying(Transform parent, Vector3 localPosition) { } // Logs can't carry anything silly
 
