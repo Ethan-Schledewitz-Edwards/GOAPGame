@@ -146,9 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11fa04d122d571943ac38cc62e83a81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableActorInteractable
-  m_localPromptOffset: {x: 0, y: 0, z: 0}
+  m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
-  m_baseMoveSpeed: 1
   m_logMeshTransform: {fileID: 2143631712808309234}
 --- !u!136 &581121961390997327
 CapsuleCollider:
@@ -211,9 +210,9 @@ NavMeshAgent:
   m_AgentTypeID: -334000983
   m_Radius: 0.85
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 2
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 50
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1

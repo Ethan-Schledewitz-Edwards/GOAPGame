@@ -96,7 +96,7 @@ public class Actor : MonoBehaviour, IInteractor
 	public EActorState LogicExecutorState { get; private set; } = default;
 
 	private float m_timeFindingJob;
-	private float m_jobSearchCooldown = 0f;
+	private float m_jobSearchCountdown = 0f;
 	private bool m_isInvestigatingPositionForJob;
 	private bool m_jobAssignedThisTick;
 
@@ -174,12 +174,12 @@ public class Actor : MonoBehaviour, IInteractor
 		}
 
 		// Tick search cooldown timer
-		if (m_jobSearchCooldown > 0f)
-			m_jobSearchCooldown -= t;
+		if (m_jobSearchCountdown > 0f)
+			m_jobSearchCountdown -= t;
 
 		if (IsJobNeeded())
 		{
-			if (m_jobSearchCooldown <= 0f)
+			if (m_jobSearchCountdown <= 0f)
 				FindClosestJob(t);
 
 			if (m_targetInteractable != null && m_assignedInteractionPosition != null)
@@ -194,11 +194,6 @@ public class Actor : MonoBehaviour, IInteractor
 					{
 						UseInteractable(m_targetInteractable);
 					}
-				}
-				else
-				{
-					ClearJobState(true);
-					return;
 				}
 			}
 		}
@@ -293,13 +288,10 @@ public class Actor : MonoBehaviour, IInteractor
 
 	public void TrySetActorJob(BehaviourTree behaviourTree)
 	{
-		// A successful interaction converts the reservation into an active
-		// interactor. If there is no behaviour tree, release that position now.
+		// If no behaviour tree was passed, its probably intentional.
+		// Certain interactions like carryables require instant interactions without behaviour trees.
 		if (behaviourTree == null)
-		{
-			ClearJobState(false);
 			return;
-		}
 
 		// A new job can be acquired from inside an existing behaviour tree
 		InteractionPoint previousPoint = m_behaviourTreeExecutor.AIContext.ReservedInteractionPoint;
@@ -356,7 +348,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 			if (!isInteractionSuccessful)
 			{
-				ClearJobState(true);
+				ClearJobState(false);
 				return;
 			}
 
@@ -427,7 +419,7 @@ public class Actor : MonoBehaviour, IInteractor
 
 		if (applyCooldown)
 		{
-			m_jobSearchCooldown = c_jobSearchCooldownDuration;
+			m_jobSearchCountdown = c_jobSearchCooldownDuration;
 			SetLogicExecutorState(EActorState.SearchingForWork);
 		}
 		else

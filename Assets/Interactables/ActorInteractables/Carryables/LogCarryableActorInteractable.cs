@@ -28,7 +28,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;
-	[SerializeField] private float m_baseMoveSpeed = 1f;
 
 	[Header("Mesh")]
 	[SerializeField] private Transform m_logMeshTransform;
@@ -57,7 +56,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
 
-		InitializeBehaviourTree();
+		//InitializeBehaviourTree();
 	}
 
 	private void InitializeBehaviourTree()
@@ -119,6 +118,22 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 				}
 			}
 		}
+	}
+
+	public override bool TryInteract(IInteractor interactor, Vector3 actorPosition, InteractionPoint assignedPosition)
+	{
+		if(base.TryInteract(interactor, actorPosition, assignedPosition))
+		{
+			if(assignedPosition.TryGetInteractionPosition(interactor, out Vector3 destination))
+			{
+				// Actor starts carrying the carryable
+				interactor.BeginCarrying(transform,
+					transform.InverseTransformPoint(destination));
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	protected override void ActorAssigned()
@@ -300,12 +315,12 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 
 	private void UpdateMovementSpeed(int actorsPresent)
 	{
-		m_navMeshAgent.speed = m_baseMoveSpeed + (actorsPresent * 1.5f);
+		m_navMeshAgent.speed = (actorsPresent * 1.2f);
 	}
 
 	public override BehaviourTree GetBehaviourTree() => m_logBT;
 
-	public void BeginCarrying(Transform parent, Vector3 localPosition) { }
+	public void BeginCarrying(Transform parent, Vector3 localPosition) { } // Logs can't carry anything silly
 
 	public void StopCarrying() { }
 

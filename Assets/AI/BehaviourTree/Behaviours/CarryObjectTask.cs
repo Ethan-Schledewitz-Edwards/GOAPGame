@@ -40,8 +40,5 @@ public class CarryObjectTask : BTNodeBase
 
 	protected override void OnNodeExited(ref AIContext context) { }
 
-	protected override void OnNodeReset(ref AIContext context)
-	{
-		OnNodeExited(ref context);
-	}
+	protected override void OnNodeReset(ref AIContext context) { }
 }

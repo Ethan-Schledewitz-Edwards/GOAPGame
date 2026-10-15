@@ -98,23 +98,22 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 	public virtual bool TryInteract(
 		IInteractor interactor,
 		Vector3 actorPosition,
-		InteractionPoint assignedPosition
+		InteractionPoint reservedPoint
 		)
 	{
-
 		if (interactor == null ||
-			assignedPosition == null ||
-			!OwnsInteractionPoint(assignedPosition))
+			reservedPoint == null ||
+			!OwnsInteractionPoint(reservedPoint))
 		{
 			return false;
 		}
 
-		if (!assignedPosition.GetPositionInRange(interactor, actorPosition))
+		if (!reservedPoint.GetPositionInRange(interactor, actorPosition))
 			return false;
 
-		if (!assignedPosition.TryBeginInteraction(interactor, out _))
+		if (!reservedPoint.TryBeginInteraction(interactor, out _))
 		{
-			CancelReservation(interactor, assignedPosition);
+			CancelReservation(interactor, reservedPoint);
 			return false;
 		}
 
@@ -124,12 +123,12 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 	protected virtual void ActorAssigned() { }
 
-	public virtual void StopInteract(IInteractor interactor, InteractionPoint assignedPosition)
+	public virtual void StopInteract(IInteractor interactor, InteractionPoint reservedPoint)
 	{
 		int actorCountBeforeRemoval = TotalActorsPresent();
 
-		if (assignedPosition != null)
-			assignedPosition.TryRemoveInteractor(interactor);
+		if (reservedPoint != null)
+			reservedPoint.TryRemoveInteractor(interactor);
 
 		// Actor count fell below requirement
 		int actorCountAfterRemoval = TotalActorsPresent();
