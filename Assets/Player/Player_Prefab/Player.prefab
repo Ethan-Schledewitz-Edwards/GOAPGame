@@ -485,6 +485,7 @@ GameObject:
   - component: {fileID: 2955833704832694629}
   - component: {fileID: 1371981767915270995}
   - component: {fileID: 3745754388446896272}
+  - component: {fileID: 177407385691527411}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -542,6 +543,7 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
+  IsDamagable: 1
 --- !u!114 &2988294567450087518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,6 +775,20 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &177407385691527411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674105291137834835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18e71e4d2d4491d4aa9fac246732e1c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Player.Core::Player.Core.PlayerCameraController
+  m_innerRadius: 0.4
+  m_outerRadius: 0.8
 --- !u!1 &8269556507321535162
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
+  m_Name: WoodBridge_BlueprintData
+  m_EditorClassIdentifier: Construction::Construction.BlueprintData
+  <DisplayName>k__BackingField: Wood Bridge
+  <Description>k__BackingField: 
+  <RequiredItems>k__BackingField:
+  - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
+    amount: 3
+  <PlacementMesh>k__BackingField: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
+  <PlacementClearenceRadius>k__BackingField: 0.2
+  <MaxPlacementAngle>k__BackingField: 15
+  <IsMultiPointBlueprint>k__BackingField: 1
+  <MaxPoints>k__BackingField: 3
+  <MultiPointSpacing>k__BackingField: 0.5
+  <BlueprintPrefab>k__BackingField: {fileID: 2660728958185705178, guid: 8605fa5ae09d647448972e5756ceb95f, type: 3}
+  <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 0}

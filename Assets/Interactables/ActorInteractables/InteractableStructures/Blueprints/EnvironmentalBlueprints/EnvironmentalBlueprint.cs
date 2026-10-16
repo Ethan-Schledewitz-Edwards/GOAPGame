@@ -76,24 +76,7 @@ namespace Interaction.ActorInteractables.Structures
 				Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 					$"was completed in settlement:{SettlementID}.");
 
-				// NOTE: We already have the BlueprintData reference! This is redundant work!
-
-				// Create the final structure
-				BlueprintData blueprintData = IndexRegistry.
-					GetAsset<BlueprintData>(m_blueprintToSpawnOnCompletion.ID);
-
-				// NOTE: Further talk on IndexRegistry:
-				// I expect there are many similar cases like this in the project, I am side-eying
-				// the IndexRegistry and suspicious that it may not actually serve a legitimate purpose.
-				// My reasoning is that the only times you need to spawn an object without a reference are:
-				// 1. Networked multiplayer
-				// 2. Save system
-				// We're not doing multiplayer, and the eventual save system should be worked on near the end (and would be structured differently anyways).
-				// I believe that using the IndexRegistry will lead to many issues down the road like the SBTD one
-				// did (merging issues, bugs, forgetting to generate ids or add objects, null refs), and cutting it when
-				// that starts is the best course of action.
-
-				GameObject prefab = blueprintData.PrefabSpawnedOnCompletion;
+				GameObject prefab = m_blueprintToSpawnOnCompletion.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
 
 				if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
@@ -127,6 +110,8 @@ namespace Interaction.ActorInteractables.Structures
 		}
 
 		public void HandleBlueprintPlaced(BlueprintData structureBlueprintData, Vector3 position, Quaternion rotation) { }
+
+		public void HandlePointAdded(Vector3 position) { }
 
 		public override void LostMinimumActors() { }
 	}

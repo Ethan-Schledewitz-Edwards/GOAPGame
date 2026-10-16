@@ -48,24 +48,28 @@ namespace Construction
 		/// </summary>
 		public void CreateBlueprint(
 			int settlementID,
-			string blueprintKey,
+			BlueprintData blueprintData,
 			Vector3 worldPosition,
-			Quaternion rotation)
+			Quaternion rotation,
+			out IBlueprintObject blueprintObject)
 		{
-			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(blueprintKey);
 
 			if (blueprintData == null)
 			{
+				blueprintObject = null;
+
 				Debug.LogError(
-					$"Failed to create blueprint: No BlueprintData found for key '{blueprintKey}'.",
+					$"[ConstructionManager] Tried to create a blueprint but BlueprintData was null.",
 					this);
 				return;
 			}
 
 			if (blueprintData.BlueprintPrefab == null)
 			{
+				blueprintObject = null;
+
 				Debug.LogError(
-					$"Failed to create blueprint '{blueprintKey}': BlueprintPrefab is null.",
+					$"[ConstructionManager] Tried to create a blueprint but BlueprintData had no prefab.",
 					blueprintData);
 				return;
 			}
@@ -73,8 +77,10 @@ namespace Construction
 			if (!SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out var settlement)
 				|| settlement == null)
 			{
+				blueprintObject = null;
+
 				Debug.LogError(
-					$"Failed to create blueprint '{blueprintKey}': Settlement with ID {settlementID} does not exist.",
+					$"Failed to create blueprint '{blueprintData}': Settlement with ID {settlementID} does not exist.",
 					this);
 				return;
 			}
@@ -82,12 +88,12 @@ namespace Construction
 			GameObject prefab = Instantiate(blueprintData.BlueprintPrefab);
 
 			IStructure structure = prefab.GetComponent<IStructure>();
-			IBlueprintObject blueprintObject = prefab.GetComponent<IBlueprintObject>();
+			blueprintObject = prefab.GetComponent<IBlueprintObject>();
 
 			if (structure == null || blueprintObject == null)
 			{
 				Debug.LogError(
-					$"Failed to create blueprint '{blueprintKey}': Prefab '{prefab.name}' is missing " +
+					$"Failed to create blueprint '{blueprintData}': Prefab '{prefab.name}' is missing " +
 					$"{(structure == null ? nameof(IStructure) : string.Empty)}" +
 					$"{(structure == null && blueprintObject == null ? " and " : string.Empty)}" +
 					$"{(blueprintObject == null ? nameof(IBlueprintObject) : string.Empty)}.",
@@ -115,36 +121,30 @@ namespace Construction
 			settlement.AddStructure(structure);
 
 			// Subscribe to blueprint events.
-			blueprintObject.BlueprintCompleted += OnBlueprintCompleted;
-			blueprintObject.BlueprintCanceled += OnBlueprintCanceled;
+			blueprintObject.BlueprintCompleted += CleanupBlueprint;
+			blueprintObject.BlueprintCanceled += CleanupBlueprint;
 		}
 
-		public void OnBlueprintCompleted(IBlueprintObject blueprintObject)
-		{
-			if (blueprintObject == null)
-				return;
-
-			CleanupBlueprint(blueprintObject);
-		}
-
-		public void OnBlueprintCanceled(IBlueprintObject blueprintIO)
-		{
-			if (blueprintIO == null)
-				return;
-
-			CleanupBlueprint(blueprintIO);
-		}
-
+		/// <summary>
+		/// Removes the specified blueprint object, its associated structure, and unsubscribes related event handlers.
+		/// </summary>
+		/// <param name="blueprintObject">The blueprint object to remove and clean up.</param>
 		private void CleanupBlueprint(IBlueprintObject blueprintObject)
 		{
+			if (blueprintObject == null)
+			{
+				Debug.LogError("[ConstructionManager] Tried to cleanup a blueprint that was null.", this);
+				return;
+			}
+
 			IStructure structure = SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].
 				SettlementStructures[blueprintObject.SettlementStructureID];
 
 			SettlementManager.s_WorldSettlements[blueprintObject.SettlementID].
 				RemoveStructure(structure.SettlementStructureID);
 
-			blueprintObject.BlueprintCompleted -= OnBlueprintCompleted;
-			blueprintObject.BlueprintCanceled -= OnBlueprintCanceled;
+			blueprintObject.BlueprintCompleted -= CleanupBlueprint;
+			blueprintObject.BlueprintCanceled -= CleanupBlueprint;
 
 			Destroy(blueprintObject.Object);
 		}

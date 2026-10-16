@@ -73,6 +73,8 @@ namespace Interaction.ActorInteractables.Structures
 			Debug.Log($"Starting blueprint: {blueprintData.DisplayName}");
 		}
 
+		public void HandlePointAdded(Vector3 position) { }
+
 		public override void HandleBlueprintCompleted()
 		{
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +

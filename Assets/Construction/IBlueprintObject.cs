@@ -18,6 +18,8 @@ namespace Construction
 				Vector3 position,
 				Quaternion rotation);
 
+		public void HandlePointAdded(Vector3 position);
+
 		public void HandleBlueprintCompleted();
 
 		public void HandleBlueprintCanceled();
