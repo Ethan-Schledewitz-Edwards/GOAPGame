@@ -16,6 +16,9 @@ public class PlayerCursorVisualizer : MonoBehaviour
 	private Vector3 m_cursorMaxTargetScale = new Vector3(.4f, .4f, .4f);
 	public float SelectionRadius { get; private set; }
 
+	[Header("Camera")]
+	[SerializeField] private PlayerCamera m_playerCamera;
+
 	[Header("Blueprint")]
 	[SerializeField] private GameObject m_blueprintVisualsObject;
 	[SerializeField] private MeshRenderer m_meshRenderer;
@@ -160,8 +163,8 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		ClearBlueprintPlacementVisuals();
 		m_cursorObject.SetActive(false);
 
-		if (blueprintData == null || 
-			blueprintData.PlacementMesh == null || 
+		if (blueprintData == null ||
+			blueprintData.PlacementMesh == null ||
 			confirmedPoints.Count == 0)
 			return;
 
@@ -172,13 +175,17 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		// Draw confirmed segments using blueprint material
 		for (int i = 0; i < confirmedPoints.Count - 1; i++)
 		{
+			bool isFirstLink = (i == 0);
+			bool isLastConfirmedLink = (i == confirmedPoints.Count - 2);
+
 			DrawBlueprintLink(blueprintData,
-				i == 0,
-				confirmedPoints[i], 
-				confirmedPoints[i + 1], 
-				spacing, 
-				blueprintMesh, 
-				m_blueprintMaterial
+				confirmedPoints[i],
+				confirmedPoints[i + 1],
+				spacing,
+				blueprintMesh,
+				m_blueprintMaterial,
+				isFirstLink,
+				isLastConfirmedLink
 			);
 		}
 
@@ -186,28 +193,30 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		if (confirmedPoints.Count > 0)
 		{
 			Vector3 lastConfirmed = confirmedPoints[confirmedPoints.Count - 1];
-			DrawBlueprintLink(blueprintData, 
+			DrawBlueprintLink(blueprintData,
+				lastConfirmed,
+				cursorPosition,
+				spacing,
+				blueprintMesh,
+				previewMaterials,
 				false,
-				lastConfirmed, 
-				cursorPosition, 
-				spacing, 
-				blueprintMesh, 
-				previewMaterials
+				false
 			);
 		}
 	}
 
 	private void DrawBlueprintLink(BlueprintData blueprintData,
+		Vector3 start,
+		Vector3 end,
+		float spacing,
+		Mesh blueprintMesh,
+		Material[] materials,
 		bool isFirstLink,
-		Vector3 start, 
-		Vector3 end, 
-		float spacing, 
-		Mesh blueprintMesh, 
-		Material[] materials)
+		bool isConfirmedLink)
 	{
 		Vector3 direction = end - start;
 		float totalDistance = direction.magnitude;
-		if (totalDistance <= 0.001f) 
+		if (totalDistance <= 0.001f)
 			return;
 		direction.Normalize();
 
@@ -234,6 +243,16 @@ public class PlayerCursorVisualizer : MonoBehaviour
 			renderer.sharedMaterials = materials;
 
 			m_activePreviewInstances.Add(segmentObject);
+
+			// Move the camera only to the very last segment object of the last confirmed link
+			if (isConfirmedLink && i == segmentCount)
+			{
+				if (m_playerCamera != null)
+				{
+					m_playerCamera.ClearCameraTargets();
+					m_playerCamera.AddCameraTarget(segmentObject.transform);
+				}
+			}
 		}
 	}
 

@@ -23,6 +23,7 @@ namespace Player.Core
 		[SerializeField] private Material m_invalidMaterial;
 
 		// Components
+		[SerializeField] private PlayerCamera m_playerCamera;
 		private PlayerFollowerController m_followerController;
 		private PlayerCursorVisualizer m_cursorVisualizer;
 
@@ -46,6 +47,10 @@ namespace Player.Core
 		protected override void Awake()
 		{
 			base.Awake();
+
+			if (m_playerCamera == null)
+				Debug.LogWarning("[PlayerConstructionController] No reference to the player camera was set.", this);
+
 
 			if (m_blockingLayer == 0) 
 				m_blockingLayer = LayerMask.GetMask("Player", "Actor");
@@ -223,6 +228,8 @@ namespace Player.Core
 
 		private void ClearBlueprintToPlace()
 		{
+			m_playerCamera.ReturnToDefault();
+
 			m_blueprintDataToPlace = null;
 			m_isPlacementValid = false;
 			m_placementRotation = Quaternion.identity;
@@ -292,6 +299,10 @@ namespace Player.Core
 					out m_multiPointBlueprint
 				);
 				m_currentPoints.Add(position);
+
+				m_playerCamera.ClearCameraTargets();
+				m_playerCamera.SetCameraSmoothing(4f);
+				m_playerCamera.AddCameraTarget(m_multiPointBlueprint.Object.transform);
 			}
 			else if (m_multiPointBlueprint != null)
 			{

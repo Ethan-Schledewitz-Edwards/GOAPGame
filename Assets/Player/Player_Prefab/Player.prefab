@@ -459,6 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Player::PlayerCursorVisualizer
   m_cursorObject: {fileID: 3433225659664458421}
+  m_playerCamera: {fileID: 1121418079944000196}
   m_blueprintVisualsObject: {fileID: 4551394778818187514}
   m_meshRenderer: {fileID: 6642912772905455022}
   m_meshFilter: {fileID: 3637038894790095929}
@@ -613,6 +614,7 @@ MonoBehaviour:
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
   m_validMaterial: {fileID: 2100000, guid: ccaa27d7dbce4804a83a9e6de0936711, type: 2}
   m_invalidMaterial: {fileID: 2100000, guid: beefd3942915ba5438d48cdbeac43797, type: 2}
+  m_playerCamera: {fileID: 1121418079944000196}
 --- !u!54 &2388740294352789583
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -832,13 +834,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8269556507321535162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f9044187b1cd834785466bf405beb9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c73fbb862f912448a56d5479d43cb94, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraRig
-  m_defaultOffset: {x: 0, y: 0.5, z: 12}
+  m_EditorClassIdentifier: Camera.Core::PlayerCamera
+  m_defaultOffset: {x: 0, y: 1, z: 12}
   m_defaultRotation: {x: 0.42261827, y: 0, z: 0, w: 0.90630776}
   m_zoomPerExtraTarget: 2
   m_maxZoomOut: 15
+  m_defaultCameraTarget: {fileID: 6207448997049218469}
   m_cameraTargets:
   - {fileID: 6207448997049218469}
 --- !u!1 &9018910126613221978

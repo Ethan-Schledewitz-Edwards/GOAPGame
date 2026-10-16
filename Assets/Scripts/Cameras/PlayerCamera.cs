@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
 	private const float c_zoomSmoothing = 4f;
-	private const float c_smoothing = 20f;
+	private const float c_defaultSmoothing = 15f;
 
 	[Header("Camera Settings")]
 	[SerializeField] private Vector3 m_defaultOffset = new Vector3(0f, 0.5f, 12f);
@@ -12,12 +13,15 @@ public class PlayerCamera : MonoBehaviour
 	[SerializeField] private float m_maxZoomOut = 15f;
 
 	[Space(10), Header("Targeting")]
-	[SerializeField] private Transform[] m_cameraTargets;
+	[SerializeField] private Transform m_defaultCameraTarget;
+	[SerializeField] private List<Transform> m_cameraTargets = new List<Transform>();
 
 	// Components
 	public Camera MainCamera { get; private set; }
 	private Vector3 m_cameraOffset;
 	private bool m_isInitialized;
+
+	private float m_zoomSmoothing;
 
 	private Vector3 m_position;
 	private Vector3 m_smoothedPosition;
@@ -30,11 +34,12 @@ public class PlayerCamera : MonoBehaviour
 	private void Awake()
 	{
 		MainCamera = GetComponentInChildren<Camera>();
+		m_zoomSmoothing = c_defaultSmoothing;
 	}
 
 	private void Start()
 	{
-		if (m_cameraTargets.Length == 0)
+		if (m_cameraTargets.Count == 0)
 			return;
 
 		MainCamera.transform.rotation = m_defaultRotation;
@@ -56,7 +61,7 @@ public class PlayerCamera : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (!m_isInitialized || m_cameraTargets.Length == 0)
+		if (!m_isInitialized || m_cameraTargets.Count == 0)
 			return;
 
 		MainCamera.transform.rotation = m_defaultRotation;
@@ -74,7 +79,7 @@ public class PlayerCamera : MonoBehaviour
 	/// </summary>
 	private void UpdateZoomTarget()
 	{
-		int targetCount = m_cameraTargets.Length;
+		int targetCount = m_cameraTargets.Count;
 		if (targetCount <= 1)
 		{
 			m_targetCameraZoom = 0f;
@@ -117,11 +122,47 @@ public class PlayerCamera : MonoBehaviour
 		targetWorldPos += flattenedOffset;
 
 		Vector3 finalPos = prevPos;
-		finalPos.x = Mathf.Lerp(prevPos.x, targetWorldPos.x, c_smoothing * Time.deltaTime);
-		finalPos.y = Mathf.Lerp(prevPos.y, targetWorldPos.y, c_smoothing * Time.deltaTime);
-		finalPos.z = Mathf.Lerp(prevPos.z, targetWorldPos.z, c_smoothing * Time.deltaTime);
+		finalPos.x = Mathf.Lerp(prevPos.x, targetWorldPos.x, m_zoomSmoothing * Time.deltaTime);
+		finalPos.y = Mathf.Lerp(prevPos.y, targetWorldPos.y, m_zoomSmoothing * Time.deltaTime);
+		finalPos.z = Mathf.Lerp(prevPos.z, targetWorldPos.z, m_zoomSmoothing * Time.deltaTime);
 
 		return finalPos;
+	}
+
+	public void AddCameraTarget(Transform target)
+	{
+		if (target == null)
+			return;
+
+		if(!m_cameraTargets.Contains(target))
+			m_cameraTargets.Add(target);
+	}
+
+	public void RemoveCameraTarget(Transform target)
+	{
+		if(target == null) 
+			return;
+
+		if (m_cameraTargets.Contains(target))
+			m_cameraTargets.Remove(target);
+	}
+
+	public void ClearCameraTargets()
+	{
+		m_cameraTargets.Clear();
+		m_cameraTargets.TrimExcess();
+	}
+
+	public void SetCameraSmoothing(float value)
+	{
+		m_zoomSmoothing = value;
+	}
+
+	public void ReturnToDefault()
+	{
+		m_zoomSmoothing = c_defaultSmoothing;
+		ClearCameraTargets();
+		AddCameraTarget(m_defaultCameraTarget);
 	}
 
 	public void SetCameraOffset(Vector3 newOffset) => m_cameraOffset = newOffset;
@@ -130,7 +171,7 @@ public class PlayerCamera : MonoBehaviour
 
 	private Vector3 GetCenterOfTargets()
 	{
-		if (m_cameraTargets.Length == 0)
+		if (m_cameraTargets.Count == 0)
 		{
 			return transform.position;
 		}
@@ -139,7 +180,7 @@ public class PlayerCamera : MonoBehaviour
 		float y = 0f;
 		float z = 0f;
 
-		int targetCount = m_cameraTargets.Length;
+		int targetCount = m_cameraTargets.Count;
 
 		for (int i = 0; i < targetCount; i++)
 		{
