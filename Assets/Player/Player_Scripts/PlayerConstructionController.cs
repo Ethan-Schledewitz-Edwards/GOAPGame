@@ -307,7 +307,7 @@ namespace Player.Core
 				{
 					Transform blueprintTransform = m_multiPointBlueprint.Object.transform;
 					if (blueprintTransform != null)
-						GenerateMultiPointBlueprintSegments(blueprintTransform, m_blueprintDataToPlace, m_currentPoints);
+						GenerateMultiPointBlueprintLinks(blueprintTransform, m_blueprintDataToPlace, m_currentPoints);
 				}
 
 				ClearBlueprintToPlace();
@@ -317,7 +317,7 @@ namespace Player.Core
 		/// <summary>
 		/// Generates and places mesh segments between multiple points along a path using specified spacing.
 		/// </summary>
-		private void GenerateMultiPointBlueprintSegments(Transform parentTransform, BlueprintData blueprintData, List<Vector3> points)
+		private void GenerateMultiPointBlueprintLinks(Transform parentTransform, BlueprintData blueprintData, List<Vector3> points)
 		{
 			if (blueprintData == null || 
 				blueprintData.PlacementMesh == null || 
@@ -326,10 +326,8 @@ namespace Player.Core
 
 			float spacing = blueprintData.MultiPointSpacing;
 			Mesh blueprintMesh = blueprintData.PlacementMesh;
-			Bounds blueprintBounds = blueprintMesh.bounds;
-			float distanceToBottom = blueprintBounds.center.y - blueprintBounds.extents.y;
 
-			// Loop through each individual placed point
+			// Loop through each link
 			for (int i = 0; i < points.Count - 1; i++)
 			{
 				Vector3 start = points[i];
@@ -339,19 +337,23 @@ namespace Player.Core
 				float totalDistance = direction.magnitude;
 				if (totalDistance <= 0.001f) 
 					continue;
-
 				direction.Normalize();
+
 				int segmentCount = Mathf.FloorToInt(totalDistance / spacing);
 				Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
 
-				// Place each segment between this placed point and the next
+				// Place each segment between this for this link
 				for (int j = 0; j <= segmentCount; j++)
 				{
+					// Skip the first segment of the first link since it overlaps with the blueprint
+					if (i == 0 && j == 0)
+						continue;
+
 					Vector3 spawnPosition = start + (direction * (j * spacing));
 
 					GameObject segmentObject = new GameObject($"Segment_{i}_{j}");
 					segmentObject.transform.SetParent(parentTransform, true);
-					segmentObject.transform.position = spawnPosition + (pathRotation * new Vector3(0, distanceToBottom, 0));
+					segmentObject.transform.position = spawnPosition;
 					segmentObject.transform.rotation = pathRotation;
 
 					MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
@@ -365,6 +367,9 @@ namespace Player.Core
 
 		private void RefreshPlacementValidityVisuals(bool isPlacementValid)
 		{
+			if(m_cursorVisualizer == null)
+				return;
+
 			if (m_blueprintDataToPlace == null)
 			{
 				m_cursorVisualizer.ClearBlueprintPlacementVisuals();
@@ -420,7 +425,7 @@ namespace Player.Core
 			}
 			else // First placed point visuals
 			{
-				m_cursorVisualizer?.SetBlueprintPlacementVisuals(
+				m_cursorVisualizer.SetBlueprintPlacementVisuals(
 					m_blueprintDataToPlace,
 					materials,
 					m_placementRotation

@@ -152,61 +152,88 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		m_blueprintVisualsObject.SetActive(true);
 	}
 
-	public void SetMultiPointBlueprintPreviewVisuals(BlueprintData blueprintData, List<Vector3> confirmedPoints, Vector3 cursorPosition, Material[] previewMaterials)
+	public void SetMultiPointBlueprintPreviewVisuals(BlueprintData blueprintData, 
+		List<Vector3> confirmedPoints, 
+		Vector3 cursorPosition, 
+		Material[] previewMaterials)
 	{
 		ClearBlueprintPlacementVisuals();
 		m_cursorObject.SetActive(false);
 
-		if (blueprintData == null || blueprintData.PlacementMesh == null || confirmedPoints.Count == 0)
+		if (blueprintData == null || 
+			blueprintData.PlacementMesh == null || 
+			confirmedPoints.Count == 0)
 			return;
 
-		float spacing = blueprintData.MultiPointSpacing > 0 ? blueprintData.MultiPointSpacing : Mathf.Max(blueprintData.PlacementMesh.bounds.size.z, 2f);
+		float spacing = blueprintData.MultiPointSpacing;
 		Mesh blueprintMesh = blueprintData.PlacementMesh;
-		Bounds blueprintBounds = blueprintMesh.bounds;
-		float distanceToBottom = blueprintBounds.center.y - blueprintBounds.extents.y;
-
 		m_blueprintVisualsObject.SetActive(true);
 
-		// 1. Draw confirmed segments using blue blueprint material
+		// Draw confirmed segments using blueprint material
 		for (int i = 0; i < confirmedPoints.Count - 1; i++)
 		{
-			DrawSegment(blueprintData, confirmedPoints[i], confirmedPoints[i + 1], spacing, blueprintMesh, distanceToBottom, m_blueprintMaterial);
+			DrawBlueprintLink(blueprintData,
+				i == 0,
+				confirmedPoints[i], 
+				confirmedPoints[i + 1], 
+				spacing, 
+				blueprintMesh, 
+				m_blueprintMaterial
+			);
 		}
 
-		// 2. Draw live preview segment stretching to cursor using green/red validation materials
+		// Draw the moving segment cursor using validation materials
 		if (confirmedPoints.Count > 0)
 		{
 			Vector3 lastConfirmed = confirmedPoints[confirmedPoints.Count - 1];
-			DrawSegment(blueprintData, lastConfirmed, cursorPosition, spacing, blueprintMesh, distanceToBottom, previewMaterials);
+			DrawBlueprintLink(blueprintData, 
+				false,
+				lastConfirmed, 
+				cursorPosition, 
+				spacing, 
+				blueprintMesh, 
+				previewMaterials
+			);
 		}
 	}
 
-	private void DrawSegment(BlueprintData blueprintData, Vector3 start, Vector3 end, float spacing, Mesh blueprintMesh, float distanceToBottom, Material[] materials)
+	private void DrawBlueprintLink(BlueprintData blueprintData,
+		bool isFirstLink,
+		Vector3 start, 
+		Vector3 end, 
+		float spacing, 
+		Mesh blueprintMesh, 
+		Material[] materials)
 	{
 		Vector3 direction = end - start;
 		float totalDistance = direction.magnitude;
-		if (totalDistance <= 0.001f) return;
-
+		if (totalDistance <= 0.001f) 
+			return;
 		direction.Normalize();
-		int postCount = Mathf.FloorToInt(totalDistance / spacing);
+
+		int segmentCount = Mathf.FloorToInt(totalDistance / spacing);
 		Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
 
-		for (int j = 0; j <= postCount; j++)
+		for (int i = 0; i <= segmentCount; i++)
 		{
-			Vector3 spawnPos = start + (direction * (j * spacing));
+			// Skip the first segment of the first link since it overlaps with the blueprint
+			if (isFirstLink && i == 0)
+				continue;
 
-			GameObject previewObj = new GameObject($"PreviewFenceMesh_{m_activePreviewInstances.Count}");
-			previewObj.transform.SetParent(m_blueprintVisualsObject.transform, true);
-			previewObj.transform.position = spawnPos + (pathRotation * new Vector3(0, distanceToBottom, 0));
-			previewObj.transform.rotation = pathRotation;
+			Vector3 spawnPosition = start + (direction * (i * spacing));
 
-			MeshFilter filter = previewObj.AddComponent<MeshFilter>();
-			MeshRenderer renderer = previewObj.AddComponent<MeshRenderer>();
+			GameObject segmentObject = new GameObject($"Segment_{m_activePreviewInstances.Count}");
+			segmentObject.transform.SetParent(m_blueprintVisualsObject.transform, true);
+			segmentObject.transform.position = spawnPosition;
+			segmentObject.transform.rotation = pathRotation;
+
+			MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
+			MeshRenderer renderer = segmentObject.AddComponent<MeshRenderer>();
 
 			filter.mesh = blueprintMesh;
 			renderer.sharedMaterials = materials;
 
-			m_activePreviewInstances.Add(previewObj);
+			m_activePreviewInstances.Add(segmentObject);
 		}
 	}
 

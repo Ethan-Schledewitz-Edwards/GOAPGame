@@ -21,7 +21,7 @@ MonoBehaviour:
   <PlacementClearenceRadius>k__BackingField: 0.2
   <MaxPlacementAngle>k__BackingField: 15
   <IsMultiPointBlueprint>k__BackingField: 1
-  <MaxPoints>k__BackingField: 4
+  <MaxPoints>k__BackingField: 2
   <MultiPointSpacing>k__BackingField: 0.5
   <BlueprintPrefab>k__BackingField: {fileID: 2660728958185705178, guid: 8605fa5ae09d647448972e5756ceb95f, type: 3}
   <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 0}
