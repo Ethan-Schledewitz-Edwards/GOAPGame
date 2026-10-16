@@ -1,12 +1,13 @@
+using Construction;
+using Factions.Core;
+using Interaction.ActorInteractables.Structures;
 using Settlements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Construction;
-using Factions.Core;
-using Interaction.ActorInteractables.Structures;
+using UnityEngine.UIElements;
 
 namespace Player.Core
 {
@@ -17,6 +18,7 @@ namespace Player.Core
 		private LayerMask m_interactionLayer;
 
 		[Header("Visuals")]
+		[SerializeField] private Material m_blueprintMaterial;
 		[SerializeField] private Material m_validMaterial;
 		[SerializeField] private Material m_invalidMaterial;
 
@@ -36,7 +38,8 @@ namespace Player.Core
 		private int m_pointsPlaced;
 		private List<Vector3> m_currentPoints = new List<Vector3>();
 
-		HashSet<Collider> m_collidersBeingCanceled;
+		Collider[] m_newCancelColliders = new Collider[16];
+		Collider[] m_collidersBeingCanceled = new Collider[16];
 
 		#region Lifecycle
 
@@ -49,8 +52,6 @@ namespace Player.Core
 
 			if (m_interactionLayer == 0) 
 				m_interactionLayer = LayerMask.GetMask("Interaction");
-
-			m_collidersBeingCanceled = new HashSet<Collider>();
 
 			m_followerController = GetComponent<PlayerFollowerController>();
 			m_cursorVisualizer = m_worldControllerManager.CursorVisualizer;
@@ -104,7 +105,7 @@ namespace Player.Core
 		{
 			int cycleDirection = Math.Sign(context.ReadValue<float>());
 
-			Quaternion rotationDelta = Quaternion.Euler(0, 90 * cycleDirection, 0);
+			Quaternion rotationDelta = Quaternion.Euler(0, 45f * cycleDirection, 0);
 			m_placementRotation = m_placementRotation * rotationDelta;
 			RefreshPlacementValidityVisuals(m_isPlacementValid);
 		}
@@ -117,6 +118,7 @@ namespace Player.Core
 			{
 				m_cursorWorldPosition = worldPosition;
 
+				// Use the point already calculated by the base class
 				Vector3 placementPosition = worldPosition;
 				LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
 				if (m_blueprintDataToPlace != null)
@@ -136,31 +138,55 @@ namespace Player.Core
 						m_isPlacementValid = !isBlocked;
 					}
 
-					UpdateRealTimeMultiPointVisuals(m_isPlacementValid);
+					RefreshPlacementValidityVisuals(m_isPlacementValid);
 					return;
 				}
 
 				if (m_isCancleHeld)
 				{
 					float selectionRadius = m_worldControllerManager.CursorVisualizer.SelectionRadius;
-					HashSet<Collider> hitColliders = Physics.OverlapSphere(worldPosition, selectionRadius, m_interactionLayer).ToHashSet();
+					int newColliders = Physics.OverlapSphereNonAlloc(worldPosition,
+						selectionRadius,
+						m_newCancelColliders,
+						m_interactionLayer
+					);
 
-					foreach (Collider i in hitColliders)
+					// Check new colliders
+					for (int i = 0; i < newColliders; i++)
 					{
-						if (i != null && !m_collidersBeingCanceled.Contains(i) &&
-							i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+						Collider col = m_newCancelColliders[i];
+						if (col == null)
+							continue;
+
+						if (col.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 							!blueprintCancelation.IsBeingCanceled)
 						{
 							blueprintCancelation.BeginCancelation();
 						}
 					}
 
-					if (m_collidersBeingCanceled.Count > 0)
+					// Compare against the previous frame's tracked colliders
+					for (int i = 0; i < m_collidersBeingCanceled.Length; i++)
 					{
-						foreach (Collider i in m_collidersBeingCanceled)
+						Collider oldCol = m_collidersBeingCanceled[i];
+						if (oldCol == null)
+							continue;
+
+						// Check if the old collider is present in the new set
+						bool stillPresent = false;
+						for (int j = 0; j < newColliders; j++)
 						{
-							if (i != null && !hitColliders.Contains(i) &&
-								i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+							if (m_newCancelColliders[j] == oldCol)
+							{
+								stillPresent = true;
+								break;
+							}
+						}
+
+						// If it was being canceled before, but is no longer touched by the cursor, stop it
+						if (!stillPresent)
+						{
+							if (oldCol.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
 								blueprintCancelation.IsBeingCanceled)
 							{
 								blueprintCancelation.StopCancelation();
@@ -168,24 +194,14 @@ namespace Player.Core
 						}
 					}
 
-					m_collidersBeingCanceled = hitColliders;
+					Array.Clear(m_collidersBeingCanceled, 0, m_collidersBeingCanceled.Length);
+					Array.Copy(m_newCancelColliders, m_collidersBeingCanceled, m_newCancelColliders.Length);
 				}
 				else
-				{
-					if (m_collidersBeingCanceled.Count > 0)
-					{
-						foreach (Collider i in m_collidersBeingCanceled)
-						{
-							if (i != null && i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
-								blueprintCancelation.IsBeingCanceled)
-							{
-								blueprintCancelation.StopCancelation();
-							}
-						}
-						m_collidersBeingCanceled.Clear();
-					}
-				}
+					StopAllCancelations();
 			}
+			else
+				StopAllCancelations();
 		}
 
 		private void SetBlueprintToPlace(BlueprintData structureData)
@@ -223,38 +239,15 @@ namespace Player.Core
 				m_followerController.enabled = true;
 		}
 
-		private void CompleteBlueprintPlacement()
-		{
-			PlayerCursorVisualizer cursorVisualizer = m_worldControllerManager?.CursorVisualizer;
-			cursorVisualizer?.ClearBlueprintPlacementVisuals();
-
-			// Generate permanent meshes directly on the placed blueprint using blueprint material (blue)
-			if (m_blueprintDataToPlace != null)
-			{
-				Transform blueprintTransform = GetBlueprintTransform(m_multiPointBlueprint);
-				if (blueprintTransform != null)
-				{
-					cursorVisualizer?.GeneratePermanentSegments(blueprintTransform, m_blueprintDataToPlace, m_currentPoints);
-				}
-			}
-
-			m_blueprintDataToPlace = null;
-			m_isPlacementValid = false;
-			m_placementRotation = Quaternion.identity;
-			m_multiPointBlueprint = null;
-			m_pointsPlaced = 0;
-			m_currentPoints.Clear();
-
-			cursorVisualizer?.EnableCursor();
-
-			if (m_followerController != null)
-				m_followerController.enabled = true;
-		}
-
 		private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 		{
 			if (m_blueprintDataToPlace == null)
+			{
+				Debug.Log("[PlayerContsructionController] Tried to place a blueprint without blueprint data.",
+					this);
+
 				return;
+			}
 
 			int nearestSettlementID =
 				SettlementManager.GetClosestSettlementID(transform.position, EFaction.FACTION_PLAYER);
@@ -262,44 +255,19 @@ namespace Player.Core
 			if (nearestSettlementID == -1)
 				SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
-			if (m_blueprintDataToPlace.IsMultiPointBlueprint)
+			if (!m_blueprintDataToPlace.IsMultiPointBlueprint)
 			{
-				if (m_pointsPlaced == 0)
-				{
-					ConstructionManager.Instance.CreateBlueprint
-					(
-						nearestSettlementID,
-						m_blueprintDataToPlace,
-						position,
-						rotation,
-						out m_multiPointBlueprint
-					);
-					m_currentPoints.Add(position);
-				}
-				else if (m_multiPointBlueprint != null)
-				{
-					Transform bpTransform = GetBlueprintTransform(m_multiPointBlueprint);
-					if (bpTransform != null && m_currentPoints.Count > 0)
-					{
-						Vector3 dir = position - m_currentPoints[0];
-						if (dir.sqrMagnitude > 0.001f)
-						{
-							bpTransform.rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-						}
-					}
-
-					m_multiPointBlueprint.HandlePointAdded(position);
-					m_currentPoints.Add(position);
-				}
-
-				m_pointsPlaced++;
-
-				if (m_pointsPlaced >= m_blueprintDataToPlace.MaxPoints)
-					CompleteBlueprintPlacement();
+				CreateStructureBlueprint(nearestSettlementID, position, rotation);
 			}
 			else
 			{
-				ConstructionManager.Instance.CreateBlueprint
+				CreateMultiPointBlueprint(nearestSettlementID, position, rotation);
+			}
+		}
+
+		private void CreateStructureBlueprint(int nearestSettlementID, Vector3 position, Quaternion rotation)
+		{
+			ConstructionManager.Instance.CreateBlueprint
 				(
 					nearestSettlementID,
 					m_blueprintDataToPlace,
@@ -308,19 +276,91 @@ namespace Player.Core
 					out _
 				);
 
+			ClearBlueprintToPlace();
+		}
+
+		private void CreateMultiPointBlueprint(int nearestSettlementID, Vector3 position, Quaternion rotation)
+		{
+			if (m_pointsPlaced == 0)
+			{
+				ConstructionManager.Instance.CreateBlueprint
+				(
+					nearestSettlementID,
+					m_blueprintDataToPlace,
+					position,
+					rotation,
+					out m_multiPointBlueprint
+				);
+				m_currentPoints.Add(position);
+			}
+			else if (m_multiPointBlueprint != null)
+			{
+				m_multiPointBlueprint.HandlePointAdded(position);
+				m_currentPoints.Add(position);
+			}
+
+			m_pointsPlaced++;
+
+			if (m_pointsPlaced >= m_blueprintDataToPlace.MaxPoints)
+			{
+				if (m_blueprintDataToPlace != null)
+				{
+					Transform blueprintTransform = m_multiPointBlueprint.Object.transform;
+					if (blueprintTransform != null)
+						GenerateMultiPointBlueprintSegments(blueprintTransform, m_blueprintDataToPlace, m_currentPoints);
+				}
+
 				ClearBlueprintToPlace();
 			}
 		}
 
-		private Transform GetBlueprintTransform(IBlueprintObject blueprintObj)
+		/// <summary>
+		/// Generates and places mesh segments between multiple points along a path using specified spacing.
+		/// </summary>
+		private void GenerateMultiPointBlueprintSegments(Transform parentTransform, BlueprintData blueprintData, List<Vector3> points)
 		{
-			if (blueprintObj == null) return null;
-			if (blueprintObj is Component comp) return comp.transform;
-			if (blueprintObj is MonoBehaviour mb) return mb.transform;
-			var prop = blueprintObj.GetType().GetProperty("transform");
-			if (prop != null && prop.PropertyType == typeof(Transform))
-				return prop.GetValue(blueprintObj) as Transform;
-			return null;
+			if (blueprintData == null || 
+				blueprintData.PlacementMesh == null || 
+				points.Count < 2)
+				return;
+
+			float spacing = blueprintData.MultiPointSpacing;
+			Mesh blueprintMesh = blueprintData.PlacementMesh;
+			Bounds blueprintBounds = blueprintMesh.bounds;
+			float distanceToBottom = blueprintBounds.center.y - blueprintBounds.extents.y;
+
+			// Loop through each individual placed point
+			for (int i = 0; i < points.Count - 1; i++)
+			{
+				Vector3 start = points[i];
+				Vector3 end = points[i + 1];
+
+				Vector3 direction = end - start;
+				float totalDistance = direction.magnitude;
+				if (totalDistance <= 0.001f) 
+					continue;
+
+				direction.Normalize();
+				int segmentCount = Mathf.FloorToInt(totalDistance / spacing);
+				Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
+
+				// Place each segment between this placed point and the next
+				for (int j = 0; j <= segmentCount; j++)
+				{
+					Vector3 spawnPosition = start + (direction * (j * spacing));
+
+					GameObject segmentObject = new GameObject($"Segment_{i}_{j}");
+					segmentObject.transform.SetParent(parentTransform, true);
+					segmentObject.transform.position = spawnPosition + (pathRotation * new Vector3(0, distanceToBottom, 0));
+					segmentObject.transform.rotation = pathRotation;
+
+					MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
+					MeshRenderer renderer = segmentObject.AddComponent<MeshRenderer>();
+
+					filter.mesh = blueprintMesh;
+					renderer.sharedMaterial = m_blueprintMaterial;
+				}
+			}
 		}
 
 		private void RefreshPlacementValidityVisuals(bool isPlacementValid)
@@ -332,14 +372,14 @@ namespace Player.Core
 				return;
 			}
 
-			Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
-
 			if (m_blueprintDataToPlace.IsMultiPointBlueprint && m_pointsPlaced > 0)
 			{
 				UpdateRealTimeMultiPointVisuals(isPlacementValid);
 			}
-			else
+			else // Update regular structure blueprint visuals
 			{
+				Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
+
 				m_cursorVisualizer.SetBlueprintPlacementVisuals(
 					m_blueprintDataToPlace,
 					materials,
@@ -354,21 +394,23 @@ namespace Player.Core
 				return;
 
 			Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
-
-			if (m_blueprintDataToPlace.IsMultiPointBlueprint && m_pointsPlaced > 0)
+			if (m_pointsPlaced > 0)
 			{
-				// Rotate the original placed blueprint object in real-time to face the cursor
-				Transform bpTransform = GetBlueprintTransform(m_multiPointBlueprint);
-				if (bpTransform != null && m_currentPoints.Count > 0)
+				// Rotate the first placed point's object to face the cursor
+				if (m_pointsPlaced == 1)
 				{
-					Vector3 dirToCursor = m_cursorWorldPosition - m_currentPoints[0];
-					if (dirToCursor.sqrMagnitude > 0.001f)
+					Transform blueprintTransform = m_multiPointBlueprint.Object.transform;
+					if (blueprintTransform != null && m_currentPoints.Count > 0)
 					{
-						bpTransform.rotation = Quaternion.LookRotation(dirToCursor.normalized, Vector3.up);
+						Vector3 dirToCursor = m_cursorWorldPosition - m_currentPoints[0];
+						if (dirToCursor.sqrMagnitude > 0.001f)
+						{
+							blueprintTransform.rotation = Quaternion.LookRotation(dirToCursor.normalized, Vector3.up);
+						}
 					}
 				}
 
-				// Pass confirmed points and current live cursor position separately
+				// Update cursor visuals
 				m_cursorVisualizer.SetMultiPointBlueprintPreviewVisuals(
 					m_blueprintDataToPlace,
 					m_currentPoints,
@@ -376,13 +418,32 @@ namespace Player.Core
 					materials
 				);
 			}
-			else
+			else // First placed point visuals
 			{
 				m_cursorVisualizer?.SetBlueprintPlacementVisuals(
 					m_blueprintDataToPlace,
 					materials,
 					m_placementRotation
 				);
+			}
+		}
+
+		private void StopAllCancelations()
+		{
+			if (m_collidersBeingCanceled.Length > 0)
+			{
+				foreach (Collider i in m_collidersBeingCanceled)
+				{
+					if (i == null)
+						continue;
+
+					if (i.TryGetComponent(out BlueprintCancelation blueprintCancelation) &&
+						blueprintCancelation.IsBeingCanceled)
+					{
+						blueprintCancelation.StopCancelation();
+					}
+				}
+				Array.Clear(m_collidersBeingCanceled, 0, m_collidersBeingCanceled.Length);
 			}
 		}
 	}
