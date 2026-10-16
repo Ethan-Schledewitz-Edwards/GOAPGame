@@ -1,20 +1,31 @@
+using Interaction.Core;
 using System;
 using System.Collections;
 using UnityEngine;
 
 namespace Interaction.ActorInteractables.Structures
 {
+	[RequireComponent(typeof(UITrackedProgressComponent))]
     public class BlueprintCancelation : MonoBehaviour
     {
 		private const float c_cancelationDuration = 3.0f;
 		private const float c_maxShakeMagnitude = 0.1f;
 		private const float c_maxShakeFrequency = 15.0f;
 
+		// Components
+		private UITrackedProgressComponent m_progressComponent;
+
 		public event Action CanceledBlueprint;
 
 		public bool IsBeingCanceled { get; private set; }
 		private Coroutine m_cancelationCoroutine;
 		private float m_shakeStrength;
+
+		private void Awake()
+		{
+			m_progressComponent = GetComponent<UITrackedProgressComponent>();
+			m_progressComponent.IsTrackingEnabled = false;
+		}
 
 		private void OnDestroy()
 		{
@@ -41,33 +52,34 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			IsBeingCanceled = false;
 
+			m_progressComponent.UpdateProgressValue(0f, 0f);
+
 			if (m_cancelationCoroutine != null)
 				StopCoroutine(m_cancelationCoroutine);
-		}
-
-		public void ForceCancelation()
-		{
-			CanceledBlueprint?.Invoke();
 		}
 
 		private IEnumerator ShakeCoroutine(float duration, float magnitude, float frequency)
 		{
 			Vector3 transformedOffset = transform.localPosition;
-			float elapsedTime = 0f;
+			float cancleTimer = 0;
 
 			// Generate a random starting point in the Perlin noise map so shakes feel unique
 			float randomSeedX = UnityEngine.Random.Range(0f, 100f);
 			float randomSeedY = UnityEngine.Random.Range(0f, 100f);
 
-			while (elapsedTime < duration)
-			{
-				elapsedTime += Time.deltaTime;
+			m_progressComponent.IsTrackingEnabled = true;
 
-				float progress = Mathf.Clamp01(elapsedTime / duration);
+			while (cancleTimer < duration)
+			{
+				cancleTimer += Time.deltaTime;
+
+				float progress = Mathf.Clamp01(cancleTimer / duration);
 				float currentMagnitude = magnitude * progress;
 
-				float noiseX = Mathf.PerlinNoise(randomSeedX + elapsedTime * frequency, 0f) * 2f - 1f;
-				float noiseY = Mathf.PerlinNoise(0f, randomSeedY + elapsedTime * frequency) * 2f - 1f;
+				m_progressComponent.UpdateProgressValue(cancleTimer, duration); // Show timer counting down
+
+				float noiseX = Mathf.PerlinNoise(randomSeedX + cancleTimer * frequency, 0f) * 2f - 1f;
+				float noiseY = Mathf.PerlinNoise(0f, randomSeedY + cancleTimer * frequency) * 2f - 1f;
 
 				transform.localPosition = new Vector3(
 					transformedOffset.x + (noiseX * currentMagnitude),
@@ -77,6 +89,8 @@ namespace Interaction.ActorInteractables.Structures
 
 				yield return null;
 			}
+
+			m_progressComponent.UpdateProgressValue(0f, 0f);
 
 			// Always force reset back to the exact initial position
 			transform.localPosition = transformedOffset;

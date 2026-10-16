@@ -378,7 +378,7 @@ namespace Player.Core
 			}
 			else
 			{
-				cursorVisualizer?.SetBlueprintPlacementVisuals(
+				m_cursorVisualizer?.SetBlueprintPlacementVisuals(
 					m_blueprintDataToPlace,
 					materials,
 					m_placementRotation

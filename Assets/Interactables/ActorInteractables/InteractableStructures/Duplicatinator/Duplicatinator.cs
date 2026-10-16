@@ -37,7 +37,6 @@ namespace Interaction.Actor.InteractableStructures
 
 		private Coroutine m_duplicationRoutine;
 		private bool m_isDuplicatingNodds;
-		private float m_duplicationCountdown;
 		/*Add a variable to specify which type is produced*/
 
 		protected override void Awake()
@@ -104,17 +103,17 @@ namespace Interaction.Actor.InteractableStructures
 		private IEnumerator BeginNoddDuplication(int noddsProduced, float duration /*Add a property to specify which type to produce*/)
 		{
 			m_isDuplicatingNodds = true;
-			m_duplicationCountdown = duration;
+			float duplicationTimer = 0;
+
 			m_progressComponent.IsTrackingEnabled = true;
 
-			while (m_duplicationCountdown > 0)
+			while (duplicationTimer < duration)
 			{
-				m_duplicationCountdown -= Time.deltaTime;
-				m_progressComponent.UpdateProgressValue(m_duplicationCountdown, duration); // Show timer counting down
+				duplicationTimer += Time.deltaTime;
+				m_progressComponent.UpdateProgressValue(duplicationTimer, duration); // Show timer counting down
 				yield return null;
 			}
 
-			m_duplicationCountdown = 0f;
 			m_isDuplicatingNodds = false;
 			m_progressComponent.UpdateProgressValue(0f, 0f); // Free the progress tracker
 
