@@ -2,11 +2,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 namespace Player.Core
 {
 	public class PlayerFollowerController : PlayerWorldControllerBase
 	{
+		[SerializeField] private PlayerCursorVisualizer m_cursorVisualizer;
+
+		public override event Action<Transform> CursorAnchorSet;
+		public override event Action ResetCursorAnchor;
+
+		// System
 		private WaitForSeconds startDelay = new WaitForSeconds(0.2f);
 
 		private LayerMask m_actorLayers;
@@ -16,10 +23,9 @@ namespace Player.Core
 		private Vector3 m_cursorWorldPosition;
 		private List<Actor> m_activeFollowers = new List<Actor>();
 
-		protected override void Awake()
-		{
-			base.Awake();
 
+		private void Awake()
+		{
 			if (m_actorLayers == 0)
 				m_actorLayers = LayerMask.GetMask("Actor");
 		}
@@ -47,16 +53,16 @@ namespace Player.Core
 			m_isSummonHeld = context.ReadValueAsButton();
 
 			if (m_isSummonHeld)
-				m_worldControllerManager.CursorVisualizer.GrowCursor();
+				m_cursorVisualizer.GrowCursor();
 			else
-				m_worldControllerManager.CursorVisualizer.ShrinkCursor();
+				m_cursorVisualizer.ShrinkCursor();
 		}
 
 		protected override void OnCycleInput(InputAction.CallbackContext context) { }
 
 		private void Select(Vector3 position)
 		{
-			float selectionRadius = m_worldControllerManager.CursorVisualizer.SelectionRadius;
+			float selectionRadius = m_cursorVisualizer.SelectionRadius;
 
 			// Try to select actors
 			Collider[] hitColliders = Physics.OverlapSphere(position, selectionRadius, m_actorLayers);

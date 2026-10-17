@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
 	private const float c_zoomSmoothing = 4f;
-	private const float c_defaultSmoothing = 15f;
+	private const float c_defaultSmoothing = 10f;
 
 	[Header("Camera Settings")]
 	[SerializeField] private Vector3 m_defaultOffset = new Vector3(0f, 0.5f, 12f);

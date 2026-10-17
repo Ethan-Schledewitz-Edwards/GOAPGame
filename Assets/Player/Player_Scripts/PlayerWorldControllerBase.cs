@@ -1,4 +1,5 @@
 using Player.Core;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,12 +8,8 @@ namespace Player.Core
 	[RequireComponent(typeof(PlayerWorldControllerManager))]
 	public abstract class PlayerWorldControllerBase : MonoBehaviour, IInputHandler
 	{
-		protected PlayerWorldControllerManager m_worldControllerManager;
-
-		protected virtual void Awake()
-		{
-			m_worldControllerManager = GetComponent<PlayerWorldControllerManager>();
-		}
+		public abstract event Action<Transform> CursorAnchorSet;
+		public abstract event Action ResetCursorAnchor;
 
 		private void OnEnable()
 		{

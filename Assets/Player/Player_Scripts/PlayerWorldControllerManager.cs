@@ -10,7 +10,7 @@ namespace Player.Core
 		private const float c_maxCursorDistanceController = 6.0f;
 		private const float c_maxCursorDistanceMouse = 12.0f;
 
-		[field: SerializeField] public PlayerCursorVisualizer CursorVisualizer { get; private set; }
+		[SerializeField] private PlayerCursorVisualizer m_cursorVisualizer;
 		[SerializeField] private Camera m_mainCamera;
 
 		// System
@@ -20,6 +20,8 @@ namespace Player.Core
 
 		private Vector2 m_rawLookInput;
 		private bool m_isUsingMouse;
+
+		private Transform m_cursorAnchorTransform; // The transform range is calculated around
 
 		private Vector3 m_cursorLocalPosition;
 		private Vector3 m_targetCursorWorldPosition;
@@ -31,13 +33,26 @@ namespace Player.Core
 				m_groundLayer = LayerMask.GetMask("Default");
 
 			m_worldControllers = GetComponents<PlayerWorldControllerBase>();
+			foreach (PlayerWorldControllerBase i in m_worldControllers)
+			{
+				i.CursorAnchorSet += SetCursorAnchor;
+				i.ResetCursorAnchor += ResetCursorAnchor;
+			}
 
 			((IInputHandler)this).SetControlsSubscription(true);
+
+			ResetCursorAnchor();
 		}
 
 		private void OnDestroy()
 		{
 			((IInputHandler)this).SetControlsSubscription(false);
+
+			foreach (PlayerWorldControllerBase i in m_worldControllers)
+			{
+				i.CursorAnchorSet -= SetCursorAnchor;
+				i.ResetCursorAnchor -= ResetCursorAnchor;
+			}
 		}
 
 		public void Subscribe()
@@ -76,30 +91,31 @@ namespace Player.Core
 
 			if (InputManager.ControlMode == InputManager.ControlType.Player)
 			{
-				Vector3 targetWorldPositionFlattened = transform.position;
+				Vector3 flattenedTargetPosition = m_cursorAnchorTransform.position;
+				flattenedTargetPosition.y = 0f;
 
 				if (m_isUsingMouse)
 				{
 					Ray mouseRay = m_mainCamera.ScreenPointToRay(m_rawLookInput);
 					if (Physics.Raycast(mouseRay, out RaycastHit mouseHit, 100f, m_groundLayer))
 					{
-						Vector3 playerToMouse = mouseHit.point - transform.position;
-						playerToMouse.y = 0; // Flatten the direction vector
+						Vector3 direction = mouseHit.point - flattenedTargetPosition;
+						direction.y = 0; // Flatten the direction vector
 
 						// Clamp the direction vector to max radius, then add it back to player position
-						Vector3 clampedOffset = Vector3.ClampMagnitude(playerToMouse, c_maxCursorDistanceMouse);
-						targetWorldPositionFlattened = transform.position + clampedOffset;
+						Vector3 clampedOffset = Vector3.ClampMagnitude(direction, c_maxCursorDistanceMouse);
+						flattenedTargetPosition = flattenedTargetPosition + clampedOffset;
 					}
 				}
 				else
 				{
 					Vector3 stickInput = new Vector3(m_rawLookInput.x, 0, m_rawLookInput.y);
-					targetWorldPositionFlattened = transform.position + (stickInput * c_maxCursorDistanceController);
+					flattenedTargetPosition = flattenedTargetPosition + (stickInput * c_maxCursorDistanceController);
 				}
 
 				// Raycast down from cursor offset
-				Vector3 groundRayStart = targetWorldPositionFlattened + (Vector3.up * 20f);
-				m_targetCursorWorldPosition = targetWorldPositionFlattened;
+				Vector3 groundRayStart = flattenedTargetPosition + (Vector3.up * 20f);
+				m_targetCursorWorldPosition = flattenedTargetPosition;
 				Quaternion targetRotation = Quaternion.identity;
 
 				if (Physics.Raycast(groundRayStart, Vector3.down, out RaycastHit hitData, 40f, m_groundLayer))
@@ -114,17 +130,33 @@ namespace Player.Core
 				worldPosition = Vector3.Lerp(m_cursorWorldPosition, m_targetCursorWorldPosition, cursorSmoothing * Time.deltaTime);
 
 				// Update Visuals
-				if (CursorVisualizer != null)
+				if (m_cursorVisualizer != null)
 				{
-					Quaternion cursorRotation = CursorVisualizer.transform.rotation;
+					Quaternion cursorRotation = m_cursorVisualizer.transform.rotation;
 					Quaternion smoothedRotation = Quaternion.Slerp(cursorRotation, targetRotation, cursorSmoothing * Time.deltaTime);
 
-					CursorVisualizer.SetVisualsPosition(worldPosition);
-					CursorVisualizer.SetVisualsRotation(smoothedRotation);
+					m_cursorVisualizer.SetVisualsPosition(worldPosition);
+					m_cursorVisualizer.SetVisualsRotation(smoothedRotation);
 				}
 			}
 
 			m_cursorWorldPosition = worldPosition;
+		}
+
+		public void SetCursorAnchor(Transform cursorAnchorTransform)
+		{
+			if(cursorAnchorTransform == null)
+			{
+				m_cursorAnchorTransform = transform;
+				return;
+			}
+
+			m_cursorAnchorTransform = cursorAnchorTransform;
+		}
+
+		public void ResetCursorAnchor()
+		{
+			m_cursorAnchorTransform = transform;
 		}
 	}
 }

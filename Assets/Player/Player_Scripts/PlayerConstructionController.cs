@@ -24,8 +24,11 @@ namespace Player.Core
 
 		// Components
 		[SerializeField] private PlayerCamera m_playerCamera;
+		[SerializeField] private PlayerCursorVisualizer m_cursorVisualizer;
 		private PlayerFollowerController m_followerController;
-		private PlayerCursorVisualizer m_cursorVisualizer;
+
+		public override event Action<Transform> CursorAnchorSet;
+		public override event Action ResetCursorAnchor;
 
 		// System
 		private bool m_isCancleHeld = false;
@@ -44,13 +47,10 @@ namespace Player.Core
 
 		#region Lifecycle
 
-		protected override void Awake()
+		private void Awake()
 		{
-			base.Awake();
-
 			if (m_playerCamera == null)
 				Debug.LogWarning("[PlayerConstructionController] No reference to the player camera was set.", this);
-
 
 			if (m_blockingLayer == 0) 
 				m_blockingLayer = LayerMask.GetMask("Player", "Actor");
@@ -59,7 +59,6 @@ namespace Player.Core
 				m_interactionLayer = LayerMask.GetMask("Interaction");
 
 			m_followerController = GetComponent<PlayerFollowerController>();
-			m_cursorVisualizer = m_worldControllerManager.CursorVisualizer;
 		}
 
 		private void Start()
@@ -149,7 +148,7 @@ namespace Player.Core
 
 				if (m_isCancleHeld)
 				{
-					float selectionRadius = m_worldControllerManager.CursorVisualizer.SelectionRadius;
+					float selectionRadius = m_cursorVisualizer.SelectionRadius;
 					int newColliders = Physics.OverlapSphereNonAlloc(worldPosition,
 						selectionRadius,
 						m_newCancelColliders,
@@ -220,8 +219,7 @@ namespace Player.Core
 			m_placementRotation = Quaternion.identity;
 			m_currentPoints.Clear();
 
-			PlayerCursorVisualizer cursorVisualizer = m_worldControllerManager?.CursorVisualizer;
-			cursorVisualizer?.ClearBlueprintPlacementVisuals();
+			m_cursorVisualizer?.ClearBlueprintPlacementVisuals();
 
 			RefreshPlacementValidityVisuals(false);
 		}
@@ -229,6 +227,7 @@ namespace Player.Core
 		private void ClearBlueprintToPlace()
 		{
 			m_playerCamera.ReturnToDefault();
+			ResetCursorAnchor?.Invoke();
 
 			m_blueprintDataToPlace = null;
 			m_isPlacementValid = false;
@@ -237,8 +236,7 @@ namespace Player.Core
 			m_pointsPlaced = 0;
 			m_currentPoints.Clear();
 
-			PlayerCursorVisualizer cursorVisualizer = m_worldControllerManager?.CursorVisualizer;
-			cursorVisualizer?.ClearBlueprintPlacementVisuals();
+			m_cursorVisualizer?.ClearBlueprintPlacementVisuals();
 
 			RefreshPlacementValidityVisuals(false);
 
@@ -300,9 +298,14 @@ namespace Player.Core
 				);
 				m_currentPoints.Add(position);
 
+				// Update camera target
 				m_playerCamera.ClearCameraTargets();
 				m_playerCamera.SetCameraSmoothing(4f);
 				m_playerCamera.AddCameraTarget(m_multiPointBlueprint.Object.transform);
+				m_playerCamera.AddCameraTarget(m_cursorVisualizer.transform);
+
+				// Update cursor anchor
+				CursorAnchorSet?.Invoke(m_multiPointBlueprint.Object.transform);
 			}
 			else if (m_multiPointBlueprint != null)
 			{

@@ -1,4 +1,5 @@
 using Construction;
+using Player.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,7 @@ public class PlayerCursorVisualizer : MonoBehaviour
 
 	[Header("Camera")]
 	[SerializeField] private PlayerCamera m_playerCamera;
+	[SerializeField] private PlayerWorldControllerManager m_playerWorldControllerManager;
 
 	[Header("Blueprint")]
 	[SerializeField] private GameObject m_blueprintVisualsObject;
@@ -205,6 +207,8 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		}
 	}
 
+	// This needs optimizng and is doing the same job as the construction controller but each frame.
+	// Probably could just not recalculate portions of confirmed segments.
 	private void DrawBlueprintLink(BlueprintData blueprintData,
 		Vector3 start,
 		Vector3 end,
@@ -251,6 +255,12 @@ public class PlayerCursorVisualizer : MonoBehaviour
 				{
 					m_playerCamera.ClearCameraTargets();
 					m_playerCamera.AddCameraTarget(segmentObject.transform);
+					m_playerCamera.AddCameraTarget(transform);
+				}
+
+				if(m_playerWorldControllerManager != null)
+				{
+					m_playerWorldControllerManager.SetCursorAnchor(segmentObject.transform);
 				}
 			}
 		}
