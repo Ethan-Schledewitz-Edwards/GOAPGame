@@ -11,7 +11,7 @@ using Interaction.Core;
 
 namespace Interaction.ActorInteractables.Structures
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(ItemRequestComponent))]
+	[RequireComponent(typeof(InventoryComponent), typeof(ResourceRequestComponent))]
 	public abstract class BlueprintActorInteractableBase : ActorInteractableBase, IStructure, IItemFiltered
 	{
 		private static BehaviourTree s_cachedBlueprintBT;
@@ -19,7 +19,7 @@ namespace Interaction.ActorInteractables.Structures
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 
-		protected ItemRequestComponent m_itemRequestComponent;
+		protected ResourceRequestComponent m_resourceRequestComponent;
 		protected InventoryComponent m_inventoryComponent;
 
 		protected int m_settlementID;
@@ -35,8 +35,8 @@ namespace Interaction.ActorInteractables.Structures
 		public GameObject Object => gameObject;
 
 		// IItemFiltered properties
-		[SerializeField] protected ItemTag[] m_tagFilter;
-		public ItemTag[] ItemTagFilter => m_tagFilter;
+		[SerializeField] protected ResourceTypeTag[] m_tagFilter;
+		public ResourceTypeTag[] ItemTagFilter => m_tagFilter;
 
 		protected override void Awake()
 		{
@@ -45,14 +45,14 @@ namespace Interaction.ActorInteractables.Structures
 			InitializeBehaviourTree();
 
 			m_inventoryComponent = GetComponent<InventoryComponent>();
-			m_itemRequestComponent = GetComponent<ItemRequestComponent>();
-			m_itemRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
+			m_resourceRequestComponent = GetComponent<ResourceRequestComponent>();
+			m_resourceRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
 		}
 
 		private void OnDestroy()
 		{
-			if (m_itemRequestComponent != null)
-				m_itemRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
+			if (m_resourceRequestComponent != null)
+				m_resourceRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
 		}
 
 		private void InitializeBehaviourTree()
@@ -90,7 +90,7 @@ namespace Interaction.ActorInteractables.Structures
 			if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 				return false;
 
-			if (m_itemRequestComponent == null)
+			if (m_resourceRequestComponent == null)
 			{
 				base.StopInteract(interactor, reservedPosition);
 				return false;
@@ -103,7 +103,7 @@ namespace Interaction.ActorInteractables.Structures
 				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) &&
 					inventoryComponent.Slots.Count > 0)
 				{
-					string requestedItemID = m_itemRequestComponent.RequestItem(inventoryComponent.Slots[0]);
+					string requestedItemID = m_resourceRequestComponent.RequestItem(inventoryComponent.Slots[0]);
 
 					if (string.IsNullOrEmpty(requestedItemID))
 						return false;

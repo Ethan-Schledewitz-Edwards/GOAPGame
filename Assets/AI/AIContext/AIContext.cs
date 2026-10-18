@@ -78,10 +78,10 @@ namespace AI.AIContext
 			set => m_itemTagFilters = value;
 		}
 
-		private ItemTag[] m_cachedResolvedItemTags;
-		public ItemTag[] CachedResolvedItemTags
+		private ResourceTypeTag[] m_cachedResolvedItemTags;
+		public ResourceTypeTag[] CachedResolvedItemTags
 		{
-			get => m_cachedResolvedItemTags ?? Array.Empty<ItemTag>();
+			get => m_cachedResolvedItemTags ?? Array.Empty<ResourceTypeTag>();
 			set => m_cachedResolvedItemTags = value;
 		}
 

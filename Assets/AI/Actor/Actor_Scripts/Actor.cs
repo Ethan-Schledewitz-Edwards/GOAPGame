@@ -8,8 +8,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using AI.AIContext;
+using ObjectTags;
 
-[RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing))]
+[RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing), typeof(GOAPAgent))]
 public class Actor : MonoBehaviour, IInteractor
 {
 	public const float c_JobSearchRange = 1.5f;
@@ -86,13 +87,10 @@ public class Actor : MonoBehaviour, IInteractor
 	public Transform Transform => gameObject.transform;
 
 	// Executors
-	[field: SerializeField] public GOAPAgent GOAPAgentComp { get; private set; }
+	public GOAPAgent GOAPAgentComp { get; private set; }
 	private BehaviourTreeExecutorBase m_behaviourTreeExecutor;
 
-	// Events
-	public event Action<int> OnSettlementUpdated;
-
-	// Internal State
+	// System
 	public EActorState LogicExecutorState { get; private set; } = default;
 
 	private float m_timeFindingJob;
@@ -298,7 +296,7 @@ public class Actor : MonoBehaviour, IInteractor
 		if (previousPoint != null && previousPoint != m_assignedInteractionPosition)
 			ReleaseInteractionPosition(previousPoint);
 
-		var context = m_behaviourTreeExecutor.AIContext;
+		AIContext context = m_behaviourTreeExecutor.AIContext;
 		context.TargetTransform = m_targetTransform;
 
 		Vector3 targetDestination = m_targetTransform.position;

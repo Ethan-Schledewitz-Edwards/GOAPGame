@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-	public class ItemRequestComponent : MonoBehaviour
+	public class ResourceRequestComponent : MonoBehaviour
 	{
 		public event Action ItemsAchieved;
 

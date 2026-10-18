@@ -1,5 +1,6 @@
 using BehaviourTrees;
 using Factions.Core;
+using Interaction.ActorInteractables.Structures;
 using Interaction.Core;
 using InventorySystem.Items;
 using ObjectTags;
@@ -8,12 +9,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+// This class needs to be made generic in the future (CarryableBaseActorInteractable)
 [RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent))]
-public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
+public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor, IDuplicatableResource
 {
 	private static BehaviourTree m_carryableBT = null; // Interacting with this object parents the
 													   // interactor to it which does not need a BT.
-
 	private const float c_logMeshCarryOffset = 0.5f;
 	private const float c_logHalfHeight = .75f;
 	private const float c_logColliderRadius = 0.25f;
@@ -26,6 +27,10 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor
 	protected override string m_interactPrompt => string.Empty;
 
 	public Transform Transform => transform;
+
+	// IDuplicatableResource properties
+	public NoddEnvelope[] NoddEnvelopes => m_noddEnvelopes;
+	[SerializeField] private NoddEnvelope[] m_noddEnvelopes;
 
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;

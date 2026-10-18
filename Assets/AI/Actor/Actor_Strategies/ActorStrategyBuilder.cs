@@ -24,7 +24,7 @@ public class ActorStrategyBuilder : MonoBehaviour
 	{
 		if(m_actor != null)
 		{
-			m_actor.OnSettlementUpdated += UpdateSettlement;
+			//m_actor.OnSettlementUpdated += UpdateSettlement;
 		}
 	}
 
@@ -32,7 +32,7 @@ public class ActorStrategyBuilder : MonoBehaviour
 	{
 		if (m_actor != null)
 		{
-			m_actor.OnSettlementUpdated -= UpdateSettlement;
+			//m_actor.OnSettlementUpdated -= UpdateSettlement;
 		}
 	}
 

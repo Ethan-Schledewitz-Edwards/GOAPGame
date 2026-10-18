@@ -147,7 +147,7 @@ public class FindItemOfIDTask : BTNodeBase
 		}
 
 		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
-		if (itemIndex?.GetIndexedAsset(itemKey) is ITaggable<ItemTag> itemTaggable)
+		if (itemIndex?.GetIndexedAsset(itemKey) is ITaggable<ResourceTypeTag> itemTaggable)
 		{
 			bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
 			if (passesFilter && inventory.Inventory.GetTotalOfItem(itemKey) > 0)

@@ -147,6 +147,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableActorInteractable
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
+  m_noddEnvelopes:
+  - NoddsProduced: 4
+    DuplicationDuration: 5
+    NoddPrefab: {fileID: 2239435831216304708, guid: 796cebe7c27e33847b0a1611548dca66, type: 3}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
   m_logMeshTransform: {fileID: 2143631712808309234}
 --- !u!136 &581121961390997327
@@ -373,7 +377,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 63366e045834e4f40988538b9c55231e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

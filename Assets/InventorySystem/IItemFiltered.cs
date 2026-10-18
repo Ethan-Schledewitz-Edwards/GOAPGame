@@ -5,6 +5,6 @@ namespace InventorySystem
 {
     public interface IItemFiltered
 	{
-		public ItemTag[] ItemTagFilter { get; }
+		public ResourceTypeTag[] ItemTagFilter { get; }
 	}
 }

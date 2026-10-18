@@ -49,12 +49,12 @@ namespace Interaction.ActorInteractables.Structures
 		public void HandleBlueprintPlaced(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
 		{
 			// Extract item tags from required items
-			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
+			HashSet<ResourceTypeTag> uniqueTags = new HashSet<ResourceTypeTag>();
 			if (blueprintData.RequiredItems != null)
 			{
 				foreach (var requiredItem in blueprintData.RequiredItems)
 				{
-					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && taggableItem.RuntimeTagSet != null)
+					if (requiredItem.itemType is ITaggable<ResourceTypeTag> taggableItem && taggableItem.RuntimeTagSet != null)
 					{
 						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
 					}
@@ -65,7 +65,7 @@ namespace Interaction.ActorInteractables.Structures
 			m_tagFilter = uniqueTags.ToArray();
 
 			m_inventoryComponent.InitializeInventory(blueprintData.RequiredItems.Length);
-			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
+			m_resourceRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
 
 			transform.position = position;
 			transform.rotation = rotation;

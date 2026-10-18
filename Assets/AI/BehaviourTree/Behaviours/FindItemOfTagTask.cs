@@ -53,7 +53,7 @@ public class FindItemOfTagTask : BTNodeBase
 
 	private Transform FindItemOfTags(Transform executorTransform,
 		IInteractor interactor,
-		ItemTag[] itemTags)
+		ResourceTypeTag[] itemTags)
 	{
 		Vector3 executorPosition = executorTransform.position;
 
@@ -71,7 +71,7 @@ public class FindItemOfTagTask : BTNodeBase
 
 			if (!entity.TryGetComponent(out IItemObject itemObject) ||
 				itemObject.IsItemStored ||
-				!(itemObject.ItemData is ITaggable<ItemTag> taggable))
+				!(itemObject.ItemData is ITaggable<ResourceTypeTag> taggable))
 			{
 				continue;
 			}
@@ -107,13 +107,13 @@ public class FindItemOfTagTask : BTNodeBase
 			return;
 		}
 
-		List<ItemTag> resolvedTags = new List<ItemTag>();
+		List<ResourceTypeTag> resolvedTags = new List<ResourceTypeTag>();
 		foreach (string tagKey in context.ItemTagFilters)
 		{
 			if (string.IsNullOrEmpty(tagKey))
 				continue;
 
-			ItemTag tag = IndexRegistry.GetAsset<ItemTag>(tagKey);
+			ResourceTypeTag tag = IndexRegistry.GetAsset<ResourceTypeTag>(tagKey);
 			if (tag != null)
 				resolvedTags.Add(tag);
 		}

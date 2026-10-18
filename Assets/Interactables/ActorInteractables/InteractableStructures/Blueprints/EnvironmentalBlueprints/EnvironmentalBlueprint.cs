@@ -31,12 +31,12 @@ namespace Interaction.ActorInteractables.Structures
 			base.Awake();
 
 			// Extract item tags from required items
-			HashSet<ItemTag> uniqueTags = new HashSet<ItemTag>();
+			HashSet<ResourceTypeTag> uniqueTags = new HashSet<ResourceTypeTag>();
 			if (m_requiredItems != null)
 			{
 				foreach (var requiredItem in m_requiredItems)
 				{
-					if (requiredItem.itemType is ITaggable<ItemTag> taggableItem && 
+					if (requiredItem.itemType is ITaggable<ResourceTypeTag> taggableItem && 
 						taggableItem.RuntimeTagSet != null)
 					{
 						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
@@ -47,7 +47,7 @@ namespace Interaction.ActorInteractables.Structures
 			m_tagFilter = uniqueTags.ToArray();
 
 			m_inventoryComponent.InitializeInventory(m_requiredItems.Length);
-			m_itemRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
+			m_resourceRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
 		}
 
 		protected void Start()

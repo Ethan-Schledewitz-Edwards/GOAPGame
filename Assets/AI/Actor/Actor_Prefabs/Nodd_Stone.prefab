@@ -272,7 +272,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2239435831216304708}
-  - component: {fileID: 1045364547215510978}
+  - component: {fileID: 348838157598707639}
   - component: {fileID: 3333077740091554456}
   - component: {fileID: 5168363217589708835}
   - component: {fileID: 986855869424821196}
@@ -283,7 +283,7 @@ GameObject:
   - component: {fileID: 8496172798646482293}
   - component: {fileID: 8696353149005091464}
   m_Layer: 6
-  m_Name: Peon
+  m_Name: Nodd_Stone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,7 +308,7 @@ Transform:
   - {fileID: 5089042427203968515}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1045364547215510978
+--- !u!114 &348838157598707639
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -317,14 +317,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6662613928143633748}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 852fecdcf5542e845b8511513c69e706, type: 3}
+  m_Script: {fileID: 11500000, guid: d638923c9541bff4883dc4ba12a8f8ce, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Actor
+  m_EditorClassIdentifier: AI.Actors::AI.Actors.Nodd
   <ActorFaction>k__BackingField: 1
   m_interactionLayers:
     serializedVersion: 2
     m_Bits: 384
-  <GOAPAgentComp>k__BackingField: {fileID: 3683834564411842312}
+  m_resourceTypeTag: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
 --- !u!114 &3333077740091554456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -343,6 +343,7 @@ MonoBehaviour:
   m_destructionParticles: {fileID: 0}
   m_damageSounds: []
   m_dieSounds: []
+  IsDamagable: 1
   <MaxHunger>k__BackingField: 100
   <MaxRest>k__BackingField: 100
   <MaxHapiness>k__BackingField: 100
@@ -385,7 +386,8 @@ MonoBehaviour:
     InteractionLayer:
       serializedVersion: 2
       m_Bits: 0
-    AssignedInteractionPosition: {fileID: 0}
+    ReservedInteractionPoint: {fileID: 0}
+    AttackDamage: 0
     IsCarryingObject: 0
     DepositInteractionStarted: 0
     StructureSettlementID: 0

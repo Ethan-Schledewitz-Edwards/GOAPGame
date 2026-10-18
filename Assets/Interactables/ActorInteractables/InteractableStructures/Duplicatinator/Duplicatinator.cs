@@ -1,11 +1,14 @@
 using BehaviourTrees;
 using Factions.Core;
+using Interaction.ActorInteractables.Structures;
 using Interaction.Core;
 using ObjectTags;
 using Settlements;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static Interaction.ActorInteractables.Structures.IDuplicatableResource;
 
 namespace Interaction.Actor.InteractableStructures
 {
@@ -15,7 +18,6 @@ namespace Interaction.Actor.InteractableStructures
 		[Header("Settings")]
 		[SerializeField] private StructureTag m_duplicatinatorTag;
 		[SerializeField] private Transform m_noddSpawnPoint;
-		[SerializeField] private Transform m_noddPrefab;
 
 		protected override int m_minActorsToFunction => 0; // Needs a carryable not guys
 
@@ -90,57 +92,67 @@ namespace Interaction.Actor.InteractableStructures
 			if(m_isDuplicatingNodds) 
 				return false;
 
-			// Kick actors off of the carryable
-			interactor.InteractionCanceled();
+			if(interactor.Transform != null &&
+				interactor.Transform.TryGetComponent(out IDuplicatableResource duplicatableResource))
+			{
+				// Kick actors off of the carryable
+				interactor.InteractionCanceled();
 
-			Destroy(interactor.Transform.gameObject);
+				Destroy(interactor.Transform.gameObject);
 
-			m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(4, 5f));
+				m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(duplicatableResource.NoddEnvelopes));
+			}
 
 			return true;
 		}
 
-		private IEnumerator BeginNoddDuplication(int noddsProduced, float duration /*Add a property to specify which type to produce*/)
+		private IEnumerator BeginNoddDuplication(NoddEnvelope[] noddTypes)
 		{
 			m_isDuplicatingNodds = true;
 			float duplicationTimer = 0;
 
 			m_progressComponent.IsTrackingEnabled = true;
 
-			while (duplicationTimer < duration)
+			for(int i = 0; i < noddTypes.Length; i++)
 			{
-				duplicationTimer += Time.deltaTime;
-				m_progressComponent.UpdateProgressValue(duplicationTimer, duration); // Show timer counting down
-				yield return null;
-			}
+				NoddEnvelope envelope = noddTypes[i];
+				int noddsProduced = envelope.NoddsProduced;
+				int spawnDuration = envelope.DuplicationDuration;
 
-			m_isDuplicatingNodds = false;
-			m_progressComponent.UpdateProgressValue(0f, 0f); // Free the progress tracker
+				while (duplicationTimer < spawnDuration)
+				{
+					duplicationTimer += Time.deltaTime;
+					m_progressComponent.UpdateProgressValue(duplicationTimer, spawnDuration); // Show timer counting down
+					yield return null;
+				}
 
-			int columns = Mathf.CeilToInt(Mathf.Sqrt(noddsProduced));
-			float spacing = 0.5f;
+				m_isDuplicatingNodds = false;
+				m_progressComponent.UpdateProgressValue(0f, 0f); // Free the progress tracker
 
-			for (int i = 0; i < noddsProduced; i++)
-			{
-				int x = i % columns;
-				int y = i / columns;
+				int columns = Mathf.CeilToInt(Mathf.Sqrt(noddsProduced));
+				float spacing = 0.5f;
 
-				Vector2 xzOffset = new Vector2(x * spacing, y * spacing);
+				for (int j = 0; j < noddsProduced; j++)
+				{
+					int x = j % columns;
+					int y = j / columns;
 
-				SpawnNodd(xzOffset);
+					Vector2 xzOffset = new Vector2(x * spacing, y * spacing);
+
+					SpawnNodd(xzOffset, envelope.NoddPrefab);
+				}
 			}
 		}
 
-		private void SpawnNodd(Vector2 offset)
+		private void SpawnNodd(Vector2 offset, Transform noddPrefab)
 		{
-			if(m_noddSpawnPoint == null ||
-				m_noddPrefab == null)
+			if(m_noddSpawnPoint == null)
 				return;
 
 			Vector3 spawnPosition = m_noddSpawnPoint.position + 
 				new Vector3(offset.x, 0, offset.y);
 
-			Instantiate(m_noddPrefab,
+			Instantiate(noddPrefab,
 				spawnPosition, 
 				m_noddSpawnPoint.rotation, null);
 		}

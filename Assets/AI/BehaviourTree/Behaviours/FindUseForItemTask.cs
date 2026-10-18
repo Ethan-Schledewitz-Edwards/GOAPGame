@@ -86,7 +86,7 @@ public class FindUseForItemTask : BTNodeBase
 		ItemIndex itemIndex = IndexRegistry.GetIndex<ItemData>() as ItemIndex;
 		string heldItemID = context.HeldItemID;
 
-		if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ItemTag> itemTaggable)
+		if (itemIndex?.GetIndexedAsset(heldItemID) is ITaggable<ResourceTypeTag> itemTaggable)
 		{
 			bool passesFilter = itemTaggable.RuntimeTagSet.Any(tag => itemFiltered.ItemTagFilter.Contains(tag));
 			Debug.Log($"[FindUseForItemTask] Item filter match for {structureObject.name}: {passesFilter}");

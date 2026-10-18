@@ -18,8 +18,8 @@ namespace Interaction.InteractableStructures
 		protected override int m_minActorsToFunction => 0;
 
 		[Header("Settings")]
-		public ItemTag[] ItemTagFilter => m_tagFilter;
-		[SerializeField] private ItemTag[] m_tagFilter;
+		public ResourceTypeTag[] ItemTagFilter => m_tagFilter;
+		[SerializeField] private ResourceTypeTag[] m_tagFilter;
 		[SerializeField] private StructureTag m_structureTypeTag;
 
 		public InventoryComponent InventoryComponent { get; private set; }
