@@ -1,6 +1,6 @@
 using Construction;
 using AssetIndex.Core;
-using InventorySystem;
+using NoddTracking.Core;
 using ObjectTags;
 using Settlements;
 using System;
@@ -26,7 +26,7 @@ namespace Interaction.ActorInteractables.Structures
 		private BoxCollider m_boxCollider;
 
 		// IBlueprintObject properties
-		public string m_blueprintDataID;
+		public BlueprintData m_blueprintData;
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
@@ -48,24 +48,9 @@ namespace Interaction.ActorInteractables.Structures
 
 		public void HandleBlueprintPlaced(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
 		{
-			// Extract item tags from required items
-			HashSet<ResourceTypeTag> uniqueTags = new HashSet<ResourceTypeTag>();
-			if (blueprintData.RequiredItems != null)
-			{
-				foreach (var requiredItem in blueprintData.RequiredItems)
-				{
-					if (requiredItem.itemType is ITaggable<ResourceTypeTag> taggableItem && taggableItem.RuntimeTagSet != null)
-					{
-						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
-					}
-				}
-			}
+			m_blueprintData = blueprintData;
 
-			m_blueprintDataID = blueprintData.ID;
-			m_tagFilter = uniqueTags.ToArray();
-
-			m_inventoryComponent.InitializeInventory(blueprintData.RequiredItems.Length);
-			m_resourceRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, blueprintData.RequiredItems);
+			
 
 			transform.position = position;
 			transform.rotation = rotation;
@@ -81,8 +66,7 @@ namespace Interaction.ActorInteractables.Structures
 				$"was completed in settlement:{SettlementID}.");
 
 			// Create the final structure
-			BlueprintData blueprintData = IndexRegistry.GetAsset<BlueprintData>(m_blueprintDataID);
-			GameObject prefab = blueprintData.PrefabSpawnedOnCompletion;
+			GameObject prefab = m_blueprintData.PrefabSpawnedOnCompletion;
 			GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
 
 			if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
@@ -102,10 +86,11 @@ namespace Interaction.ActorInteractables.Structures
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 				$"was canceled in settlement:{SettlementID}.");
 
-			foreach (InventorySlot slot in m_inventoryComponent.Slots)
-			{
-				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
-			}
+			// Free the nodds
+			//foreach (InventorySlot slot in m_inventoryComponent.Slots)
+			//{
+			//	slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
+			//}
 
 			BlueprintCanceled?.Invoke(this);
 		}

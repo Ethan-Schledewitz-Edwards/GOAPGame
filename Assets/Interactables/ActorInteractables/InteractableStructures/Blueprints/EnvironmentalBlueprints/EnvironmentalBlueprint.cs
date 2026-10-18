@@ -1,7 +1,6 @@
 using Construction;
 using AssetIndex.Core;
-using InventorySystem;
-using InventorySystem.Items;
+using NoddTracking.Core;
 using ObjectTags;
 using Settlements;
 using System;
@@ -16,7 +15,7 @@ namespace Interaction.ActorInteractables.Structures
 		protected override int m_minActorsToFunction => 0;
 
 		[Header("Settings")]
-		[SerializeField] private ItemQuantity[] m_requiredItems;
+		[SerializeField] private NoddQuantity[] m_requiredResources;
 		[SerializeField] private int m_blueprintSettlementID;
 
 		[SerializeField] private BlueprintData m_blueprintToSpawnOnCompletion;
@@ -30,24 +29,7 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			base.Awake();
 
-			// Extract item tags from required items
-			HashSet<ResourceTypeTag> uniqueTags = new HashSet<ResourceTypeTag>();
-			if (m_requiredItems != null)
-			{
-				foreach (var requiredItem in m_requiredItems)
-				{
-					if (requiredItem.itemType is ITaggable<ResourceTypeTag> taggableItem && 
-						taggableItem.RuntimeTagSet != null)
-					{
-						uniqueTags.UnionWith(taggableItem.RuntimeTagSet);
-					}
-				}
-			}
 
-			m_tagFilter = uniqueTags.ToArray();
-
-			m_inventoryComponent.InitializeInventory(m_requiredItems.Length);
-			m_resourceRequestComponent.SetRequiredItems(m_inventoryComponent.Inventory, m_requiredItems);
 		}
 
 		protected void Start()
@@ -101,11 +83,7 @@ namespace Interaction.ActorInteractables.Structures
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 				$"was canceled in settlement:{SettlementID}.");
 
-			foreach (InventorySlot slot in m_inventoryComponent.Slots)
-			{
-				slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
-			}
-
+			
 			BlueprintCanceled?.Invoke(this);
 		}
 

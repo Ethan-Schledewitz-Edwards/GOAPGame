@@ -1,7 +1,7 @@
 using BehaviourTrees;
 using Construction;
 using AssetIndex.Core;
-using InventorySystem;
+using NoddTracking.Core;
 using ObjectTags;
 using Settlements;
 using System;
@@ -11,16 +11,13 @@ using Interaction.Core;
 
 namespace Interaction.ActorInteractables.Structures
 {
-	[RequireComponent(typeof(InventoryComponent), typeof(ResourceRequestComponent))]
-	public abstract class BlueprintActorInteractableBase : ActorInteractableBase, IStructure, IItemFiltered
+	[RequireComponent(typeof(NoddRequestComponent))]
+	public abstract class BlueprintActorInteractableBase : ActorInteractableBase, IStructure
 	{
-		private static BehaviourTree s_cachedBlueprintBT;
-
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 
-		protected ResourceRequestComponent m_resourceRequestComponent;
-		protected InventoryComponent m_inventoryComponent;
+		protected NoddRequestComponent m_noddRequestComponent;
 
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
@@ -42,43 +39,14 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			base.Awake();
 
-			InitializeBehaviourTree();
-
-			m_inventoryComponent = GetComponent<InventoryComponent>();
-			m_resourceRequestComponent = GetComponent<ResourceRequestComponent>();
-			m_resourceRequestComponent.ItemsAchieved += HandleBlueprintCompleted;
+			m_noddRequestComponent = GetComponent<NoddRequestComponent>();
+			m_noddRequestComponent.ResourcesAchieved += HandleBlueprintCompleted;
 		}
 
 		private void OnDestroy()
 		{
-			if (m_resourceRequestComponent != null)
-				m_resourceRequestComponent.ItemsAchieved -= HandleBlueprintCompleted;
-		}
-
-		private void InitializeBehaviourTree()
-		{
-			if (s_cachedBlueprintBT != null)
-				return;
-
-			StructureTag storageTag = IndexRegistry.GetAsset<StructureTag>("Storage_StructureTag");
-
-			BTNodeBase root = new BTSequenceNode(new List<BTNodeBase>
-			{
-				new BTTimeoutNode(new FindItemOfIDTask(storageTag), 2f),
-				new ReserveInteractionPositionTask(),
-				new MoveToInteractionPointTask(),
-				new BTTimeoutNode(new TryPickupItemTask(), 2f),
-				new ReturnToStructureTask(),
-				new MoveToInteractionPointTask(),
-				new BTTimeoutNode(new DepositHeldItemTask(), 2f),
-				new ReserveInteractionPositionTask(),
-				new BTTimeoutNode(new AquireNewBehaviourTreeFromTargetTask(), 2f)
-			});
-
-			BehaviourTree tree = new BehaviourTree();
-			tree.SetTree(root);
-
-			s_cachedBlueprintBT = tree;
+			if (m_noddRequestComponent != null)
+				m_noddRequestComponent.ResourcesAchieved -= HandleBlueprintCompleted;
 		}
 
 		public override bool TryInteract(
@@ -90,35 +58,13 @@ namespace Interaction.ActorInteractables.Structures
 			if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 				return false;
 
-			if (m_resourceRequestComponent == null)
+			if (m_noddRequestComponent == null)
 			{
 				base.StopInteract(interactor, reservedPosition);
 				return false;
 			}
 
 			// Tell the actor which items to find (Its behaviour tree will use the context to find the item)
-			BehaviourTreeExecutorBase executor = interactor.Transform.GetComponent<BehaviourTreeExecutorBase>();
-			if (executor != null)
-			{
-				if (interactor.Transform.TryGetComponent(out InventoryComponent inventoryComponent) &&
-					inventoryComponent.Slots.Count > 0)
-				{
-					string requestedItemID = m_resourceRequestComponent.RequestItem(inventoryComponent.Slots[0]);
-
-					if (string.IsNullOrEmpty(requestedItemID))
-						return false;
-
-					var context = executor.AIContext;
-					context.StructureSettlementID = m_settlementID;
-					context.StructureID = m_settlementStructureID;
-					context.ItemToFindID = requestedItemID;
-
-					executor.AIContext = context;
-					return true;
-				}
-			}
-
-			base.StopInteract(interactor, reservedPosition);
 			return false;
 		}
 
@@ -130,6 +76,6 @@ namespace Interaction.ActorInteractables.Structures
 
 		public abstract void HandleBlueprintCompleted();
 
-		public override BehaviourTree GetBehaviourTree() => s_cachedBlueprintBT;
+		public override BehaviourTree GetBehaviourTree() => null;
 	}
 }

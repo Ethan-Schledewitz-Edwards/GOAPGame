@@ -1,19 +1,12 @@
 using UnityEngine;
 using AssetIndex.Core;
-using InventorySystem.Items;
+using NoddTracking.Core;
 using Interaction.Core;
 using System;
 using ObjectTags;
 
 namespace Construction
 {
-	[Serializable]
-	public struct NoddRequirement
-	{
-		public ResourceTypeTag TypeRequired;
-		public int AmountRequired;
-	}
-
 	[CreateAssetMenu(fileName = "BlueprintData", menuName = "Blueprints/BlueprintData")]
 	public class BlueprintData : ScriptableObject, IIndexedAsset
 	{
@@ -23,7 +16,7 @@ namespace Construction
 		[field: SerializeField, TextArea(5, 5)] public string Description { get; private set; }
 
 		[Header("Completion Requirments")]
-		[field: SerializeField] public NoddRequirement[] RequiredItems { get; private set; }
+		[field: SerializeField] public NoddQuantity[] RequiredNodds { get; private set; }
 
 		[Header("Placement Properties")]
 		[field: SerializeField] public Mesh PlacementMesh { get; private set; }

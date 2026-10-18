@@ -2,7 +2,6 @@ using BehaviourTrees;
 using Factions.Core;
 using Interaction.ActorInteractables.Structures;
 using Interaction.Core;
-using InventorySystem.Items;
 using ObjectTags;
 using Settlements;
 using System.Collections.Generic;
