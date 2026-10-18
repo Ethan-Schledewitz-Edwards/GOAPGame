@@ -29,7 +29,7 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			base.Awake();
 
-
+			m_noddRequestComponent.SetRequiredResources(m_requiredResources);
 		}
 
 		protected void Start()
@@ -67,7 +67,7 @@ namespace Interaction.ActorInteractables.Structures
 				}
 				else
 				{
-					Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!", this);
+					Debug.LogWarning($"Prefab {prefab.name} is missing an IStructure component!", this);
 				}
 			}
 
@@ -76,15 +76,6 @@ namespace Interaction.ActorInteractables.Structures
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 				$"was completed in settlement:{SettlementID}.");
 			BlueprintCompleted?.Invoke(this);
-		}
-
-		public void HandleBlueprintCanceled()
-		{
-			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
-				$"was canceled in settlement:{SettlementID}.");
-
-			
-			BlueprintCanceled?.Invoke(this);
 		}
 
 		public void HandleBlueprintPlaced(BlueprintData structureBlueprintData, Vector3 position, Quaternion rotation) { }

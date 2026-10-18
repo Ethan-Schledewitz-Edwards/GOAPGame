@@ -25,8 +25,7 @@ namespace Interaction.ActorInteractables.Structures
 		private BlueprintCancelation m_cancelBlueprint;
 		private BoxCollider m_boxCollider;
 
-		// IBlueprintObject properties
-		public BlueprintData m_blueprintData;
+		private BlueprintData m_blueprintData;
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
@@ -50,7 +49,7 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			m_blueprintData = blueprintData;
 
-			
+			m_noddRequestComponent.SetRequiredResources(m_blueprintData.RequiredNodds);
 
 			transform.position = position;
 			transform.rotation = rotation;
@@ -75,7 +74,7 @@ namespace Interaction.ActorInteractables.Structures
 			}
 			else
 			{
-				Debug.LogError($"Prefab {prefab.name} is missing an IStructure component!");
+				Debug.LogWarning($"Prefab {prefab.name} is missing an IStructure component!");
 			}
 
 			BlueprintCompleted?.Invoke(this);
@@ -85,12 +84,6 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 				$"was canceled in settlement:{SettlementID}.");
-
-			// Free the nodds
-			//foreach (InventorySlot slot in m_inventoryComponent.Slots)
-			//{
-			//	slot.RemoveFromStack(slot.AmountInSlot, out var _, true, transform.position);
-			//}
 
 			BlueprintCanceled?.Invoke(this);
 		}

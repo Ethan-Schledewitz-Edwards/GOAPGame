@@ -1,3 +1,5 @@
+using Interaction.Core;
+using NoddTracking.Core;
 using ObjectTags;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +22,17 @@ namespace AI.Actors
 				}
 				return m_runtimeTagSet;
 			}
+		}
+
+		public override void UseInteractable(IInteractable interactable)
+		{
+			if(interactable.InteractableTransform.TryGetComponent(out NoddStorageComponent storage))
+			{
+				if(storage.TryAddNodd(m_resourceTypeTag, transform))
+					return;
+			}
+
+			base.UseInteractable(interactable);
 		}
 	}
 }

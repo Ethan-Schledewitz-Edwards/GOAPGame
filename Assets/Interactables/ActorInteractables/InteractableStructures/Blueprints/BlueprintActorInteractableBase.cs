@@ -11,13 +11,13 @@ using Interaction.Core;
 
 namespace Interaction.ActorInteractables.Structures
 {
-	[RequireComponent(typeof(NoddRequestComponent))]
+	[RequireComponent(typeof(NoddStorageComponent))]
 	public abstract class BlueprintActorInteractableBase : ActorInteractableBase, IStructure
 	{
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 
-		protected NoddRequestComponent m_noddRequestComponent;
+		protected NoddStorageComponent m_noddRequestComponent;
 
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
@@ -31,15 +31,11 @@ namespace Interaction.ActorInteractables.Structures
 		public int SettlementStructureID => m_settlementStructureID;
 		public GameObject Object => gameObject;
 
-		// IItemFiltered properties
-		[SerializeField] protected ResourceTypeTag[] m_tagFilter;
-		public ResourceTypeTag[] ItemTagFilter => m_tagFilter;
-
 		protected override void Awake()
 		{
 			base.Awake();
 
-			m_noddRequestComponent = GetComponent<NoddRequestComponent>();
+			m_noddRequestComponent = GetComponent<NoddStorageComponent>();
 			m_noddRequestComponent.ResourcesAchieved += HandleBlueprintCompleted;
 		}
 

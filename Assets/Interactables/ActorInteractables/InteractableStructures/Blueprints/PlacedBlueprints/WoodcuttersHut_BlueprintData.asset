@@ -14,10 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
   <DisplayName>k__BackingField: Woodcutters Hut
   <Description>k__BackingField: 
-  <RequiredItems>k__BackingField:
-  - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
-    amount: 3
+  <RequiredNodds>k__BackingField:
+  - TypeRequired: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
+    AmountRequired: 3
   <PlacementMesh>k__BackingField: {fileID: 1767986231468006461, guid: c51a3dc80ebf6624aa05aa12e9cd2853, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
+  <MaxPlacementAngle>k__BackingField: 15
+  <IsMultiPointBlueprint>k__BackingField: 0
+  <MaxPoints>k__BackingField: 0
+  <MultiPointSpacing>k__BackingField: 0.5
   <BlueprintPrefab>k__BackingField: {fileID: 8129932717663440262, guid: fbc86f35938e2c84fb12b237ffb475a3, type: 3}
   <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 162404230185621835, guid: 361bb5efaaf16e84a87039137681aed4, type: 3}

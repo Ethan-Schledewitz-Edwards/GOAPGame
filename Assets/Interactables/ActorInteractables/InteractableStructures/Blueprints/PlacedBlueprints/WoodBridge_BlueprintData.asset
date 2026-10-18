@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Construction::Construction.BlueprintData
   <DisplayName>k__BackingField: Wood Bridge
   <Description>k__BackingField: 
-  <RequiredItems>k__BackingField:
-  - itemType: {fileID: 11400000, guid: b9c1834b6d98c304daa4e896a94e4191, type: 2}
-    amount: 3
+  <RequiredNodds>k__BackingField:
+  - TypeRequired: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
+    AmountRequired: 3
   <PlacementMesh>k__BackingField: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
   <MaxPlacementAngle>k__BackingField: 15

@@ -315,7 +315,7 @@ public class Actor : MonoBehaviour, IInteractor
 		m_jobAssignedThisTick = true;
 	}
 
-	public void UseInteractable(IInteractable interactable)
+	public virtual void UseInteractable(IInteractable interactable)
 	{
 		if(interactable is ActorInteractableBase actorInteractable)
 		{

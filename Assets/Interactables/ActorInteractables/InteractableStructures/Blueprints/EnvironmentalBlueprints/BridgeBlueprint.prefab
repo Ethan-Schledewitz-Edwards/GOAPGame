@@ -153,8 +153,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.EnvironmentalBlueprint
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_tagFilter: []
-  m_requiredResources: []
+  m_requiredResources:
+  - TypeRequired: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
+    AmountRequired: 3
   m_blueprintSettlementID: 0
   m_blueprintToSpawnOnCompletion: {fileID: 0}
   m_objectEnabledOnCompletion: {fileID: 402355606233393382}
