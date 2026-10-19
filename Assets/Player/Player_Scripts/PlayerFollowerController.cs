@@ -141,14 +141,14 @@ namespace Player.Core
 			return closestFollower;
 		}
 
-		public override void RefreshCursor(Vector3 worldPosition)
+		public override void RefreshCursor(Vector3 worldPoint, Vector3 normal)
 		{
 			if (InputManager.ControlMode == InputManager.ControlType.Player)
 			{
-				m_cursorWorldPosition = worldPosition;
+				m_cursorWorldPosition = worldPoint;
 
 				if (m_isSummonHeld)
-					Select(worldPosition);
+					Select(worldPoint);
 			}
 		}
 	}

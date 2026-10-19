@@ -76,71 +76,73 @@ namespace Player.Core
 
 		private void Update()
 		{
-			UpdateCursorPosition(out Vector3 worldPosition);
+			UpdateCursorPosition();
+		}
+
+		private void UpdateCursorPosition()
+		{
+			if (!Application.isFocused) 
+				return;
+
+			if (InputManager.ControlMode != InputManager.ControlType.Player)
+				return;
+
+			if(m_rawLookInput.magnitude < 0.05f)
+				return;
+
+			Vector3 flattenedTargetPosition = m_cursorAnchorTransform.position;
+			flattenedTargetPosition.y = 0f;
+
+			if (m_isUsingMouse)
+			{
+				Ray mouseRay = m_mainCamera.ScreenPointToRay(m_rawLookInput);
+				if (Physics.Raycast(mouseRay, out RaycastHit mouseHit, 100f, m_groundLayer))
+				{
+					Vector3 direction = mouseHit.point - flattenedTargetPosition;
+					direction.y = 0; // Flatten the direction vector
+
+					// Clamp the direction vector to max radius, then add it back to player position
+					Vector3 clampedOffset = Vector3.ClampMagnitude(direction, c_maxCursorDistanceMouse);
+					flattenedTargetPosition = flattenedTargetPosition + clampedOffset;
+				}
+			}
+			else
+			{
+				Vector3 stickInput = new Vector3(m_rawLookInput.x, 0, m_rawLookInput.y);
+				flattenedTargetPosition = flattenedTargetPosition + (stickInput * c_maxCursorDistanceController);
+			}
+
+			// Raycast down from cursor offset
+			Vector3 groundRayStart = flattenedTargetPosition + (Vector3.up * 20f);
+			m_targetCursorWorldPosition = flattenedTargetPosition;
+			Quaternion targetRotation = Quaternion.identity;
+
+			if (Physics.Raycast(groundRayStart, Vector3.down, out RaycastHit hitData, 40f, m_groundLayer))
+			{
+				m_targetCursorWorldPosition = hitData.point;
+
+				// Match cursor rotation to ground surface normal
+				targetRotation = Quaternion.FromToRotation(Vector3.up, hitData.normal);
+			}
+
+			float cursorSmoothing = m_isUsingMouse ? c_cursorSmoothingMouse : c_cursorSmoothingController;
+			m_cursorWorldPosition = Vector3.Lerp(m_cursorWorldPosition, m_targetCursorWorldPosition, cursorSmoothing * Time.deltaTime);
+
+			// Update Visuals
+			if (m_cursorVisualizer != null)
+			{
+				Quaternion cursorRotation = m_cursorVisualizer.transform.rotation;
+				Quaternion smoothedRotation = Quaternion.Slerp(cursorRotation, targetRotation, cursorSmoothing * Time.deltaTime);
+
+				m_cursorVisualizer.SetVisualsPosition(m_cursorWorldPosition);
+				m_cursorVisualizer.SetVisualsRotation(smoothedRotation);
+			}
 
 			foreach (PlayerWorldControllerBase i in m_worldControllers)
 			{
 				if (i.enabled)
-					i.RefreshCursor(worldPosition);
+					i.RefreshCursor(m_cursorWorldPosition, hitData.normal);
 			}
-		}
-
-		private void UpdateCursorPosition(out Vector3 worldPosition)
-		{
-			worldPosition = m_cursorWorldPosition;
-
-			if (InputManager.ControlMode == InputManager.ControlType.Player)
-			{
-				Vector3 flattenedTargetPosition = m_cursorAnchorTransform.position;
-				flattenedTargetPosition.y = 0f;
-
-				if (m_isUsingMouse)
-				{
-					Ray mouseRay = m_mainCamera.ScreenPointToRay(m_rawLookInput);
-					if (Physics.Raycast(mouseRay, out RaycastHit mouseHit, 100f, m_groundLayer))
-					{
-						Vector3 direction = mouseHit.point - flattenedTargetPosition;
-						direction.y = 0; // Flatten the direction vector
-
-						// Clamp the direction vector to max radius, then add it back to player position
-						Vector3 clampedOffset = Vector3.ClampMagnitude(direction, c_maxCursorDistanceMouse);
-						flattenedTargetPosition = flattenedTargetPosition + clampedOffset;
-					}
-				}
-				else
-				{
-					Vector3 stickInput = new Vector3(m_rawLookInput.x, 0, m_rawLookInput.y);
-					flattenedTargetPosition = flattenedTargetPosition + (stickInput * c_maxCursorDistanceController);
-				}
-
-				// Raycast down from cursor offset
-				Vector3 groundRayStart = flattenedTargetPosition + (Vector3.up * 20f);
-				m_targetCursorWorldPosition = flattenedTargetPosition;
-				Quaternion targetRotation = Quaternion.identity;
-
-				if (Physics.Raycast(groundRayStart, Vector3.down, out RaycastHit hitData, 40f, m_groundLayer))
-				{
-					m_targetCursorWorldPosition = hitData.point;
-
-					// Match cursor rotation to ground surface normal
-					targetRotation = Quaternion.FromToRotation(Vector3.up, hitData.normal);
-				}
-
-				float cursorSmoothing = m_isUsingMouse ? c_cursorSmoothingMouse : c_cursorSmoothingController;
-				worldPosition = Vector3.Lerp(m_cursorWorldPosition, m_targetCursorWorldPosition, cursorSmoothing * Time.deltaTime);
-
-				// Update Visuals
-				if (m_cursorVisualizer != null)
-				{
-					Quaternion cursorRotation = m_cursorVisualizer.transform.rotation;
-					Quaternion smoothedRotation = Quaternion.Slerp(cursorRotation, targetRotation, cursorSmoothing * Time.deltaTime);
-
-					m_cursorVisualizer.SetVisualsPosition(worldPosition);
-					m_cursorVisualizer.SetVisualsRotation(smoothedRotation);
-				}
-			}
-
-			m_cursorWorldPosition = worldPosition;
 		}
 
 		public void SetCursorAnchor(Transform cursorAnchorTransform)

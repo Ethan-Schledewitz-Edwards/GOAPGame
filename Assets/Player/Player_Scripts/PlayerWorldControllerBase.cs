@@ -52,6 +52,6 @@ namespace Player.Core
 		protected abstract void OnCycleInput(InputAction.CallbackContext context);
 		#endregion
 
-		public abstract void RefreshCursor(Vector3 worldPosition);
+		public abstract void RefreshCursor(Vector3 worldPoint, Vector3 normal);
 	}
 }

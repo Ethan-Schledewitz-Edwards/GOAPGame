@@ -19,7 +19,7 @@ MonoBehaviour:
     AmountRequired: 3
   <PlacementMesh>k__BackingField: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
-  <MaxPlacementAngle>k__BackingField: 15
+  <MaxPlacementAngle>k__BackingField: 30
   <IsMultiPointBlueprint>k__BackingField: 1
   <MaxPoints>k__BackingField: 2
   <MultiPointSpacing>k__BackingField: 0.5

@@ -32,11 +32,13 @@ namespace Player.Core
 
 		// System
 		private bool m_isCancleHeld = false;
-		private Vector3 m_cursorWorldPosition;
-		private bool m_isPlacementValid;
-		private Quaternion m_placementRotation;
 
 		private BlueprintData m_blueprintDataToPlace;
+
+		private Vector3 m_cursorWorldPosition;
+		private Vector3 m_groundNormal;
+		private Quaternion m_placementRotation;
+		private bool m_isPlacementValid;
 
 		private IBlueprintObject m_multiPointBlueprint;
 		private int m_pointsPlaced;
@@ -116,14 +118,13 @@ namespace Player.Core
 
 		#endregion
 
-		public override void RefreshCursor(Vector3 worldPosition)
+		public override void RefreshCursor(Vector3 worldPoint, Vector3 normal)
 		{
 			if (InputManager.ControlMode == InputManager.ControlType.Player)
 			{
-				m_cursorWorldPosition = worldPosition;
+				m_cursorWorldPosition = worldPoint;
+				m_groundNormal = normal;
 
-				// Use the point already calculated by the base class
-				Vector3 placementPosition = worldPosition;
 				LayerMask combinedCheckMask = m_blockingLayer | m_interactionLayer;
 				if (m_blueprintDataToPlace != null)
 				{
@@ -132,15 +133,14 @@ namespace Player.Core
 					float clearance = baseRadius + m_blueprintDataToPlace.PlacementClearenceRadius;
 
 					bool isBlocked = Physics.CheckSphere(
-						placementPosition,
+						m_cursorWorldPosition,
 						clearance,
 						combinedCheckMask
 					);
 
-					if (isBlocked != !m_isPlacementValid)
-					{
-						m_isPlacementValid = !isBlocked;
-					}
+					bool isNormalSafe = IsPlacementNormalSafe(normal, m_blueprintDataToPlace.MaxPlacementAngle);
+
+					m_isPlacementValid = !isBlocked && isNormalSafe;
 
 					RefreshPlacementValidityVisuals(m_isPlacementValid);
 					return;
@@ -149,7 +149,7 @@ namespace Player.Core
 				if (m_isCancleHeld)
 				{
 					float selectionRadius = m_cursorVisualizer.SelectionRadius;
-					int newColliders = Physics.OverlapSphereNonAlloc(worldPosition,
+					int newColliders = Physics.OverlapSphereNonAlloc(m_cursorWorldPosition,
 						selectionRadius,
 						m_newCancelColliders,
 						m_interactionLayer
@@ -464,6 +464,12 @@ namespace Player.Core
 				}
 				Array.Clear(m_collidersBeingCanceled, 0, m_collidersBeingCanceled.Length);
 			}
+		}
+
+		private bool IsPlacementNormalSafe(Vector3 groundNormal, float maxAngle)
+		{
+			float slopeAngle = Vector3.Angle(groundNormal, Vector3.up);
+			return slopeAngle <= maxAngle;
 		}
 	}
 }
