@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Construction
@@ -17,6 +18,12 @@ namespace Construction
 				Vector3 position,
 				Quaternion rotation);
 
-		public void HandlePointAdded(Vector3 position);
+	}
+
+	public interface IMultiPointBlueprintObject : IBlueprintObject
+	{
+		public void AddPoint(Vector3 position);
+		public IReadOnlyList<Vector3> GetPlacementPositions();
+		public void GenerateMultiPointBlueprintLinks();
 	}
 }

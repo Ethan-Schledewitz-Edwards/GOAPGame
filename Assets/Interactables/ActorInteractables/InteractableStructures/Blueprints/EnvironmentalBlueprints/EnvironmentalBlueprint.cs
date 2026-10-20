@@ -22,6 +22,7 @@ namespace Interaction.ActorInteractables.Structures
 		[SerializeField] private GameObject m_objectEnabledOnCompletion;
 
 		// IBlueprintObject properties
+
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
 
@@ -79,8 +80,6 @@ namespace Interaction.ActorInteractables.Structures
 		}
 
 		public void HandleBlueprintPlaced(BlueprintData structureBlueprintData, Vector3 position, Quaternion rotation) { }
-
-		public void HandlePointAdded(Vector3 position) { }
 
 		public override void LostMinimumActors() { }
 	}
