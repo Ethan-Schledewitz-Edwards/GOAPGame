@@ -56,8 +56,20 @@ namespace Interaction.ActorInteractables.Structures
 				return;
 
 			m_blueprintData = blueprintData;
+			NoddQuantity[] requiredNodds = m_blueprintData.RequiredNodds;
 
-			m_noddRequestComponent.SetRequiredResources(m_blueprintData.RequiredNodds);
+			m_noddRequestComponent.SetRequiredResources(requiredNodds);
+
+			// Update runtime object tags
+			foreach (NoddQuantity i in requiredNodds)
+			{
+				RuntimeTagSet.Add(i.TypeRequired);
+			}
+
+			foreach (var item in RuntimeTagSet)
+			{
+				Debug.Log(item);
+			}
 
 			transform.position = position;
 			transform.rotation = rotation;

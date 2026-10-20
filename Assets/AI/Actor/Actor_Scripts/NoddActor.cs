@@ -18,7 +18,10 @@ namespace AI.Actors
 			{
 				if (m_runtimeTagSet == null)
 				{
-					m_runtimeTagSet = new HashSet<ResourceTypeTag> { m_resourceTypeTag };
+					m_runtimeTagSet = new HashSet<ResourceTypeTag>();
+
+					if (m_resourceTypeTag != null)
+						m_runtimeTagSet.Add(m_resourceTypeTag);
 				}
 				return m_runtimeTagSet;
 			}

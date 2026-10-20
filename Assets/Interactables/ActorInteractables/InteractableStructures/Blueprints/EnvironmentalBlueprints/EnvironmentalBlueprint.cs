@@ -31,6 +31,12 @@ namespace Interaction.ActorInteractables.Structures
 			base.Awake();
 
 			m_noddRequestComponent.SetRequiredResources(m_requiredResources);
+
+			// Update runtime object tags
+			foreach (NoddQuantity i in m_requiredResources)
+			{
+				RuntimeTagSet.Add(i.TypeRequired);
+			}
 		}
 
 		protected void Start()
