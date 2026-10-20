@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITaggable<ResourceTypeTag>
+public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITaggable<ResourceTypeTag>, ITrackableObject
 {
 	[Header("Settings")]
 	protected abstract int m_minActorsToFunction { get; }
@@ -40,6 +40,16 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITag
 			return m_runtimeTagSet;
 		}
 	}
+
+	// ITrackableObject Properties
+	public bool IsTrackingEnabled { get; set; } = false;
+
+	public Vector3 LocalTrackingPointOffset => Vector3.up * 2;
+
+	public Transform ObjectTransform => transform;
+
+	public event Action ObjectInfoUpdated;
+	public event Action ObjectDestroyed;
 
 	protected virtual void Awake()
 	{

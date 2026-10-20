@@ -5,6 +5,7 @@ namespace Interaction.Core
 {
 	public class UITrackedProgressComponent : MonoBehaviour, ITrackableObject
 	{
+		// ITrackableObject Properties
 		public bool IsTrackingEnabled { get;  set; } = false;
 
 		public Vector3 LocalTrackingPointOffset => Vector3.up * 2;
@@ -14,6 +15,7 @@ namespace Interaction.Core
 		public event Action ObjectInfoUpdated;
 		public event Action ObjectDestroyed;
 
+		// System
 		public float ProgressPercentage { get; private set; }
 
 		private void OnDestroy()
