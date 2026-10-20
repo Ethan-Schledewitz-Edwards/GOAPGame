@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "353476175",
+    "Type": "Event",
+    "GUID": "{FB895FE4-D68E-4836-8E7B-177C251C0A63}",
+    "Language": "SFX",
+    "Hash": "{D4ED0F22-F8E6-E9D9-8898-F584B4E53F28}",
+    "ObjectPath": "Resume_mus_test",
+    "ShortName": "Resume_mus_test",
+    "Path": "Event/Resume_mus_test.bnk",
+    "Events": [
+     {
+      "Id": "353476175",
+      "Name": "Resume_mus_test",
+      "ObjectPath": "\\Events\\Default Work Unit\\Resume_mus_test",
+      "GUID": "{FB895FE4-D68E-4836-8E7B-177C251C0A63}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{C494FEEB-0CE7-CE35-CF2D-02EA4EECFEAC}"
+ }
+}

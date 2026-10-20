@@ -1,6 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{52DFADEE-0D0D-48F3-AD74-0F6C9F87603E}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{52DFADEE-0D0D-48F3-AD74-0F6C9F87603E}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{52DFADEE-0D0D-48F3-AD74-0F6C9F87603E}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_snd_attack" ID="{695D58B5-12A8-4C75-AB33-F14D8162DDCB}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{E74855D5-5425-4B1E-A3D1-22FCE8E58CC3}" ShortID="390349358">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="snd_attack" ID="{63349A90-ACA3-41FC-9ED8-B88D85768552}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_snd_hit" ID="{03D54D0A-4385-48B0-9EFB-92D65EFCED30}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{3992082A-FD1D-4850-B6DC-1272BE7D12F3}" ShortID="56249168">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="snd_hit" ID="{6C155ADA-BAB0-4462-9145-2F915D5B322C}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_mus_test" ID="{55DA0754-A395-4E82-8EBE-C18387B44CA2}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{3217745F-10C7-424B-9F62-C7E8D2B8DE58}" ShortID="804783830">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Pause_mus_test" ID="{EC81DC5D-BF09-40D0-95C9-C6661BD51B96}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{6EF6276A-800E-4EF2-A70D-CF4488E06E33}" ShortID="128414305">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="7"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Stop_mus_test" ID="{AB82F5F2-F136-46E8-B7E3-ADC39FE314FD}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{02A61390-219A-4328-9E05-D3C67119C10E}" ShortID="115324304">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Resume_mus_test" ID="{FB895FE4-D68E-4836-8E7B-177C251C0A63}">
+					<PropertyList>
+						<Property Name="InstanceLimit" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{372B1D42-B2BB-4AF4-A360-CF2CEC665739}" ShortID="1032697239">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="9"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

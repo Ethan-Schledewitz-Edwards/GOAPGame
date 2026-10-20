@@ -1,0 +1,3 @@
+Event	ID	Name			Wwise Object Path	Notes
+	353476175	Resume_mus_test			\Default Work Unit\Resume_mus_test	
+

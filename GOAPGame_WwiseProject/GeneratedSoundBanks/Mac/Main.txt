@@ -1,0 +1,28 @@
+Event	ID	Name			Wwise Object Path	Notes
+	477856308	Stop_mus_test			\Default Work Unit\Stop_mus_test	
+	1657409244	Pause_mus_test			\Default Work Unit\Pause_mus_test	
+	2767191669	Play_snd_hit			\Default Work Unit\Play_snd_hit	
+	3864685870	Play_snd_attack			\Default Work Unit\Play_snd_attack	
+	3968878682	Play_mus_test			\Default Work Unit\Play_mus_test	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	99579301	001a	.cache\04\{041F02C1-FC60-3598-8A9D-3008D8049AF3}.wem		\Containers\Default Work Unit\snd_attack\001a		56094
+	205198790	008d	.cache\FB\{FB5A374D-74D5-4103-5B72-12BEB137FF6B}.wem		\Containers\Default Work Unit\snd_hit\008d		17952
+	205929227	001g	.cache\44\{44C0990C-0586-AA57-8A32-430B1CD387CA}.wem		\Containers\Default Work Unit\snd_attack\001g		17794
+	212119150	001h	.cache\EE\{EE8CFA9E-F6B2-A277-F3D9-C5AA7705611C}.wem		\Containers\Default Work Unit\snd_attack\001h		20570
+	325499655	001i	.cache\91\{91B3420C-9628-B7F5-04D6-F1807216888F}.wem		\Containers\Default Work Unit\snd_attack\001i		10506
+	556374863	009a	.cache\12\{12233311-B8EA-A26B-3FD3-27CA65272E88}.wem		\Containers\Default Work Unit\snd_hit\009a		17074
+	597377846	001b	.cache\C0\{C0013AC4-D72C-1E17-891A-953972AC00A6}.wem		\Containers\Default Work Unit\snd_attack\001b		50160
+	629806711	008b	.cache\69\{696242E4-C68A-20D9-607F-0F1112D617D2}.wem		\Containers\Default Work Unit\snd_hit\008b		21722
+	630357054	001c	.cache\F8\{F8316E8A-EAEA-88A8-BB39-353921965627}.wem		\Containers\Default Work Unit\snd_attack\001c		15364
+	667690629	008c	.cache\2E\{2EE74727-5B85-6FAF-22A9-6330BCAE0793}.wem		\Containers\Default Work Unit\snd_hit\008c		24356
+	670168286	001f	.cache\64\{641E57D2-CC9F-E3D6-DE5E-61A9D0D18212}.wem		\Containers\Default Work Unit\snd_attack\001f		32020
+	678994193	009c	.cache\48\{48379B26-E5A7-29B6-D239-7D23639AC685}.wem		\Containers\Default Work Unit\snd_hit\009c		17702
+	738963954	009e	.cache\35\{351442C4-794C-905F-3AD9-6DDEEA1B5279}.wem		\Containers\Default Work Unit\snd_hit\009e		36298
+	743005828	mus_test	.cache\9B\{9B2CB69E-8DA8-2C97-3B87-F96EE3487883}.wem		\Containers\Default Work Unit\mus_test\loop\mus_test		40939616
+	937814878	008a	.cache\9F\{9F813CA4-EBC6-766F-9C8E-088DF7014B8F}.wem		\Containers\Default Work Unit\snd_hit\008a		26770
+	948711598	001e	.cache\76\{76E1705B-AE7D-D2CC-4564-1E8195F17C64}.wem		\Containers\Default Work Unit\snd_attack\001e		72444
+	992968903	008e	.cache\95\{956D20B1-D584-9497-5BF1-A88584EC78E1}.wem		\Containers\Default Work Unit\snd_hit\008e		18794
+	1062378458	009b	.cache\CA\{CA26ADB5-BF03-EF07-6C06-C1C225C3575C}.wem		\Containers\Default Work Unit\snd_hit\009b		29222
+	1069784144	001d	.cache\32\{32FE549C-0D42-1092-9CA3-EB0AC4616BF2}.wem		\Containers\Default Work Unit\snd_attack\001d		76566
+

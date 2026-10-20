@@ -13,6 +13,7 @@
 				<Language Name="SFX" ID="{23827444-8A85-4BA5-B4C9-475FEA7FC952}" />
 			</LanguageList>
 			<PropertyList>
+				<Property Name="AutoSoundBankEnabled" Type="bool" Value="True" />
 				<Property Name="ExternalSourcesInputPath" Type="string">
 					<ValueList>
 						<Value Platform="Mac"></Value>
@@ -25,7 +26,9 @@
 						<Value Platform="Windows">GeneratedSoundBanks\Windows\</Value>
 					</ValueList>
 				</Property>
-				<Property Name="SoundBankGenerateEstimatedDuration" Type="bool" Value="True" /><Property Name="GenerateSoundBankXML" Type="bool" Value="False" /><Property Name="SoundBankGenerateHeaderFile" Type="bool" Value="True" /><Property Name="SoundBankGenerateMaxAttenuationInfo" Type="bool" Value="True" /><Property Name="GenerateSoundBankJSON" Type="bool" Value="True" /><Property Name="SoundBankGeneratePrintGUID" Type="bool" Value="True" /><Property Name="SoundBankGeneratePrintPath" Type="bool" Value="True" /><Property Name="AutoSoundBankEnabled" Type="bool" Value="True" /><Property Name="SoundBankHeaderFilePath" Type="string" Value="GeneratedSoundBanks/" />
+				<Property Name="LicenseKey" Type="string" Value="PHByb2plY3QgaWQ9IjU4NTQiIG1hc2s9IktXVVQ2MzU5IiBlbmM9IjAiPjxsaWNlbnNlIGlkPSIxIiBuYW1lPSJXd2lzZSIgdHlwZT0iMyIgcGxhdGZvcm1zPSIyLDMsNCwxMCwxMywxNCIgZXhwaXJlcz0iMjAyNy0wOS0zMCIgIC8+PGxpY2Vuc2UgaWQ9IjIyIiBuYW1lPSJMZXZlbCBBIExpY2Vuc2UiIHR5cGU9IjMiIHBsYXRmb3Jtcz0iMiwzLDQsMTAsMTMsMTQiIGV4cGlyZXM9IjIwMjctMDktMzAiICAvPjxsaWNlbnNlIGlkPSIyMSIgbmFtZT0iTWFpbnRlbmFuY2UiIHR5cGU9IjMiIHBsYXRmb3Jtcz0iMiwzLDQsMTAsMTMsMTQiIGV4cGlyZXM9IjIwMjctMDktMzAiICAvPjxsaWNlbnNlIGlkPSIyNSIgbmFtZT0iQWxsIFd3aXNlIFBsdWctSW5zIiB0eXBlPSIzIiAgZXhwaXJlcz0iMjAyNy0wOS0zMCIgIC8+PC9wcm9qZWN0Pg==|YGVf6E5PsdXZixspMEgMQkKditlNCwDXkt2u/rZrLvNl7IOIT1IH3eaRVhSCvUiQL26G2inl6ONnDqvOYmbOucPfrvgrjbl2P5Iq+ozYhOdXPAVQU+UPqg/X1KXhmRdZoDpfn0F1gkIamZSQYmNcE9YxLZXmpPVlJqgfLlCVv9Ge4pmhzWQIn5JsfS6P+7iBG3OPpm1eLP3dU/R4mKHEM3aj2MK73vhBl+E6KDE9BMvu0wSeKumk3J5p8cjxPh2ZQm6Ka/D+aCiKyrx65YiBu5HQjNyauJwu73hEW16zuK+orGR9qs14ucaSR8uDGBcSliVTer2P74S1oEx+JIh9aA==" />
+				<Property Name="SoundBankGenerateHeaderFile" Type="bool" Value="True" />
+				<Property Name="SoundBankGenerateEstimatedDuration" Type="bool" Value="True" /><Property Name="SoundBankHeaderFilePath" Type="string" Value="GeneratedSoundBanks/" />
 				<Property Name="SoundBankPaths" Type="string">
 					<ValueList>
 						<Value Platform="Mac">GeneratedSoundBanks\Mac\</Value>
