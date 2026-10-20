@@ -17,7 +17,8 @@ namespace NoddTracking.Core
 
 		private void OnDestroy()
 		{
-			ReleaseStoredNodds();
+			if (!m_isAchieved)
+				ReleaseStoredNodds();
 		}
 
 		public void SetRequiredResources(NoddQuantity[] requiredResources)

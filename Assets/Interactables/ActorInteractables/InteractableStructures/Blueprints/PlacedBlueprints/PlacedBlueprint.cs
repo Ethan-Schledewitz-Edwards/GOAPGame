@@ -77,7 +77,10 @@ namespace Interaction.ActorInteractables.Structures
 			Debug.Log($"A blueprint of SettlementBlueprintID:{m_settlementStructureID} " +
 				$"was completed in settlement:{SettlementID}.");
 
-			if (m_blueprintData != null && m_blueprintData.PrefabSpawnedOnCompletion != null)
+			if (m_blueprintData == null)
+				return;
+
+			if (m_blueprintData.PrefabSpawnedOnCompletion != null)
 			{
 				GameObject prefab = m_blueprintData.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
@@ -87,6 +90,8 @@ namespace Interaction.ActorInteractables.Structures
 					spawnedStructureObj != null &&
 					spawnedStructureObj.TryGetComponent(out MultiPointStructure multiPointStructure))
 				{
+					Debug.Log("WTF");
+
 					float spacing = m_blueprintData.MultiPointSpacing;
 					multiPointStructure.GenerateMultiPointStructureLinks(m_placementPoints, spacing);
 				}
@@ -101,6 +106,10 @@ namespace Interaction.ActorInteractables.Structures
 				}
 
 				BlueprintCompleted?.Invoke(this);
+			}
+			else
+			{
+				Debug.LogWarning($"Tried to build a structure without an assigned completion prefab.", m_blueprintData);
 			}
 		}
 

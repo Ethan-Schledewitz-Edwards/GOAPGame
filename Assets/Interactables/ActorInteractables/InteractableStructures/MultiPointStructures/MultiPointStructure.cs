@@ -37,11 +37,9 @@ namespace Interaction.ActorInteractables.Structures
 
 					Vector3 spawnPosition = start + (direction * (j * spacing));
 
-					GameObject segmentObject = new GameObject($"Segment_{i}_{j}");
-					segmentObject.transform.SetParent(transform, true);
-					segmentObject.transform.position = spawnPosition;
-					segmentObject.transform.rotation = pathRotation;
-					segmentObject.SetActive(true);
+					Transform segmentClone = Instantiate(m_segmentObject, spawnPosition, pathRotation, transform);
+					segmentClone.name = $"Segment_{i}_{j}";
+					segmentClone.gameObject.SetActive(true);
 				}
 			}
 		}
