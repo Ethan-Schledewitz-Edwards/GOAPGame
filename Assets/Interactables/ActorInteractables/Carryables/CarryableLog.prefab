@@ -104,6 +104,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832175474334960640}
   - component: {fileID: 1684694862476352012}
+  - component: {fileID: 9049870561072637293}
   - component: {fileID: 581121961390997327}
   - component: {fileID: 4577833922541599157}
   - component: {fileID: 5094118048292447491}
@@ -147,12 +148,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction::CarryableActorInteractable
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
+  m_resourceTypeTag: {fileID: 0}
   m_noddEnvelopes:
   - NoddsProduced: 4
     DuplicationDuration: 5
     NoddPrefab: {fileID: 2239435831216304708, guid: 796cebe7c27e33847b0a1611548dca66, type: 3}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
   m_logMeshTransform: {fileID: 2143631712808309234}
+--- !u!114 &9049870561072637293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1848493102313110294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7f6c1ec6740ec4086de1056e7d6b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedActorCounter
 --- !u!136 &581121961390997327
 CapsuleCollider:
   m_ObjectHideFlags: 0

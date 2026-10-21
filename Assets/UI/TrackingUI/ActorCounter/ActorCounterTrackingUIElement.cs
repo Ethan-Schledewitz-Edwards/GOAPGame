@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ActorLimitTrackingUIElement : TrackingUIElementBase
+public class ActorCounterTrackingUIElement : TrackingUIElementBase
 {
 	[SerializeField] private TextMeshProUGUI m_presentText;
 	[SerializeField] private TextMeshProUGUI m_minimumText;

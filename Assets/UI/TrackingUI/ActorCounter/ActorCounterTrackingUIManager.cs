@@ -6,22 +6,22 @@ using UnityEngine.Pool;
 
 namespace UISystem.TrackingUI
 {
-	public class ActorLimitTrackingUIManager : TrackingUIManagerBase<UITrackedActorCounter, ActorLimitTrackingUIElement>
+	public class ActorCounterTrackingUIManager : TrackingUIManagerBase<UITrackedActorCounter, ActorCounterTrackingUIElement>
 	{
-		[SerializeField] private ActorLimitTrackingUIElement m_actorLimitPrefab;
+		[SerializeField] private ActorCounterTrackingUIElement m_actorLimitPrefab;
 		[SerializeField] private Transform m_uiCanvasParent;
 
-		private IObjectPool<ActorLimitTrackingUIElement> m_uiPool;
+		private IObjectPool<ActorCounterTrackingUIElement> m_uiPool;
 
 		private Dictionary<UITrackedActorCounter, System.Action> m_updateCallbacks = 
 			new Dictionary<UITrackedActorCounter, System.Action>();
 
 		private void Awake()
 		{
-			Assert.IsNotNull(m_actorLimitPrefab, "[ProgressWheelTrackingUIManager] The reference to the Wheel Element Prefab is missing.");
+			Assert.IsNotNull(m_actorLimitPrefab, "[ActorLimitTrackingUIManager] The reference to the Wheel Element Prefab is missing.");
 
 			// Why does an object pool need to be so dumb to setup John Unity?
-			m_uiPool = new ObjectPool<ActorLimitTrackingUIElement>
+			m_uiPool = new ObjectPool<ActorCounterTrackingUIElement>
 			(
 				createFunc: () => Instantiate(m_actorLimitPrefab, m_uiCanvasParent),
 				actionOnGet: (uiElement) => uiElement.gameObject.SetActive(true),
@@ -56,24 +56,24 @@ namespace UISystem.TrackingUI
 			}
 		}
 
-		protected override ActorLimitTrackingUIElement GetUIElement(UITrackedActorCounter actorCounter)
+		protected override ActorCounterTrackingUIElement GetUIElement(UITrackedActorCounter actorCounter)
 		{
 			return m_uiPool.Get();
 		}
 
-		protected override void ReleaseUIElement(ActorLimitTrackingUIElement uiElement)
+		protected override void ReleaseUIElement(ActorCounterTrackingUIElement uiElement)
 		{
 			m_uiPool.Release(uiElement);
 		}
 
-		protected override void InitializeUI(UITrackedActorCounter actorCounter, ActorLimitTrackingUIElement uiElement)
+		protected override void InitializeUI(UITrackedActorCounter actorCounter, ActorCounterTrackingUIElement uiElement)
 		{
 			int actorsPresent = actorCounter.ActorsPresent;
 			int minimumActors = actorCounter.MinimumActors;
 			uiElement.SetActorValues(actorsPresent, minimumActors);
 		}
 
-		protected override void UpdateUI(UITrackedActorCounter actorCounter, ActorLimitTrackingUIElement uiElement)
+		protected override void UpdateUI(UITrackedActorCounter actorCounter, ActorCounterTrackingUIElement uiElement)
 		{
 			int actorsPresent = actorCounter.ActorsPresent;
 			int minimumActors = actorCounter.MinimumActors;
