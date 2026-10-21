@@ -2,29 +2,32 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ActorCounterTrackingUIElement : TrackingUIElementBase
+namespace UISystem.TrackingUI
 {
-	[SerializeField] private TextMeshProUGUI m_presentText;
-	[SerializeField] private TextMeshProUGUI m_minimumText;
-
-	public void SetActorValues(int actorsPresent, int minActors)
+	public class ActorCounterTrackingUIElement : TrackingUIElementBase
 	{
-		if (m_presentText != null)
-			m_presentText.text = actorsPresent.ToString();
+		[SerializeField] private TextMeshProUGUI m_presentText;
+		[SerializeField] private TextMeshProUGUI m_minimumText;
 
-		if (m_minimumText != null)
-			m_minimumText.text = minActors.ToString();
-	}
+		public void SetActorValues(int actorsPresent, int minActors)
+		{
+			if (m_presentText != null)
+				m_presentText.text = actorsPresent.ToString();
 
-	public override void ElementReleased()
-	{
-		gameObject.SetActive(true);
-	}
+			if (m_minimumText != null)
+				m_minimumText.text = minActors.ToString();
+		}
 
-	public override void ElementReturned()
-	{
-		ResetDynamicPosition();
-		SetActorValues(0, 0);
-		gameObject.SetActive(false);
+		public override void ElementReleased()
+		{
+			gameObject.SetActive(true);
+		}
+
+		public override void ElementReturned()
+		{
+			ResetDynamicPosition();
+			SetActorValues(0, 0);
+			gameObject.SetActive(false);
+		}
 	}
 }

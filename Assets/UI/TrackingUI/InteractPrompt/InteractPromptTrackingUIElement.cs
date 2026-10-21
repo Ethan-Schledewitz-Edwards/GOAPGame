@@ -1,25 +1,28 @@
 using TMPro;
 using UnityEngine;
 
-public class InteractPromptTrackingUIElement : TrackingUIElementBase
+namespace UISystem.TrackingUI
 {
-	[SerializeField] private TextMeshProUGUI m_promptText;
-
-	public void SetPromptText(string prompt)
+	public class InteractPromptTrackingUIElement : TrackingUIElementBase
 	{
-		if (m_promptText != null)
-			m_promptText.SetText(prompt);
-	}
+		[SerializeField] private TextMeshProUGUI m_promptText;
 
-	public override void ElementReleased()
-	{
-		gameObject.SetActive(true);
-	}
+		public void SetPromptText(string prompt)
+		{
+			if (m_promptText != null)
+				m_promptText.SetText(prompt);
+		}
 
-	public override void ElementReturned()
-	{
-		ResetDynamicPosition();
-		SetPromptText(string.Empty);
-		gameObject.SetActive(false);
+		public override void ElementReleased()
+		{
+			gameObject.SetActive(true);
+		}
+
+		public override void ElementReturned()
+		{
+			ResetDynamicPosition();
+			SetPromptText(string.Empty);
+			gameObject.SetActive(false);
+		}
 	}
 }
