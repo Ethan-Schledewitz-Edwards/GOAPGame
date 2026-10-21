@@ -1263,7 +1263,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6643754114127664926}
-  - component: {fileID: 2517356441188652411}
   - component: {fileID: 4515109530899790981}
   m_Layer: 5
   m_Name: NoddRequirementManager
@@ -1291,20 +1290,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2517356441188652411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5114365407184048901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2ba45d10d2ac334190735c012e8c0b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UISystem.TrackingUI::UISystem.TrackingUI.ActorCounterTrackingUIManager
-  m_actorLimitPrefab: {fileID: 5814565321641897557, guid: bdf1f080f3dfaa64fb757ebbbf873dfa, type: 3}
-  m_uiCanvasParent: {fileID: 6643754114127664926}
 --- !u!114 &4515109530899790981
 MonoBehaviour:
   m_ObjectHideFlags: 0

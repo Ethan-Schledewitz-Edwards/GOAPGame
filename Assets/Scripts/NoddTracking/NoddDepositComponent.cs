@@ -6,61 +6,67 @@ using UnityEngine;
 
 namespace NoddTracking.Core
 {
-	public class NoddStorageComponent : MonoBehaviour, ITrackableObject
+	public class NoddDepositComponent : MonoBehaviour, ITrackableObject
 	{
 		// ITrackableObject Properties
 		public bool IsTrackingEnabled { get; set; } = false;
 
-		public Vector3 LocalTrackingPointOffset => Vector3.up * 2;
+		public Vector3 LocalTrackingPointOffset => Vector3.zero;
 
 		public Transform ObjectTransform => transform;
 
 		public event Action ObjectInfoUpdated;
 		public event Action ObjectDestroyed;
 
-		// System
+		// Events
 		public event Action ResourcesAchieved;
 
+		// System
 		private bool m_isAchieved = false;
 
-		private NoddQuantity[] m_requiredResources;
-
-		private Dictionary<ResourceTypeTag, HashSet<Transform>> m_storedResources;
+		public NoddQuantity[] RequiredResources { get; private set; }
+		public Dictionary<ResourceTypeTag, HashSet<Transform>> StoredResources { get; private set; }
 
 		private void OnDestroy()
 		{
+			ObjectDestroyed?.Invoke();
+
 			if (!m_isAchieved)
 				ReleaseStoredNodds();
 		}
 
 		public void SetRequiredResources(NoddQuantity[] requiredResources)
 		{
-			m_requiredResources = requiredResources;
+			RequiredResources = requiredResources;
 			m_isAchieved = false;
 			InitializeStoredResources();
+			IsTrackingEnabled = true;
 		}
 
 		private void InitializeStoredResources()
 		{
-			if (m_storedResources == null)
+			if (StoredResources == null)
 			{
-				m_storedResources = new Dictionary<ResourceTypeTag, HashSet<Transform>>();
+				StoredResources = new Dictionary<ResourceTypeTag, HashSet<Transform>>();
 			}
 			else
 			{
-				m_storedResources.Clear();
+				StoredResources.Clear();
 			}
 
-			if (m_requiredResources == null) 
+			if (RequiredResources == null) 
 				return;
 
-			foreach (NoddQuantity i in m_requiredResources)
+			// Create hash sets to track for each required resource type
+			foreach (NoddQuantity i in RequiredResources)
 			{
-				if (!m_storedResources.ContainsKey(i.TypeRequired))
+				if (!StoredResources.ContainsKey(i.TypeRequired))
 				{
-					m_storedResources[i.TypeRequired] = new HashSet<Transform>();
+					StoredResources[i.TypeRequired] = new HashSet<Transform>();
 				}
 			}
+
+			ObjectInfoUpdated?.Invoke();
 		}
 
 		public bool TryAddNodd(ResourceTypeTag noddType, Transform noddTransform)
@@ -71,16 +77,18 @@ namespace NoddTracking.Core
 				return false;
 			}
 
-			if (m_storedResources != null && m_storedResources.ContainsKey(noddType))
+			// Try to add a nodd transform to the specified resource
+			if (StoredResources != null && StoredResources.ContainsKey(noddType))
 			{
-				bool added = m_storedResources[noddType].Add(noddTransform);
-
+				bool added = StoredResources[noddType].Add(noddTransform);
 				noddTransform.gameObject.SetActive(false);
 
 				if (added && !m_isAchieved)
 				{
 					RefreshTrackedNodds();
 				}
+
+				ObjectInfoUpdated?.Invoke();
 				return true;
 			}
 
@@ -89,10 +97,10 @@ namespace NoddTracking.Core
 
 		public void ReleaseStoredNodds()
 		{
-			if (m_storedResources == null) 
+			if (StoredResources == null) 
 				return;
 
-			foreach (var kvp in m_storedResources)
+			foreach (var kvp in StoredResources)
 			{
 				foreach (Transform noddTransform in kvp.Value)
 				{
@@ -103,7 +111,7 @@ namespace NoddTracking.Core
 				}
 			}
 
-			m_storedResources.Clear();
+			StoredResources.Clear();
 			m_isAchieved = false;
 
 			// Re-initialize dictionary structures for the current requirements
@@ -112,13 +120,13 @@ namespace NoddTracking.Core
 
 		private void RefreshTrackedNodds()
 		{
-			if (m_requiredResources == null) 
+			if (RequiredResources == null) 
 				return;
 
-			foreach (NoddQuantity noddQuantity in m_requiredResources)
+			foreach (NoddQuantity noddQuantity in RequiredResources)
 			{
-				if (!m_storedResources.ContainsKey(noddQuantity.TypeRequired) ||
-					m_storedResources[noddQuantity.TypeRequired].Count < noddQuantity.AmountRequired)
+				if (!StoredResources.ContainsKey(noddQuantity.TypeRequired) ||
+					StoredResources[noddQuantity.TypeRequired].Count < noddQuantity.AmountRequired)
 					return;
 			}
 

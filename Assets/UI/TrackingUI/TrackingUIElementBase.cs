@@ -39,7 +39,6 @@ namespace UISystem.TrackingUI
 				Camera camera = Camera.main;
 				Vector2 screenPosition = camera.WorldToScreenPoint(targetPosition);
 				m_rectTransform.position = screenPosition + m_localOffset;
-				m_anchorPosition = screenPosition;
 			}
 		}
 

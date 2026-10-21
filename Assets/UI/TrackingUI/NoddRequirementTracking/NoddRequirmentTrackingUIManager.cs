@@ -1,5 +1,6 @@
 using Interaction.Core;
 using NoddTracking.Core;
+using ObjectTags;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -7,19 +8,19 @@ using UnityEngine.Pool;
 
 namespace UISystem.TrackingUI
 {
-	public class NoddRequirmentTrackingUIManager: TrackingUIManagerBase<NoddStorageComponent, NoddRequirmentTrackingUIElement>
+	public class NoddRequirmentTrackingUIManager: TrackingUIManagerBase<NoddDepositComponent, NoddRequirmentTrackingUIElement>
 	{
 		[SerializeField] private NoddRequirmentTrackingUIElement m_actorLimitPrefab;
 		[SerializeField] private Transform m_uiCanvasParent;
 
 		private IObjectPool<NoddRequirmentTrackingUIElement> m_uiPool;
 
-		private Dictionary<NoddStorageComponent, System.Action> m_updateCallbacks = 
-			new Dictionary<NoddStorageComponent, System.Action>();
+		private Dictionary<NoddDepositComponent, System.Action> m_updateCallbacks = 
+			new Dictionary<NoddDepositComponent, System.Action>();
 
 		private void Awake()
 		{
-			Assert.IsNotNull(m_actorLimitPrefab, "[NoddRequirmentTrackingUIManager] The reference to the Wheel Element Prefab is missing.");
+			Assert.IsNotNull(m_actorLimitPrefab, "[NoddRequirmentTrackingUIManager] The reference to the ActorLimitPrefab is missing.");
 
 			// Why does an object pool need to be so dumb to setup John Unity?
 			m_uiPool = new ObjectPool<NoddRequirmentTrackingUIElement>
@@ -34,7 +35,7 @@ namespace UISystem.TrackingUI
 			);
 		}
 
-		protected override void RegisterTrackableSubscriptions(NoddStorageComponent noddStorage)
+		protected override void RegisterTrackableSubscriptions(NoddDepositComponent noddStorage)
 		{
 			System.Action updateAction = () =>
 			{
@@ -48,7 +49,7 @@ namespace UISystem.TrackingUI
 			noddStorage.ObjectInfoUpdated += updateAction;
 		}
 
-		protected override void CleanupTrackableSubscriptions(NoddStorageComponent noddStorage)
+		protected override void CleanupTrackableSubscriptions(NoddDepositComponent noddStorage)
 		{
 			if (m_updateCallbacks.TryGetValue(noddStorage, out var updateAction))
 			{
@@ -57,7 +58,7 @@ namespace UISystem.TrackingUI
 			}
 		}
 
-		protected override NoddRequirmentTrackingUIElement GetUIElement(NoddStorageComponent noddStorage)
+		protected override NoddRequirmentTrackingUIElement GetUIElement(NoddDepositComponent noddStorage)
 		{
 			return m_uiPool.Get();
 		}
@@ -67,18 +68,46 @@ namespace UISystem.TrackingUI
 			m_uiPool.Release(uiElement);
 		}
 
-		protected override void InitializeUI(NoddStorageComponent noddStorage, NoddRequirmentTrackingUIElement uiElement)
+		protected override void InitializeUI(NoddDepositComponent noddStorage, NoddRequirmentTrackingUIElement uiElement)
 		{
-			//int actorsPresent = actorCounter.ActorsPresent;
-			//int minimumActors = actorCounter.MinimumActors;
-			//uiElement.SetActorValues(actorsPresent, minimumActors);
+			UpdateResourceElement(noddStorage, uiElement);
 		}
 
-		protected override void UpdateUI(NoddStorageComponent noddStorage, NoddRequirmentTrackingUIElement uiElement)
+		protected override void UpdateUI(NoddDepositComponent noddStorage, NoddRequirmentTrackingUIElement uiElement)
 		{
-			//int actorsPresent = actorCounter.ActorsPresent;
-			//int minimumActors = actorCounter.MinimumActors;
-			//uiElement.SetActorValues(actorsPresent, minimumActors);
+			UpdateResourceElement(noddStorage, uiElement);
+		}
+
+		private void UpdateResourceElement(NoddDepositComponent noddStorage, NoddRequirmentTrackingUIElement uiElement)
+		{
+			if (noddStorage == null || uiElement == null)
+				return;
+
+			var requiredResources = noddStorage.RequiredResources;
+			var storedResources = noddStorage.StoredResources;
+
+			List<ResourceRequirementData> requirementsList = new List<ResourceRequirementData>();
+
+			if (requiredResources != null)
+			{
+				foreach (var noddQty in requiredResources)
+				{
+					int presentCount = 0;
+					if (storedResources != null && storedResources.TryGetValue(noddQty.TypeRequired, out var storedSet))
+					{
+						presentCount = storedSet.Count;
+					}
+
+					requirementsList.Add(new ResourceRequirementData
+					{
+						ResourceIcon = null,
+						PresentCount = presentCount,
+						RequiredCount = noddQty.AmountRequired
+					});
+				}
+			}
+
+			uiElement.DisplayRequiredResources(requirementsList);
 		}
 	}
 }

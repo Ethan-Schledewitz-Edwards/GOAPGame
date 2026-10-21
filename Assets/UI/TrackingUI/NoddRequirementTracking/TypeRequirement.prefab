@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -48, y: -25}
-  m_SizeDelta: {x: 64, y: 50}
+  m_AnchoredPosition: {x: -48, y: -19}
+  m_SizeDelta: {x: 64, y: 38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5650032781830032053
 CanvasRenderer:
@@ -252,7 +252,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 180, y: 100}
+  m_SizeDelta: {x: 180, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8930586545773597364
 MonoBehaviour:
@@ -266,6 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c0863735af0d3d439de0e09b47a47c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UISystem.TrackingUI::UISystem.TrackingUI.TypeRequirementElement
+  m_resourceIconImage: {fileID: 1946506649895305386}
   m_presentText: {fileID: 7985026469344370909}
   m_requiredText: {fileID: 2876858433104634932}
 --- !u!222 &5732517903208729195
@@ -340,8 +341,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -48, y: 25}
-  m_SizeDelta: {x: 64, y: 50}
+  m_AnchoredPosition: {x: -48, y: 19}
+  m_SizeDelta: {x: 64, y: 38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1254464428068994731
 CanvasRenderer:

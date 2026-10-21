@@ -29,7 +29,7 @@ namespace AI.Actors
 
 		public override void UseInteractable(IInteractable interactable)
 		{
-			if(interactable.InteractableTransform.TryGetComponent(out NoddStorageComponent storage))
+			if(interactable.InteractableTransform.TryGetComponent(out NoddDepositComponent storage))
 			{
 				if(storage.TryAddNodd(m_resourceTypeTag, transform))
 					return;

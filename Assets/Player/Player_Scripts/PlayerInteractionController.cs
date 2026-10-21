@@ -22,9 +22,11 @@ namespace Player.Core
 		public event Action<string, Vector3> ClosestInteractableUpdated;
 		public event Action ClosestInteractableCleared;
 
+		// System
 		private PlayerInteractableBase m_closestInteractable;
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
+		private List<ITrackableObject> m_trackablesBuffer = new List<ITrackableObject>();
 		private HashSet<ITrackableObject> m_previousTrackables = new HashSet<ITrackableObject>();
 		private HashSet<ITrackableObject> m_currentTrackables = new HashSet<ITrackableObject>();
 
@@ -49,18 +51,23 @@ namespace Player.Core
 				Collider col = m_colliderBuffer[i];
 
 				// Any object implementing ITrackableObject with tracking enabled gets tracked UI.
-				if (col.TryGetComponent(out ITrackableObject trackableObject) &&
-					trackableObject.IsTrackingEnabled)
+				col.GetComponents(m_trackablesBuffer);
+				for (int j = 0; j < m_trackablesBuffer.Count; j++)
 				{
-					m_currentTrackables.Add(trackableObject);
-
-					if (!m_previousTrackables.Contains(trackableObject))
+					ITrackableObject trackableObject = m_trackablesBuffer[j];
+					if (trackableObject != null && trackableObject.IsTrackingEnabled)
 					{
-						NewTrackableObjectInDisplayRange?.Invoke(trackableObject);
+						m_currentTrackables.Add(trackableObject);
+
+						if (!m_previousTrackables.Contains(trackableObject))
+						{
+							NewTrackableObjectInDisplayRange?.Invoke(trackableObject);
+						}
 					}
 				}
+				m_trackablesBuffer.Clear();
 
-				//  Find the closest player interactable
+				// Find the closest player interactable
 				if (col.TryGetComponent(out PlayerInteractableBase playerInteractable))
 				{
 					float sqrDistance = (col.transform.position - transform.position).sqrMagnitude;
@@ -75,7 +82,7 @@ namespace Player.Core
 			// Find trackable objects that left the display range
 			foreach (ITrackableObject prevTrackable in m_previousTrackables)
 			{
-				if (prevTrackable != null && 
+				if (prevTrackable != null &&
 					!m_currentTrackables.Contains(prevTrackable))
 				{
 					TrackableObjectOutOfRange?.Invoke(prevTrackable);
