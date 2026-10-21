@@ -59,14 +59,18 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 		m_rigidbody = GetComponent<Rigidbody>();
 		m_navMeshAgent = GetComponent<NavMeshAgent>();
 		m_navMeshAgent.enabled = false;
+
 		m_actorCounter = GetComponent<UITrackedActorCounter>();
 		m_actorCounter.IsTrackingEnabled = true;
+		m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
 
 		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
 	}
 
 	private void FixedUpdate()
 	{
+		m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
+
 		if (!m_isBeingCarried)
 			return;
 
@@ -135,7 +139,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 				HandleCarryStarted();
 
 			UpdateMovementSpeed(actorsPresent);
-			m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
 		}
 	}
 
@@ -147,7 +150,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 		if (actorsPresent >= m_minActorsToFunction)
 		{
 			UpdateMovementSpeed(actorsPresent);
-			m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
 		}
 	}
 

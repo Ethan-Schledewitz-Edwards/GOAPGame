@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITaggable<ResourceTypeTag>, ITrackableObject
+public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITaggable<ResourceTypeTag>
 {
 	[Header("Settings")]
 	protected abstract int m_minActorsToFunction { get; }
