@@ -2,66 +2,69 @@ using Player.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class InteractPromptTrackingUIManager : MonoBehaviour
+namespace UISystem.TrackingUI
 {
-	[SerializeField] private InteractPromptTrackingUIElement m_interactPromptTrackingUIElement;
-
-	private PlayerInteractionController m_playerInteraction;
-
-	private void Awake()
+	public class InteractPromptTrackingUIManager : MonoBehaviour
 	{
-		Assert.IsNotNull(m_interactPromptTrackingUIElement, "[InteractPromptTrackingUIManager] " +
-			"The reference to the interactPromptTrackingUIElement is missing.");
-	}
+		[SerializeField] private InteractPromptTrackingUIElement m_interactPromptTrackingUIElement;
 
-	private void Start()
-	{
-		m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
-		if (m_playerInteraction != null)
+		private PlayerInteractionController m_playerInteraction;
+
+		private void Awake()
 		{
-			m_playerInteraction.ClosestInteractableUpdated += HandlePromptUpdated;
-			m_playerInteraction.ClosestInteractableCleared += HandlePromptCleared;
+			Assert.IsNotNull(m_interactPromptTrackingUIElement, "[InteractPromptTrackingUIManager] " +
+				"The reference to the interactPromptTrackingUIElement is missing.");
 		}
 
-		if (m_interactPromptTrackingUIElement != null)
+		private void Start()
 		{
-			m_interactPromptTrackingUIElement.gameObject.SetActive(false);
-		}
-	}
-
-	private void OnDestroy()
-	{
-		if (m_playerInteraction != null)
-		{
-			m_playerInteraction.ClosestInteractableUpdated -= HandlePromptUpdated;
-			m_playerInteraction.ClosestInteractableCleared -= HandlePromptCleared;
-		}
-	}
-
-	private void HandlePromptUpdated(string prompt, Vector3 worldPosition)
-	{
-		if (!string.IsNullOrEmpty(prompt))
-		{
-			m_interactPromptTrackingUIElement.SetPromptText(prompt);
-			m_interactPromptTrackingUIElement.SetTrackingPosition(worldPosition);
-
-			if (!m_interactPromptTrackingUIElement.gameObject.activeSelf)
+			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
+			if (m_playerInteraction != null)
 			{
-				m_interactPromptTrackingUIElement.ElementReleased();
+				m_playerInteraction.ClosestInteractableUpdated += HandlePromptUpdated;
+				m_playerInteraction.ClosestInteractableCleared += HandlePromptCleared;
+			}
+
+			if (m_interactPromptTrackingUIElement != null)
+			{
+				m_interactPromptTrackingUIElement.gameObject.SetActive(false);
 			}
 		}
-		else
-		{
-			HandlePromptCleared();
-		}
-	}
 
-	private void HandlePromptCleared()
-	{
-		if (m_interactPromptTrackingUIElement != null && 
-			m_interactPromptTrackingUIElement.gameObject.activeSelf)
+		private void OnDestroy()
 		{
-			m_interactPromptTrackingUIElement.ElementReturned();
+			if (m_playerInteraction != null)
+			{
+				m_playerInteraction.ClosestInteractableUpdated -= HandlePromptUpdated;
+				m_playerInteraction.ClosestInteractableCleared -= HandlePromptCleared;
+			}
+		}
+
+		private void HandlePromptUpdated(string prompt, Vector3 worldPosition)
+		{
+			if (!string.IsNullOrEmpty(prompt))
+			{
+				m_interactPromptTrackingUIElement.SetPromptText(prompt);
+				m_interactPromptTrackingUIElement.SetTrackingPosition(worldPosition);
+
+				if (!m_interactPromptTrackingUIElement.gameObject.activeSelf)
+				{
+					m_interactPromptTrackingUIElement.ElementReleased();
+				}
+			}
+			else
+			{
+				HandlePromptCleared();
+			}
+		}
+
+		private void HandlePromptCleared()
+		{
+			if (m_interactPromptTrackingUIElement != null &&
+				m_interactPromptTrackingUIElement.gameObject.activeSelf)
+			{
+				m_interactPromptTrackingUIElement.ElementReturned();
+			}
 		}
 	}
 }

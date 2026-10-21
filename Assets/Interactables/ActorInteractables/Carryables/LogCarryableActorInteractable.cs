@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // This class needs to be made generic in the future (CarryableBaseActorInteractable)
-[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent))]
+[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(UITrackedActorCounter))]
 public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor, IDuplicatableResource
 {
 	private static BehaviourTree m_carryableBT = null; // Interacting with this object parents the
@@ -40,6 +40,7 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 	// Components
 	private Rigidbody m_rigidbody;
 	private NavMeshAgent m_navMeshAgent;
+	private UITrackedActorCounter m_actorCounter;
 
 	// System
 	private LayerMask m_logOverlapLayermask;
@@ -59,11 +60,17 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 		m_navMeshAgent = GetComponent<NavMeshAgent>();
 		m_navMeshAgent.enabled = false;
 
+		m_actorCounter = GetComponent<UITrackedActorCounter>();
+		m_actorCounter.IsTrackingEnabled = true;
+		m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
+
 		m_logOverlapLayermask = LayerMask.GetMask("Default", "Interaction");
 	}
 
 	private void FixedUpdate()
 	{
+		m_actorCounter.UpdateActorValues(TotalActorsPresent(), m_minActorsToFunction);
+
 		if (!m_isBeingCarried)
 			return;
 

@@ -1,3 +1,4 @@
+using Interaction.Core;
 using ObjectTags;
 using System;
 using System.Collections.Generic;
@@ -5,8 +6,19 @@ using UnityEngine;
 
 namespace NoddTracking.Core
 {
-	public class NoddStorageComponent : MonoBehaviour
+	public class NoddStorageComponent : MonoBehaviour, ITrackableObject
 	{
+		// ITrackableObject Properties
+		public bool IsTrackingEnabled { get; set; } = false;
+
+		public Vector3 LocalTrackingPointOffset => Vector3.up * 2;
+
+		public Transform ObjectTransform => transform;
+
+		public event Action ObjectInfoUpdated;
+		public event Action ObjectDestroyed;
+
+		// System
 		public event Action ResourcesAchieved;
 
 		private bool m_isAchieved = false;

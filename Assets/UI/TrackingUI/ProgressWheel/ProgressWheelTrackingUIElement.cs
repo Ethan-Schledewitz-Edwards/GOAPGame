@@ -2,25 +2,28 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ProgressWheelTrackingUIElement : TrackingUIElementBase
+namespace UISystem.TrackingUI
 {
-	[SerializeField] private Image m_fillWheelImage;
-
-	public void SetFillValue(float value, float maxValue)
+	public class ProgressWheelTrackingUIElement : TrackingUIElementBase
 	{
-		if (m_fillWheelImage != null)
-			m_fillWheelImage.fillAmount = value / maxValue;
-	}
+		[SerializeField] private Image m_fillWheelImage;
 
-	public override void ElementReleased()
-	{
-		gameObject.SetActive(true);
-	}
+		public void SetFillValue(float value, float maxValue)
+		{
+			if (m_fillWheelImage != null)
+				m_fillWheelImage.fillAmount = value / maxValue;
+		}
 
-	public override void ElementReturned()
-	{
-		ResetDynamicPosition();
-		SetFillValue(0f, 0);
-		gameObject.SetActive(false);
+		public override void ElementReleased()
+		{
+			gameObject.SetActive(true);
+		}
+
+		public override void ElementReturned()
+		{
+			ResetDynamicPosition();
+			SetFillValue(0f, 0);
+			gameObject.SetActive(false);
+		}
 	}
 }

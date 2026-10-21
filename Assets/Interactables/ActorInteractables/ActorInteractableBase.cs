@@ -1,9 +1,11 @@
 using BehaviourTrees;
 using Interaction.Core;
+using ObjectTags;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
+public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITaggable<ResourceTypeTag>
 {
 	[Header("Settings")]
 	protected abstract int m_minActorsToFunction { get; }
@@ -19,6 +21,35 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable
 
 	public InteractionPoint[] InteractionPoints => m_interactionPoints;
 	private InteractionPoint[] m_interactionPoints;
+
+	// ITaggableProperties
+	[SerializeField] private ResourceTypeTag m_resourceTypeTag;
+
+	private HashSet<ResourceTypeTag> m_runtimeTagSet;
+	public HashSet<ResourceTypeTag> RuntimeTagSet
+	{
+		get
+		{
+			if (m_runtimeTagSet == null)
+			{
+				m_runtimeTagSet = new HashSet<ResourceTypeTag>();
+
+				if (m_resourceTypeTag != null)
+					m_runtimeTagSet.Add(m_resourceTypeTag);
+			}
+			return m_runtimeTagSet;
+		}
+	}
+
+	// ITrackableObject Properties
+	public bool IsTrackingEnabled { get; set; } = false;
+
+	public Vector3 LocalTrackingPointOffset => Vector3.up * 2;
+
+	public Transform ObjectTransform => transform;
+
+	public event Action ObjectInfoUpdated;
+	public event Action ObjectDestroyed;
 
 	protected virtual void Awake()
 	{

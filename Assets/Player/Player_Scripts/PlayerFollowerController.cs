@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using Interaction.ActorInteractables.Structures;
+using ObjectTags;
+using AI.Actors;
 
 namespace Player.Core
 {
@@ -13,10 +16,13 @@ namespace Player.Core
 		public override event Action<Transform> CursorAnchorSet;
 		public override event Action ResetCursorAnchor;
 
+		[Header("Settings")]
+		private LayerMask m_actorLayers;
+		private LayerMask m_interactionLayers;
+
 		// System
 		private WaitForSeconds startDelay = new WaitForSeconds(0.2f);
 
-		private LayerMask m_actorLayers;
 
 		private bool m_isSummonHeld = false;
 
@@ -28,6 +34,10 @@ namespace Player.Core
 		{
 			if (m_actorLayers == 0)
 				m_actorLayers = LayerMask.GetMask("Actor");
+
+			if (m_interactionLayers == 0)
+				m_interactionLayers = LayerMask.GetMask("Interaction");
+
 		}
 
 		private void Start()
@@ -80,10 +90,40 @@ namespace Player.Core
 			}
 		}
 
+		public override void RefreshCursor(Vector3 worldPoint, Vector3 normal)
+		{
+			if (InputManager.ControlMode == InputManager.ControlType.Player)
+			{
+				m_cursorWorldPosition = worldPoint;
+
+				if (m_isSummonHeld)
+					Select(worldPoint);
+			}
+		}
+
 		private void TryAssignActor(Vector3 throwPosition)
 		{
+			Actor followerToThrow = null;
+
+			// Find the closest nodd that matches the interactables resource type
+			ActorInteractableBase actorInteractable = FindClosestActorInteractable(throwPosition);
+			if (actorInteractable != null && 
+				actorInteractable.RuntimeTagSet.Count > 0)
+			{
+				HashSet <ResourceTypeTag> interactableResourceTypes = actorInteractable.RuntimeTagSet;
+				foreach (ResourceTypeTag typeTag in interactableResourceTypes)
+				{
+					followerToThrow = FindClosestFollower(typeTag);
+					if (followerToThrow != null)
+						break;
+				}
+			}
+
+			// Find the closest follower of any type
+			if (followerToThrow == null)
+				followerToThrow = FindClosestFollower();
+
 			// Remove the closest follower and throw them at the cursor
-			Actor followerToThrow = FindClosestFollower();
 			if (followerToThrow != null)
 			{
 				RemoveFollower(followerToThrow);
@@ -117,6 +157,34 @@ namespace Player.Core
 			}
 		}
 
+		private ActorInteractableBase FindClosestActorInteractable(Vector3 position)
+		{
+			ActorInteractableBase closestInteractable = null;
+
+			// Try to select actors
+			Collider[] hitColliders = Physics.OverlapSphere(position, 1f, m_interactionLayers);
+			if(hitColliders.Length > 0)
+			{
+				float closestDist = Mathf.Infinity;
+				foreach (Collider interactableBase in hitColliders)
+				{
+					if (interactableBase == null ||
+						!interactableBase.TryGetComponent(out ActorInteractableBase actorInteractableBase))
+						continue;
+
+					float dist = Vector3.Distance(transform.position, interactableBase.transform.position);
+					if (dist < closestDist)
+					{
+						closestInteractable = actorInteractableBase;
+						closestDist = dist;
+					}
+				}
+			}
+
+			Debug.Log(closestInteractable, closestInteractable);
+			return closestInteractable;
+		}
+
 		/// <summary>
 		/// Finds and returns the follower actor closest to the current actor's position.
 		/// </summary>
@@ -128,7 +196,8 @@ namespace Player.Core
 			float closestDist = Mathf.Infinity;
 			foreach (Actor actor in m_activeFollowers)
 			{
-				if (actor == null) continue;
+				if (actor == null) 
+					continue;
 
 				float dist = Vector3.Distance(transform.position, actor.transform.position);
 				if (dist < closestDist)
@@ -141,15 +210,34 @@ namespace Player.Core
 			return closestFollower;
 		}
 
-		public override void RefreshCursor(Vector3 worldPoint, Vector3 normal)
+		/// <summary>
+		/// Finds the nearest active follower with the specified resource type tag.
+		/// </summary>
+		/// <returns>The closest follower matching the specified resource type, or null if none are found.</returns>
+		private Actor FindClosestFollower(ResourceTypeTag resourceType)
 		{
-			if (InputManager.ControlMode == InputManager.ControlType.Player)
-			{
-				m_cursorWorldPosition = worldPoint;
+			Actor closestFollower = null;
 
-				if (m_isSummonHeld)
-					Select(worldPoint);
+			float closestDist = Mathf.Infinity;
+			foreach (Actor actor in m_activeFollowers)
+			{
+				if (actor == null)
+					continue;
+
+				// Check if nodds match the resource filter
+				if (actor is ITaggable<ResourceTypeTag> taggableActor && 
+					taggableActor.HasTag(resourceType))
+				{
+					float dist = Vector3.Distance(transform.position, actor.transform.position);
+					if (dist < closestDist)
+					{
+						closestFollower = actor;
+						closestDist = dist;
+					}
+				}
 			}
+
+			return closestFollower;
 		}
 	}
 }

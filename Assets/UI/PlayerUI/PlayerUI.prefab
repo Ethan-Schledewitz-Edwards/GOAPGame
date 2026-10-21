@@ -1220,6 +1220,8 @@ RectTransform:
   - {fileID: 6042106322052188462}
   - {fileID: 1104373237528560115}
   - {fileID: 3032314970505584733}
+  - {fileID: 1913993469971215122}
+  - {fileID: 6643754114127664926}
   m_Father: {fileID: 8387755752652551309}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1252,6 +1254,121 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UISystem::HUD
   m_menuButtons: []
+--- !u!1 &5114365407184048901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6643754114127664926}
+  - component: {fileID: 2517356441188652411}
+  - component: {fileID: 4515109530899790981}
+  m_Layer: 5
+  m_Name: NoddRequirementManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6643754114127664926
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5114365407184048901}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 404055212059426969}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2517356441188652411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5114365407184048901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2ba45d10d2ac334190735c012e8c0b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UISystem.TrackingUI::UISystem.TrackingUI.ActorCounterTrackingUIManager
+  m_actorLimitPrefab: {fileID: 5814565321641897557, guid: bdf1f080f3dfaa64fb757ebbbf873dfa, type: 3}
+  m_uiCanvasParent: {fileID: 6643754114127664926}
+--- !u!114 &4515109530899790981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5114365407184048901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 041f8a0adfce40145a11d718be33cf32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UISystem.TrackingUI::UISystem.TrackingUI.NoddRequirmentTrackingUIManager
+  m_actorLimitPrefab: {fileID: 127943603957786194, guid: 87cdcce4327bdf147ad6953a5cb483b7, type: 3}
+  m_uiCanvasParent: {fileID: 6643754114127664926}
+--- !u!1 &5153258944760999638
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1913993469971215122}
+  - component: {fileID: 1376233948420510775}
+  m_Layer: 5
+  m_Name: ActorCounterManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1913993469971215122
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153258944760999638}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 404055212059426969}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1376233948420510775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153258944760999638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2ba45d10d2ac334190735c012e8c0b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UISystem.TrackingUI::UISystem.TrackingUI.ActorCounterTrackingUIManager
+  m_actorLimitPrefab: {fileID: 5814565321641897557, guid: bdf1f080f3dfaa64fb757ebbbf873dfa, type: 3}
+  m_uiCanvasParent: {fileID: 1913993469971215122}
 --- !u!1 &5807559894734077182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1628,7 +1745,7 @@ GameObject:
   - component: {fileID: 3032314970505584733}
   - component: {fileID: 3922041892319476072}
   m_Layer: 5
-  m_Name: ProgressBarManager
+  m_Name: ProgressWheelManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
