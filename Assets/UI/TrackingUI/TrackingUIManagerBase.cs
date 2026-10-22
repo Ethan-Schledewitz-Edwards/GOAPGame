@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UISystem.TrackingUI
 {
 	public abstract class TrackingUIManagerBase<TTrackable, TUIElement> : MonoBehaviour
-	where TTrackable : class, ITrackableObject
+	where TTrackable : class, ITrackableByElement
 	where TUIElement : TrackingUIElementBase
 	{
 		protected PlayerInteractionController m_playerInteraction;
@@ -42,7 +42,7 @@ namespace UISystem.TrackingUI
 			m_activeElements.Clear();
 		}
 
-		private void HandleInteractableInRange(ITrackableObject trackable)
+		private void HandleInteractableInRange(ITrackableByElement trackable)
 		{
 			if (trackable is TTrackable typedTrackable)
 			{
@@ -65,7 +65,7 @@ namespace UISystem.TrackingUI
 			}
 		}
 
-		private void HandleInteractableOutOfRange(ITrackableObject trackable)
+		private void HandleInteractableOutOfRange(ITrackableByElement trackable)
 		{
 			if (trackable is TTrackable typedTrackable)
 			{
@@ -94,9 +94,13 @@ namespace UISystem.TrackingUI
 		{
 			if (interactable.ObjectTransform != null)
 			{
-				// Fallback or local offset handling if applicable
-				Vector3 targetPosition = interactable.ObjectTransform.position + 
-					interactable.LocalTrackingPointOffset;
+				// Object position as fallback
+				Vector3 targetPosition = interactable.ObjectTransform.position;
+
+				// Prefer ElementTrackingPosition 
+				if (interactable.ElementTrackingPosition != null)
+					targetPosition = interactable.ElementTrackingPosition.position;
+
 				uiElement.SetTrackingPosition(targetPosition);
 			}
 		}

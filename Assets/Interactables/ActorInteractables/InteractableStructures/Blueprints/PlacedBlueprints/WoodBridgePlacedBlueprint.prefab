@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
+    - target: {fileID: 1301754691358669812, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 3017703126850601998, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
       propertyPath: m_Size.y
       value: 0.2
@@ -76,7 +80,8 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6915830432947262248, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

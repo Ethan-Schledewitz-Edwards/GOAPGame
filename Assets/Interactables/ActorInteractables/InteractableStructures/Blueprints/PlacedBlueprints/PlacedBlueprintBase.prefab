@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 6019955960294120562}
   - component: {fileID: 3017703126850601998}
   - component: {fileID: 7574354641766003157}
-  - component: {fileID: 6915830432947262248}
   - component: {fileID: 4836379151744860039}
+  - component: {fileID: 121242852987978291}
   m_Layer: 7
   m_Name: PlacedBlueprintBase
   m_TagString: Untagged
@@ -37,6 +37,8 @@ Transform:
   m_Children:
   - {fileID: 6481859380391125491}
   - {fileID: 4793061507273258872}
+  - {fileID: 6005071250705509970}
+  - {fileID: 1301754691358669812}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2123883129720176227
@@ -52,12 +54,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.InteractableStructures.Blueprints.PlacedBlueprint
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
+  m_resourceTypeTag: {fileID: 0}
   m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
-  m_tagFilter: []
   m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
   m_meshFilter: {fileID: 1086525549323106786}
   m_meshRenderer: {fileID: 9099140680238688444}
-  m_blueprintData: {fileID: 0}
 --- !u!114 &6019955960294120562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,18 +108,6 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
---- !u!114 &6915830432947262248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262572155233583462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96e2facf2bc4298478733b2c7f723e84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: NoddTracking.Core::NoddTracking.Core.NoddRequestComponent
 --- !u!114 &4836379151744860039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,6 +120,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db115c758ed2c204caca8780fc6cf527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedProgressComponent
+  m_localElementTrackingPosition: {fileID: 6005071250705509970}
+--- !u!114 &121242852987978291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262572155233583462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6046beb9e40e93a42bd2019460ef549a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NoddTracking.Core::NoddTracking.Core.NoddDepositComponent
+  m_localElementTrackingPosition: {fileID: 1301754691358669812}
 --- !u!1 &2541393826013963773
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,6 +224,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3023333669380471072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1301754691358669812}
+  m_Layer: 7
+  m_Name: ResourceTrackingPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1301754691358669812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3023333669380471072}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4303596133692988039}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3353513340889776398
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,3 +302,34 @@ MonoBehaviour:
   <MaxInteractors>k__BackingField: 0
   <FormationRadius>k__BackingField: 0
   <InteractionDistance>k__BackingField: 0.3
+--- !u!1 &3847552598869691960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6005071250705509970}
+  m_Layer: 7
+  m_Name: CancelProgressTrackingPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6005071250705509970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3847552598869691960}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4303596133692988039}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -6,12 +6,13 @@ using UnityEngine;
 
 namespace NoddTracking.Core
 {
-	public class NoddDepositComponent : MonoBehaviour, ITrackableObject
+	public class NoddDepositComponent : MonoBehaviour, ITrackableByElement
 	{
 		// ITrackableObject Properties
 		public bool IsTrackingEnabled { get; set; } = false;
 
-		public Vector3 LocalTrackingPointOffset => Vector3.zero;
+		public Transform ElementTrackingPosition => m_localElementTrackingPosition;
+		[SerializeField] private Transform m_localElementTrackingPosition;
 
 		public Transform ObjectTransform => transform;
 

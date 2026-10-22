@@ -133,6 +133,7 @@ Transform:
   - {fileID: 6305211541075311309}
   - {fileID: 2060017707386306927}
   - {fileID: 6409537312686005106}
+  - {fileID: 2213005396187606250}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1684694862476352012
@@ -167,6 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7f6c1ec6740ec4086de1056e7d6b6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedActorCounter
+  m_localElementTrackingPosition: {fileID: 2213005396187606250}
 --- !u!136 &581121961390997327
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -423,3 +425,34 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8072590804003672114}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &8399624687941405889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2213005396187606250}
+  m_Layer: 7
+  m_Name: ActorCountTrackingPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2213005396187606250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8399624687941405889}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 832175474334960640}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

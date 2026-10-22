@@ -92,6 +92,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5003992895285579222
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8747543985779787172}
+  m_Layer: 7
+  m_Name: ProgressTrackingPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8747543985779787172
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5003992895285579222}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4096898627607497459}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8017305751090146384
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,6 +205,7 @@ Transform:
   m_Children:
   - {fileID: 6588828977190778168}
   - {fileID: 2586353325853295127}
+  - {fileID: 8747543985779787172}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8889112409096884335
@@ -189,9 +221,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Interaction.Actor.InteractableStructures::Interaction.Actor.InteractableStructures.Duplicatinator
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
+  m_resourceTypeTag: {fileID: 0}
   m_duplicatinatorTag: {fileID: 11400000, guid: 302bab234182982438cedff16a8a761f, type: 2}
   m_noddSpawnPoint: {fileID: 2586353325853295127}
-  m_noddPrefab: {fileID: 2239435831216304708, guid: 1d6e8690a216d624688493fb43008a49, type: 3}
 --- !u!114 &6665421013647682190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db115c758ed2c204caca8780fc6cf527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.Core::Interaction.Core.UITrackedProgressComponent
+  m_localElementTrackingPosition: {fileID: 8747543985779787172}
 --- !u!208 &4621684914593885089
 NavMeshObstacle:
   m_ObjectHideFlags: 0

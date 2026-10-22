@@ -15,8 +15,8 @@ namespace Player.Core
 		[SerializeField] private LayerMask m_interactionLayer;
 
 		// Trackable Object Events
-		public event Action<ITrackableObject> NewTrackableObjectInDisplayRange;
-		public event Action<ITrackableObject> TrackableObjectOutOfRange;
+		public event Action<ITrackableByElement> NewTrackableObjectInDisplayRange;
+		public event Action<ITrackableByElement> TrackableObjectOutOfRange;
 
 		// Interaction Events
 		public event Action<string, Vector3> ClosestInteractableUpdated;
@@ -26,9 +26,9 @@ namespace Player.Core
 		private PlayerInteractableBase m_closestInteractable;
 		private Collider[] m_colliderBuffer = new Collider[c_maxColliders];
 
-		private List<ITrackableObject> m_trackablesBuffer = new List<ITrackableObject>();
-		private HashSet<ITrackableObject> m_previousTrackables = new HashSet<ITrackableObject>();
-		private HashSet<ITrackableObject> m_currentTrackables = new HashSet<ITrackableObject>();
+		private List<ITrackableByElement> m_trackablesBuffer = new List<ITrackableByElement>();
+		private HashSet<ITrackableByElement> m_previousTrackables = new HashSet<ITrackableByElement>();
+		private HashSet<ITrackableByElement> m_currentTrackables = new HashSet<ITrackableByElement>();
 
 		// TO do: Interaction input using these methods
 		public void Subscribe() { }
@@ -54,7 +54,7 @@ namespace Player.Core
 				col.GetComponents(m_trackablesBuffer);
 				for (int j = 0; j < m_trackablesBuffer.Count; j++)
 				{
-					ITrackableObject trackableObject = m_trackablesBuffer[j];
+					ITrackableByElement trackableObject = m_trackablesBuffer[j];
 					if (trackableObject != null && trackableObject.IsTrackingEnabled)
 					{
 						m_currentTrackables.Add(trackableObject);
@@ -80,7 +80,7 @@ namespace Player.Core
 			}
 
 			// Find trackable objects that left the display range
-			foreach (ITrackableObject prevTrackable in m_previousTrackables)
+			foreach (ITrackableByElement prevTrackable in m_previousTrackables)
 			{
 				if (prevTrackable != null &&
 					!m_currentTrackables.Contains(prevTrackable))
@@ -100,7 +100,7 @@ namespace Player.Core
 			}
 
 			// Double buffering swap for trackables
-			HashSet<ITrackableObject> temp = m_previousTrackables;
+			HashSet<ITrackableByElement> temp = m_previousTrackables;
 			m_previousTrackables = m_currentTrackables;
 			m_currentTrackables = temp;
 			m_currentTrackables.Clear();
