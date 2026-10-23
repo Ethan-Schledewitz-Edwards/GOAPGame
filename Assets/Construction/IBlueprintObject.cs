@@ -20,10 +20,12 @@ namespace Construction
 
 	}
 
-	public interface IMultiPointBlueprintObject : IBlueprintObject
+	public interface ILinkBlueprintObject : IBlueprintObject
 	{
-		public void AddPoint(Vector3 position);
-		public IReadOnlyList<Vector3> GetPlacementPositions();
-		public void GenerateMultiPointBlueprintLinks();
+		public Vector3 LinkStartPosition { get; }
+		public Vector3 LinkEndPosition { get; }
+
+		public void SetLinkStartPosition(Vector3 position);
+		public void SetLinkEndPosition(Vector3 position);
 	}
 }

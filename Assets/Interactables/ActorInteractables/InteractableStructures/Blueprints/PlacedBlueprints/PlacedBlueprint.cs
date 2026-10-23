@@ -12,7 +12,7 @@ using Interaction.Core;
 namespace Interaction.ActorInteractables.Structures
 {
 	[RequireComponent(typeof(BoxCollider), typeof(BlueprintCancelation))]
-	public class PlacedBlueprint : BlueprintActorInteractableBase, IMultiPointBlueprintObject
+	public class PlacedBlueprint : BlueprintActorInteractableBase, ILinkBlueprintObject
 	{
 		protected override int m_minActorsToFunction => 0;
 
@@ -24,16 +24,22 @@ namespace Interaction.ActorInteractables.Structures
 		[Header("Components")]
 		private BlueprintCancelation m_cancelBlueprint;
 		private BoxCollider m_boxCollider;
+		private NoddDepositComponent m_depositComponent;
 
 		// IBlueprintObject properties
-		public bool IsMultiPointBlueprint { get; set; }
 
 		public event Action<IBlueprintObject> BlueprintCompleted;
 		public event Action<IBlueprintObject> BlueprintCanceled;
 
+		// ILinkBlueprintObject properties
+		public Vector3 LinkStartPosition => m_linkStartPosition;
+		private Vector3 m_linkStartPosition;
+
+		public Vector3 LinkEndPosition => m_linkEndPosition;
+		private Vector3 m_linkEndPosition;
+
 		// System
 		private BlueprintData m_blueprintData;
-		private List<Vector3> m_placementPoints = new List<Vector3>();
 
 		protected override void Awake()
 		{
@@ -41,6 +47,10 @@ namespace Interaction.ActorInteractables.Structures
 
 			m_cancelBlueprint = GetComponent<BlueprintCancelation>();
 			m_boxCollider = GetComponent<BoxCollider>();
+
+			m_depositComponent = GetComponent<NoddDepositComponent>();
+			if (m_depositComponent != null)
+				m_depositComponent.IsTrackingEnabled = false;
 
 			m_cancelBlueprint.CanceledBlueprint += HandleBlueprintCanceled;
 		}
@@ -50,39 +60,43 @@ namespace Interaction.ActorInteractables.Structures
 			m_cancelBlueprint.CanceledBlueprint -= HandleBlueprintCanceled;
 		}
 
-		public void HandleBlueprintPlaced(BlueprintData blueprintData, Vector3 position, Quaternion rotation)
+		public void HandleBlueprintPlaced(BlueprintData blueprintData, Vector3 position, Quaternion _)
 		{
 			if(blueprintData == null) 
 				return;
 
 			m_blueprintData = blueprintData;
-			NoddQuantity[] requiredNodds = m_blueprintData.RequiredNodds;
 
-			m_noddRequestComponent.SetRequiredResources(requiredNodds);
 
-			// Update runtime object tags
-			foreach (NoddQuantity i in requiredNodds)
+			NoddQuantity[] requiredNodds = null;
+			if (!m_blueprintData.IsLinkBlueprint)
 			{
-				RuntimeTagSet.Add(i.TypeRequired);
+				requiredNodds = m_blueprintData.RequiredNodds;
+			}
+			else // Calculate the resource cost per segment
+			{
+				GenerateLink(out int segmentCount);
+				int resourceCost = segmentCount * (int)(m_blueprintData.ResourceCostPerSegment);
 			}
 
-			foreach (var item in RuntimeTagSet)
+			if (requiredNodds != null) 
 			{
-				Debug.Log(item);
+				m_noddRequestComponent.SetRequiredResources(requiredNodds);
+
+				// Update runtime object tags
+				foreach (NoddQuantity i in requiredNodds)
+				{
+					RuntimeTagSet.Add(i.TypeRequired);
+				}
 			}
 
 			transform.position = position;
-			transform.rotation = rotation;
+
+			if (m_depositComponent != null)
+				m_depositComponent.IsTrackingEnabled = true;
 
 			Debug.Log($"Starting blueprint: {blueprintData.DisplayName}");
 		}
-
-		public void AddPoint(Vector3 position)
-		{
-			m_placementPoints.Add(position);
-		}
-
-		public IReadOnlyList<Vector3> GetPlacementPositions() => m_placementPoints;
 
 		public override void HandleBlueprintCompleted()
 		{
@@ -96,17 +110,6 @@ namespace Interaction.ActorInteractables.Structures
 			{
 				GameObject prefab = m_blueprintData.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
-
-				// Initiate multi point structures on the final built object if needed
-				if (m_placementPoints.Count > 1 &&
-					spawnedStructureObj != null &&
-					spawnedStructureObj.TryGetComponent(out MultiPointStructure multiPointStructure))
-				{
-					Debug.Log("WTF");
-
-					float spacing = m_blueprintData.MultiPointSpacing;
-					multiPointStructure.GenerateMultiPointStructureLinks(m_placementPoints, spacing);
-				}
 
 				if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
 				{
@@ -133,51 +136,54 @@ namespace Interaction.ActorInteractables.Structures
 			BlueprintCanceled?.Invoke(this);
 		}
 
+		public void SetLinkStartPosition(Vector3 position)
+		{
+			m_linkStartPosition = position;
+		}
+
+		public void SetLinkEndPosition(Vector3 position)
+		{
+			m_linkEndPosition = position;
+		}
+
 		/// <summary>
 		/// Generates and places mesh segments internally between multiple points along a path using specified spacing.
 		/// </summary>
-		public void GenerateMultiPointBlueprintLinks()
+		private void GenerateLink(out int segmentCount)
 		{
+			segmentCount = 0;
+
 			if (m_blueprintData == null || 
-				m_blueprintData.PlacementMesh == null || 
-				m_placementPoints.Count < 2)
+				m_blueprintData.PlacementMesh == null)
 				return;
 
-			float spacing = m_blueprintData.MultiPointSpacing;
+			float spacing = m_blueprintData.SegmentSpacing;
 			Mesh blueprintMesh = m_blueprintData.PlacementMesh;
 
-			for (int i = 0; i < m_placementPoints.Count - 1; i++)
+			Vector3 direction = m_linkEndPosition - m_linkStartPosition;
+			float totalDistance = direction.magnitude;
+			direction.Normalize();
+
+			Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
+
+			segmentCount = Mathf.FloorToInt(totalDistance / spacing);
+			for (int j = 0; j <= segmentCount; j++)
 			{
-				Vector3 start = m_placementPoints[i];
-				Vector3 end = m_placementPoints[i + 1];
-
-				Vector3 direction = end - start;
-				float totalDistance = direction.magnitude;
-				if (totalDistance <= 0.001f)
+				if (j == 0)
 					continue;
-				direction.Normalize();
 
-				int segmentCount = Mathf.FloorToInt(totalDistance / spacing);
-				Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
+				Vector3 spawnPosition = m_linkStartPosition + (direction * (j * spacing));
 
-				for (int j = 0; j <= segmentCount; j++)
-				{
-					if (i == 0 && j == 0)
-						continue;
+				GameObject segmentObject = new GameObject($"Segment_{j}");
+				segmentObject.transform.SetParent(transform, true);
+				segmentObject.transform.position = spawnPosition;
+				segmentObject.transform.rotation = pathRotation;
 
-					Vector3 spawnPosition = start + (direction * (j * spacing));
+				MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
+				MeshRenderer renderer = segmentObject.AddComponent<MeshRenderer>();
 
-					GameObject segmentObject = new GameObject($"Segment_{i}_{j}");
-					segmentObject.transform.SetParent(transform, true);
-					segmentObject.transform.position = spawnPosition;
-					segmentObject.transform.rotation = pathRotation;
-
-					MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
-					MeshRenderer renderer = segmentObject.AddComponent<MeshRenderer>();
-
-					filter.mesh = blueprintMesh;
-					renderer.sharedMaterial = m_blueprintMaterial;
-				}
+				filter.mesh = blueprintMesh;
+				renderer.sharedMaterial = m_blueprintMaterial;
 			}
 		}
 

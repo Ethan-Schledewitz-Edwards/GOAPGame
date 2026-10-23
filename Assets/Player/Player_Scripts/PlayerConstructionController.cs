@@ -41,8 +41,7 @@ namespace Player.Core
 		private Quaternion m_placementRotation;
 
 		// Multi point blueprint
-		private IMultiPointBlueprintObject m_multiPointBlueprint;
-		private int m_pointsPlaced;
+		private ILinkBlueprintObject m_linkBlueprint;
 
 		Collider[] m_newCancelColliders = new Collider[16];
 		Collider[] m_collidersBeingCanceled = new Collider[16];
@@ -99,6 +98,12 @@ namespace Player.Core
 		{
 			if (m_blueprintDataToPlace != null)
 			{
+				// Destroy any unfinished link
+				if(m_linkBlueprint != null)
+				{
+					Destroy(m_linkBlueprint.Object);
+				}
+
 				ClearBlueprintToPlace();
 				m_isCancleHeld = false;
 				return;
@@ -208,22 +213,22 @@ namespace Player.Core
 				StopAllCancelations();
 		}
 
+		/// <summary>
+		/// Sets the blueprint data to be placed and disables the follower controller.
+		/// </summary>
 		private void SetBlueprintToPlace(BlueprintData structureData)
 		{
+			ClearBlueprintToPlace();
+
 			if (m_followerController != null)
 				m_followerController.enabled = false;
 
 			m_blueprintDataToPlace = structureData;
-			m_placementRotation = Quaternion.identity;
-
-			m_multiPointBlueprint = null;
-			m_pointsPlaced = 0;
-
-			m_cursorVisualizer?.ClearBlueprintPlacementVisuals();
-
-			RefreshPlacementValidityVisuals(false);
 		}
 
+		/// <summary>
+		/// Resets blueprint placement state, clears cursor visuals, then enables the follower controller.
+		/// </summary>
 		private void ClearBlueprintToPlace()
 		{
 			m_playerCamera.ReturnToDefault();
@@ -233,17 +238,23 @@ namespace Player.Core
 			m_blueprintDataToPlace = null;
 			m_placementRotation = Quaternion.identity;
 
-			m_multiPointBlueprint = null;
-			m_pointsPlaced = 0;
+			m_linkBlueprint = null;
 
-			m_cursorVisualizer?.ClearBlueprintPlacementVisuals();
-
-			RefreshPlacementValidityVisuals(false);
+			if(m_cursorVisualizer != null)
+			{
+				m_cursorVisualizer.ClearBlueprintPlacementVisuals();
+				m_cursorVisualizer.EnableCursor();
+				RefreshPlacementValidityVisuals(false);
+			}
 
 			if (m_followerController != null)
 				m_followerController.enabled = true;
 		}
 
+		/// <summary>
+		/// Attempts to place a blueprint at the specified position and rotation, creating a new player settlement if
+		/// necessary.
+		/// </summary>
 		private void TryPlaceBlueprint(Vector3 position, Quaternion rotation)
 		{
 			if (m_blueprintDataToPlace == null)
@@ -258,138 +269,119 @@ namespace Player.Core
 			if (nearestSettlementID == -1)
 				SettlementManager.Instance.CreatePlayerSettlement(position, out nearestSettlementID);
 
-			if (!m_blueprintDataToPlace.IsMultiPointBlueprint)
+			if (!m_blueprintDataToPlace.IsLinkBlueprint)
 			{
 				CreateStructureBlueprint(nearestSettlementID, position, rotation);
 			}
 			else
 			{
-				CreateMultiPointBlueprint(nearestSettlementID, position, rotation);
+				CreateLinkBlueprint(nearestSettlementID, position, rotation);
 			}
 		}
 
+		/// <summary>
+		/// Creates a standard blueprint structure at the specified position and rotation, 
+		/// assigning it to the nearest settlement.
+		/// </summary>
 		private void CreateStructureBlueprint(int nearestSettlementID, Vector3 position, Quaternion rotation)
 		{
-			ConstructionManager.Instance.CreateBlueprint
+			ConstructionManager constructionManager = ConstructionManager.Instance;
+			constructionManager.CreateBlueprintPreview
 				(
-					nearestSettlementID,
 					m_blueprintDataToPlace,
 					position,
-					rotation,
-					out _
+					out IBlueprintObject blueprintObject
 				);
+
+			constructionManager.PlacePreviewBlueprint(nearestSettlementID, m_blueprintDataToPlace, position, rotation, blueprintObject);
 
 			ClearBlueprintToPlace();
 		}
 
-		private void CreateMultiPointBlueprint(int nearestSettlementID, Vector3 position, Quaternion rotation)
+		/// <summary>
+		/// Creates a link blueprint preview or finalizes and places an existing link blueprint at the specified position
+		/// and rotation, assigning it to the nearest settlement.
+		/// </summary>
+		private void CreateLinkBlueprint(int nearestSettlementID, Vector3 position, Quaternion rotation)
 		{
-			if (m_pointsPlaced == 0)
+			ConstructionManager constructionManager = ConstructionManager.Instance;
+
+			if (m_linkBlueprint == null)
 			{
-				IBlueprintObject createdBlueprint;
-				ConstructionManager.Instance.CreateBlueprint
+				// Create a blueprint preview
+				constructionManager.CreateBlueprintPreview
 				(
-					nearestSettlementID,
 					m_blueprintDataToPlace,
 					position,
-					rotation,
-					out createdBlueprint
+					out IBlueprintObject blueprintPreview
 				);
 
-				m_multiPointBlueprint = createdBlueprint as IMultiPointBlueprintObject;
-				if (m_multiPointBlueprint != null)
+				m_linkBlueprint = blueprintPreview as ILinkBlueprintObject;
+				if (m_linkBlueprint != null)
 				{
-					m_multiPointBlueprint.AddPoint(position);
+					m_linkBlueprint.SetLinkStartPosition(position);
 				}
 
 				// Update camera target
-				if (m_multiPointBlueprint?.Object != null)
+				if (m_linkBlueprint?.Object != null)
 				{
 					m_playerCamera.ClearCameraTargets();
 					m_playerCamera.SetCameraSmoothing(4f);
-					m_playerCamera.AddCameraTarget(m_multiPointBlueprint.Object.transform);
+					m_playerCamera.AddCameraTarget(m_linkBlueprint.Object.transform);
 					m_playerCamera.AddCameraTarget(m_cursorVisualizer.transform);
 
-					CursorAnchorSet?.Invoke(m_multiPointBlueprint.Object.transform);
+					CursorAnchorSet?.Invoke(m_linkBlueprint.Object.transform);
 				}
 			}
-			else if (m_multiPointBlueprint != null)
+			else // Create a link
 			{
-				m_multiPointBlueprint.AddPoint(position);
-			}
+				// Add the end point
+				m_linkBlueprint.SetLinkEndPosition(position);
 
-			m_pointsPlaced++;
+				// Place the link
+				constructionManager.PlacePreviewBlueprint(nearestSettlementID, 
+					m_blueprintDataToPlace,
+					m_linkBlueprint.LinkStartPosition, 
+					rotation, 
+					m_linkBlueprint
+				);
 
-			// Once max points are placed, finish placement state
-			if (m_pointsPlaced >= m_blueprintDataToPlace.MaxPoints)
-			{
-				m_multiPointBlueprint.GenerateMultiPointBlueprintLinks();
-				ClearBlueprintToPlace();
+				// Start another link
+				m_linkBlueprint = null;
+				CreateLinkBlueprint(nearestSettlementID, position, rotation);
 			}
 		}
 
 		private void RefreshPlacementValidityVisuals(bool isPlacementValid)
 		{
-			if (m_cursorVisualizer == null)
+			if (m_cursorVisualizer == null || m_blueprintDataToPlace == null)
 				return;
 
-			if (m_blueprintDataToPlace == null)
-			{
-				m_cursorVisualizer.ClearBlueprintPlacementVisuals();
-				m_cursorVisualizer.EnableCursor();
-				return;
-			}
-
-			if (m_blueprintDataToPlace.IsMultiPointBlueprint && 
-				m_pointsPlaced > 0)
-			{
-				RefreshRealTimeMultiPointVisuals(isPlacementValid);
-			}
-			else // Update regular structure blueprint visuals
-			{
-				Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
-
-				m_cursorVisualizer.SetBlueprintPlacementVisuals(
-					m_blueprintDataToPlace,
-					materials,
-					m_placementRotation
-				);
-			}
-		}
-
-		private void RefreshRealTimeMultiPointVisuals(bool isPlacementValid)
-		{
-			if (m_cursorVisualizer == null || m_multiPointBlueprint == null)
-				return;
-
-			IReadOnlyList<Vector3> placementPoints = m_multiPointBlueprint.GetPlacementPositions();
 			Material[] materials = { isPlacementValid ? m_validMaterial : m_invalidMaterial };
 
-			if (m_pointsPlaced > 0)
+			// Update linked blueprint preivew visuals
+			if (m_blueprintDataToPlace.IsLinkBlueprint && 
+				m_linkBlueprint != null)
 			{
-				if (m_pointsPlaced == 1)
+				Transform blueprintTransform = m_linkBlueprint.Object?.transform;
+				Vector3 startPosition = m_linkBlueprint.LinkStartPosition;
+
+				Vector3 dirToCursor = m_cursorWorldPosition - startPosition;
+				if (dirToCursor.sqrMagnitude > 0.001f)
 				{
-					Transform blueprintTransform = m_multiPointBlueprint.Object?.transform;
-					if (blueprintTransform != null && placementPoints.Count > 0)
-					{
-						Vector3 dirToCursor = m_cursorWorldPosition - placementPoints[0];
-						if (dirToCursor.sqrMagnitude > 0.001f)
-						{
-							blueprintTransform.rotation = Quaternion.LookRotation(dirToCursor.normalized, Vector3.up);
-						}
-					}
+					blueprintTransform.rotation = Quaternion.LookRotation(dirToCursor.normalized, Vector3.up);
 				}
 
-				m_cursorVisualizer.SetMultiPointBlueprintPreviewVisuals(
+				m_cursorVisualizer.SetLinkedBlueprintPreviewVisuals(
 					m_blueprintDataToPlace,
-					placementPoints.ToList(),
+					startPosition,
 					m_cursorWorldPosition,
 					materials
 				);
 			}
-			else
+			else // Update regular blueprint preivew visuals
 			{
-				m_cursorVisualizer.SetBlueprintPlacementVisuals(
+				m_cursorVisualizer.SetBlueprintPreviewVisuals(
 					m_blueprintDataToPlace,
 					materials,
 					m_placementRotation

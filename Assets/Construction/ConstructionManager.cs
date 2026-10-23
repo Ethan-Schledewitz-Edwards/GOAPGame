@@ -44,81 +44,75 @@ namespace Construction
 		}
 
 		/// <summary>
-		/// Creates and places a blueprint at the specified world position and rotation within a settlement.
+		/// Creates a blueprint prefab at the specified world position.
 		/// </summary>
-		public void CreateBlueprint(
-			int settlementID,
+		public void CreateBlueprintPreview(
 			BlueprintData blueprintData,
 			Vector3 worldPosition,
-			Quaternion rotation,
 			out IBlueprintObject blueprintObject)
 		{
+			blueprintObject = null;
 
-			if (blueprintData == null)
+			if (blueprintData?.BlueprintPrefab == null)
 			{
-				blueprintObject = null;
-
-				Debug.LogError(
-					$"[ConstructionManager] Tried to create a blueprint but BlueprintData was null.",
-					this);
-				return;
-			}
-
-			if (blueprintData.BlueprintPrefab == null)
-			{
-				blueprintObject = null;
-
-				Debug.LogError(
-					$"[ConstructionManager] Tried to create a blueprint but BlueprintData had no prefab.",
-					blueprintData);
-				return;
-			}
-
-			if (!SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out var settlement)
-				|| settlement == null)
-			{
-				blueprintObject = null;
-
-				Debug.LogError(
-					$"Failed to create blueprint '{blueprintData}': Settlement with ID {settlementID} does not exist.",
-					this);
+				Debug.LogError($"[ConstructionManager] Tried to create a blueprint, but BlueprintData or its prefab is null.", this);
 				return;
 			}
 
 			GameObject prefab = Instantiate(blueprintData.BlueprintPrefab);
 
-			IStructure structure = prefab.GetComponent<IStructure>();
-			blueprintObject = prefab.GetComponent<IBlueprintObject>();
-
-			if (structure == null || blueprintObject == null)
+			if (!prefab.TryGetComponent<IStructure>(out _) || !prefab.TryGetComponent(out blueprintObject))
 			{
-				Debug.LogError(
-					$"Failed to create blueprint '{blueprintData}': Prefab '{prefab.name}' is missing " +
-					$"{(structure == null ? nameof(IStructure) : string.Empty)}" +
-					$"{(structure == null && blueprintObject == null ? " and " : string.Empty)}" +
-					$"{(blueprintObject == null ? nameof(IBlueprintObject) : string.Empty)}.",
-					prefab);
-
+				Debug.LogError($"[ConstructionManager] Prefab '{prefab.name}' is missing IStructure or IBlueprintObject.", prefab);
 				Destroy(prefab);
+				blueprintObject = null;
 				return;
 			}
 
-			// Position the blueprint at ground level using its renderer bounds.
-			Vector3 offsetPosition = worldPosition;
+			// Position the blueprint at ground level using its renderer bounds if available.
 			if (prefab.TryGetComponent(out MeshRenderer meshRenderer))
 			{
-				float distanceToBottom = meshRenderer.bounds.min.y;
-				offsetPosition.y -= distanceToBottom - worldPosition.y;
+				worldPosition.y -= meshRenderer.bounds.min.y - worldPosition.y;
+			}
+
+			prefab.transform.position = worldPosition;
+		}
+
+		/// <summary>
+		/// Initializes a placed a blueprint preview and assigns it to a settlement.
+		/// </summary>
+		public void PlacePreviewBlueprint(
+			int settlementID,
+			BlueprintData blueprintData,
+			Vector3 worldPosition,
+			Quaternion rotation,
+			IBlueprintObject blueprintObject)
+		{
+			if (blueprintObject == null)
+			{
+				Debug.LogError("[ConstructionManager] Tried to place a null blueprint object.", this);
+				return;
+			}
+
+			if (!SettlementManager.s_WorldSettlements.TryGetValue(settlementID, out var settlement) || settlement == null)
+			{
+				Debug.LogError($"[ConstructionManager] Settlement with ID {settlementID} does not exist.", this);
+				return;
 			}
 
 			// Initialize the blueprint.
-			blueprintObject.HandleBlueprintPlaced(
-				blueprintData,
-				offsetPosition,
-				rotation);
+			blueprintObject.HandleBlueprintPlaced(blueprintData, worldPosition, rotation);
 
 			// Register the structure with the settlement.
-			settlement.AddStructure(structure);
+			if (blueprintObject.Object.TryGetComponent<IStructure>(out var structure))
+			{
+				settlement.AddStructure(structure);
+			}
+			else
+			{
+				Debug.LogError($"[ConstructionManager] Blueprint object prefab is missing an IStructure component.", blueprintObject.Object);
+				return;
+			}
 
 			// Subscribe to blueprint events.
 			blueprintObject.BlueprintCompleted += CleanupBlueprint;

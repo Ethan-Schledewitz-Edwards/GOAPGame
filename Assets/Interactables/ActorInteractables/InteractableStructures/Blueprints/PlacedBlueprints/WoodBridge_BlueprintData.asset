@@ -20,8 +20,8 @@ MonoBehaviour:
   <PlacementMesh>k__BackingField: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
   <PlacementClearenceRadius>k__BackingField: 0.2
   <MaxPlacementAngle>k__BackingField: 30
-  <IsMultiPointBlueprint>k__BackingField: 1
-  <MaxPoints>k__BackingField: 2
-  <MultiPointSpacing>k__BackingField: 0.5
+  <IsLinkBlueprint>k__BackingField: 1
+  <SegmentSpacing>k__BackingField: 0.5
+  <ResourceCostPerSegment>k__BackingField: 0.25
   <BlueprintPrefab>k__BackingField: {fileID: 2660728958185705178, guid: 8605fa5ae09d647448972e5756ceb95f, type: 3}
   <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 9147261133234705029, guid: 98eb1c03261f5b1438a65746a8b7acf7, type: 3}

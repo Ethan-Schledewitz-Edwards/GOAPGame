@@ -18,7 +18,6 @@ public class PlayerCursorVisualizer : MonoBehaviour
 	public float SelectionRadius { get; private set; }
 
 	[Header("Camera")]
-	[SerializeField] private PlayerCamera m_playerCamera;
 	[SerializeField] private PlayerWorldControllerManager m_playerWorldControllerManager;
 
 	[Header("Blueprint")]
@@ -134,14 +133,15 @@ public class PlayerCursorVisualizer : MonoBehaviour
 	}
 	#endregion
 
-	public void SetBlueprintPlacementVisuals(BlueprintData blueprintData,
+	public void SetBlueprintPreviewVisuals(BlueprintData blueprintData,
 		Material[] materials,
 		Quaternion localRotation = default)
 	{
 		ClearBlueprintPlacementVisuals();
 		m_cursorObject.SetActive(false);
 
-		if (blueprintData == null || blueprintData.PlacementMesh == null)
+		if (blueprintData == null || 
+			blueprintData.PlacementMesh == null)
 			return;
 
 		Mesh blueprintMesh = blueprintData.PlacementMesh;
@@ -157,8 +157,8 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		m_blueprintVisualsObject.SetActive(true);
 	}
 
-	public void SetMultiPointBlueprintPreviewVisuals(BlueprintData blueprintData, 
-		List<Vector3> confirmedPoints, 
+	public void SetLinkedBlueprintPreviewVisuals(BlueprintData blueprintData, 
+		Vector3 startPosition,
 		Vector3 cursorPosition, 
 		Material[] previewMaterials)
 	{
@@ -166,57 +166,28 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		m_cursorObject.SetActive(false);
 
 		if (blueprintData == null ||
-			blueprintData.PlacementMesh == null ||
-			confirmedPoints.Count == 0)
+			blueprintData.PlacementMesh == null)
 			return;
 
-		float spacing = blueprintData.MultiPointSpacing;
+		float spacing = blueprintData.SegmentSpacing;
 		Mesh blueprintMesh = blueprintData.PlacementMesh;
 		m_blueprintVisualsObject.SetActive(true);
 
 		// Draw confirmed segments using blueprint material
-		for (int i = 0; i < confirmedPoints.Count - 1; i++)
-		{
-			bool isFirstLink = (i == 0);
-			bool isLastConfirmedLink = (i == confirmedPoints.Count - 2);
-
-			DrawBlueprintLink(blueprintData,
-				confirmedPoints[i],
-				confirmedPoints[i + 1],
-				spacing,
-				blueprintMesh,
-				m_blueprintMaterial,
-				isFirstLink,
-				isLastConfirmedLink
-			);
-		}
-
-		// Draw the moving segment cursor using validation materials
-		if (confirmedPoints.Count > 0)
-		{
-			Vector3 lastConfirmed = confirmedPoints[confirmedPoints.Count - 1];
-			DrawBlueprintLink(blueprintData,
-				lastConfirmed,
+		DrawBlueprintLink(blueprintData,
+				startPosition,
 				cursorPosition,
 				spacing,
 				blueprintMesh,
-				previewMaterials,
-				false,
-				false
-			);
-		}
+				previewMaterials);
 	}
 
-	// This needs optimizng and is doing the same job as the construction controller but each frame.
-	// Probably could just not recalculate portions of confirmed segments.
 	private void DrawBlueprintLink(BlueprintData blueprintData,
 		Vector3 start,
 		Vector3 end,
 		float spacing,
 		Mesh blueprintMesh,
-		Material[] materials,
-		bool isFirstLink,
-		bool isConfirmedLink)
+		Material[] materials)
 	{
 		Vector3 direction = end - start;
 		float totalDistance = direction.magnitude;
@@ -230,7 +201,7 @@ public class PlayerCursorVisualizer : MonoBehaviour
 		for (int i = 0; i <= segmentCount; i++)
 		{
 			// Skip the first segment of the first link since it overlaps with the blueprint
-			if (isFirstLink && i == 0)
+			if (i == 0)
 				continue;
 
 			Vector3 spawnPosition = start + (direction * (i * spacing));
@@ -247,22 +218,6 @@ public class PlayerCursorVisualizer : MonoBehaviour
 			renderer.sharedMaterials = materials;
 
 			m_activePreviewInstances.Add(segmentObject);
-
-			// Move the camera only to the very last segment object of the last confirmed link
-			if (isConfirmedLink && i == segmentCount)
-			{
-				if (m_playerCamera != null)
-				{
-					m_playerCamera.ClearCameraTargets();
-					m_playerCamera.AddCameraTarget(segmentObject.transform);
-					m_playerCamera.AddCameraTarget(transform);
-				}
-
-				if(m_playerWorldControllerManager != null)
-				{
-					m_playerWorldControllerManager.SetCursorAnchor(segmentObject.transform);
-				}
-			}
 		}
 	}
 
