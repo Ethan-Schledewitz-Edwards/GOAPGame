@@ -22,6 +22,7 @@ MonoBehaviour:
   <MaxPlacementAngle>k__BackingField: 30
   <IsLinkBlueprint>k__BackingField: 1
   <SegmentSpacing>k__BackingField: 0.5
+  <SegmentResourceType>k__BackingField: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
   <ResourceCostPerSegment>k__BackingField: 0.25
   <BlueprintPrefab>k__BackingField: {fileID: 2660728958185705178, guid: 8605fa5ae09d647448972e5756ceb95f, type: 3}
   <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 9147261133234705029, guid: 98eb1c03261f5b1438a65746a8b7acf7, type: 3}

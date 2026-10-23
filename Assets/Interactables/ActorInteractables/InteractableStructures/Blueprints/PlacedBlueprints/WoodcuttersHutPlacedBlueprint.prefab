@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1767986231468006461, guid: c51a3dc80ebf6624aa05aa12e9cd2853, type: 3}
+    - target: {fileID: 2123883129720176227, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+      propertyPath: m_resourceTrackingPosition
+      value: 
+      objectReference: {fileID: 7018657428998534932}
     - target: {fileID: 3017703126850601998, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
       propertyPath: m_Size.x
       value: 2.7
@@ -118,3 +122,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+--- !u!4 &7018657428998534932 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1301754691358669812, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+  m_PrefabInstance: {fileID: 8320265348338978016}
+  m_PrefabAsset: {fileID: 0}

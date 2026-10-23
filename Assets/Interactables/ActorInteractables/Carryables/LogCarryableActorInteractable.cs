@@ -28,8 +28,8 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 	public Transform Transform => transform;
 
 	// IDuplicatableResource properties
-	public NoddEnvelope[] NoddEnvelopes => m_noddEnvelopes;
-	[SerializeField] private NoddEnvelope[] m_noddEnvelopes;
+	public NoddDuplicationData[] NoddDuplicationData => m_noddEnvelopes;
+	[SerializeField] private NoddDuplicationData[] m_noddEnvelopes;
 
 	[Header("Carry Settings")]
 	[SerializeField] private StructureTag m_duplicatinatorTag;

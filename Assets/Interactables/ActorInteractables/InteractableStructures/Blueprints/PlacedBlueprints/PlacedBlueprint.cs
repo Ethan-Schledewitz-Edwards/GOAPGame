@@ -18,8 +18,7 @@ namespace Interaction.ActorInteractables.Structures
 
 		[Header("Settings & Visuals")]
 		[SerializeField] private Material m_blueprintMaterial;
-		[SerializeField] private MeshFilter m_meshFilter;
-		[SerializeField] private MeshRenderer m_meshRenderer;
+		[SerializeField] private Transform m_resourceTrackingPosition;
 
 		[Header("Components")]
 		private BlueprintCancelation m_cancelBlueprint;
@@ -75,8 +74,35 @@ namespace Interaction.ActorInteractables.Structures
 			}
 			else // Calculate the resource cost per segment
 			{
+				if(m_blueprintData.SegmentResourceType == null)
+				{
+					Debug.LogWarning("Tried to place a blueprint that is marked as a linked but no " +
+						"resource type reference was defined in the blueprint data.", m_blueprintData);
+
+					return;
+				}
+
 				GenerateLink(out int segmentCount);
-				int resourceCost = segmentCount * (int)(m_blueprintData.ResourceCostPerSegment);
+				if (segmentCount == 0)
+					Destroy(gameObject);
+
+				int resourceCost = Mathf.RoundToInt(segmentCount * m_blueprintData.ResourceCostPerSegment);
+
+				NoddQuantity noddQuantity = new NoddQuantity();
+				noddQuantity.AmountRequired = resourceCost;
+				noddQuantity.TypeRequired = m_blueprintData.SegmentResourceType;
+
+				requiredNodds = new NoddQuantity[1];
+				requiredNodds[0] = noddQuantity;
+
+				// Move the resource tracker UI to the middle of the link
+				// The middle is calculated when generating the link.
+				if (m_resourceTrackingPosition != null)
+				{
+					Vector3 linkMiddlePosition = (m_linkStartPosition + m_linkEndPosition) / 2;
+					Vector3 localResourceTrackingPosition = linkMiddlePosition + (Vector3.up * 1.5f);
+					m_resourceTrackingPosition.position = localResourceTrackingPosition;
+				}
 			}
 
 			if (requiredNodds != null) 
@@ -162,11 +188,14 @@ namespace Interaction.ActorInteractables.Structures
 
 			Vector3 direction = m_linkEndPosition - m_linkStartPosition;
 			float totalDistance = direction.magnitude;
+
 			direction.Normalize();
 
 			Quaternion pathRotation = Quaternion.LookRotation(direction, Vector3.up);
 
 			segmentCount = Mathf.FloorToInt(totalDistance / spacing);
+
+			List<MeshFilter> meshFilters = new List<MeshFilter>();
 			for (int j = 0; j <= segmentCount; j++)
 			{
 				if (j == 0)
@@ -180,6 +209,8 @@ namespace Interaction.ActorInteractables.Structures
 				segmentObject.transform.rotation = pathRotation;
 
 				MeshFilter filter = segmentObject.AddComponent<MeshFilter>();
+				meshFilters.Add(filter);
+
 				MeshRenderer renderer = segmentObject.AddComponent<MeshRenderer>();
 
 				filter.mesh = blueprintMesh;

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Interaction.ActorInteractables.Structures
 {
 	[Serializable]
-	public struct NoddEnvelope
+	public struct NoddDuplicationData
 	{
 		public int NoddsProduced;
 		public int DuplicationDuration;
@@ -13,6 +13,6 @@ namespace Interaction.ActorInteractables.Structures
 
 	public interface IDuplicatableResource
 	{
-		public NoddEnvelope[] NoddEnvelopes { get; }
+		public NoddDuplicationData[] NoddDuplicationData { get; }
 	}
 }

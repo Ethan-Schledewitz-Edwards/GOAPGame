@@ -100,13 +100,13 @@ namespace Interaction.Actor.InteractableStructures
 
 				Destroy(interactor.Transform.gameObject);
 
-				m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(duplicatableResource.NoddEnvelopes));
+				m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(duplicatableResource.NoddDuplicationData));
 			}
 
 			return true;
 		}
 
-		private IEnumerator BeginNoddDuplication(NoddEnvelope[] noddTypes)
+		private IEnumerator BeginNoddDuplication(NoddDuplicationData[] noddTypes)
 		{
 			m_isDuplicatingNodds = true;
 			float duplicationTimer = 0;
@@ -115,7 +115,7 @@ namespace Interaction.Actor.InteractableStructures
 
 			for(int i = 0; i < noddTypes.Length; i++)
 			{
-				NoddEnvelope envelope = noddTypes[i];
+				NoddDuplicationData envelope = noddTypes[i];
 				int noddsProduced = envelope.NoddsProduced;
 				int spawnDuration = envelope.DuplicationDuration;
 

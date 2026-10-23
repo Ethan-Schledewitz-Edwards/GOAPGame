@@ -22,8 +22,11 @@ namespace Construction
 		[field: SerializeField] public Mesh PlacementMesh { get; private set; }
 		[field: SerializeField] public float PlacementClearenceRadius { get; private set; } = 0.2f;
 		[field: SerializeField] public float MaxPlacementAngle { get; private set; } = 15f;
+
+		[Header("Link Properties")]
 		[field: SerializeField] public bool IsLinkBlueprint { get; private set; } // Blueprints that are created between two points
 		[field: SerializeField] public float SegmentSpacing { get; private set; } = 0.5f;
+		[field: SerializeField] public ResourceTypeTag SegmentResourceType { get; private set; }
 		[field: SerializeField] public float ResourceCostPerSegment { get; private set; } = 0.25f;
 
 		[Header("Blueprint Prefabs")]
