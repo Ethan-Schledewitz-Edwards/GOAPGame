@@ -1,5 +1,52 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4913462723928877063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4778765849817978083}
+  - component: {fileID: 7700192150986975738}
+  m_Layer: 7
+  m_Name: InteractionPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4778765849817978083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4913462723928877063}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2085563524617704763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7700192150986975738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4913462723928877063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e005599ac46a4a49881d0b7bdcefd78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.Core::Interaction.Core.InteractionPoint
+  <MaxInteractors>k__BackingField: 0
+  <FormationRadius>k__BackingField: 0
+  <InteractionDistance>k__BackingField: 0.3
 --- !u!1001 &2830539956753682364
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103,12 +150,53 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 6915830432947262248, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
     - {fileID: 7574354641766003157, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+    - {fileID: 2123883129720176227, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4303596133692988039, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 4778765849817978083}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 262572155233583462, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 8087270321595818681}
   m_SourcePrefab: {fileID: 100100000, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+--- !u!4 &2085563524617704763 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4303596133692988039, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+  m_PrefabInstance: {fileID: 2830539956753682364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2660728958185705178 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 262572155233583462, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+  m_PrefabInstance: {fileID: 2830539956753682364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8087270321595818681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2660728958185705178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437c4b93c76a500488a73d62857557a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Interaction.InteractableStructures.Blueprints::Interaction.ActorInteractables.Structures.PlacedLinkBlueprint
+  m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
+  m_resourceTypeTag: {fileID: 0}
+  m_structureTypeTag: {fileID: 11400000, guid: 791685b48007b274189f24675e696565, type: 2}
+  m_blueprintMaterial: {fileID: 2100000, guid: e07a56da5edc28f4d81d056a4f0d8611, type: 2}
+  m_interactionPoint1: {fileID: 7335371019001313476}
+  m_interactionPoint2: {fileID: 4778765849817978083}
+  m_resourceTrackingPosition: {fileID: 3844064065802204232}
 --- !u!4 &3844064065802204232 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1301754691358669812, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
+  m_PrefabInstance: {fileID: 2830539956753682364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7335371019001313476 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4793061507273258872, guid: 8cf5d05eeeb8eef4c971e9cb89422e1e, type: 3}
   m_PrefabInstance: {fileID: 2830539956753682364}
   m_PrefabAsset: {fileID: 0}

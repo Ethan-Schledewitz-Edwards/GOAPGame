@@ -17,7 +17,7 @@ namespace Interaction.ActorInteractables.Structures
 		[Header("Structure Settings")]
 		[SerializeField] private StructureTag m_structureTypeTag;
 
-		protected NoddDepositComponent m_noddRequestComponent;
+		protected NoddDepositComponent m_noddDepositComponent;
 
 		protected int m_settlementID;
 		protected int m_settlementStructureID;
@@ -35,14 +35,14 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			base.Awake();
 
-			m_noddRequestComponent = GetComponent<NoddDepositComponent>();
-			m_noddRequestComponent.ResourcesAchieved += HandleBlueprintCompleted;
+			m_noddDepositComponent = GetComponent<NoddDepositComponent>();
+			m_noddDepositComponent.ResourcesAchieved += HandleBlueprintCompleted;
 		}
 
 		private void OnDestroy()
 		{
-			if (m_noddRequestComponent != null)
-				m_noddRequestComponent.ResourcesAchieved -= HandleBlueprintCompleted;
+			if (m_noddDepositComponent != null)
+				m_noddDepositComponent.ResourcesAchieved -= HandleBlueprintCompleted;
 		}
 
 		public override bool TryInteract(
@@ -54,7 +54,7 @@ namespace Interaction.ActorInteractables.Structures
 			if (!base.TryInteract(interactor, actorPosition, reservedPosition))
 				return false;
 
-			if (m_noddRequestComponent == null)
+			if (m_noddDepositComponent == null)
 			{
 				base.StopInteract(interactor, reservedPosition);
 				return false;

@@ -30,7 +30,7 @@ namespace Interaction.ActorInteractables.Structures
 		{
 			base.Awake();
 
-			m_noddRequestComponent.SetRequiredResources(m_requiredResources);
+			m_noddDepositComponent.SetRequiredResources(m_requiredResources);
 
 			// Update runtime object tags
 			foreach (NoddQuantity i in m_requiredResources)
