@@ -21,6 +21,7 @@ namespace Interaction.ActorInteractables.Structures
 		[SerializeField] private Transform m_interactionPoint1;
 		[SerializeField] private Transform m_interactionPoint2;
 		[SerializeField] private Transform m_resourceTrackingPosition;
+		[SerializeField] private Transform m_destructionProgressPosition;
 
 		[Header("Components")]
 		private BlueprintCancelation m_cancelBlueprint;
@@ -77,6 +78,22 @@ namespace Interaction.ActorInteractables.Structures
 			if (segmentCount == 0)
 				Destroy(gameObject);
 
+			if (m_boxCollider != null)
+			{
+				float spacing = m_blueprintData.SegmentSpacing;
+
+				Vector3 finalSegmentPos = m_linkStartPosition + (transform.forward * (segmentCount * spacing));
+
+				// Calculate center and size in local space
+				Vector3 worldCenter = (m_linkStartPosition + finalSegmentPos) * 0.5f;
+				m_boxCollider.center = transform.InverseTransformPoint(worldCenter);
+
+				// Scale the box collider
+				Vector3 colliderSize = m_boxCollider.size;
+				colliderSize.z = segmentCount * spacing;
+				m_boxCollider.size = colliderSize;
+			}
+
 			int resourceCost = Mathf.RoundToInt(segmentCount * m_blueprintData.ResourceCostPerSegment);
 
 			NoddQuantity noddQuantity = new NoddQuantity();
@@ -86,13 +103,21 @@ namespace Interaction.ActorInteractables.Structures
 			NoddQuantity[] requiredNodds = new NoddQuantity[1];
 			requiredNodds[0] = noddQuantity;
 
-			// Move the resource tracker UI to the middle of the link
-			// The middle is calculated when generating the link.
+
+			Vector3 linkMiddlePosition = (m_linkStartPosition + m_linkEndPosition) * 0.5f;
+
+			// Move the resource tracker to the center of the link
 			if (m_resourceTrackingPosition != null)
 			{
-				Vector3 linkMiddlePosition = (m_linkStartPosition + m_linkEndPosition) * 0.5f;
-				Vector3 localResourceTrackingPosition = linkMiddlePosition + (Vector3.up * 1.5f);
+				Vector3 localResourceTrackingPosition = linkMiddlePosition + (Vector3.up * -1f);
 				m_resourceTrackingPosition.position = localResourceTrackingPosition;
+			}
+
+			// Move the destruction progress tracker to the center of the link
+			if (m_destructionProgressPosition != null)
+			{
+				Vector3 localResourceTrackingPosition = linkMiddlePosition + (Vector3.up * 2f);
+				m_destructionProgressPosition.position = localResourceTrackingPosition;
 			}
 
 			// Move the interaction positions to the link's opposite ends
