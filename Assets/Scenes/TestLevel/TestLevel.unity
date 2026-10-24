@@ -5279,6 +5279,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1121418079944000196, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
+      propertyPath: m_maxZoomOut
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3025054037896614222, guid: bb8c264ec6e5dc241910a8950231e4ac, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

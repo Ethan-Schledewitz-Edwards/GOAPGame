@@ -105,8 +105,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8438998940054071138}
   - component: {fileID: 6661631668660036274}
-  - component: {fileID: 3295931232239793180}
   - component: {fileID: 8577459977837105862}
+  - component: {fileID: 3093107527235525038}
+  - component: {fileID: 2357541184861496441}
   m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -180,14 +181,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3295931232239793180
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3107145545663617611}
-  m_Enabled: 1
 --- !u!114 &8577459977837105862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +225,46 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &3093107527235525038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3107145545663617611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f0e7e210b739174489a7e48730f9867, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AK.Wwise.Unity.MonoBehaviour::AkGameObj
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 0
+  isStaticObject: 0
+  usePositionOffsetData: 0
+  m_positionOffsetData:
+    KeepMe: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+  scalingFactor: 1
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1
+--- !u!114 &2357541184861496441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3107145545663617611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabeb9c9dc3364f449b80d0469e942b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AK.Wwise.Unity.MonoBehaviour::AkAudioListener
+  isDefaultListener: 1
+  bOverrideScalingFactor: 0
+  scalingFactor: -1
+  listenerId: 0
 --- !u!1 &3433225659664458421
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,7 +492,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Player::PlayerCursorVisualizer
   m_cursorObject: {fileID: 3433225659664458421}
-  m_playerCamera: {fileID: 1121418079944000196}
   m_playerWorldControllerManager: {fileID: 1613715350608868700}
   m_blueprintVisualsObject: {fileID: 4551394778818187514}
   m_meshRenderer: {fileID: 6642912772905455022}
@@ -828,7 +860,7 @@ MonoBehaviour:
   m_defaultOffset: {x: 0, y: 1, z: 12}
   m_defaultRotation: {x: 0.42261827, y: 0, z: 0, w: 0.90630776}
   m_zoomPerExtraTarget: 2
-  m_maxZoomOut: 3
+  m_maxZoomOut: 7
   m_defaultCameraTarget: {fileID: 6207448997049218469}
   m_cameraTargets:
   - {fileID: 6207448997049218469}

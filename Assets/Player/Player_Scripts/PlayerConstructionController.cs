@@ -346,9 +346,7 @@ namespace Player.Core
 					m_linkBlueprint
 				);
 
-				// Start another link
-				m_linkBlueprint = null;
-				CreateLinkBlueprint(nearestSettlementID, position, rotation);
+				ClearBlueprintToPlace();
 			}
 		}
 
