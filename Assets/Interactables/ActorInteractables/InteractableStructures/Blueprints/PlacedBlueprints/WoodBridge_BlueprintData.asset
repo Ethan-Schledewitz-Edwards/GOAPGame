@@ -18,7 +18,7 @@ MonoBehaviour:
   - TypeRequired: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
     AmountRequired: 3
   <PlacementMesh>k__BackingField: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
-  <PlacementClearenceRadius>k__BackingField: 0.2
+  <PlacementClearenceRadius>k__BackingField: 0.025
   <MaxPlacementAngle>k__BackingField: 30
   <IsLinkBlueprint>k__BackingField: 1
   <SegmentSpacing>k__BackingField: 0.5

@@ -23,7 +23,7 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITag
 	private InteractionPoint[] m_interactionPoints;
 
 	// ITaggableProperties
-	[SerializeField] private ResourceTypeTag m_resourceTypeTag;
+	[SerializeField] private ResourceTypeTag m_permittedNoddTypeTag;
 
 	private HashSet<ResourceTypeTag> m_runtimeTagSet;
 	public HashSet<ResourceTypeTag> RuntimeTagSet
@@ -34,8 +34,8 @@ public abstract class ActorInteractableBase : MonoBehaviour, IInteractable, ITag
 			{
 				m_runtimeTagSet = new HashSet<ResourceTypeTag>();
 
-				if (m_resourceTypeTag != null)
-					m_runtimeTagSet.Add(m_resourceTypeTag);
+				if (m_permittedNoddTypeTag != null)
+					m_runtimeTagSet.Add(m_permittedNoddTypeTag);
 			}
 			return m_runtimeTagSet;
 		}

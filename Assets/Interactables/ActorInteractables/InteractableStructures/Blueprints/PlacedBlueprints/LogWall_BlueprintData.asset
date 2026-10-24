@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5770002f4038302488f130a2b3ae3a52, type: 3}
+  m_Name: LogWall_BlueprintData
+  m_EditorClassIdentifier: Construction::Construction.BlueprintData
+  <DisplayName>k__BackingField: Log Wall
+  <Description>k__BackingField: 
+  <RequiredNodds>k__BackingField:
+  - TypeRequired: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
+    AmountRequired: 3
+  <PlacementMesh>k__BackingField: {fileID: 4008646795387166497, guid: d26c5a2ea57d0594d932fc08d79f1e5b, type: 3}
+  <PlacementClearenceRadius>k__BackingField: 0.025
+  <MaxPlacementAngle>k__BackingField: 30
+  <IsLinkBlueprint>k__BackingField: 1
+  <SegmentSpacing>k__BackingField: 1
+  <SegmentResourceType>k__BackingField: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
+  <ResourceCostPerSegment>k__BackingField: 0.5
+  <BlueprintPrefab>k__BackingField: {fileID: 6081017701270469602, guid: 569bf71009e860f4e85609b9ab92279c, type: 3}
+  <PrefabSpawnedOnCompletion>k__BackingField: {fileID: 9147261133234705029, guid: 98eb1c03261f5b1438a65746a8b7acf7, type: 3}
