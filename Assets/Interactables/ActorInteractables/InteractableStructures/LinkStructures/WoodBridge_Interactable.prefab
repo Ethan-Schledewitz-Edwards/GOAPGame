@@ -133,10 +133,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 9147261133234705029}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca57ff267ecd3bd42a0924ae94f678a8, type: 3}
+  m_Script: {fileID: 11500000, guid: b1747ab0376fe7646b5c20ead08d8841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Interaction.ActorInteractables.Structures::Interaction.ActorInteractables.Structures.MultiPointStructure
-  m_segmentObject: {fileID: 2639530155937460752}
+  m_segmentMaterial: {fileID: 2100000, guid: 63366e045834e4f40988538b9c55231e, type: 2}
+  m_segmentMesh: {fileID: 8775968086950232725, guid: 7801869378f2586408220ff69c556c08, type: 3}
+  m_segmentSpacing: 0.5
+  m_navMeshMode: 1
 --- !u!65 &6103581957917923309
 BoxCollider:
   m_ObjectHideFlags: 0

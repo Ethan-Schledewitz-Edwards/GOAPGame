@@ -159,6 +159,22 @@ namespace Interaction.ActorInteractables.Structures
 				GameObject prefab = m_blueprintData.PrefabSpawnedOnCompletion;
 				GameObject spawnedStructureObj = Instantiate(prefab, transform.position, transform.rotation);
 
+				// Initialize the segment generator on the built structure
+				if (spawnedStructureObj.TryGetComponent(out LinkStructureSegmentGenerator segmentGenerator))
+				{
+					segmentGenerator.SetLinkStartPosition(m_linkStartPosition);
+					segmentGenerator.SetLinkEndPosition(m_linkEndPosition);
+
+					segmentGenerator.Initialize(
+						m_linkStartPosition,
+						m_linkEndPosition,
+						m_blueprintData.PlacementMesh,
+						m_blueprintData.SegmentSpacing
+					);
+
+					segmentGenerator.GenerateLink();
+				}
+
 				if (spawnedStructureObj.TryGetComponent(out IStructure builtStructure))
 				{
 					SettlementManager.s_WorldSettlements[SettlementID].AddStructure(builtStructure);
