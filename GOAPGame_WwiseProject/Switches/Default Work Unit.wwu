@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{12E7552E-8F36-44D5-9FBD-E7886C15A959}" SchemaVersion="133">
 	<Switches>
-		<WorkUnit Name="Default Work Unit" ID="{12E7552E-8F36-44D5-9FBD-E7886C15A959}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{12E7552E-8F36-44D5-9FBD-E7886C15A959}" PersistMode="Standalone">
+			<ChildrenList>
+				<SwitchGroup Name="TEST_NearEnemy" ID="{D4F0EC5B-9853-4B9A-834F-B72F84682655}">
+					<ChildrenList>
+						<Switch Name="True" ID="{C519EE62-C94B-4F31-BEF7-D8F752F9DC97}"/>
+						<Switch Name="False" ID="{38AF48FB-9370-494F-90E4-1793C45D8235}"/>
+					</ChildrenList>
+				</SwitchGroup>
+				<SwitchGroup Name="TEST_NearTreasure" ID="{EC20C5A6-8C46-4A45-AD51-BE9681C00B9F}">
+					<ChildrenList>
+						<Switch Name="True" ID="{C135EB1A-91D7-4E81-9071-A1239A89B003}"/>
+						<Switch Name="False" ID="{D7213CE7-6D90-4DAD-9C5C-60569C06B12A}"/>
+					</ChildrenList>
+				</SwitchGroup>
+				<SwitchGroup Name="TEST_FightingEnemy" ID="{F3729029-F120-4A6E-A485-2C6F4B1EBB0C}">
+					<ChildrenList>
+						<Switch Name="True" ID="{B97FD553-6A29-48F2-ACB1-D4109CC8EB18}"/>
+						<Switch Name="False" ID="{46FAB47D-B3EF-49F1-A994-2FA4EF2C5C67}"/>
+					</ChildrenList>
+				</SwitchGroup>
+				<SwitchGroup Name="TEST_CarryingTreasure" ID="{BDA4E57D-3830-4EA5-9F85-4C32B1AB0939}">
+					<ChildrenList>
+						<Switch Name="True" ID="{4B660478-3644-41E9-9D35-51C622196DC9}"/>
+						<Switch Name="False" ID="{3D5CD3E2-760D-4903-B7AA-1F804906EA5A}"/>
+					</ChildrenList>
+				</SwitchGroup>
+			</ChildrenList>
+		</WorkUnit>
 	</Switches>
 </WwiseDocument>

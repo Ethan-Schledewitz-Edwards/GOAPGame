@@ -1,0 +1,3 @@
+Event	ID	Name			Wwise Object Path	Notes
+	1657409244	Pause_mus_test			\WU_Music\mus_test\Pause_mus_test	
+

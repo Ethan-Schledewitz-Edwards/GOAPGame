@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{30A4D71B-9209-4927-BE94-4B9A54F3DB34}" SchemaVersion="133">
+	<Events>
+		<WorkUnit Name="WU_Music" ID="{30A4D71B-9209-4927-BE94-4B9A54F3DB34}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="mus_test" ID="{80611554-AF17-4C17-8DD0-AB80928D3731}" ShortID="934265646">
+					<ChildrenList>
+						<Event Name="Play_mus_test" ID="{31C36786-CE12-479C-A207-E7D824D5B7E6}">
+							<PropertyList>
+								<Property Name="InstanceLimit" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{BDD9F503-3521-448D-A161-9B0A35932AD4}" ShortID="804783831">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Stop_mus_test" ID="{A6E7B718-D9AB-4C7B-8727-F17F1B224734}">
+							<PropertyList>
+								<Property Name="InstanceLimit" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{6696E34A-4EF7-4612-B170-EC4F54669A5F}" ShortID="115324305">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Resume_mus_test_01" ID="{B5244B66-1DF1-4092-B5ED-03CE3F6415FB}">
+							<PropertyList>
+								<Property Name="InstanceLimit" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{5CF489B2-BF2F-4149-ADBE-D345E99324F4}" ShortID="1032697240">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="9"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Pause_mus_test" ID="{36E4480E-6704-4CC8-8A79-EE97E97E48C4}">
+							<PropertyList>
+								<Property Name="InstanceLimit" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{B08E1AD8-0BCC-4394-B5E8-E9CF9687FEB8}" ShortID="128414306">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="7"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="mus_test" ID="{BB75EDC4-D4B7-4A10-8B74-A086D3A0F891}" WorkUnitID="{EB4BE9EA-48D5-42B6-862C-6EB223121178}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="MUS_BulblaxKingdom" ID="{25DBAD5E-DF1C-48B6-9B32-A110A74D1F68}" ShortID="389365425">
+					<ChildrenList>
+						<Event Name="MUS_BulblaxKingdom_Play" ID="{A72E2791-A5E1-4671-8C4E-31BCBA0F362A}">
+							<ChildrenList>
+								<Action Name="" ID="{575967F6-1C5F-4E24-A2E5-83558F1EB45D}" ShortID="875333288">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="MUS_BulblaxKingdom" ID="{694DD898-6CD0-47D3-9EE9-A477DB49DCC4}" WorkUnitID="{7E885951-4843-4DC1-99B8-EAE8FB97F736}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="MUS_BulblaxKingdom_Pause" ID="{B425F7E5-5373-48F9-B5AE-BF3DE1241F43}">
+							<ChildrenList>
+								<Action Name="" ID="{BBA6FF15-77B1-4D80-86FA-2EAC7DF2C7E5}" ShortID="617320899">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="7"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="MUS_BulblaxKingdom" ID="{694DD898-6CD0-47D3-9EE9-A477DB49DCC4}" WorkUnitID="{7E885951-4843-4DC1-99B8-EAE8FB97F736}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="MUS_BulblaxKingdom_Stop" ID="{C401329C-7B5E-4D64-A627-562D8176DB7C}">
+							<ChildrenList>
+								<Action Name="" ID="{E328BB17-A5DF-4A46-A359-C4019FEC5F6F}" ShortID="211818341">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="MUS_BulblaxKingdom" ID="{694DD898-6CD0-47D3-9EE9-A477DB49DCC4}" WorkUnitID="{7E885951-4843-4DC1-99B8-EAE8FB97F736}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="MUS_BulblaxKingdom_Resume" ID="{AFC8A088-2C03-44B6-B1AC-0E7AD66A4F19}">
+							<ChildrenList>
+								<Action Name="" ID="{FDD70636-7D24-4E3A-9D71-03ADDE683DA3}" ShortID="1033020927">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="9"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="MUS_BulblaxKingdom" ID="{694DD898-6CD0-47D3-9EE9-A477DB49DCC4}" WorkUnitID="{7E885951-4843-4DC1-99B8-EAE8FB97F736}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -1,0 +1,3 @@
+Event	ID	Name			Wwise Object Path	Notes
+	2342678189	MUS_BulblaxKingdom_Stop			\WU_Music\MUS_BulblaxKingdom\MUS_BulblaxKingdom_Stop	
+

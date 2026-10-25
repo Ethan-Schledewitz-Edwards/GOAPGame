@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "1657409244",
+    "Type": "Event",
+    "GUID": "{A51842D7-5D7A-488D-B0DE-68FD86D648E7}",
+    "Language": "SFX",
+    "Hash": "{842BFAE4-9103-49F4-C3D5-3AF7D7383DE5}",
+    "ObjectPath": "Pause_mus_test",
+    "ShortName": "Pause_mus_test",
+    "Path": "Event/Pause_mus_test.bnk",
+    "Events": [
+     {
+      "Id": "1657409244",
+      "Name": "Pause_mus_test",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Pause_mus_test",
+      "GUID": "{A51842D7-5D7A-488D-B0DE-68FD86D648E7}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{9690285E-4B06-7155-C12F-F444CEDE060F}"
+ }
+}

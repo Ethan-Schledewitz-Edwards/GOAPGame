@@ -1,9 +1,6 @@
 Event	ID	Name			Wwise Object Path	Notes
-	477856308	Stop_mus_test			\Default Work Unit\Stop_mus_test	
-	1657409244	Pause_mus_test			\Default Work Unit\Pause_mus_test	
-	2767191669	Play_snd_hit			\Default Work Unit\Play_snd_hit	
-	3864685870	Play_snd_attack			\Default Work Unit\Play_snd_attack	
-	3968878682	Play_mus_test			\Default Work Unit\Play_mus_test	
+	61191612	Play_snd_attack_01			\WU_Sound\Play_snd_attack_01	
+	2767191669	Play_snd_hit			\WU_Sound\Play_snd_hit	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	99579301	001a	.cache\04\{041F02C1-FC60-3598-8A9D-3008D8049AF3}.wem		\Containers\Default Work Unit\snd_attack\001a		56094
@@ -19,7 +16,6 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	670168286	001f	.cache\64\{641E57D2-CC9F-E3D6-DE5E-61A9D0D18212}.wem		\Containers\Default Work Unit\snd_attack\001f		32020
 	678994193	009c	.cache\48\{48379B26-E5A7-29B6-D239-7D23639AC685}.wem		\Containers\Default Work Unit\snd_hit\009c		17702
 	738963954	009e	.cache\35\{351442C4-794C-905F-3AD9-6DDEEA1B5279}.wem		\Containers\Default Work Unit\snd_hit\009e		36298
-	743005828	mus_test	.cache\9B\{9B2CB69E-8DA8-2C97-3B87-F96EE3487883}.wem		\Containers\Default Work Unit\mus_test\loop\mus_test		40939616
 	937814878	008a	.cache\9F\{9F813CA4-EBC6-766F-9C8E-088DF7014B8F}.wem		\Containers\Default Work Unit\snd_hit\008a		26770
 	948711598	001e	.cache\76\{76E1705B-AE7D-D2CC-4564-1E8195F17C64}.wem		\Containers\Default Work Unit\snd_attack\001e		72444
 	992968903	008e	.cache\95\{956D20B1-D584-9497-5BF1-A88584EC78E1}.wem		\Containers\Default Work Unit\snd_hit\008e		18794

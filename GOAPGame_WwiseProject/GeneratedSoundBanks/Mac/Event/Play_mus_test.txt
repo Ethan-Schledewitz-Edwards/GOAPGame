@@ -1,0 +1,3 @@
+Event	ID	Name			Wwise Object Path	Notes
+	3968878682	Play_mus_test			\WU_Music\mus_test\Play_mus_test	
+

@@ -1,0 +1,144 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3405416721",
+    "Type": "Event",
+    "GUID": "{5340F004-129D-4E1A-B25B-502605EF11E2}",
+    "Language": "SFX",
+    "Hash": "{4D36C958-0818-0408-AED0-3749928AF34C}",
+    "ObjectPath": "Play_snd_hit_01",
+    "ShortName": "Play_snd_hit_01",
+    "Path": "Event/Play_snd_hit_01.bnk",
+    "Media": [
+     {
+      "Id": "205198790",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Encoded\\008d.wav",
+      "Path": "Media/205198790.wem",
+      "CachePath": "FB/{FB5A374D-74D5-4103-5B72-12BEB137FF6B}.wem"
+     },
+     {
+      "Id": "556374863",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "009a.wav",
+      "Path": "Media/556374863.wem",
+      "CachePath": "12/{12233311-B8EA-A26B-3FD3-27CA65272E88}.wem"
+     },
+     {
+      "Id": "629806711",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Encoded\\008b.wav",
+      "Path": "Media/629806711.wem",
+      "CachePath": "69/{696242E4-C68A-20D9-607F-0F1112D617D2}.wem"
+     },
+     {
+      "Id": "667690629",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Encoded\\008c.wav",
+      "Path": "Media/667690629.wem",
+      "CachePath": "2E/{2EE74727-5B85-6FAF-22A9-6330BCAE0793}.wem"
+     },
+     {
+      "Id": "678994193",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "009c.wav",
+      "Path": "Media/678994193.wem",
+      "CachePath": "48/{48379B26-E5A7-29B6-D239-7D23639AC685}.wem"
+     },
+     {
+      "Id": "738963954",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "009e.wav",
+      "Path": "Media/738963954.wem",
+      "CachePath": "35/{351442C4-794C-905F-3AD9-6DDEEA1B5279}.wem"
+     },
+     {
+      "Id": "937814878",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Encoded\\008a.wav",
+      "Path": "Media/937814878.wem",
+      "CachePath": "9F/{9F813CA4-EBC6-766F-9C8E-088DF7014B8F}.wem"
+     },
+     {
+      "Id": "992968903",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Encoded\\008e.wav",
+      "Path": "Media/992968903.wem",
+      "CachePath": "95/{956D20B1-D584-9497-5BF1-A88584EC78E1}.wem"
+     },
+     {
+      "Id": "1062378458",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "009b.wav",
+      "Path": "Media/1062378458.wem",
+      "CachePath": "CA/{CA26ADB5-BF03-EF07-6C06-C1C225C3575C}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3405416721",
+      "Name": "Play_snd_hit_01",
+      "ObjectPath": "\\Events\\WU_Sound\\Play_snd_hit_01",
+      "GUID": "{5340F004-129D-4E1A-B25B-502605EF11E2}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.35370833",
+      "DurationMax": "0.7542083",
+      "MediaRefs": [
+       {
+        "Id": "205198790"
+       },
+       {
+        "Id": "556374863"
+       },
+       {
+        "Id": "629806711"
+       },
+       {
+        "Id": "667690629"
+       },
+       {
+        "Id": "678994193"
+       },
+       {
+        "Id": "738963954"
+       },
+       {
+        "Id": "937814878"
+       },
+       {
+        "Id": "992968903"
+       },
+       {
+        "Id": "1062378458"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{79EAFFEE-03F3-96B7-ABAE-DB62032FC115}"
+ }
+}

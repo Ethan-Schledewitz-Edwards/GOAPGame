@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "911975317",
+    "Type": "Event",
+    "GUID": "{B425F7E5-5373-48F9-B5AE-BF3DE1241F43}",
+    "Language": "SFX",
+    "Hash": "{F819A4C5-7E6C-B513-74A4-67FBD9FA2F86}",
+    "ObjectPath": "MUS_BulblaxKingdom_Pause",
+    "ShortName": "MUS_BulblaxKingdom_Pause",
+    "Path": "Event/MUS_BulblaxKingdom_Pause.bnk",
+    "Events": [
+     {
+      "Id": "911975317",
+      "Name": "MUS_BulblaxKingdom_Pause",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Pause",
+      "GUID": "{B425F7E5-5373-48F9-B5AE-BF3DE1241F43}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{D1757933-684C-5E61-D0B7-9126E25CE672}"
+ }
+}

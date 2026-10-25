@@ -1,9 +1,9 @@
 Event	ID	Name			Wwise Object Path	Notes
+	61191612	Play_snd_attack_01			\Default Work Unit\Play_snd_attack_01	
+	344547202	Pause_mus_test_01			\Default Work Unit\Pause_mus_test_01	
 	477856308	Stop_mus_test			\Default Work Unit\Stop_mus_test	
-	1657409244	Pause_mus_test			\Default Work Unit\Pause_mus_test	
 	2767191669	Play_snd_hit			\Default Work Unit\Play_snd_hit	
-	3864685870	Play_snd_attack			\Default Work Unit\Play_snd_attack	
-	3968878682	Play_mus_test			\Default Work Unit\Play_mus_test	
+	3764261016	Play_mus_test_01			\Default Work Unit\Play_mus_test_01	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	99579301	001a	.cache\04\{041F02C1-FC60-3598-8A9D-3008D8049AF3}.wem		\Containers\Default Work Unit\snd_attack\001a		56094

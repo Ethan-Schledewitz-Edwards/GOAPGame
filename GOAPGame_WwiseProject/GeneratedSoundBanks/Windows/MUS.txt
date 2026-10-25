@@ -1,0 +1,23 @@
+Event	ID	Name			Wwise Object Path	Notes
+	219023932	MUS_BulblaxKingdom_Resume			\WU_Music\MUS_BulblaxKingdom\MUS_BulblaxKingdom_Resume	
+	477856308	Stop_mus_test			\WU_Music\mus_test\Stop_mus_test	
+	848850988	Set_Switch_False_01			\Default Work Unit\TEST_FightingEnemy\Set_Switch_False_01	
+	848850990	Set_Switch_False_03			\Default Work Unit\TEST_NearTreasure\Set_Switch_False_03	
+	848850991	Set_Switch_False_02			\Default Work Unit\TEST_NearEnemy\Set_Switch_False_02	
+	911975317	MUS_BulblaxKingdom_Pause			\WU_Music\MUS_BulblaxKingdom\MUS_BulblaxKingdom_Pause	
+	1079312265	Set_Switch_True_01			\Default Work Unit\TEST_FightingEnemy\Set_Switch_True_01	
+	1079312266	Set_Switch_True_02			\Default Work Unit\TEST_NearEnemy\Set_Switch_True_02	
+	1079312267	Set_Switch_True_03			\Default Work Unit\TEST_NearTreasure\Set_Switch_True_03	
+	1207107987	Resume_mus_test_01			\WU_Music\mus_test\Resume_mus_test_01	
+	1657409244	Pause_mus_test			\WU_Music\mus_test\Pause_mus_test	
+	2342678189	MUS_BulblaxKingdom_Stop			\WU_Music\MUS_BulblaxKingdom\MUS_BulblaxKingdom_Stop	
+	2992554334	Set_Switch_False			\Default Work Unit\TEST_CarryingTreasure\Set_Switch_False	
+	3180298014	ClearTestValues			\Default Work Unit\ClearTestValues	
+	3752654061	Set_Switch_True			\Default Work Unit\TEST_CarryingTreasure\Set_Switch_True	
+	3878438063	MUS_BulblaxKingdom_Play			\WU_Music\MUS_BulblaxKingdom\MUS_BulblaxKingdom_Play	
+	3968878682	Play_mus_test			\WU_Music\mus_test\Play_mus_test	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	525205869	Bass & Cymbal	.cache\95\{958DAA73-6E5A-DB08-90F5-9E5B48EB951C}.wem		\Containers\WU_Music\MUS_BulblaxKingdom\call_01\Bass & Cymbal		24581664
+	743005828	mus_test	.cache\9B\{9B2CB69E-8DA8-2C97-3B87-F96EE3487883}.wem		\Containers\Default Work Unit\mus_test\loop\mus_test		40939616
+

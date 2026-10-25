@@ -13,13 +13,8 @@ public class TestPostWwiseEvent : MonoBehaviour
     {
         if (Keyboard.current.digit1Key.wasPressedThisFrame) _atkEvent.Post(gameObject);
         if (Keyboard.current.digit2Key.wasPressedThisFrame) _hitEvent.Post(gameObject);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame)
-        {
-            _musPlayEvent.Post(gameObject);
-        }
-        if (Keyboard.current.digit4Key.wasPressedThisFrame)
-        {
-            _musPauseEvent.Post(gameObject);
-        }
+        if (Keyboard.current.digit3Key.wasPressedThisFrame) _musPlayEvent.Post(gameObject);
+        if (Keyboard.current.digit4Key.wasPressedThisFrame) _musResumeEvent.Post(gameObject);
+        if (Keyboard.current.digit5Key.wasPressedThisFrame) _musPauseEvent.Post(gameObject);
     }
 }

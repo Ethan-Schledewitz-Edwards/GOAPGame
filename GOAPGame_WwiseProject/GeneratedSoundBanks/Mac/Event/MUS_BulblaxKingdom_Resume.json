@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "219023932",
+    "Type": "Event",
+    "GUID": "{AFC8A088-2C03-44B6-B1AC-0E7AD66A4F19}",
+    "Language": "SFX",
+    "Hash": "{91AD842F-CACD-890B-5B5C-D26F61D2F804}",
+    "ObjectPath": "MUS_BulblaxKingdom_Resume",
+    "ShortName": "MUS_BulblaxKingdom_Resume",
+    "Path": "Event/MUS_BulblaxKingdom_Resume.bnk",
+    "Events": [
+     {
+      "Id": "219023932",
+      "Name": "MUS_BulblaxKingdom_Resume",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Resume",
+      "GUID": "{AFC8A088-2C03-44B6-B1AC-0E7AD66A4F19}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{685BC59A-439A-B541-66BC-3966857E5584}"
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3759449882",
+    "Type": "Event",
+    "GUID": "{CDBA60F1-8E1C-4C48-AF30-7C0A79EA8BDB}",
+    "Language": "SFX",
+    "Hash": "{B8178A75-35E7-E65A-7F12-678CA0654493}",
+    "ObjectPath": "Stop_mus_test_01",
+    "ShortName": "Stop_mus_test_01",
+    "Path": "Event/Stop_mus_test_01.bnk",
+    "Events": [
+     {
+      "Id": "3759449882",
+      "Name": "Stop_mus_test_01",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Stop_mus_test_01",
+      "GUID": "{CDBA60F1-8E1C-4C48-AF30-7C0A79EA8BDB}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{8C4728D9-E42B-AAA5-BD9B-684A71955BAF}"
+ }
+}

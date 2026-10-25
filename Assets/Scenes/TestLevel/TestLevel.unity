@@ -23195,6 +23195,7 @@ GameObject:
   - component: {fileID: 1230348537}
   - component: {fileID: 1230348539}
   - component: {fileID: 1230348538}
+  - component: {fileID: 1230348540}
   m_Layer: 0
   m_Name: WwiseGlobal
   m_TagString: Untagged
@@ -23282,23 +23283,23 @@ MonoBehaviour:
   _atkEvent:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: c9b55627729d16a40b82efadced54559, type: 2}
+    WwiseObjectReference: {fileID: 11400000, guid: e43cd6d41ff6f0d4fa17cf157f13458b, type: 2}
   _hitEvent:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 9daf8f8c0a7695140b3bf4ded28bacd1, type: 2}
+    WwiseObjectReference: {fileID: 11400000, guid: 9d827f9a97edc4b42b804c170adfed18, type: 2}
   _musPlayEvent:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 64fa35fc269725245be6b1a9a05fbe41, type: 2}
+    WwiseObjectReference: {fileID: 11400000, guid: 7e3b20a4d4389dd4db83b40adea2b8c7, type: 2}
   _musResumeEvent:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 59a88da3be26e5c4f819ca987582fc59, type: 2}
+    WwiseObjectReference: {fileID: 11400000, guid: be44ed55dd64ec645a015f9e532b0952, type: 2}
   _musPauseEvent:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 8b0cfbb5e567ccf4a8d3df46832d7693, type: 2}
+    WwiseObjectReference: {fileID: 11400000, guid: e3744ddc5396f794b916000c38ea6a7f, type: 2}
 --- !u!114 &1230348539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23323,6 +23324,35 @@ MonoBehaviour:
   scalingFactor: 1
   m_posOffsetData: {fileID: 0}
   listenerMask: 1
+--- !u!114 &1230348540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230348534}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8acd7a3c186df9b4e92d08fea1a6aa55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AK.Wwise.Unity.MonoBehaviour::AkEvent
+  triggerList: f7e1664ci
+  useOtherObject: 0
+  actionOnEventType: 0
+  curveInterpolation: 4
+  enableActionOnEvent: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 4ddbe91220479e846bd4d6f17a16cda0, type: 2}
+  useCallbacks: 0
+  stopSoundOnDisable: 1
+  Callbacks: []
+  soundEmitterObject: {fileID: 0}
+  transitionDuration: 0
+  eventIdInternal: 0
+  valueGuidInternal: 
+  m_callbackDataInternal: {fileID: 0}
 --- !u!1001 &1236899772
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,0 +1,46 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3878438063",
+    "Type": "Event",
+    "GUID": "{A72E2791-A5E1-4671-8C4E-31BCBA0F362A}",
+    "Language": "SFX",
+    "Hash": "{18FD078D-F25F-B7C0-C010-DAF93E42C134}",
+    "ObjectPath": "MUS_BulblaxKingdom_Play",
+    "ShortName": "MUS_BulblaxKingdom_Play",
+    "Path": "Event/MUS_BulblaxKingdom_Play.bnk",
+    "Media": [
+     {
+      "Id": "525205869",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Bulblax Kingdom Parts.wav",
+      "Path": "Media/525205869.wem",
+      "CachePath": "95/{958DAA73-6E5A-DB08-90F5-9E5B48EB951C}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3878438063",
+      "Name": "MUS_BulblaxKingdom_Play",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Play",
+      "GUID": "{A72E2791-A5E1-4671-8C4E-31BCBA0F362A}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "525205869"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{1C600CEA-CB94-ED6F-B113-71B5A3205E8E}"
+ }
+}

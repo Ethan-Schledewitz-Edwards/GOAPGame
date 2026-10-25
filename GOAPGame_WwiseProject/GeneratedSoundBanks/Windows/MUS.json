@@ -1,0 +1,395 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "712897226",
+    "Type": "User",
+    "GUID": "{1F3B86E9-2077-4EF7-AB7B-2E486B84B35F}",
+    "Language": "SFX",
+    "Hash": "{CC694B92-0AA3-CFC5-2340-22674208B8E2}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\MUS",
+    "ShortName": "MUS",
+    "Path": "MUS.bnk",
+    "Media": [
+     {
+      "Id": "525205869",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Bulblax Kingdom Parts.wav",
+      "CachePath": "95/{958DAA73-6E5A-DB08-90F5-9E5B48EB951C}.wem"
+     },
+     {
+      "Id": "743005828",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "mus_test.wav",
+      "CachePath": "9B/{9B2CB69E-8DA8-2C97-3B87-F96EE3487883}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3180298014",
+      "Name": "ClearTestValues",
+      "ObjectPath": "\\Events\\Default Work Unit\\ClearTestValues",
+      "GUID": "{37C8AC64-0192-4075-A1FF-3FEC80B45EB6}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionPostEvent": [
+       {
+        "Id": "848850988",
+        "Name": "Set_Switch_False_01",
+        "ObjectPath": "\\Events\\Default Work Unit\\TEST_FightingEnemy\\Set_Switch_False_01",
+        "GUID": "{83748FE7-E1E4-4911-9D0C-CA55CF6C2913}"
+       },
+       {
+        "Id": "848850990",
+        "Name": "Set_Switch_False_03",
+        "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearTreasure\\Set_Switch_False_03",
+        "GUID": "{70BB71D2-0248-47D0-9B1D-5706A7C5DD9B}"
+       },
+       {
+        "Id": "848850991",
+        "Name": "Set_Switch_False_02",
+        "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearEnemy\\Set_Switch_False_02",
+        "GUID": "{A6A9DA9F-E2C0-4952-B823-74D766B02386}"
+       },
+       {
+        "Id": "2992554334",
+        "Name": "Set_Switch_False",
+        "ObjectPath": "\\Events\\Default Work Unit\\TEST_CarryingTreasure\\Set_Switch_False",
+        "GUID": "{316DA07F-8885-4A1F-A1E4-B5D7D26EBC6C}"
+       }
+      ]
+     },
+     {
+      "Id": "911975317",
+      "Name": "MUS_BulblaxKingdom_Pause",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Pause",
+      "GUID": "{B425F7E5-5373-48F9-B5AE-BF3DE1241F43}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "3878438063",
+      "Name": "MUS_BulblaxKingdom_Play",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Play",
+      "GUID": "{A72E2791-A5E1-4671-8C4E-31BCBA0F362A}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "525205869"
+       }
+      ]
+     },
+     {
+      "Id": "219023932",
+      "Name": "MUS_BulblaxKingdom_Resume",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Resume",
+      "GUID": "{AFC8A088-2C03-44B6-B1AC-0E7AD66A4F19}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "2342678189",
+      "Name": "MUS_BulblaxKingdom_Stop",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Stop",
+      "GUID": "{C401329C-7B5E-4D64-A627-562D8176DB7C}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "1657409244",
+      "Name": "Pause_mus_test",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Pause_mus_test",
+      "GUID": "{36E4480E-6704-4CC8-8A79-EE97E97E48C4}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "3968878682",
+      "Name": "Play_mus_test",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Play_mus_test",
+      "GUID": "{31C36786-CE12-479C-A207-E7D824D5B7E6}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "743005828"
+       }
+      ]
+     },
+     {
+      "Id": "1207107987",
+      "Name": "Resume_mus_test_01",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Resume_mus_test_01",
+      "GUID": "{B5244B66-1DF1-4092-B5ED-03CE3F6415FB}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "2992554334",
+      "Name": "Set_Switch_False",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_CarryingTreasure\\Set_Switch_False",
+      "GUID": "{316DA07F-8885-4A1F-A1E4-B5D7D26EBC6C}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "2389352484",
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\False",
+        "GUID": "{3D5CD3E2-760D-4903-B7AA-1F804906EA5A}"
+       }
+      ]
+     },
+     {
+      "Id": "848850988",
+      "Name": "Set_Switch_False_01",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_FightingEnemy\\Set_Switch_False_01",
+      "GUID": "{83748FE7-E1E4-4911-9D0C-CA55CF6C2913}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1751547134",
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\False",
+        "GUID": "{46FAB47D-B3EF-49F1-A994-2FA4EF2C5C67}"
+       }
+      ]
+     },
+     {
+      "Id": "848850991",
+      "Name": "Set_Switch_False_02",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearEnemy\\Set_Switch_False_02",
+      "GUID": "{A6A9DA9F-E2C0-4952-B823-74D766B02386}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1870920134",
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\False",
+        "GUID": "{38AF48FB-9370-494F-90E4-1793C45D8235}"
+       }
+      ]
+     },
+     {
+      "Id": "848850990",
+      "Name": "Set_Switch_False_03",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearTreasure\\Set_Switch_False_03",
+      "GUID": "{70BB71D2-0248-47D0-9B1D-5706A7C5DD9B}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1818960737",
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\False",
+        "GUID": "{D7213CE7-6D90-4DAD-9C5C-60569C06B12A}"
+       }
+      ]
+     },
+     {
+      "Id": "3752654061",
+      "Name": "Set_Switch_True",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_CarryingTreasure\\Set_Switch_True",
+      "GUID": "{75DB2C5E-0A17-4360-BBEE-FE98BA6C9E2A}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "2389352484",
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\True",
+        "GUID": "{4B660478-3644-41E9-9D35-51C622196DC9}"
+       }
+      ]
+     },
+     {
+      "Id": "1079312265",
+      "Name": "Set_Switch_True_01",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_FightingEnemy\\Set_Switch_True_01",
+      "GUID": "{8289F2D0-5A23-4257-98EE-CBE94370CB03}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1751547134",
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\True",
+        "GUID": "{B97FD553-6A29-48F2-ACB1-D4109CC8EB18}"
+       }
+      ]
+     },
+     {
+      "Id": "1079312266",
+      "Name": "Set_Switch_True_02",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearEnemy\\Set_Switch_True_02",
+      "GUID": "{B5F545AC-2951-49C6-ACAC-CE972ABA5C70}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1870920134",
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\True",
+        "GUID": "{C519EE62-C94B-4F31-BEF7-D8F752F9DC97}"
+       }
+      ]
+     },
+     {
+      "Id": "1079312267",
+      "Name": "Set_Switch_True_03",
+      "ObjectPath": "\\Events\\Default Work Unit\\TEST_NearTreasure\\Set_Switch_True_03",
+      "GUID": "{535ACCF6-0910-46A0-9C43-0B4DE74F567C}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0",
+      "ActionSetSwitch": [
+       {
+        "GroupId": "1818960737",
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\True",
+        "GUID": "{C135EB1A-91D7-4E81-9071-A1239A89B003}"
+       }
+      ]
+     },
+     {
+      "Id": "477856308",
+      "Name": "Stop_mus_test",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Stop_mus_test",
+      "GUID": "{A6E7B718-D9AB-4C7B-8727-F17F1B224734}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ],
+    "SwitchGroups": [
+     {
+      "Id": "1751547134",
+      "Name": "TEST_FightingEnemy",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy",
+      "GUID": "{F3729029-F120-4A6E-A485-2C6F4B1EBB0C}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\False",
+        "GUID": "{46FAB47D-B3EF-49F1-A994-2FA4EF2C5C67}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\True",
+        "GUID": "{B97FD553-6A29-48F2-ACB1-D4109CC8EB18}"
+       }
+      ]
+     },
+     {
+      "Id": "1818960737",
+      "Name": "TEST_NearTreasure",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure",
+      "GUID": "{EC20C5A6-8C46-4A45-AD51-BE9681C00B9F}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\False",
+        "GUID": "{D7213CE7-6D90-4DAD-9C5C-60569C06B12A}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\True",
+        "GUID": "{C135EB1A-91D7-4E81-9071-A1239A89B003}"
+       }
+      ]
+     },
+     {
+      "Id": "1870920134",
+      "Name": "TEST_NearEnemy",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy",
+      "GUID": "{D4F0EC5B-9853-4B9A-834F-B72F84682655}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\False",
+        "GUID": "{38AF48FB-9370-494F-90E4-1793C45D8235}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\True",
+        "GUID": "{C519EE62-C94B-4F31-BEF7-D8F752F9DC97}"
+       }
+      ]
+     },
+     {
+      "Id": "2389352484",
+      "Name": "TEST_CarryingTreasure",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure",
+      "GUID": "{BDA4E57D-3830-4EA5-9F85-4C32B1AB0939}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\False",
+        "GUID": "{3D5CD3E2-760D-4903-B7AA-1F804906EA5A}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\True",
+        "GUID": "{4B660478-3644-41E9-9D35-51C622196DC9}"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{FDDD5E28-9B83-0A4C-C8B3-FB78C92CC7B5}"
+ }
+}

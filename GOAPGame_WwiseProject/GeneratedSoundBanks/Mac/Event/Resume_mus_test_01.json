@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "1207107987",
+    "Type": "Event",
+    "GUID": "{F982F195-5EB9-4F38-9C6B-C7207F14440F}",
+    "Language": "SFX",
+    "Hash": "{C3D7A3E6-87D9-43CA-BDEB-CA93AA869A22}",
+    "ObjectPath": "Resume_mus_test_01",
+    "ShortName": "Resume_mus_test_01",
+    "Path": "Event/Resume_mus_test_01.bnk",
+    "Events": [
+     {
+      "Id": "1207107987",
+      "Name": "Resume_mus_test_01",
+      "ObjectPath": "\\Events\\WU_Music\\mus_test\\Resume_mus_test_01",
+      "GUID": "{F982F195-5EB9-4F38-9C6B-C7207F14440F}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{CD98BADB-3B8D-434D-54E9-30D913E9974C}"
+ }
+}

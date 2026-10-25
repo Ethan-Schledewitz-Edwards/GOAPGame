@@ -1,0 +1,3 @@
+Event	ID	Name			Wwise Object Path	Notes
+	3405416721	Play_snd_hit_01			\WU_Sound\Play_snd_hit_01	
+

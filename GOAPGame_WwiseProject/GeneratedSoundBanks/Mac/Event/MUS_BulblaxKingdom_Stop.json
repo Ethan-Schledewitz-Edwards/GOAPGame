@@ -1,0 +1,33 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "2342678189",
+    "Type": "Event",
+    "GUID": "{C401329C-7B5E-4D64-A627-562D8176DB7C}",
+    "Language": "SFX",
+    "Hash": "{0FB4B85B-1004-74AF-5E3E-A403BF5DE6D2}",
+    "ObjectPath": "MUS_BulblaxKingdom_Stop",
+    "ShortName": "MUS_BulblaxKingdom_Stop",
+    "Path": "Event/MUS_BulblaxKingdom_Stop.bnk",
+    "Events": [
+     {
+      "Id": "2342678189",
+      "Name": "MUS_BulblaxKingdom_Stop",
+      "ObjectPath": "\\Events\\WU_Music\\MUS_BulblaxKingdom\\MUS_BulblaxKingdom_Stop",
+      "GUID": "{C401329C-7B5E-4D64-A627-562D8176DB7C}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{497C3310-83C4-D82C-1D3E-425323DA4878}"
+ }
+}

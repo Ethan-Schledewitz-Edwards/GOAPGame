@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{1F3B86E9-2077-4EF7-AB7B-2E486B84B35F}",
     "Language": "SFX",
-    "Hash": "{0C5F2879-3E22-A16B-F3E7-D429EB73D28C}",
+    "Hash": "{94A05559-5123-B5B4-CA11-2BAE28B9501B}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -170,9 +170,9 @@
     ],
     "Events": [
      {
-      "Id": "1657409244",
-      "Name": "Pause_mus_test",
-      "ObjectPath": "\\Events\\Default Work Unit\\Pause_mus_test",
+      "Id": "344547202",
+      "Name": "Pause_mus_test_01",
+      "ObjectPath": "\\Events\\Default Work Unit\\Pause_mus_test_01",
       "GUID": "{EC81DC5D-BF09-40D0-95C9-C6661BD51B96}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
@@ -180,9 +180,9 @@
       "DurationMax": "0"
      },
      {
-      "Id": "3968878682",
-      "Name": "Play_mus_test",
-      "ObjectPath": "\\Events\\Default Work Unit\\Play_mus_test",
+      "Id": "3764261016",
+      "Name": "Play_mus_test_01",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_mus_test_01",
       "GUID": "{55DA0754-A395-4E82-8EBE-C18387B44CA2}",
       "DurationType": "Infinite",
       "MediaRefs": [
@@ -192,9 +192,9 @@
       ]
      },
      {
-      "Id": "3864685870",
-      "Name": "Play_snd_attack",
-      "ObjectPath": "\\Events\\Default Work Unit\\Play_snd_attack",
+      "Id": "61191612",
+      "Name": "Play_snd_attack_01",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_snd_attack_01",
       "GUID": "{695D58B5-12A8-4C75-AB33-F14D8162DDCB}",
       "DurationType": "OneShot",
       "DurationMin": "0.216875",
@@ -280,6 +280,6 @@
     ]
    }
   ],
-  "FileHash": "{78ADCEB5-4BEB-002E-35DB-180B34D70A17}"
+  "FileHash": "{996D2898-A030-AC40-BC4D-C11E95513189}"
  }
 }

@@ -41,9 +41,91 @@
       "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus",
       "GUID": "{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}"
      }
+    ],
+    "SwitchGroups": [
+     {
+      "Id": "1751547134",
+      "Name": "TEST_FightingEnemy",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy",
+      "GUID": "{F3729029-F120-4A6E-A485-2C6F4B1EBB0C}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\False",
+        "GUID": "{46FAB47D-B3EF-49F1-A994-2FA4EF2C5C67}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_FightingEnemy\\True",
+        "GUID": "{B97FD553-6A29-48F2-ACB1-D4109CC8EB18}"
+       }
+      ]
+     },
+     {
+      "Id": "1818960737",
+      "Name": "TEST_NearTreasure",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure",
+      "GUID": "{EC20C5A6-8C46-4A45-AD51-BE9681C00B9F}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\False",
+        "GUID": "{D7213CE7-6D90-4DAD-9C5C-60569C06B12A}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearTreasure\\True",
+        "GUID": "{C135EB1A-91D7-4E81-9071-A1239A89B003}"
+       }
+      ]
+     },
+     {
+      "Id": "1870920134",
+      "Name": "TEST_NearEnemy",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy",
+      "GUID": "{D4F0EC5B-9853-4B9A-834F-B72F84682655}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\False",
+        "GUID": "{38AF48FB-9370-494F-90E4-1793C45D8235}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_NearEnemy\\True",
+        "GUID": "{C519EE62-C94B-4F31-BEF7-D8F752F9DC97}"
+       }
+      ]
+     },
+     {
+      "Id": "2389352484",
+      "Name": "TEST_CarryingTreasure",
+      "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure",
+      "GUID": "{BDA4E57D-3830-4EA5-9F85-4C32B1AB0939}",
+      "Switches": [
+       {
+        "Id": "2452206122",
+        "Name": "False",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\False",
+        "GUID": "{3D5CD3E2-760D-4903-B7AA-1F804906EA5A}"
+       },
+       {
+        "Id": "3053630529",
+        "Name": "True",
+        "ObjectPath": "\\Switches\\Default Work Unit\\TEST_CarryingTreasure\\True",
+        "GUID": "{4B660478-3644-41E9-9D35-51C622196DC9}"
+       }
+      ]
+     }
     ]
    }
   ],
-  "FileHash": "{E332BC80-87AA-7828-C68E-8D695CE440D6}"
+  "FileHash": "{DAF12FBB-BE31-33C7-7E6B-779144CCBF1B}"
  }
 }

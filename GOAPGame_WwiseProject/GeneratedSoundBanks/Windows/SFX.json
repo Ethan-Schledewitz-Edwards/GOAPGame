@@ -6,14 +6,14 @@
   "SoundBankVersion": "172",
   "SoundBanks": [
    {
-    "Id": "3161908922",
+    "Id": "393239870",
     "Type": "User",
-    "GUID": "{1F3B86E9-2077-4EF7-AB7B-2E486B84B35F}",
+    "GUID": "{E643B0B5-336A-4037-AAD7-9B621E4307C1}",
     "Language": "SFX",
-    "Hash": "{9A1EAFC3-CBB5-6A53-3A44-27FC40901401}",
-    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
-    "ShortName": "Main",
-    "Path": "Main.bnk",
+    "Hash": "{700250C9-3ADB-9BBA-8925-1C33BB4E930A}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\SFX",
+    "ShortName": "SFX",
+    "Path": "SFX.bnk",
     "Media": [
      {
       "Id": "99579301",
@@ -120,14 +120,6 @@
       "CachePath": "35/{351442C4-794C-905F-3AD9-6DDEEA1B5279}.wem"
      },
      {
-      "Id": "743005828",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "mus_test.wav",
-      "CachePath": "9B/{9B2CB69E-8DA8-2C97-3B87-F96EE3487883}.wem"
-     },
-     {
       "Id": "937814878",
       "Language": "SFX",
       "Streaming": "false",
@@ -170,32 +162,10 @@
     ],
     "Events": [
      {
-      "Id": "1657409244",
-      "Name": "Pause_mus_test",
-      "ObjectPath": "\\Events\\Default Work Unit\\Pause_mus_test",
-      "GUID": "{EC81DC5D-BF09-40D0-95C9-C6661BD51B96}",
-      "MaxAttenuation": "0",
-      "DurationType": "OneShot",
-      "DurationMin": "0",
-      "DurationMax": "0"
-     },
-     {
-      "Id": "3968878682",
-      "Name": "Play_mus_test",
-      "ObjectPath": "\\Events\\Default Work Unit\\Play_mus_test",
-      "GUID": "{55DA0754-A395-4E82-8EBE-C18387B44CA2}",
-      "DurationType": "Infinite",
-      "MediaRefs": [
-       {
-        "Id": "743005828"
-       }
-      ]
-     },
-     {
-      "Id": "3864685870",
-      "Name": "Play_snd_attack",
-      "ObjectPath": "\\Events\\Default Work Unit\\Play_snd_attack",
-      "GUID": "{695D58B5-12A8-4C75-AB33-F14D8162DDCB}",
+      "Id": "61191612",
+      "Name": "Play_snd_attack_01",
+      "ObjectPath": "\\Events\\WU_Sound\\Play_snd_attack_01",
+      "GUID": "{21F98B75-5612-4C90-BCBE-5EAA64E9F839}",
       "DurationType": "OneShot",
       "DurationMin": "0.216875",
       "DurationMax": "1.593125",
@@ -232,8 +202,8 @@
      {
       "Id": "2767191669",
       "Name": "Play_snd_hit",
-      "ObjectPath": "\\Events\\Default Work Unit\\Play_snd_hit",
-      "GUID": "{03D54D0A-4385-48B0-9EFB-92D65EFCED30}",
+      "ObjectPath": "\\Events\\WU_Sound\\Play_snd_hit",
+      "GUID": "{70914A7F-5451-448F-BF17-8D866E5B9099}",
       "DurationType": "OneShot",
       "DurationMin": "0.35370833",
       "DurationMax": "0.7542083",
@@ -266,20 +236,10 @@
         "Id": "1062378458"
        }
       ]
-     },
-     {
-      "Id": "477856308",
-      "Name": "Stop_mus_test",
-      "ObjectPath": "\\Events\\Default Work Unit\\Stop_mus_test",
-      "GUID": "{AB82F5F2-F136-46E8-B7E3-ADC39FE314FD}",
-      "MaxAttenuation": "0",
-      "DurationType": "OneShot",
-      "DurationMin": "0",
-      "DurationMax": "0"
      }
     ]
    }
   ],
-  "FileHash": "{322706E6-6ECC-8674-5D11-0D5D4A92F9AC}"
+  "FileHash": "{4EF28437-ED01-6D32-E8A7-C91969DA15ED}"
  }
 }
