@@ -14,15 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp-Editor::ArchieAndrews.PrefabBrush.PB_SaveObject
   prefabList: []
   prefabData:
-  - prefab: {fileID: 3778585277737840742, guid: ee1b128ab8b04e24f944ec54e88936e3, type: 3}
-    selected: 0
   - prefab: {fileID: 3778585277737840742, guid: cf8560772b7401c4d9b6b6d1e1900464, type: 3}
     selected: 1
   paintType: 0
-  brushSize: 6.17
+  brushSize: 20
   minBrushSize: 0.1
   maxBrushSize: 20
-  paintDeltaDistance: 0.4
+  paintDeltaDistance: 1.36
   maxPaintDeltaDistance: 3
   minPaintDeltaDistance: 0.1
   prefabsPerStroke: 1
@@ -31,22 +29,22 @@ MonoBehaviour:
   spawnHeight: 10
   addRigidbodyToPaintedPrefab: 1
   physicsIterations: 100
-  checkLayer: 0
+  checkLayer: 1
   checkTag: 0
-  checkSlope: 0
-  checkTerrainLayer: 0
-  ignorePaintedPrefabs: 0
-  ignoreTriggers: 1
+  checkSlope: 1
+  checkTerrainLayer: 1
+  ignorePaintedPrefabs: 1
+  ignoreTriggers: 0
   ignoreTriggersErase: 1
   ignorePaintedPrefabsErase: 0
   includeInactivePrefabsInCheck: 0
   includeInactivePrefabsInCheckErase: 0
   chainPivotAxis: 0
   chainDirection: 0
-  requiredTagMask: 0
-  requiredLayerMask: 0
+  requiredTagMask: 1
+  requiredLayerMask: 512
   minRequiredSlope: 0
-  maxRequiredSlope: 0
+  maxRequiredSlope: 30.9375
   applyOriginOffset: 0
   applyRotationOffset: 0
   prefabOriginOffset: {x: 0, y: 0, z: 0}
@@ -92,7 +90,9 @@ MonoBehaviour:
   eraseTagCheckType: 0
   minRequiredSlopeForErase: 0
   maxRequiredSlopeForErase: 0
-  terrainLayers: []
+  terrainLayers:
+  - terrainLayer: {fileID: 8574412962073106934, guid: 2e17eafed6995ff498fca981dce5975a, type: 2}
+    minLayerStrength: 1
   eraseLayerCheckType: 0
   terrainLayersErase: []
   eraseDetection: 0
@@ -102,6 +102,6 @@ MonoBehaviour:
   removeBrushHoldKey: 1
   disableBrushHotKey: 105
   disableBrushHoldKey: 0
-  filterFlags: 0
+  filterFlags: 14
   eraseFilterFlags: 0
   modFlags: 4

@@ -70,7 +70,7 @@ namespace Player.Core
 			m_rb.isKinematic = true;
 			m_rb.freezeRotation = true;
 
-			m_collisionLayerMask = LayerMask.GetMask("Default", "Environment", "Interaction");
+			m_collisionLayerMask = LayerMask.GetMask("Default", "Ground", "Interaction");
 			m_col.layerOverridePriority = 100;
 
 			LayerMask colliderMask = m_collisionLayerMask | LayerMask.GetMask("Trigger");
