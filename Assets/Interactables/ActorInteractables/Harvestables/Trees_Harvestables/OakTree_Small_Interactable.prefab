@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
-  m_resourceTypeTag: {fileID: 0}
+  m_permittedNoddTypeTag: {fileID: 0}
 --- !u!114 &4026278048805383853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,7 +245,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 3
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

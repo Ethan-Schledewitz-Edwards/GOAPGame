@@ -30,7 +30,7 @@ namespace Player.Core
 		private void Awake()
 		{
 			if (m_groundLayer == 0)
-				m_groundLayer = LayerMask.GetMask("Default");
+				m_groundLayer = LayerMask.GetMask("Ground");
 
 			m_worldControllers = GetComponents<PlayerWorldControllerBase>();
 			foreach (PlayerWorldControllerBase i in m_worldControllers)
