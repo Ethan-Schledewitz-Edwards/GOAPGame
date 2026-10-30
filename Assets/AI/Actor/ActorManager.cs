@@ -81,7 +81,7 @@ public class ActorManager : MonoBehaviour
 		}
 	}
 
-	private void Update()
+	private void FixedUpdate()
 	{
 		m_playerPosition = m_player.transform.position;
 

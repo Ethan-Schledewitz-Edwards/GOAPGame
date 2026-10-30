@@ -111,7 +111,6 @@ namespace Player.Core
 
 			// Raycast down from cursor offset
 			m_targetCursorWorldPosition = cursorOffset;
-
 			Vector3 groundRayStart = (transform.position + new Vector3(cursorOffset.x, 0, cursorOffset.y)) + (Vector3.up * 20f);
 
 			Quaternion targetRotation = Quaternion.identity;
