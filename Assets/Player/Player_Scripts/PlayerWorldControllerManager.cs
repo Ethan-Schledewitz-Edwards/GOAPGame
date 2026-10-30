@@ -90,33 +90,31 @@ namespace Player.Core
 			if(m_rawLookInput.magnitude < 0.05f)
 				return;
 
-			Vector3 flattenedTargetPosition = m_cursorAnchorTransform.position;
-			flattenedTargetPosition.y = 0f;
-
+			Vector2 cursorOffset = Vector2.zero;
 			if (m_isUsingMouse)
 			{
 				Ray mouseRay = m_mainCamera.ScreenPointToRay(m_rawLookInput);
 				if (Physics.Raycast(mouseRay, out RaycastHit mouseHit, 100f, m_groundLayer))
 				{
-					Vector3 direction = mouseHit.point - flattenedTargetPosition;
-					direction.y = 0; // Flatten the direction vector
+					Vector3 direction = mouseHit.point - transform.position;
+					Vector2 flattenedDirection = new Vector2(direction.x, direction.z);
 
 					// Clamp the direction vector to max radius, then add it back to player position
-					Vector3 clampedOffset = Vector3.ClampMagnitude(direction, c_maxCursorDistanceMouse);
-					flattenedTargetPosition = flattenedTargetPosition + clampedOffset;
+					cursorOffset = Vector2.ClampMagnitude(flattenedDirection, c_maxCursorDistanceMouse);
 				}
 			}
 			else
 			{
-				Vector3 stickInput = new Vector3(m_rawLookInput.x, 0, m_rawLookInput.y);
-				flattenedTargetPosition = flattenedTargetPosition + (stickInput * c_maxCursorDistanceController);
+				Vector2 stickInput = new Vector2(m_rawLookInput.x, m_rawLookInput.y);
+				cursorOffset = stickInput * c_maxCursorDistanceController;
 			}
 
 			// Raycast down from cursor offset
-			Vector3 groundRayStart = flattenedTargetPosition + (Vector3.up * 20f);
-			m_targetCursorWorldPosition = flattenedTargetPosition;
-			Quaternion targetRotation = Quaternion.identity;
+			m_targetCursorWorldPosition = cursorOffset;
 
+			Vector3 groundRayStart = (transform.position + new Vector3(cursorOffset.x, 0, cursorOffset.y)) + (Vector3.up * 20f);
+
+			Quaternion targetRotation = Quaternion.identity;
 			if (Physics.Raycast(groundRayStart, Vector3.down, out RaycastHit hitData, 40f, m_groundLayer))
 			{
 				m_targetCursorWorldPosition = hitData.point;
