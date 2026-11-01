@@ -15,7 +15,7 @@ public class ActorHealthComponent : HealthComponent
 	[field: SerializeField] public int MaxHapiness { get; private set; } = 100;
 
 	// Components
-	private Actor m_actor;
+	private ActorBase m_actor;
 
 	// System
 	private float m_healthDegredationInterval;
@@ -31,7 +31,7 @@ public class ActorHealthComponent : HealthComponent
 	protected override void Awake()
 	{
 		base.Awake();
-		m_actor = GetComponent<Actor>();
+		m_actor = GetComponent<ActorBase>();
 	}
 
 	private void HandleSpawned(Vector3 savedPosition, Quaternion savedRotation)

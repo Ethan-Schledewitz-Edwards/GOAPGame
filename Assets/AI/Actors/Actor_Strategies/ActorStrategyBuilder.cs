@@ -2,16 +2,16 @@ using Settlements;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Actor), typeof(GOAPAgent), typeof(AIPathing))]
+[RequireComponent(typeof(ActorBase), typeof(GOAPAgent), typeof(AIPathing))]
 public class ActorStrategyBuilder : MonoBehaviour
 {
-	private Actor m_actor;
+	private ActorBase m_actor;
 	private AIPathing m_aiPathing;
 	private GOAPAgent m_goapAgent;
 
 	private void Awake()
 	{
-		m_actor = GetComponent<Actor>();
+		m_actor = GetComponent<ActorBase>();
 		m_aiPathing = GetComponent<AIPathing>();
 		m_goapAgent = GetComponent<GOAPAgent>();
 

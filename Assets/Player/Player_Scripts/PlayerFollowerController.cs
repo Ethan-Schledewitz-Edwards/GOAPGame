@@ -27,7 +27,7 @@ namespace Player.Core
 		private bool m_isSummonHeld = false;
 
 		private Vector3 m_cursorWorldPosition;
-		private List<Actor> m_activeFollowers = new List<Actor>();
+		private List<ActorBase> m_activeFollowers = new List<ActorBase>();
 
 
 		private void Awake()
@@ -38,18 +38,6 @@ namespace Player.Core
 			if (m_interactionLayers == 0)
 				m_interactionLayers = LayerMask.GetMask("Interaction");
 
-		}
-
-		private void Start()
-		{
-			if (ActorManager.Instance != null)
-				ActorManager.Instance.FollowingActorLoaded += AddFollower;
-		}
-
-		private void OnDestroy()
-		{
-			if (ActorManager.Instance != null)
-				ActorManager.Instance.FollowingActorLoaded -= AddFollower;
 		}
 
 		protected override void OnPrimaryFireInput(InputAction.CallbackContext context)
@@ -80,7 +68,7 @@ namespace Player.Core
 			{
 				foreach (Collider i in hitColliders)
 				{
-					Actor actor = i.GetComponent<Actor>();
+					PlayerActorBase actor = i.GetComponent<PlayerActorBase>();
 					if (actor != null &&
 						actor.ActorFaction == Factions.Core.EFaction.FACTION_PLAYER)
 					{
@@ -103,7 +91,7 @@ namespace Player.Core
 
 		private void TryAssignActor(Vector3 throwPosition)
 		{
-			Actor followerToThrow = null;
+			ActorBase followerToThrow = null;
 
 			// Find the closest nodd that matches the interactables resource type
 			ActorInteractableBase actorInteractable = FindClosestActorInteractable(throwPosition);
@@ -137,7 +125,7 @@ namespace Player.Core
 			}
 		}
 
-		private void AddFollower(Actor newFollower)
+		private void AddFollower(PlayerActorBase newFollower)
 		{
 			if (m_activeFollowers.Contains(newFollower))
 				return;
@@ -149,7 +137,7 @@ namespace Player.Core
 			newFollower.FollowPlayer(this.transform);
 		}
 
-		private void RemoveFollower(Actor actor)
+		private void RemoveFollower(ActorBase actor)
 		{
 			if (m_activeFollowers.Contains(actor))
 			{
@@ -180,8 +168,6 @@ namespace Player.Core
 					}
 				}
 			}
-
-			Debug.Log(closestInteractable, closestInteractable);
 			return closestInteractable;
 		}
 
@@ -189,12 +175,12 @@ namespace Player.Core
 		/// Finds and returns the follower actor closest to the current actor's position.
 		/// </summary>
 		/// <returns>The closest follower actor, or null if no followers are present.</returns>
-		private Actor FindClosestFollower()
+		private ActorBase FindClosestFollower()
 		{
-			Actor closestFollower = null;
+			ActorBase closestFollower = null;
 
 			float closestDist = Mathf.Infinity;
-			foreach (Actor actor in m_activeFollowers)
+			foreach (ActorBase actor in m_activeFollowers)
 			{
 				if (actor == null) 
 					continue;
@@ -214,12 +200,12 @@ namespace Player.Core
 		/// Finds the nearest active follower with the specified resource type tag.
 		/// </summary>
 		/// <returns>The closest follower matching the specified resource type, or null if none are found.</returns>
-		private Actor FindClosestFollower(ResourceTypeTag resourceType)
+		private ActorBase FindClosestFollower(ResourceTypeTag resourceType)
 		{
-			Actor closestFollower = null;
+			ActorBase closestFollower = null;
 
 			float closestDist = Mathf.Infinity;
-			foreach (Actor actor in m_activeFollowers)
+			foreach (ActorBase actor in m_activeFollowers)
 			{
 				if (actor == null)
 					continue;

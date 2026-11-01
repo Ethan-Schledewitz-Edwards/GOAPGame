@@ -1,3 +1,4 @@
+using AI.Context;
 using Interaction.Core;
 using NoddTracking.Core;
 using ObjectTags;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace AI.Actors
 {
-    public class NoddActor : Actor, ITaggable<ResourceTypeTag>
+    public class NoddActor : PlayerActorBase, ITaggable<ResourceTypeTag>
 	{
 		// ITaggableProperties
 		[SerializeField] private ResourceTypeTag m_resourceTypeTag;
@@ -36,6 +37,17 @@ namespace AI.Actors
 			}
 
 			base.UseInteractable(interactable);
+		}
+
+		protected override void HandleContextRest()
+		{
+			AIContext context = BehaviourTreeExecutor.AIContext;
+
+			context.ExecutorTransform = transform;
+			context.ExecutorFaction = (int)ActorFaction;
+			context.JobSearchDistance = ActorBase.c_JobSearchRange;
+			context.InteractionLayer = 1 << LayerMask.NameToLayer("Interaction");
+			context.AttackDamage = 1; // Hard coded for now
 		}
 	}
 }

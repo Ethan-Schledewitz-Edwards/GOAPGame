@@ -1,21 +1,23 @@
-using AI.AIContext;
+using AI.Context;
 using BehaviourTrees;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BehaviourTreeExecutorBase : MonoBehaviour
+public class BehaviourTreeExecutorBase
 {
+	public event Action ContextReset;
+
 	public AIContext AIContext;
+
 	public BehaviourTree CurrentBehaviourTree { get; private set; } = null;
 
-	protected virtual void Awake()
+	protected Transform m_objectTransform;
+
+	public BehaviourTreeExecutorBase(Transform objectTransform)
 	{
 		AIContext = new AIContext();
-	}
-
-	private void Start()
-	{
-		ResetContext();
+		m_objectTransform = objectTransform;
 	}
 
 	public void SetCurrentBehaviourTree(BehaviourTree behaviourTree)
@@ -39,5 +41,6 @@ public class BehaviourTreeExecutorBase : MonoBehaviour
 		cleanupAction?.Invoke();
 
 		AIContext.ClearAllData();
+		ContextReset?.Invoke();
 	}
 }

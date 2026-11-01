@@ -1,3 +1,4 @@
+using AI.Actors;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,16 +20,13 @@ public class ActorManager : MonoBehaviour
 	// Components
 	[SerializeField] private Transform m_player;
 
-	// Events
-	public event Action<Actor> FollowingActorLoaded;
-
 	// System
 	// NOTE: A hash set can be slow to iterate over, it's probably better to use a list.
 	// Each actor would track its index in the list. On removal, it's a quick look up,
 	// then copy the pointer at the end of the array into the new empty slot and decrease
 	// the array size by 1.
-	public static HashSet<Actor> s_Actors = new HashSet<Actor>();
-	private List<Actor> m_pendingRemovals = new List<Actor>();
+	public static HashSet<IActor> s_Actors = new HashSet<IActor>();
+	private List<IActor> m_pendingRemovals = new List<IActor>();
 	private bool m_isTicking = false;
 
 	double m_accumulatedTime = 0f;
@@ -88,7 +86,7 @@ public class ActorManager : MonoBehaviour
 		TickActors(Time.deltaTime);
 	}
 
-	public bool TryAddActor(Actor actor)
+	public bool TryAddActor(IActor actor)
 	{
 		if (!s_Actors.Contains(actor))
 		{
@@ -100,7 +98,7 @@ public class ActorManager : MonoBehaviour
 		return false;
 	}
 
-	public void RemoveActor(Actor actor)
+	public void RemoveActor(IActor actor)
 	{
 		if (s_Actors.Contains(actor))
 		{
@@ -126,10 +124,10 @@ public class ActorManager : MonoBehaviour
 		while (m_accumulatedTime >= k_tpsThreshold)
 		{
 			m_isTicking = true;
-			foreach (Actor actor in s_Actors)
+			foreach (IActor actor in s_Actors)
 			{
 				if (actor == null ||
-					!actor.isActiveAndEnabled)
+					!actor.IsActorActive)
 					continue;
 
 				actor.TickBehaviour(k_tpsThreshold);
@@ -140,7 +138,7 @@ public class ActorManager : MonoBehaviour
 			// Process all deaths that occurred during this tick
 			if (m_pendingRemovals.Count > 0)
 			{
-				foreach (Actor actor in m_pendingRemovals)
+				foreach (IActor actor in m_pendingRemovals)
 				{
 					s_Actors.Remove(actor);
 				}

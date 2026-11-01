@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AI.AIContext 
+namespace AI.Context 
 {
 	[System.Serializable]
 	public struct AIContext

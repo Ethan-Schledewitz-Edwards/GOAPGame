@@ -1,4 +1,4 @@
-public enum EActorState
+public enum EPlayerActorState
 { 
 	OffDuty,
 	Follow,
