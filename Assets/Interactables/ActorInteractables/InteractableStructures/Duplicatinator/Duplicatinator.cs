@@ -39,7 +39,6 @@ namespace Interaction.Actor.InteractableStructures
 
 		private Coroutine m_duplicationRoutine;
 		private bool m_isDuplicatingNodds;
-		/*Add a variable to specify which type is produced*/
 
 		protected override void Awake()
 		{
@@ -87,21 +86,32 @@ namespace Interaction.Actor.InteractableStructures
 			return base.TryReserveClosestPosition(interactor, actorPosition, out reservedPoint);
 		}
 
-		public override bool TryInteract(IInteractor interactor, Vector3 actorPosition, InteractionPoint assignedPosition)
+		public override bool TryInteract(IInteractor interactor,
+			Vector3 actorPosition,
+			InteractionPoint assignedPosition)
 		{
-			if(m_isDuplicatingNodds) 
+			if (m_isDuplicatingNodds)
 				return false;
 
-			if(interactor.Transform != null &&
-				interactor.Transform.TryGetComponent(out IDuplicatableResource duplicatableResource))
+			if (!interactor.Transform.TryGetComponent(
+					out IDuplicatableResource duplicatableResource))
 			{
-				// Kick actors off of the carryable
-				interactor.InteractionCanceled();
-
-				Destroy(interactor.Transform.gameObject);
-
-				m_duplicationRoutine = StartCoroutine(BeginNoddDuplication(duplicatableResource.NoddDuplicationData));
+				return false;
 			}
+
+			// Cancel every interaction registered with the carryable
+			if (duplicatableResource is IInteractor carryableInteractor)
+			{
+				carryableInteractor.InteractionCanceled();
+			}
+
+			Destroy(interactor.Transform.gameObject);
+
+			m_duplicationRoutine = StartCoroutine(
+				BeginNoddDuplication(
+					duplicatableResource.NoddDuplicationData
+				)
+			);
 
 			return true;
 		}

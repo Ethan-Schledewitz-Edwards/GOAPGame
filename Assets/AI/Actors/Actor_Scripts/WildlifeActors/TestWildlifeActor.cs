@@ -6,7 +6,7 @@ namespace AI.Actors
 	{
 		public override void TickBehaviour(float t)
 		{
-			throw new System.NotImplementedException();
+			
 		}
 	}
 }

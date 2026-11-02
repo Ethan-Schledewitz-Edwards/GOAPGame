@@ -113,7 +113,7 @@ namespace AI.Actors
 			TickActorSystems(t);
 
 			// Wait until the investigation destination is reached
-			// before searching for jobs.
+			// before searching for jobs
 			if (m_isInvestigatingPositionForJob)
 			{
 				if (!AIPathing.HasReachedDestination(
@@ -127,7 +127,7 @@ namespace AI.Actors
 				AIPathing.ClearDestination();
 			}
 
-			// Job search cooldown.
+			// Job search cooldown
 			if (m_jobSearchCountdown > 0f)
 				m_jobSearchCountdown -= t;
 
@@ -246,7 +246,7 @@ namespace AI.Actors
 		/// </summary>
 		private void TrySetActorJob(BehaviourTree behaviourTree)
 		{
-			// Null trees are allowed for immediate interactions.
+			// Null trees are allowed for immediate interactions
 			if (behaviourTree == null)
 				return;
 
@@ -292,6 +292,10 @@ namespace AI.Actors
 		/// </summary>
 		protected void ClearJobState(bool applyCooldown = false)
 		{
+			// Release the actor from whatever it is carrying
+			if (this is ICarryingInteractor carryingInteractor)
+				carryingInteractor.EndCarrying();
+
 			ClearInteractionState();
 
 			m_isInvestigatingPositionForJob = false;
@@ -408,7 +412,7 @@ namespace AI.Actors
 
 			m_timeFindingJob += t;
 
-			// Stop searching if it takes too long.
+			// Stop searching if it takes too long
 			if (m_timeFindingJob >= c_waitingForJobLimit)
 			{
 				ClearJobState(applyCooldown: true);

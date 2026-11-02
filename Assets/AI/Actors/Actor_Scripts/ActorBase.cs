@@ -18,6 +18,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public AIPathing AIPathing { get; private set; }
 	public BehaviourTreeExecutorBase BehaviourTreeExecutor { get; private set; }
+	public Collider Collider { get; private set; }
 
 	// IInteractor
 	public Transform Transform => transform;
@@ -46,11 +47,10 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 
 		BehaviourTreeExecutor = new BehaviourTreeExecutorBase(transform);
 		BehaviourTreeExecutor.ContextReset += HandleContextReset;
-
-		// Initialize the context immediately.
 		BehaviourTreeExecutor.ResetContext();
-	}
 
+		Collider = GetComponent<Collider>();
+	}
 
 	protected virtual void Start()
 	{
@@ -96,9 +96,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	/// <summary>
 	/// Executes the currently assigned behaviour tree.
 	/// </summary>
-	protected bool TryTickBehaviourTree(
-		float t,
-		out EBTNodeState state)
+	protected bool TryTickBehaviourTree(float t, out EBTNodeState state)
 	{
 		if (BehaviourTreeExecutor == null ||
 			BehaviourTreeExecutor.CurrentBehaviourTree == null)
@@ -129,7 +127,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 		if (interactable is not ActorInteractableBase actorInteractable)
 			return;
 
-		// Revalidate the reserved interaction position.
+		// Revalidate the reserved interaction position
 		if (m_assignedInteractionPosition != null)
 		{
 			if (!m_assignedInteractionPosition.TryGetInteractionPosition(
@@ -181,8 +179,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	/// Allows derived actors to customize how an interactable's
 	/// behaviour tree is handled.
 	/// </summary>
-	protected virtual void HandleInteractableBehaviourTree(
-		BehaviourTree behaviourTree)
+	protected virtual void HandleInteractableBehaviourTree(BehaviourTree behaviourTree)
 	{
 		if (behaviourTree != null)
 			SetBehaviourTree(behaviourTree);
@@ -199,14 +196,14 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	}
 
 	/// <summary>
-	/// Clears interaction state without modifying carrying-related
-	/// transform, collider or NavMeshAgent properties.
+	/// Clears interaction state
 	/// </summary>
 	protected void ClearInteractionState()
 	{
 		if (m_targetInteractable != null)
 		{
-			m_targetInteractable.StopInteract(
+			m_targetInteractable.StopInteract
+			(
 				this,
 				m_assignedInteractionPosition
 			);
@@ -217,6 +214,9 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 		m_targetInteractable = null;
 		m_targetTransform = null;
 		m_assignedInteractionPosition = null;
+
+		if (this is ICarryingInteractor carryingInteractor)
+			carryingInteractor.EndCarrying();
 
 		if (BehaviourTreeExecutor != null)
 		{

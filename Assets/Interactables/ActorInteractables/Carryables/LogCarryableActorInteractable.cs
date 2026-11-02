@@ -24,7 +24,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 
 	// IInteractable properties
 	protected override string m_interactPrompt => string.Empty;
-
 	public Transform Transform => transform;
 
 	// IDuplicatableResource properties
