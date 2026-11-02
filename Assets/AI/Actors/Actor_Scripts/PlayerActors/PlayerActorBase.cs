@@ -5,32 +5,78 @@ using UnityEngine;
 
 namespace AI.Actors
 {
+	[RequireComponent(typeof(GOAPAgent))]
 	public abstract class PlayerActorBase : ActorBase
 	{
 		public const float c_JobSearchRange = 1.5f;
+
 		private const float c_waitingForJobLimit = 2.0f;
 		private const float c_followDist = 1.2f;
 		private const float c_workingDist = 0.3f;
+
 		private const float c_followSpeed = 7.2f;
 		private const float c_workingSpeed = 5.8f;
 		private const float c_offDutySpeed = 2f;
+
 		private const float c_searchForJobStoppingDistance = 0.25f;
 		private const float c_jobSearchCooldownDuration = 2.0f;
 
-		// System
-		public EPlayerActorState LogicExecutorState { get; private set; } = default;
+		public EPlayerActorState LogicExecutorState { get; private set; }
+			= EPlayerActorState.OffDuty;
+
+		public GOAPAgent GOAPAgentComp { get; private set; }
 
 		private float m_timeFindingJob;
-		private float m_jobSearchCountdown = 0f;
+		private float m_jobSearchCountdown;
+
 		private bool m_isInvestigatingPositionForJob;
 		private bool m_jobAssignedThisTick;
 
-		/// <summary>
-		/// Setting the logic executor state determines the method used by an Actor to calculate its behaviour.
-		/// Off-Duty actors use GOAP to drive emergent behaviour.
-		/// Following actors try to reach a specific destination.
-		/// Working actors use a behaviour tree.
-		/// </summary>
+		#region Lifecycle
+
+		protected override void Awake()
+		{
+			base.Awake();
+
+			GOAPAgentComp = GetComponent<GOAPAgent>();
+			SetLogicExecutorState(EPlayerActorState.OffDuty);
+		}
+
+		private void OnEnable()
+		{
+			if (GOAPAgentComp == null)
+				GOAPAgentComp = GetComponent<GOAPAgent>();
+
+			if (GOAPAgentComp != null && AIPathing != null)
+			{
+				GOAPAgentComp.OnFoundDestination += AIPathing.SetDestination;
+				GOAPAgentComp.OnClearDestination += AIPathing.ClearDestination;
+			}
+		}
+
+		private void OnDisable()
+		{
+			if (GOAPAgentComp != null && AIPathing != null)
+			{
+				GOAPAgentComp.OnFoundDestination -= AIPathing.SetDestination;
+				GOAPAgentComp.OnClearDestination -= AIPathing.ClearDestination;
+			}
+		}
+
+		protected override void HandleContextReset()
+		{
+			base.HandleContextReset();
+
+			AIContext context = BehaviourTreeExecutor.AIContext;
+			context.JobSearchDistance = c_JobSearchRange;
+
+			BehaviourTreeExecutor.AIContext = context;
+		}
+
+		#endregion
+
+		#region Logic Executor
+
 		public void SetLogicExecutorState(EPlayerActorState state)
 		{
 			LogicExecutorState = state;
@@ -39,48 +85,49 @@ namespace AI.Actors
 			{
 				case EPlayerActorState.OffDuty:
 					AIPathing.SetSpeed(c_offDutySpeed);
+					AIPathing.SetStoppingDistance(c_workingDist);
 					break;
+
 				case EPlayerActorState.Follow:
 					AIPathing.SetSpeed(c_followSpeed);
+					AIPathing.SetStoppingDistance(c_followDist);
 					break;
+
 				case EPlayerActorState.SearchingForWork:
 				case EPlayerActorState.Working:
 					AIPathing.SetSpeed(c_workingSpeed);
-					break;
-				case EPlayerActorState.Carrying:
-					AIPathing.SetSpeed(0);
+					AIPathing.SetStoppingDistance(c_workingDist);
 					break;
 			}
-
-			float newStoppingDistance = state == EPlayerActorState.Follow ? c_followDist : c_workingDist;
-			AIPathing.SetStoppingDistance(newStoppingDistance);
 		}
+
+		#endregion
+
+		#region Behaviour
 
 		public override void TickBehaviour(float t)
 		{
-			if (AIPathing == null ||
-			BehaviourTreeExecutor == null ||
-			GOAPAgentComp == null)
+			if (!IsActorReady || GOAPAgentComp == null)
 				return;
 
-			if (LogicExecutorState == EPlayerActorState.Carrying)
-				return;
+			TickActorSystems(t);
 
-			ActorHealth?.TickStats(t);
-			AIPathing?.TickAIPathing();
-
-			// Prevent job acquisition until the investigation destination has been reached.
+			// Wait until the investigation destination is reached
+			// before searching for jobs.
 			if (m_isInvestigatingPositionForJob)
 			{
-				if (!AIPathing.HasReachedDestination(c_searchForJobStoppingDistance))
+				if (!AIPathing.HasReachedDestination(
+						c_searchForJobStoppingDistance))
+				{
+					FaceCurrentTarget();
 					return;
+				}
 
-				// Resume job searching
 				m_isInvestigatingPositionForJob = false;
 				AIPathing.ClearDestination();
 			}
 
-			// Tick search cooldown timer
+			// Job search cooldown.
 			if (m_jobSearchCountdown > 0f)
 				m_jobSearchCountdown -= t;
 
@@ -89,18 +136,19 @@ namespace AI.Actors
 				if (m_jobSearchCountdown <= 0f)
 					FindClosestJob(t);
 
-				if (m_targetInteractable != null && m_assignedInteractionPosition != null)
+				if (m_targetInteractable != null &&
+					m_assignedInteractionPosition != null &&
+					m_assignedInteractionPosition.TryGetInteractionPosition(
+						this,
+						out Vector3 validPosition))
 				{
-					if (m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
-					{
-						AIPathing.SetDestination(validPos);
+					AIPathing.SetDestination(validPosition);
 
-						// Check distance and attempt interaction directly
-						float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
-						if (AIPathing.IsWithinDistance(validPos, interactionDistance))
-						{
-							UseInteractable(m_targetInteractable);
-						}
+					if (AIPathing.IsWithinDistance(
+							validPosition,
+							m_assignedInteractionPosition.InteractionDistance))
+					{
+						UseInteractable(m_targetInteractable);
 					}
 				}
 			}
@@ -109,95 +157,163 @@ namespace AI.Actors
 				switch (LogicExecutorState)
 				{
 					case EPlayerActorState.OffDuty:
+
 						GOAPAgentComp.TickGoapPlanner(t);
 						break;
+
 					case EPlayerActorState.Follow:
+
 						if (m_targetTransform != null)
 							AIPathing.SetDestination(m_targetTransform.position);
+
 						break;
 
 					case EPlayerActorState.Working:
-						if (BehaviourTreeExecutor != null && BehaviourTreeExecutor.CurrentBehaviourTree != null)
+
+						SyncJobStateFromContext();
+
+						m_jobAssignedThisTick = false;
+
+						if (TryTickBehaviourTree(t, out EBTNodeState treeState))
 						{
-							SyncJobStateFromContext();
-
-							m_jobAssignedThisTick = false;
-							EBTNodeState treeState = BehaviourTreeExecutor.TickBehaviour(t);
-
-							// Clear if the behaviour tree completed and was not replaced this frame.
-							if (!m_jobAssignedThisTick &&
-								(treeState == EBTNodeState.SUCSESS ||
-								 treeState == EBTNodeState.FAILURE))
+							if ((treeState == EBTNodeState.SUCSESS ||
+								 treeState == EBTNodeState.FAILURE) &&
+								!m_jobAssignedThisTick)
 							{
-								ClearJobState(false);
+								ClearJobState();
 							}
 						}
+
 						break;
 				}
 			}
 
-			if (m_targetTransform != null && !AIPathing.IsMoving)
-				AIPathing.FaceTarget(m_targetTransform.position);
+			FaceCurrentTarget();
 		}
 
+		#endregion
+
+		#region Commands
+
+		/// <summary>
+		/// Commands the actor to follow a player.
+		/// </summary>
 		public void FollowPlayer(Transform player)
 		{
-			// Clear state
-			InteractionCanceled();
-			ClearJobState(false);
+			ClearJobState();
 
-			// Follow
-			SetLogicExecutorState(EPlayerActorState.Follow);
 			m_targetTransform = player;
+
+			SetLogicExecutorState(EPlayerActorState.Follow);
 		}
 
+		/// <summary>
+		/// Commands the actor to investigate a position.
+		/// Once reached, it begins searching for jobs.
+		/// </summary>
 		public void InvestigatePosition(Vector3 destination)
 		{
-			m_isInvestigatingPositionForJob = true;
-			m_targetTransform = null;
-
 			ClearJobState();
+
+			m_isInvestigatingPositionForJob = true;
+
 			SetLogicExecutorState(EPlayerActorState.SearchingForWork);
 
 			AIPathing.SetDestination(destination);
 		}
 
-		protected void ClearJobState(bool applyCooldown = false)
+		#endregion
+
+		#region Interactions
+
+		public override void InteractionCanceled()
 		{
-			if (m_targetInteractable != null)
-				m_targetInteractable.StopInteract(this, m_assignedInteractionPosition);
+			ClearJobState();
+		}
 
-			ReleaseInteractionPosition(m_assignedInteractionPosition);
+		protected override void OnInteractionFailed()
+		{
+			ClearJobState();
+		}
 
-			// Reset local references
-			m_targetInteractable = null;
-			m_targetTransform = null;
-			m_assignedInteractionPosition = null;
-			m_isInvestigatingPositionForJob = false;
-			m_timeFindingJob = 0;
+		protected override void HandleInteractableBehaviourTree(BehaviourTree behaviourTree)
+		{
+			TrySetActorJob(behaviourTree);
+		}
 
-			// Reset AI Context to avoid stale data
-			if (BehaviourTreeExecutor != null)
+		/// <summary>
+		/// Assigns a job supplied by an interactable.
+		/// </summary>
+		private void TrySetActorJob(BehaviourTree behaviourTree)
+		{
+			// Null trees are allowed for immediate interactions.
+			if (behaviourTree == null)
+				return;
+
+			InteractionPoint previousPoint =
+				BehaviourTreeExecutor.AIContext.ReservedInteractionPoint;
+
+			if (previousPoint != null &&
+				previousPoint != m_assignedInteractionPosition)
 			{
-				BehaviourTreeExecutor.ResetContext();
-				BehaviourTreeExecutor.SetCurrentBehaviourTree(null);
+				ReleaseInteractionPosition(previousPoint);
 			}
 
-			transform.parent = null;
-			m_collider.isTrigger = false;
+			AIContext context = BehaviourTreeExecutor.AIContext;
 
-			AIPathing.NavAgent.enabled = true;
-			AIPathing?.ClearDestination();
-			AIPathing.SetPosition(transform.position);
+			context.TargetTransform = m_targetTransform;
+
+			Vector3 targetDestination = m_targetTransform != null
+				? m_targetTransform.position
+				: transform.position;
+
+			if (m_assignedInteractionPosition != null &&
+				m_assignedInteractionPosition.TryGetInteractionPosition(
+					this,
+					out Vector3 validPosition))
+			{
+				targetDestination = validPosition;
+			}
+
+			context.TargetDestination = targetDestination;
+			context.ReservedInteractionPoint = m_assignedInteractionPosition;
+
+			BehaviourTreeExecutor.AIContext = context;
+
+			SetBehaviourTree(behaviourTree);
+
+			SetLogicExecutorState(EPlayerActorState.Working);
+
+			m_jobAssignedThisTick = true;
+		}
+
+		/// <summary>
+		/// Clears all current job and interaction information.
+		/// </summary>
+		protected void ClearJobState(bool applyCooldown = false)
+		{
+			ClearInteractionState();
+
+			m_isInvestigatingPositionForJob = false;
+			m_timeFindingJob = 0f;
 
 			if (applyCooldown)
 			{
 				m_jobSearchCountdown = c_jobSearchCooldownDuration;
-				SetLogicExecutorState(EPlayerActorState.SearchingForWork);
+
+				SetLogicExecutorState(
+					EPlayerActorState.SearchingForWork
+				);
 			}
 			else
+			{
 				SetLogicExecutorState(EPlayerActorState.OffDuty);
+			}
 		}
+
+		#endregion
+
+		#region Job Management
 
 		private void SyncJobStateFromContext()
 		{
@@ -205,59 +321,72 @@ namespace AI.Actors
 
 			Transform contextTarget = context.TargetTransform;
 			InteractionPoint reservedPoint = context.ReservedInteractionPoint;
+
 			if (contextTarget != m_targetTransform)
 			{
 				m_targetTransform = contextTarget;
 
-				if (contextTarget != null)
-					m_targetInteractable = contextTarget.GetComponent<ActorInteractableBase>() ??
-						contextTarget.GetComponentInParent<ActorInteractableBase>();
-				else
-					m_targetInteractable = null;
+				m_targetInteractable = contextTarget != null
+					? contextTarget.GetComponent<ActorInteractableBase>() ??
+					  contextTarget.GetComponentInParent<ActorInteractableBase>()
+					: null;
 			}
 
 			if (reservedPoint != m_assignedInteractionPosition)
 			{
 				ReleaseInteractionPosition(m_assignedInteractionPosition);
+
 				m_assignedInteractionPosition = reservedPoint;
 			}
 		}
 
 		private bool IsJobNeeded()
 		{
-			bool isJobFinished = (LogicExecutorState == EPlayerActorState.Working &&
-				BehaviourTreeExecutor.CurrentBehaviourTree == null);
+			bool workingWithoutTree =
+				LogicExecutorState == EPlayerActorState.Working &&
+				BehaviourTreeExecutor.CurrentBehaviourTree == null;
 
-			return LogicExecutorState == EPlayerActorState.SearchingForWork || isJobFinished;
+			return LogicExecutorState == EPlayerActorState.SearchingForWork ||
+				   workingWithoutTree;
 		}
 
 		/// <summary>
-		/// Searches for an actor interactable object within a radius.
+		/// Finds the closest available interactable task.
 		/// </summary>
 		private ActorInteractableBase SearchForTask()
 		{
 			ActorInteractableBase closestTask = null;
 
-			Vector3 pos = transform.position;
-			Collider[] hitColliders = Physics.OverlapSphere(pos, c_JobSearchRange, m_interactionLayers, QueryTriggerInteraction.Collide);
+			Vector3 position = transform.position;
 
-			float closestDist = Mathf.Infinity;
-			foreach (Collider i in hitColliders)
+			Collider[] hitColliders = Physics.OverlapSphere(
+				position,
+				c_JobSearchRange,
+				InteractionLayers,
+				QueryTriggerInteraction.Collide
+			);
+
+			float closestDistance = Mathf.Infinity;
+
+			foreach (Collider hitCollider in hitColliders)
 			{
-				if (i == null)
+				if (hitCollider == null ||
+					!hitCollider.TryGetComponent(
+						out ActorInteractableBase actorInteractable))
+				{
+					continue;
+				}
+
+				if (!actorInteractable.HasWorkForInteractor(this))
 					continue;
 
-				if (i.TryGetComponent(out ActorInteractableBase actorInteractable))
-				{
-					if (!actorInteractable.HasWorkForInteractor(this))
-						continue;
+				float distance =
+					(position - actorInteractable.transform.position).sqrMagnitude;
 
-					float dist = (pos - actorInteractable.transform.position).sqrMagnitude;
-					if (dist < closestDist)
-					{
-						closestTask = actorInteractable;
-						closestDist = dist;
-					}
+				if (distance < closestDistance)
+				{
+					closestTask = actorInteractable;
+					closestDistance = distance;
 				}
 			}
 
@@ -265,39 +394,45 @@ namespace AI.Actors
 		}
 
 		/// <summary>
-		/// Searches for the nearest available job and updates the actor's duty state based on the time spent searching.
+		/// Searches for the nearest available job and reserves
+		/// an interaction position.
 		/// </summary>
-		/// <param name="t">The time increment to add to the job search timer.</param>
-		/// <returns>The transform of the nearest interactable object if found; otherwise, null.</returns>
 		private void FindClosestJob(float t)
 		{
-			if (m_assignedInteractionPosition != null)
-				return;
-
-			// Allow job search when within range of the target destination
-			bool canSearchForJob = AIPathing.HasReachedDestination(c_searchForJobStoppingDistance);
-			if (canSearchForJob)
+			if (m_assignedInteractionPosition != null ||
+				!AIPathing.HasReachedDestination(
+					c_searchForJobStoppingDistance))
 			{
-				m_timeFindingJob += t;
+				return;
+			}
 
-				// Stop the job search if its been too long
-				if (m_timeFindingJob >= c_waitingForJobLimit)
-				{
-					ClearJobState(true);
-					return;
-				}
+			m_timeFindingJob += t;
 
-				// Try to reserve an interaction position, then move to it
-				m_targetInteractable = SearchForTask();
-				if (m_targetInteractable != null)
-				{
-					if (m_targetInteractable.TryReserveClosestPosition(this, transform.position, out m_assignedInteractionPosition))
-					{
-						m_timeFindingJob = 0;
-						Debug.Log($"Found Job: {m_targetInteractable} \n Interaction Position {m_assignedInteractionPosition}.", this);
-					}
-				}
+			// Stop searching if it takes too long.
+			if (m_timeFindingJob >= c_waitingForJobLimit)
+			{
+				ClearJobState(applyCooldown: true);
+				return;
+			}
+
+			m_targetInteractable = SearchForTask();
+
+			if (m_targetInteractable != null &&
+				m_targetInteractable.TryReserveClosestPosition(
+					this,
+					transform.position,
+					out m_assignedInteractionPosition))
+			{
+				m_timeFindingJob = 0f;
+
+				Debug.Log(
+					$"Found Job: {m_targetInteractable}\n" +
+					$"Interaction Position {m_assignedInteractionPosition}.",
+					this
+				);
 			}
 		}
+
+		#endregion
 	}
 }

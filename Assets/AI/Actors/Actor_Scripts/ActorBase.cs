@@ -1,243 +1,238 @@
+using AI.Actors;
+using AI.Context;
 using BehaviourTrees;
 using Factions.Core;
 using Interaction.Core;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
-using AI.Context;
-using ObjectTags;
-using AI.Actors;
 
-[RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing), typeof(GOAPAgent))]
+[RequireComponent(typeof(ActorHealthComponent), typeof(AIPathing))]
 public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 {
 	[Header("Parameters")]
 	[field: SerializeField] public EFaction ActorFaction { get; private set; }
+
 	[SerializeField] private LayerMask m_interactionLayers;
+	[SerializeField, Min(0)] private int m_attackDamage = 1;
 
-	/*
-		
-		NOTE: The actor components should not be separate components since they are
-		intrinsically linked to an actor. 
-	
-		Having separate components creates complex reference keeping that makes things 
-		confusing and error prone.
-	
-		Inventory has the excuse that it could be used on other objects (like chests) in
-		the future, but imo this is a bad excuse and it shouldn't be developed that way 
-		unless that feature is currently in development. It's currently very linked to
-		actors anyways.
-	
-		ActorHealthComponent is referenced by Actor, and also keeps a reference to Actor,
-		functionally making it one component anyways.
-		
-		My suggestion:
-1. 		Make ActorHealthComponent a partial class.
-
-		File Actor.Health.cs
-		public partial class Actor
-		{
-			health stuff
-		}
-
-		2. I would suggest making ActorInventory a regular class like this:
-
-		File: ActorInventory.cs
-		public class ActorInventory
-		{
-			inventory stuff
-		}
-
-		But because its behaviour seems to be very very connected to actors
-		I think making it a partial class as well would be better.
-
-		File: Actor.Inventory.cs
-		public partial class Actor
-		{
-			inventory stuff
-		}
-
-		File Actor.cs
-		public partial class Actor : Monobehaviour et al
-		{
-			ActorInventory m_inventory; // if regular class is chosen
-		}
-
-	*/
-
-	// Components
+	// Shared components
 	public ActorHealthComponent ActorHealth { get; private set; }
 	public AIPathing AIPathing { get; private set; }
-	private Collider m_collider;
-	private Rigidbody m_rigidbody;
-
-	// IInteractor Properties
-	public Transform Transform => gameObject.transform;
-
-	// IActor Properties
-	public bool IsActorActive => enabled;
-
-	// Executors
-	public GOAPAgent GOAPAgentComp { get; private set; }
 	public BehaviourTreeExecutorBase BehaviourTreeExecutor { get; private set; }
 
-	private float m_timeFindingJob;
-	private float m_jobSearchCountdown = 0f;
-	private bool m_isInvestigatingPositionForJob;
-	private bool m_jobAssignedThisTick;
+	// IInteractor
+	public Transform Transform => transform;
 
+	// IActor
+	public bool IsActorActive => enabled;
+
+	// Shared interaction state
 	protected Transform m_targetTransform;
 	protected ActorInteractableBase m_targetInteractable;
 	protected InteractionPoint m_assignedInteractionPosition;
 
+	protected LayerMask InteractionLayers => m_interactionLayers;
+
+	protected bool IsActorReady =>
+		ActorHealth != null &&
+		AIPathing != null &&
+		BehaviourTreeExecutor != null;
+
 	#region Lifecycle
 
-	private void Awake()
+	protected virtual void Awake()
 	{
-		BehaviourTreeExecutor = new BehaviourTreeExecutorBase(transform);
-		BehaviourTreeExecutor.ContextReset += HandleContextRest;
-
 		ActorHealth = GetComponent<ActorHealthComponent>();
 		AIPathing = GetComponent<AIPathing>();
-		m_collider = GetComponent<Collider>();
-		m_rigidbody = GetComponent<Rigidbody>();
-		GOAPAgentComp = GetComponent<GOAPAgent>();
+
+		BehaviourTreeExecutor = new BehaviourTreeExecutorBase(transform);
+		BehaviourTreeExecutor.ContextReset += HandleContextReset;
+
+		// Initialize the context immediately.
+		BehaviourTreeExecutor.ResetContext();
 	}
 
-	private void Start()
+
+	protected virtual void Start()
 	{
 		ActorManager.Instance.TryAddActor(this);
 	}
 
-	private void OnEnable()
+	protected virtual void OnDestroy()
 	{
-		if (GOAPAgentComp != null)
-		{
-			GOAPAgentComp.OnFoundDestination += AIPathing.SetDestination;
-			GOAPAgentComp.OnClearDestination += AIPathing.ClearDestination;
-		}
+		if (BehaviourTreeExecutor != null)
+			BehaviourTreeExecutor.ContextReset -= HandleContextReset;
+
+		if (m_assignedInteractionPosition != null)
+			ReleaseInteractionPosition(m_assignedInteractionPosition);
 	}
 
-	private void OnDisable()
+	#endregion
+
+	#region Behaviour
+
+	/// <summary>
+	/// Default behaviour for actors that simply execute their assigned tree.
+	/// PlayerActorBase overrides this to handle commands and jobs.
+	/// </summary>
+	public virtual void TickBehaviour(float t)
 	{
-		if (GOAPAgentComp != null)
-		{
-			GOAPAgentComp.OnFoundDestination -= AIPathing.SetDestination;
-			GOAPAgentComp.OnClearDestination -= AIPathing.ClearDestination;
-		}
+		if (!IsActorReady)
+			return;
+
+		TickActorSystems(t);
+		TryTickBehaviourTree(t, out _);
+		FaceCurrentTarget();
 	}
 
-	private void OnDestroy()
+	/// <summary>
+	/// Updates shared actor systems.
+	/// </summary>
+	protected void TickActorSystems(float t)
 	{
-		BehaviourTreeExecutor.ContextReset -= HandleContextRest;
+		ActorHealth?.TickStats(t);
+		AIPathing?.TickAIPathing();
+	}
+
+	/// <summary>
+	/// Executes the currently assigned behaviour tree.
+	/// </summary>
+	protected bool TryTickBehaviourTree(
+		float t,
+		out EBTNodeState state)
+	{
+		if (BehaviourTreeExecutor == null ||
+			BehaviourTreeExecutor.CurrentBehaviourTree == null)
+		{
+			state = default;
+			return false;
+		}
+
+		state = BehaviourTreeExecutor.TickBehaviour(t);
+		return true;
+	}
+
+	/// <summary>
+	/// Assigns or clears the current behaviour tree.
+	/// </summary>
+	public void SetBehaviourTree(BehaviourTree behaviourTree)
+	{
+		if (BehaviourTreeExecutor != null)
+			BehaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
+	}
+
+	#endregion
+
+	#region Interactions
+
+	public virtual void UseInteractable(IInteractable interactable)
+	{
+		if (interactable is not ActorInteractableBase actorInteractable)
+			return;
+
+		// Revalidate the reserved interaction position.
+		if (m_assignedInteractionPosition != null)
+		{
+			if (!m_assignedInteractionPosition.TryGetInteractionPosition(
+					this, out Vector3 validPosition))
+				return;
+
+			if (!AIPathing.IsWithinDistance(
+					validPosition,
+					m_assignedInteractionPosition.InteractionDistance))
+				return;
+		}
+
+		m_targetTransform = actorInteractable.transform;
+		m_targetInteractable = actorInteractable;
 
 		if (m_assignedInteractionPosition != null)
 		{
 			m_assignedInteractionPosition.InteractionsCanceled -= InteractionCanceled;
 		}
-	}
 
-	#endregion
+		bool interactionSucceeded = actorInteractable.TryInteract(
+			this,
+			transform.position,
+			m_assignedInteractionPosition
+		);
 
-	public abstract void TickBehaviour(float t);
-
-	public void TrySetActorJob(BehaviourTree behaviourTree)
-	{
-		// If no behaviour tree was passed, its probably intentional.
-		// Certain interactions like carryables require instant interactions without behaviour trees.
-		if (behaviourTree == null)
-			return;
-
-		// A new job can be acquired from inside an existing behaviour tree
-		InteractionPoint previousPoint = BehaviourTreeExecutor.AIContext.ReservedInteractionPoint;
-		if (previousPoint != null && previousPoint != m_assignedInteractionPosition)
-			ReleaseInteractionPosition(previousPoint);
-
-		AIContext context = BehaviourTreeExecutor.AIContext;
-		context.TargetTransform = m_targetTransform;
-
-		Vector3 targetDestination = m_targetTransform.position;
-		if (m_assignedInteractionPosition != null &&
-			m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
+		if (!interactionSucceeded)
 		{
-			targetDestination = validPos;
+			OnInteractionFailed();
+			return;
 		}
 
-		context.TargetDestination = targetDestination;
-		context.ReservedInteractionPoint = m_assignedInteractionPosition;
-		BehaviourTreeExecutor.AIContext = context;
+		if (m_assignedInteractionPosition != null)
+		{
+			m_assignedInteractionPosition.InteractionsCanceled += InteractionCanceled;
+		}
 
-		BehaviourTreeExecutor.SetCurrentBehaviourTree(behaviourTree);
-		SetLogicExecutorState(EPlayerActorState.Working);
-		m_jobAssignedThisTick = true;
+		HandleInteractableBehaviourTree(
+			actorInteractable.GetBehaviourTree()
+		);
+
+		Debug.Log(
+			$"{transform} interacted with {actorInteractable.name} and was successful.",
+			this
+		);
 	}
 
-	public virtual void UseInteractable(IInteractable interactable)
+	/// <summary>
+	/// Allows derived actors to customize how an interactable's
+	/// behaviour tree is handled.
+	/// </summary>
+	protected virtual void HandleInteractableBehaviourTree(
+		BehaviourTree behaviourTree)
 	{
-		if(interactable is ActorInteractableBase actorInteractable)
+		if (behaviourTree != null)
+			SetBehaviourTree(behaviourTree);
+	}
+
+	protected virtual void OnInteractionFailed()
+	{
+		ClearInteractionState();
+	}
+
+	public virtual void InteractionCanceled()
+	{
+		ClearInteractionState();
+	}
+
+	/// <summary>
+	/// Clears interaction state without modifying carrying-related
+	/// transform, collider or NavMeshAgent properties.
+	/// </summary>
+	protected void ClearInteractionState()
+	{
+		if (m_targetInteractable != null)
 		{
-			// Recalculate the interaction position in case it moved between ticks.
-			if (m_assignedInteractionPosition != null)
-			{
-				if (!m_assignedInteractionPosition.TryGetInteractionPosition(this, out Vector3 validPos))
-					return;
-
-				float interactionDistance = m_assignedInteractionPosition.InteractionDistance;
-				if (!AIPathing.IsWithinDistance(validPos, interactionDistance))
-					return;
-			}
-
-			m_targetTransform = actorInteractable.transform;
-
-			if (m_assignedInteractionPosition != null)
-			{
-				m_assignedInteractionPosition.InteractionsCanceled -= InteractionCanceled;
-			}
-
-			bool isInteractionSuccessful = actorInteractable.TryInteract
-			(
+			m_targetInteractable.StopInteract(
 				this,
-				transform.position,
 				m_assignedInteractionPosition
 			);
-
-			if (!isInteractionSuccessful)
-			{
-				ClearJobState(false);
-				return;
-			}
-
-			m_assignedInteractionPosition.InteractionsCanceled += InteractionCanceled;
-			TrySetActorJob(actorInteractable.GetBehaviourTree());
-			Debug.Log($"{transform} interacted with {actorInteractable.name} and was successful.", this);
 		}
-	}
 
-	public void InteractionCanceled()
-	{
-		ClearJobState();
-	}
+		ReleaseInteractionPosition(m_assignedInteractionPosition);
 
-	public void BeginCarrying(Transform parent, Vector3 localPosition)
-	{
-		if (parent != null)
+		m_targetInteractable = null;
+		m_targetTransform = null;
+		m_assignedInteractionPosition = null;
+
+		if (BehaviourTreeExecutor != null)
 		{
-			SetLogicExecutorState(EPlayerActorState.Carrying);
-
-			AIPathing.NavAgent.enabled = false;
-			AIPathing.ClearDestination();
-
-			m_collider.isTrigger = true;
-
-			transform.parent = parent;
-			transform.localPosition = localPosition;
+			BehaviourTreeExecutor.ResetContext();
+			BehaviourTreeExecutor.SetCurrentBehaviourTree(null);
 		}
+
+		AIPathing?.ClearDestination();
+		AIPathing?.SetPosition(transform.position);
 	}
 
-	protected void ReleaseInteractionPosition(InteractionPoint registeredPoint)
+	/// <summary>
+	/// Releases an interaction position reservation.
+	/// </summary>
+	protected void ReleaseInteractionPosition(
+		InteractionPoint registeredPoint)
 	{
 		if (registeredPoint == null)
 			return;
@@ -247,5 +242,37 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 		registeredPoint.TryRemoveInteractor(this);
 	}
 
-	protected abstract void HandleContextRest();
+	#endregion
+
+	#region AI Context
+
+	protected virtual void HandleContextReset()
+	{
+		if (BehaviourTreeExecutor == null)
+			return;
+
+		AIContext context = BehaviourTreeExecutor.AIContext;
+
+		context.ExecutorTransform = transform;
+		context.ExecutorFaction = (int)ActorFaction;
+
+		int interactionLayer = LayerMask.NameToLayer("Interaction");
+		context.InteractionLayer = 1 << interactionLayer;
+
+		context.AttackDamage = m_attackDamage;
+
+		BehaviourTreeExecutor.AIContext = context;
+	}
+
+	#endregion
+
+	protected void FaceCurrentTarget()
+	{
+		if (m_targetTransform != null &&
+			AIPathing != null &&
+			!AIPathing.IsMoving)
+		{
+			AIPathing.FaceTarget(m_targetTransform.position);
+		}
+	}
 }

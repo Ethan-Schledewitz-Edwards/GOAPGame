@@ -19,7 +19,7 @@ public class CarryObjectTask : BTNodeBase
 			return EBTNodeState.FAILURE;
 
 		IInteractor interactor = executorTransform.GetComponent<IInteractor>();
-		if (interactor == null)
+		if (interactor == null || interactor is not ICarryingInteractor carryingInteractor)
 			return EBTNodeState.FAILURE;
 
 		Transform targetTransform = context.TargetTransform;
@@ -30,7 +30,8 @@ public class CarryObjectTask : BTNodeBase
 		InteractionPoint reservedPoint = context.ReservedInteractionPoint;
 		if (reservedPoint.TryGetInteractionPosition(interactor, out Vector3 formationWorldPos))
 		{
-			interactor.BeginCarrying(reservedPoint.transform, reservedPoint.transform.InverseTransformPoint(formationWorldPos));
+			carryingInteractor.BeginCarrying(reservedPoint.transform, 
+				reservedPoint.transform.InverseTransformPoint(formationWorldPos));
 		}
 
 		return EBTNodeState.RUNNING;

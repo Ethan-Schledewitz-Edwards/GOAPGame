@@ -4,7 +4,7 @@ namespace AI.Actors
 {
 	public class TestWildlifeActor : WildlifeActorBase
 	{
-		protected override void HandleContextRest()
+		public override void TickBehaviour(float t)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -27,7 +27,7 @@ namespace Player.Core
 		private bool m_isSummonHeld = false;
 
 		private Vector3 m_cursorWorldPosition;
-		private List<ActorBase> m_activeFollowers = new List<ActorBase>();
+		private List<PlayerActorBase> m_activeFollowers = new List<PlayerActorBase>();
 
 
 		private void Awake()
@@ -91,7 +91,7 @@ namespace Player.Core
 
 		private void TryAssignActor(Vector3 throwPosition)
 		{
-			ActorBase followerToThrow = null;
+			PlayerActorBase followerToThrow = null;
 
 			// Find the closest nodd that matches the interactables resource type
 			ActorInteractableBase actorInteractable = FindClosestActorInteractable(throwPosition);
@@ -137,7 +137,7 @@ namespace Player.Core
 			newFollower.FollowPlayer(this.transform);
 		}
 
-		private void RemoveFollower(ActorBase actor)
+		private void RemoveFollower(PlayerActorBase actor)
 		{
 			if (m_activeFollowers.Contains(actor))
 			{
@@ -175,12 +175,12 @@ namespace Player.Core
 		/// Finds and returns the follower actor closest to the current actor's position.
 		/// </summary>
 		/// <returns>The closest follower actor, or null if no followers are present.</returns>
-		private ActorBase FindClosestFollower()
+		private PlayerActorBase FindClosestFollower()
 		{
-			ActorBase closestFollower = null;
+			PlayerActorBase closestFollower = null;
 
 			float closestDist = Mathf.Infinity;
-			foreach (ActorBase actor in m_activeFollowers)
+			foreach (PlayerActorBase actor in m_activeFollowers)
 			{
 				if (actor == null) 
 					continue;
@@ -200,12 +200,12 @@ namespace Player.Core
 		/// Finds the nearest active follower with the specified resource type tag.
 		/// </summary>
 		/// <returns>The closest follower matching the specified resource type, or null if none are found.</returns>
-		private ActorBase FindClosestFollower(ResourceTypeTag resourceType)
+		private PlayerActorBase FindClosestFollower(ResourceTypeTag resourceType)
 		{
-			ActorBase closestFollower = null;
+			PlayerActorBase closestFollower = null;
 
 			float closestDist = Mathf.Infinity;
-			foreach (ActorBase actor in m_activeFollowers)
+			foreach (PlayerActorBase actor in m_activeFollowers)
 			{
 				if (actor == null)
 					continue;

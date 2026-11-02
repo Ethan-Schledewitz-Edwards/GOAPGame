@@ -120,10 +120,13 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 		{
 			if(assignedPosition.TryGetInteractionPosition(interactor, out Vector3 destination))
 			{
-				// Actor starts carrying the carryable
-				interactor.BeginCarrying(transform,
+				if(interactor is ICarryingInteractor carryingInteractor)
+				{
+					// Actor starts carrying the carryable
+					carryingInteractor.BeginCarrying(transform,
 					transform.InverseTransformPoint(destination));
-				return true;
+					return true;
+				}
 			}
 		}
 
@@ -313,10 +316,6 @@ public class LogCarryableActorInteractable : ActorInteractableBase, IInteractor,
 	}
 
 	public override BehaviourTree GetBehaviourTree() => m_carryableBT;
-
-	public void BeginCarrying(Transform parent, Vector3 localPosition) { } // Logs can't carry anything silly
-
-	public void StopCarrying() { }
 
 	public void InteractionCanceled()
 	{

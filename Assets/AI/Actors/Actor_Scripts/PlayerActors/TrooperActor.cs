@@ -1,19 +1,14 @@
 using AI.Context;
+using Interaction.Core;
 using UnityEngine;
 
 namespace AI.Actors
 {
-	public class TrooperActor : PlayerActorBase
+	public class TrooperActor : PlayerActorBase, ICarryingInteractor
 	{
-		protected override void HandleContextRest()
+		public void BeginCarrying(Transform parent, Vector3 localPosition)
 		{
-			AIContext context = BehaviourTreeExecutor.AIContext;
-
-			context.ExecutorTransform = transform;
-			context.ExecutorFaction = (int)ActorFaction;
-			context.JobSearchDistance = ActorBase.c_JobSearchRange;
-			context.InteractionLayer = 1 << LayerMask.NameToLayer("Interaction");
-			context.AttackDamage = 1; // Hard coded for now
+			
 		}
 	}
 }
