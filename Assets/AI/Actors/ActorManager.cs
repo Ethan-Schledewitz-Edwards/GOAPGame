@@ -126,8 +126,7 @@ public class ActorManager : MonoBehaviour
 			m_isTicking = true;
 			foreach (IActor actor in s_Actors)
 			{
-				if (actor == null ||
-					!actor.IsActorActive)
+				if (actor == null)
 					continue;
 
 				actor.TickBehaviour(k_tpsThreshold);

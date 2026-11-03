@@ -39,6 +39,12 @@ namespace AI.Actors
 			base.Awake();
 
 			GOAPAgentComp = GetComponent<GOAPAgent>();
+		}
+
+		protected override void Start()
+		{
+			base.Start();
+
 			SetLogicExecutorState(EPlayerActorState.OffDuty);
 		}
 
@@ -107,7 +113,7 @@ namespace AI.Actors
 
 		public override void TickBehaviour(float t)
 		{
-			if (!IsActorReady || GOAPAgentComp == null)
+			if (!isActiveAndEnabled || GOAPAgentComp == null)
 				return;
 
 			TickActorSystems(t);

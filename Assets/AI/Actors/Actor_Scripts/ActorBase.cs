@@ -24,7 +24,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	public Transform Transform => transform;
 
 	// IActor
-	public bool IsActorActive => enabled;
+	public bool IsActorActive => isActiveAndEnabled;
 
 	// Shared interaction state
 	protected Transform m_targetTransform;
@@ -76,7 +76,7 @@ public abstract class ActorBase : MonoBehaviour, IInteractor, IActor
 	/// </summary>
 	public virtual void TickBehaviour(float t)
 	{
-		if (!IsActorReady)
+		if (!IsActorActive || !IsActorReady)
 			return;
 
 		TickActorSystems(t);
