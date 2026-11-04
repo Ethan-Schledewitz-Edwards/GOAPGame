@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{36C6D608-E8AA-45F1-BAF4-6CF39A0E051A}" SchemaVersion="133">
 	<States>
-		<WorkUnit Name="Default Work Unit" ID="{36C6D608-E8AA-45F1-BAF4-6CF39A0E051A}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{36C6D608-E8AA-45F1-BAF4-6CF39A0E051A}" PersistMode="Standalone">
+			<ChildrenList>
+				<StateGroup Name="TEST_BossState" ID="{DEB9BCC9-D7BD-4B90-82B3-C5CD2D6D1701}">
+					<ChildrenList>
+						<State Name="None" ID="{59663E8F-2C64-46F0-81C3-64516A2B392E}"/>
+						<State Name="Idle" ID="{5B41E8D0-3B1C-45CC-8479-275E2BF243A5}"/>
+						<State Name="Attack" ID="{DF3EA2AE-A302-4A83-A61C-DF606EC6E7A8}"/>
+						<State Name="AttackPrep" ID="{F82D8F0E-742D-438B-9228-038325905FE9}"/>
+						<State Name="BigAttack" ID="{78CEDCE2-2D92-4E96-AAF5-3D76F3C91B21}"/>
+						<State Name="Guarding" ID="{2BE7AAD4-DD53-456B-B773-6A91EBEDDCF8}"/>
+						<State Name="Dead" ID="{F859A9B6-E0BB-4D3B-8FD2-609B3D563E5B}"/>
+					</ChildrenList>
+				</StateGroup>
+			</ChildrenList>
+		</WorkUnit>
 	</States>
 </WwiseDocument>

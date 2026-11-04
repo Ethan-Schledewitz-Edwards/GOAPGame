@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{29C4858E-D045-4485-8FB4-F7B8C5F07D85}" SchemaVersion="133">
 	<Triggers>
-		<WorkUnit Name="Default Work Unit" ID="{29C4858E-D045-4485-8FB4-F7B8C5F07D85}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{29C4858E-D045-4485-8FB4-F7B8C5F07D85}" PersistMode="Standalone">
+			<ChildrenList>
+				<Trigger Name="BossGettingReadyForAttack" ID="{2252206C-0B1C-428E-9F6C-E1902C525A4C}"/>
+			</ChildrenList>
+		</WorkUnit>
 	</Triggers>
 </WwiseDocument>
