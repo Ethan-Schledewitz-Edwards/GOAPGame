@@ -118,16 +118,18 @@ namespace UISystem.Core
 
 		public static void CloseMenu(Menu menu)
 		{
-			if (menu.IsUnclosable) return;
-			CloseMenu_Internal(menu);
+			if (menu.IsUnclosable) 
+				return;
+
+			CloseMenuInternal(menu);
 		}
 
 		public static void CloseUnclosableMenu(Menu menu)
 		{
-			CloseMenu_Internal(menu);
+			CloseMenuInternal(menu);
 		}
 
-		static void CloseMenu_Internal(Menu menu)
+		static void CloseMenuInternal(Menu menu)
 		{
 			if (!s_openMenus.Contains(menu))
 			{

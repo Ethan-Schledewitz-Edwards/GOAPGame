@@ -6,7 +6,7 @@ using Interaction.Player;
 
 namespace Player.Core
 {
-	public class PlayerInteractionController : MonoBehaviour, IInputHandler
+	public class PlayerInteraction : MonoBehaviour, IInputHandler
 	{
 		private const float c_displayRange = 12f;
 		private const float c_interactionRange = 4f;

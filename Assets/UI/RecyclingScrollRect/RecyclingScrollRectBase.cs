@@ -3,7 +3,7 @@ using UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UISystems.RecyclingScrollRect
+namespace UISystem.RecyclingScrollRect
 {
 	public abstract class RecyclingScrollRectBase<T> : MonoBehaviour
 	{

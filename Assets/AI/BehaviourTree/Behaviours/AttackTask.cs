@@ -17,7 +17,7 @@ public class AttackTask : BTNodeBase
 		if (targetTransform == null)
 			return EBTNodeState.FAILURE;
 
-		if (targetTransform.TryGetComponent(out HealthComponent health) &&
+		if (targetTransform.TryGetComponent(out HealthBase health) &&
 			!health.IsDead)
 		{
 			float currentTimer = context.Cooldown + t;

@@ -3,7 +3,7 @@ using Interaction.Core;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(TreeHealthComponent))]
+[RequireComponent(typeof(HarvestableHealthBase))]
 public class HarvestableActorInteractable : ActorInteractableBase
 {
 	private static BehaviourTree m_harvestBT;

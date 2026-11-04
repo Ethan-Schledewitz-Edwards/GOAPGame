@@ -11,7 +11,7 @@ using UnityEngine.AI;
 /// Move most of the functionality there but keep the log spawning logic specific to trees
 /// </summary>
 [RequireComponent(typeof(UITrackedProgressComponent))]
-public class TreeHealthComponent : HealthComponent
+public class HarvestableHealthBase : HealthBase
 {
 	private const float c_spawnTimeout = 0.2f;
 	private const float c_logSpawnRadius = 1.8f;

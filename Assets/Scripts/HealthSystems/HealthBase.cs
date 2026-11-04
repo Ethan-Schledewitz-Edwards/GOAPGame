@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 [RequireComponent(typeof(AudioSource))]
-public class HealthComponent : MonoBehaviour
+public class HealthBase : MonoBehaviour
 {
 	// Components
 	protected AudioSource m_audioSource;
@@ -18,7 +18,8 @@ public class HealthComponent : MonoBehaviour
 	[SerializeField] protected GameObject m_destructionParticles;
 
 	[field: Header("Sounds")]
-	[SerializeField] private AudioClip[] m_damageSounds;
+	[SerializeField] private AudioClip[] m_bluntDamageSounds;
+	[SerializeField] private AudioClip[] m_velocityDamageSounds;
 	[SerializeField] private AudioClip[] m_dieSounds;
 
 	// System vars
@@ -33,13 +34,13 @@ public class HealthComponent : MonoBehaviour
 		SetHealth(MaxHealth);
 	}
 
-	public void SetHealth(int newHealthValue)
+	public virtual void SetHealth(int newHealthValue)
 	{
 		// Play damage sounds if the component lost health
 		bool wasHealthLost = newHealthValue < Health;
-		if (wasHealthLost && m_damageSounds.Length > 0)
+		if (wasHealthLost && m_bluntDamageSounds.Length > 0)
 		{
-			m_audioSource.PlayOneShot(m_damageSounds[Random.Range(0, m_damageSounds.Length)], 0.6f);
+			m_audioSource.PlayOneShot(m_bluntDamageSounds[Random.Range(0, m_bluntDamageSounds.Length)], 0.6f);
 		}
 
 		Health = Mathf.Clamp(newHealthValue, 0, MaxHealth);

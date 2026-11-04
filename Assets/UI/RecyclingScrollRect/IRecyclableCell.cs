@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystems.RecyclingScrollRect
+namespace UISystem.RecyclingScrollRect
 {
 	public interface IRecyclableCell<T>
 	{

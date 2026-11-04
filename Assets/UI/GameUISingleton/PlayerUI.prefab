@@ -2123,4 +2123,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: UISystem::PlayerUI
   <HUD>k__BackingField: {fileID: 4938697175853806401}
   <PauseMenu>k__BackingField: {fileID: 5242262913311716664}
-  <BuildMenu>k__BackingField: {fileID: 224646525688586512}
+  <ConstructionMenu>k__BackingField: {fileID: 224646525688586512}

@@ -9,13 +9,13 @@ namespace UISystem.TrackingUI
 	where TTrackable : class, ITrackableByElement
 	where TUIElement : TrackingUIElementBase
 	{
-		protected PlayerInteractionController m_playerInteraction;
+		protected PlayerInteraction m_playerInteraction;
 
 		protected Dictionary<TTrackable, TUIElement> m_activeElements = new Dictionary<TTrackable, TUIElement>();
 
 		protected virtual void Start()
 		{
-			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
+			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteraction>();
 			if (m_playerInteraction != null)
 			{
 				m_playerInteraction.NewTrackableObjectInDisplayRange += HandleInteractableInRange;

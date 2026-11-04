@@ -12,7 +12,7 @@ namespace Managers
 
 		[Header("Clock Properties")]
 		[Tooltip("How many in-game minutes pass for every 1 real-life second.")]
-		[SerializeField] private float m_minutesPerSecond = 2f;
+		[SerializeField] private float m_minutesPerSecond = 1f;
 
 		[Header("Day / Night Thresholds (Hours)")]
 		[SerializeField] private int m_sunriseHour = 6;

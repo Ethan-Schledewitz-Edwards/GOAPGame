@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using static UnityEngine.Analytics.IAnalytic;
 
-public class ActorHealthComponent : HealthComponent
+public class ActorHealthComponent : HealthBase
 {
 	// Constants
 	private const float c_hungerDegredation = 0.15f;

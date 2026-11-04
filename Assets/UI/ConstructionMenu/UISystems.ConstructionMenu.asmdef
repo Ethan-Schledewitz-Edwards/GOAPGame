@@ -1,6 +1,6 @@
 {
-    "name": "UISystems.ConstructionMenu",
-    "rootNamespace": "",
+    "name": "UISystem.ConstructionMenu",
+    "rootNamespace": "UISystem.ConstructionMenu",
     "references": [
         "GUID:5e549e5c8d4b5b14cafd196c6dc8eb10",
         "GUID:8bc4cdfcc3ea536488dde889105f8a36",
@@ -10,7 +10,6 @@
         "GUID:553751e538aa0874d9351ac2f1e0dc17",
         "GUID:0eec0e3185c110644ab23d853bdbea41",
         "GUID:854f8f51ca1d1e3448a9ac836b7678bc",
-        "GUID:9ba38f2c76031274599e13fd9c690966",
         "GUID:82a8d3db3bc98a34382d1f953bc8489e"
     ],
     "includePlatforms": [],

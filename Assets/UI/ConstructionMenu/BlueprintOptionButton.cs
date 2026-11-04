@@ -1,40 +1,44 @@
 using TMPro;
-using UISystems.RecyclingScrollRect;
+using UISystem.RecyclingScrollRect;
 using UnityEngine;
 using Construction;
 using UISystem.Core;
 
-public class BlueprintOptionButton : MenuButton, IRecyclableCell<BlueprintData>
+namespace UISystem.ConstructionMenu
 {
-	[SerializeField] private GameObject m_prefab;
-	public GameObject Prefab => m_prefab;
-
-	[SerializeField] private GameObject m_gameObject;
-	public GameObject GameObject => m_gameObject;
-
-	[SerializeField] private RectTransform m_rectTransform;
-	public RectTransform RectTransform => m_rectTransform;
-
-	[SerializeField] private TextMeshProUGUI m_blueprintTitleText;
-	[SerializeField] private TextMeshProUGUI m_cellIDText;
-	private BlueprintData m_blueprintData;
-
-	public void ConfigureCell(int index, BlueprintData[] data)
+	public class BlueprintOptionButton : MenuButton, IRecyclableCell<BlueprintData>
 	{
-		if (m_blueprintTitleText)
-			m_blueprintTitleText.text = data[index].DisplayName;
+		[SerializeField] private GameObject m_prefab;
+		public GameObject Prefab => m_prefab;
 
-		if (m_cellIDText)
-			m_cellIDText.text = index.ToString();
+		[SerializeField] private GameObject m_gameObject;
+		public GameObject GameObject => m_gameObject;
 
-		m_blueprintData = data[index];
+		[SerializeField] private RectTransform m_rectTransform;
+		public RectTransform RectTransform => m_rectTransform;
+
+		[SerializeField] private TextMeshProUGUI m_blueprintTitleText;
+		[SerializeField] private TextMeshProUGUI m_cellIDText;
+		private BlueprintData m_blueprintData;
+
+		public void ConfigureCell(int index, BlueprintData[] data)
+		{
+			if (m_blueprintTitleText)
+				m_blueprintTitleText.text = data[index].DisplayName;
+
+			if (m_cellIDText)
+				m_cellIDText.text = index.ToString();
+
+			m_blueprintData = data[index];
+		}
+
+		protected override void ButtonClicked()
+		{
+			base.ButtonClicked();
+
+			MenuManager.CloseMenu(m_parentMenu);
+			ConstructionManager.Instance.HandleBlueprintButton(m_blueprintData);
+		}
 	}
 
-	protected override void ButtonClicked()
-	{
-		base.ButtonClicked();
-
-		MenuManager.CloseMenu(m_parentMenu);
-		ConstructionManager.Instance.HandleBlueprintButton(m_blueprintData);
-	}
 }

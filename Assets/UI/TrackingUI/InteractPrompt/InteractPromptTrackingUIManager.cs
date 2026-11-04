@@ -8,7 +8,7 @@ namespace UISystem.TrackingUI
 	{
 		[SerializeField] private InteractPromptTrackingUIElement m_interactPromptTrackingUIElement;
 
-		private PlayerInteractionController m_playerInteraction;
+		private PlayerInteraction m_playerInteraction;
 
 		private void Awake()
 		{
@@ -18,7 +18,7 @@ namespace UISystem.TrackingUI
 
 		private void Start()
 		{
-			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteractionController>();
+			m_playerInteraction = Object.FindAnyObjectByType<PlayerInteraction>();
 			if (m_playerInteraction != null)
 			{
 				m_playerInteraction.ClosestInteractableUpdated += HandlePromptUpdated;

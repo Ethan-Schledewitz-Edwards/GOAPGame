@@ -2,12 +2,15 @@ using UnityEngine;
 using Player.Core;
 using UISystem.Core;
 
-public class HUDElement : UIElement
+namespace UISystem.HUD
 {
-	protected PlayerEntity m_player;
-
-    public virtual void SetPlayer(PlayerEntity player)
+	public class HUDElement : UIElement
 	{
-		m_player = player;
+		protected PlayerEntity m_player;
+
+		public virtual void SetPlayer(PlayerEntity player)
+		{
+			m_player = player;
+		}
 	}
 }

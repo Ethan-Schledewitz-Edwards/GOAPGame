@@ -5,58 +5,61 @@ using UISystem.Core;
 using UnityEngine;
 using WorldLighting;
 
-public class ClockElement : UIElement
+namespace UISystem.HUD
 {
-	private IGameClock m_gameClock;
-
-	[SerializeField] private TextMeshProUGUI m_clockText;
-
-	private void Start()
+	public class ClockElement : UIElement
 	{
-		m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include)
-				.OfType<IGameClock>()
-				.FirstOrDefault();
+		private IGameClock m_gameClock;
 
-		if (m_gameClock == null)
+		[SerializeField] private TextMeshProUGUI m_clockText;
+
+		private void Start()
 		{
-			Debug.LogError($"{gameObject.name}: Missing an {nameof(IGameClock)} reference in scene.", this);
-			return;
-		}
+			m_gameClock = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include)
+					.OfType<IGameClock>()
+					.FirstOrDefault();
 
-		m_gameClock.ClockUpdated += OnClockUpdated;
+			if (m_gameClock == null)
+			{
+				Debug.LogError($"{gameObject.name}: Missing an {nameof(IGameClock)} reference in scene.", this);
+				return;
+			}
 
-		// Initial display update
-		(int currentHour, int currentMinute) = m_gameClock.GetTimeOfDay();
-		OnClockUpdated(currentHour, currentMinute);
-	}
-
-	private void OnEnable()
-	{
-		if (m_gameClock != null)
-		{
-			m_gameClock.ClockUpdated -= OnClockUpdated;
 			m_gameClock.ClockUpdated += OnClockUpdated;
 
+			// Initial display update
 			(int currentHour, int currentMinute) = m_gameClock.GetTimeOfDay();
 			OnClockUpdated(currentHour, currentMinute);
 		}
-	}
 
-	private void OnDisable()
-	{
-		if (m_gameClock != null)
+		private void OnEnable()
 		{
-			m_gameClock.ClockUpdated -= OnClockUpdated;
+			if (m_gameClock != null)
+			{
+				m_gameClock.ClockUpdated -= OnClockUpdated;
+				m_gameClock.ClockUpdated += OnClockUpdated;
+
+				(int currentHour, int currentMinute) = m_gameClock.GetTimeOfDay();
+				OnClockUpdated(currentHour, currentMinute);
+			}
 		}
-	}
 
-	private void OnClockUpdated(int hour, int minute)
-	{
-		string amPm = hour >= 12 ? "PM" : "AM";
-		int displayHour = hour % 12;
-		if (displayHour == 0)
-			displayHour = 12;
+		private void OnDisable()
+		{
+			if (m_gameClock != null)
+			{
+				m_gameClock.ClockUpdated -= OnClockUpdated;
+			}
+		}
 
-		m_clockText.text = $"{displayHour}:{minute:D2} {amPm}";
+		private void OnClockUpdated(int hour, int minute)
+		{
+			string amPm = hour >= 12 ? "PM" : "AM";
+			int displayHour = hour % 12;
+			if (displayHour == 0)
+				displayHour = 12;
+
+			m_clockText.text = $"{displayHour}:{minute:D2} {amPm}";
+		}
 	}
 }

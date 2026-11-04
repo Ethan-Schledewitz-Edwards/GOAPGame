@@ -1,23 +1,26 @@
 using UISystem.Core;
 using UnityEngine;
 
-public class PauseMenu : Menu
+namespace UISystems.PauseMenu
 {
-	protected override void Awake()
+	public class PauseMenu : Menu
 	{
-		base.Awake();
+		protected override void Awake()
+		{
+			base.Awake();
 
-		MenuManager.PauseMenu = this;
-	}
+			MenuManager.PauseMenu = this;
+		}
 
-	protected override void Start()
-	{
-		SetMenuActive(false);
-		base.Start();
-	}
+		protected override void Start()
+		{
+			SetMenuActive(false);
+			base.Start();
+		}
 
-	public void QuitButton()
-	{
-		Application.Quit();
+		public void QuitButton()
+		{
+			Application.Quit();
+		}
 	}
 }

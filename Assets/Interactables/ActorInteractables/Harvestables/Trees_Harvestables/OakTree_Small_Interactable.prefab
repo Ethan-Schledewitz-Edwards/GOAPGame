@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 2071504800197458935}
   - component: {fileID: 1403681809950730677}
   - component: {fileID: 3214825593510965529}
-  - component: {fileID: 4026278048805383853}
+  - component: {fileID: 2678056919536222731}
   - component: {fileID: 7982115691812477690}
   - component: {fileID: 6518718037148992619}
   - component: {fileID: 1005846120864118715}
@@ -188,7 +188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableAIO
   m_localInteractionPromptOffset: {x: 0, y: 0, z: 0}
   m_permittedNoddTypeTag: {fileID: 0}
---- !u!114 &4026278048805383853
+--- !u!114 &2678056919536222731
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,14 +197,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3778585277737840742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f542308d5b2c0da42b8ceb8e31829242, type: 3}
+  m_Script: {fileID: 11500000, guid: 44fe452554188694480e1c434a77665e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Interaction.Actor.Harvestables::TreeHealthComponent
+  m_EditorClassIdentifier: Interaction.Actor.Harvestables::HarvestableHealthBase
   <MaxHealth>k__BackingField: 5
   <IsDestroyedOnDeath>k__BackingField: 0
   m_damageParticles: {fileID: 0}
   m_destructionParticles: {fileID: 0}
-  m_damageSounds: []
+  m_bluntDamageSounds: []
+  m_velocityDamageSounds: []
   m_dieSounds: []
   IsDamagable: 1
   m_treeMeshObject: {fileID: 6670668404327998910}
