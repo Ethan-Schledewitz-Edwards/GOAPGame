@@ -16,6 +16,9 @@ namespace Player.Core
 		public override event Action<Transform> CursorAnchorSet;
 		public override event Action ResetCursorAnchor;
 
+		public event Action<ENoddTypes> OnFollowerAdd;
+		public event Action<ENoddTypes> OnFollowerRemove;
+
 		[Header("Settings")]
 		private LayerMask m_actorLayers;
 		private LayerMask m_interactionLayers;
@@ -130,8 +133,9 @@ namespace Player.Core
 			if (m_activeFollowers.Contains(newFollower))
 				return;
 
-			Debug.Log("Added Follower");
-
+			Debug.Log("Added Follower " + newFollower.name + " of type " + newFollower.NoddType);
+			OnFollowerAdd?.Invoke(newFollower.NoddType);
+			
 			// Update systems to include new actor
 			m_activeFollowers.Add(newFollower);
 			newFollower.FollowPlayer(this.transform);
@@ -141,6 +145,7 @@ namespace Player.Core
 		{
 			if (m_activeFollowers.Contains(actor))
 			{
+				OnFollowerRemove?.Invoke(actor.NoddType);
 				m_activeFollowers.Remove(actor);
 			}
 		}

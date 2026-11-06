@@ -1,6 +1,7 @@
 using AI.Context;
 using BehaviourTrees;
 using Interaction.Core;
+using ObjectTags;
 using UnityEngine;
 
 namespace AI.Actors
@@ -8,6 +9,8 @@ namespace AI.Actors
 	[RequireComponent(typeof(GOAPAgent))]
 	public abstract class PlayerActorBase : ActorBase
 	{
+		[SerializeField] private ENoddTypes m_noddType = ENoddTypes.NODD_BASE;
+		
 		public const float c_JobSearchRange = 1.5f;
 
 		private const float c_waitingForJobLimit = 2.0f;
@@ -26,6 +29,8 @@ namespace AI.Actors
 
 		public GOAPAgent GOAPAgentComp { get; private set; }
 
+		public ENoddTypes NoddType => m_noddType;
+		
 		private float m_timeFindingJob;
 		private float m_jobSearchCountdown;
 

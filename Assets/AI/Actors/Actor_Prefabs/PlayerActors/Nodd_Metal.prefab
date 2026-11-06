@@ -323,6 +323,8 @@ MonoBehaviour:
   m_interactionLayers:
     serializedVersion: 2
     m_Bits: 384
+  m_attackDamage: 1
+  m_noddType: 3
   m_resourceTypeTag: {fileID: 11400000, guid: 64d00340124533c4fb8c07b99d09deaf, type: 2}
 --- !u!114 &3333077740091554456
 MonoBehaviour:
@@ -340,7 +342,8 @@ MonoBehaviour:
   <IsDestroyedOnDeath>k__BackingField: 1
   m_damageParticles: {fileID: 0}
   m_destructionParticles: {fileID: 0}
-  m_damageSounds: []
+  m_bluntDamageSounds: []
+  m_velocityDamageSounds: []
   m_dieSounds: []
   IsDamagable: 1
   <MaxHunger>k__BackingField: 100
