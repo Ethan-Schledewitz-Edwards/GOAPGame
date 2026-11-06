@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Player.Core
@@ -10,7 +11,7 @@ namespace Player.Core
 		private PlayerEntity m_player;
 
 		// Events
-		public event Action<int> HealthChanged;
+		public event Action<int> OnHealthChanged;
 
 		protected override void Awake()
 		{
@@ -23,7 +24,20 @@ namespace Player.Core
 		{
 			base.SetHealth(newHealthValue);
 
-			HealthChanged?.Invoke(newHealthValue);
+			OnHealthChanged?.Invoke(newHealthValue);
+		}
+		
+		// TESTING UI ELEMENTS
+		[Button]
+		private void TakeFiveDamage()
+		{
+			SetHealth(Health - 5);
+		}
+		
+		[Button]
+		private void HealFiveDamage()
+		{
+			SetHealth(Health + 5);
 		}
 	}
 }
