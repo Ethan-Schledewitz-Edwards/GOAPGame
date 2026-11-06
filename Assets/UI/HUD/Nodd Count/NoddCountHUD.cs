@@ -8,7 +8,10 @@ namespace UISystem.HUD
 {
     public class NoddCountHUD : MonoBehaviour
     {
+        [SerializeField] private NoddCountElement m_noddCountElementObj;
+        
         [SerializeField] private Dictionary<ENoddTypes, int> m_noddCountDict;
+        [SerializeField] private Dictionary<ENoddTypes, NoddCountElement> m_noddCountElements;
 
         private PlayerFollowerController m_playerFollowerController;
 
@@ -23,13 +26,29 @@ namespace UISystem.HUD
 
         private void AddNodd(ENoddTypes noddType)
         {
-            if (m_noddCountDict.ContainsKey(noddType)) m_noddCountDict[noddType] += 1;
-            else m_noddCountDict[noddType] = 1;
+            if (m_noddCountDict.ContainsKey(noddType))
+            {
+                if (m_noddCountDict[noddType] == 0) m_noddCountElements[noddType].gameObject.SetActive(true);
+                m_noddCountDict[noddType] += 1;
+                m_noddCountElements[noddType].UpdateCountText(m_noddCountDict[noddType]);
+            }
+            else
+            {
+                NoddCountElement element = Instantiate(m_noddCountElementObj, m_noddCountElementObj.transform.parent);
+                element.gameObject.SetActive(true);
+                element.UpdateCountText(1);
+                element.UpdateBackImage(noddType);
+
+                m_noddCountElements[noddType] = element;
+                m_noddCountDict[noddType] = 1;
+            }
         }
 
         private void RemoveNodd(ENoddTypes noddType)
         {
             m_noddCountDict[noddType] -= 1;
+            m_noddCountElements[noddType].UpdateCountText(m_noddCountDict[noddType]);
+            if (m_noddCountDict[noddType] == 0) m_noddCountElements[noddType].gameObject.SetActive(false);
         }
     }
 }
